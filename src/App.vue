@@ -1,19 +1,29 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import Login from '/@/views/sys/login/Login.vue'
 </script>
 
 <template>
-  <div>
+  <!-- <div>
     <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
+      <img src="/bdc.svg" class="logo" alt="Vite logo" />
     </a>
     <a href="https://vuejs.org/" target="_blank">
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
+  </div> -->
+  <a-config-provider :theme="{
+    token: {
+      algorithm: theme.defaultAlgorithm,
+      colorPrimary: '#00b96b',
+    },
+  }">
 
+    <Login />
+  </a-config-provider>
+</template>
+<script lang="ts">
+import { theme } from 'ant-design-vue'
+</script>
 <style scoped>
 .logo {
   height: 6em;
@@ -21,9 +31,11 @@ import HelloWorld from './components/HelloWorld.vue'
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
