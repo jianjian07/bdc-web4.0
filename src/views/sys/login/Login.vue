@@ -1,12 +1,8 @@
 <template>
-    <a-row>
-        <a-col :span="14" class="left-css vh-100">col</a-col>
-        <a-col :span="10" class="vh-100 d-flex">
+    <a-row class="content-css">
+        <a-col :span="7"></a-col>
+        <a-col :span="8" :offset="7">
             <div class="login-css">
-                <a style="">
-                    <img style="height: 50px !important;margin-bottom: 1.6rem !important;"
-                        src="/src/assets/svg/logo-icon.svg" alt="logo" />
-                </a>
                 <h1
                     style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.5rem + 1.8vw);line-height: 1.25;font-weight: 600;">
                     不动产登记系统
@@ -33,8 +29,8 @@
                             style="letter-spacing: 0.5px;height: 40px;" :loading="loading">登录</a-button>
                     </a-form-item>
                     <div style="font-size: 12px;float: right;">
-                        忘记密码?
-                        <a @click="forgetPassword">找回密码</a>
+
+                        <a @click="forgetPassword">忘记密码？</a>
                     </div>
                 </a-form>
             </div>
@@ -67,6 +63,13 @@ function forgetPassword() {
 }
 </script>
 <style scoped>
+.content-css {
+    background-size: cover;
+    background-image: url('/@/assets/images/login/bg.jpg');
+
+    height: 100vh !important
+}
+
 .vh-100 {
     height: 100vh !important
 }
@@ -109,10 +112,12 @@ function forgetPassword() {
 
 .login-css {
     transform: translateY(30%);
-
+    background-color: #fff;
     width: 100%;
     height: 538px;
     padding: 40px 48px 26px;
     font-size: 14px;
+    margin-right: 100px;
+    border-radius: 4px;
 }
 </style>
