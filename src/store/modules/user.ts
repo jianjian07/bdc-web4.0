@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 // import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
+import userToken from "../../../public/static/userToken.json"
 import {
   ROLES_KEY,
   TOKEN_KEY,
@@ -25,11 +26,11 @@ import { router } from '../../router';
 import { usePermissionStore } from '/@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '../../router/routes/basic';
-
+import { isArray } from '/@/utils/is';
 import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { createVNode } from 'vue';
-import { getCategoryDict, getDataDict, getRuleListByRuleType, getRuleListByValidate } from "/@/api/sys/dict"
+import { getCategoryDict, getDataDict, getRuleList } from "/@/api/sys/dict"
 // import { useGlobSetting } from '/@/hooks/setting';
 // import { useSso } from '/@/hooks/web/useSso';
 
@@ -107,13 +108,13 @@ export const useUserStore = defineStore({
     getToken(): string {
       return this.token || getAuthCache<string>(TOKEN_KEY);
     },
-    getAllDicts(): any[] {
+    getAllDicts(): [] {
       return this.dicts || getAuthCache(DB_DICT_DATA_KEY);
     },
-    getAllCategory(): any[] {
+    getAllCategory(): [] {
       return this.category || getAuthCache(CATEGORY_DATA_KEY)
     },
-    getValidateRuleList(): any[] {
+    getValidateRuleList(): [] {
       return this.validateRuleList || getAuthCache(VALIDATE_RULE_DATA_KEY)
     },
     getCodeRuleList(): [] {
@@ -216,13 +217,15 @@ export const useUserStore = defineStore({
       // debugger
       this.userInfo = null;
       this.szUserInfo = null;
+      this.dictItems = [];
       this.token = '';
+      //   this.roleList = [];
       this.sessionTimeout = false;
       this.menuIndex = -1
       this.licence = ''
     },
-    formatDictList(newArr: any) {
-      let newData = newArr.map((item: any) => {
+    formatDictList(newArr) {
+      let newData = newArr.map(item => {
         item.label = item.dict_name
         item.value = item.dict_code
         if (item.children) {
@@ -328,52 +331,41 @@ export const useUserStore = defineStore({
         return null;
       }
       console.log('this.getToken', this.getToken)
-      const sysAllDictItems: any = await getDataDict()
-      console.log('mmmmmk', sysAllDictItems)
-      const sysAllCategory: any = await getCategoryDict()
-      const sysValidateRuleList: any = await getRuleListByRuleType('validate')
-      const sysCodeRuleList: any = await getRuleListByRuleType('code')
-      const sysDataRuleList: any = await getRuleListByRuleType('data')
-      const sysApiRuleList: any = await getRuleListByRuleType('api')
-      console.log('sysApiRuleList', sysApiRuleList)
       const userInfo: any = await getUserInfo();
+      // 登录界面不是使用单点登录接口，此处获取深圳用户代码屏蔽
+      // const szUserInfo: any = await initEventUserInfo()
       if (userInfo) {
-        // const { roles = [] } = userInfo;
-        // if (isArray(roles)) {
-        //   const roleList = roles.map((item) => item.value) as RoleEnum[];
-        //   this.setRoleList(roleList);
-        // } else {
-        //   userInfo.roles = [];
-        //   this.setRoleList([]);
-        // }
         this.setUserInfo(userInfo);
       }
-      /**
-       * 添加字典信息到缓存
-       * @updateBy:lsq
-       * @updateDate:2021-09-08
-       */
-      if (sysAllDictItems) {
-        let dicts = this.formatDictList(sysAllDictItems)
-        this.setAllDicts(dicts)
-      }
-      if (sysAllCategory) {
-        let dicts = this.formatDictList(sysAllCategory)
-        this.setAllCategory(dicts)
-      }
-      if (sysValidateRuleList) {
-        this.setValidateRuleList(sysValidateRuleList)
-      }
-      if (sysCodeRuleList) {
-        this.setCodeRuleList(sysCodeRuleList)
-      }
-      if (sysDataRuleList) {
-        this.setDataRuleList(sysDataRuleList)
-      }
-      if (sysApiRuleList) {
-        this.setApiRuleList(sysApiRuleList)
-      }
+      // 数据字典
+      getDataDict()
+      // 分类字典
+      getCategoryDict()
+      // 规则
+      getRuleList()
+      // if (szUserInfo) {
+      //   if (userToken.iszsEnv != '0') {
+      //     this.setToken(szUserInfo.token.access_token);
+      //     this.setSzUserInfo(szUserInfo.userInfo)
+      //   } else {
+      //     this.setSzUserInfo(szUserInfo)
+      //   }
+      // }
       return userInfo;
+    },
+    // 获取深圳用户信息
+    async getSzUserInfoAction(ssotoken: String): Promise<any | null> {
+      if (!ssotoken) {
+        return null;
+      }
+      const szUserInfo: any = await initEventUserInfo(ssotoken)
+      if (szUserInfo) {
+        // 局方单点登录增加Single 标识
+        const token = "Single " + szUserInfo.token.access_token
+        this.setToken(token);
+        this.setSzUserInfo(szUserInfo.userInfo)
+      }
+      return szUserInfo;
     },
     /**
      * 退出登录

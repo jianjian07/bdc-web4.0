@@ -1,5 +1,5 @@
 <template>
-    <div class="wonder-basic-form">
+    <div class="wonder-table-form">
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="8" :offset="0">
@@ -40,7 +40,8 @@
                 新增
             </a-button>
         </div>
-        <a-table :columns="columns" :data-source="datalist" :pagination="pagination" @change="onChange($event, loadData)">
+        <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
+            @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'isLoad'">
                     <span>
@@ -95,14 +96,14 @@ let pagination = ref({
  * 表格数据加载
 */
 async function loadData(type?: string | undefined) {
-  // 解决翻页后查询不到的问题
-  if (type == 'query') {
-    pagination.value = {
-      total: 0,
-      current: 1,
-      pageSize: 10,
+    // 解决翻页后查询不到的问题
+    if (type == 'query') {
+        pagination.value = {
+            total: 0,
+            current: 1,
+            pageSize: 10,
+        }
     }
-  }
     let url = '/magicapi/zrzy-form/magic/form/report/list'
     defHttp.post({ url: url, params: { code: formData.value.code || '', title: formData.value.title || '', page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: false, joinParamsToUrl: true }).then((res) => {
         datalist.value = res.list
