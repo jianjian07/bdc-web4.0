@@ -30,10 +30,9 @@ import {
     onTableSelectRowChange,
     getSelectAllCheck,
     setSelectAllCheck,
-    hideField,
-    getSelectJsonSetting
+    hideField
 } from "/@/utils/form/wonder1.0.1"
-import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
+// import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props = defineProps({
     id: {
         type: String,
@@ -80,7 +79,7 @@ let vue3Script = ref({
 const generateData = generateFormHtml(info, vue3Script)
 // columns.value = []
 let selectJsonSetting = ref<any>(generateData.selectJsonSetting)
-getSelectJsonSetting(selectJsonSetting)
+// getSelectJsonSetting(selectJsonSetting)
 columns.value = generateData.columns
 // if (generateData.columns != '') {
 //     columns.value = JSON.parse(generateData.columns)//拷贝
@@ -193,7 +192,7 @@ const generateVue3 = defineComponent({
             computed,
             defHttp,
             editableData,
-            tableSelectProps,
+            // tableSelectProps,
             search,
             onChange,
             initTable,

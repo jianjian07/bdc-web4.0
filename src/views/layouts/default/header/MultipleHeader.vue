@@ -1,7 +1,7 @@
 <template>
   <div class="multiple-header">
-    <a-tabs size="small" :animated="false" :hideAdd="true" :activeKey="activeKeys" @change="handleChange"
-      @edit="handleEdit">
+    <a-tabs size="small" type="editable-card" :animated="false" :hideAdd="true" :activeKey="activeKeys"
+      @change="handleChange" @edit="handleEdit">
       <a-tab-pane v-for="(item, index) in tabList" :key="item.fullPath" :closable="getClosable(index)">
         <template #tab>
           <tab-action :tab-item="item"></tab-action>
@@ -9,7 +9,6 @@
       </a-tab-pane>
 
       <template #rightExtra>
-        <test-button :is-extra="true"></test-button>
         <span class="tab-extra" @click="handleReLoading">
           <RedoOutlined :spin="loading" />
         </span>
@@ -35,7 +34,7 @@ const TabAction = defineAsyncComponent(() => import("/@/views/layouts/default/he
 const tabStore = useTabsStore()
 // tab选中面板key
 const activeKeys = computed(() => tabStore.getTabActiveKey)
-console.log("activeKeys哈哈哈哈哈" + activeKeys)
+// console.log("activeKeys哈哈哈哈哈" + activeKeys)
 // tab列表
 const tabList = computed(() => tabStore.getTabList);
 // 全屏状态
@@ -202,7 +201,28 @@ function dataFilter(data: any) {
       background-color: #fff;
       padding: 0 20px 0 30px;
       margin: 0 10px 0 0 !important;
+      border: 0;
+    }
+
+    .ant-tabs-tab:hover {
+      border: none;
+      outline: none;
+    }
+
+    .ant-tabs-tab-active {
+      border-bottom: 2px solid #00b96b !important;
     }
   }
+}
+
+.tab-extra {
+  display: inline-block;
+  width: 36px;
+  height: 50px;
+  line-height: 50px;
+  color: #00000073;
+  text-align: center;
+  cursor: pointer;
+  border-left: 1px solid #d9d9d9;
 }
 </style>

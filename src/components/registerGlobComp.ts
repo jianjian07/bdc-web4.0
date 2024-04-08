@@ -1,4 +1,5 @@
 import type { App } from 'vue';
+import SvgIcon from './icon/SvgIcon.vue'
 import {
     Layout,
     Carousel,
@@ -43,7 +44,7 @@ import {
 } from 'ant-design-vue';
 
 export function registerGlobComp(app: App) {
-
+    app.component("svg-icon", SvgIcon)
     app
         .use(Layout)
         .use(Carousel)

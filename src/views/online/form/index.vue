@@ -4,7 +4,7 @@
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="6" :offset="0">
                     <a-form-item label="表单分类">
-                        <a-tree-select v-model:value="formData.formType" :tree-data="getTreeDictItemsByCode('BDFL')"
+                        <a-tree-select v-model:value="formData.formType" :tree-data="getDictItemsByCode('BDFL')"
                             allowClear @select="onSelect" @change="changeType">
                         </a-tree-select>
                     </a-form-item>
@@ -75,7 +75,7 @@ import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
-import { getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import ClipboardJS from 'clipboard'
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
 enum Api {

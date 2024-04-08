@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
 </script>
 
 <template>
-  <a-config-provider :theme="{
+  <a-config-provider :locale="zhCN" :theme="{
     token: {
       colorPrimary: '#00b96b',
       fontSize: 13

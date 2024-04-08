@@ -9,8 +9,9 @@ import { setupRouterGuard } from './router/guard';
 import { initGlobalSetting } from './settings/initSetting';
 
 import formImagining from 'form-imagining'
-// import 'form-imagining/dist/style.css'
+import 'form-imagining/dist/style.css'
 import 'ant-design-vue/dist/reset.css';
+import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
 // createApp(App).mount('#app')
 async function bootstrap() {
     const app = createApp(App)

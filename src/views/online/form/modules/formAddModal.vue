@@ -1,17 +1,18 @@
 <template>
     <div class="modalClass">
         <a-modal v-model:open="modalVisible" :title="modalTitle">
-            <a-form ref="formRef" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" :rules="rules" :model="formState">
+            <a-form ref="formRef" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" :rules="rules"
+                :model="formState">
                 <a-form-item label="表单名称" name="form_name">
-                    <a-textarea v-model:value="formState.formName" placeholder="表单名称" showCount :auto-size="{ maxRows: 1 }"
-                        :maxlength="50"></a-textarea>
+                    <a-textarea v-model:value="formState.formName" placeholder="表单名称" showCount
+                        :auto-size="{ maxRows: 1 }" :maxlength="50"></a-textarea>
                 </a-form-item>
                 <a-form-item label="表单编码" name="code">
                     <a-input v-model:value="formState.code" placeholder="表单编码"></a-input>
                 </a-form-item>
                 <a-form-item label="表单分类">
-                    <a-tree-select v-model:value="formState.formType" :tree-data="getTreeDictItemsByCode('BDFL')"
-                        allowClear @change="changeType">
+                    <a-tree-select v-model:value="formState.formType" :tree-data="getDictItemsByCode('BDFL')" allowClear
+                        @change="changeType">
                     </a-tree-select>
                 </a-form-item>
                 <a-form-item label="备注">
@@ -41,7 +42,7 @@ import { ref } from "vue"
 import { defHttp } from "/@/utils/http/axios";
 import { message } from 'ant-design-vue';
 import { SaveOutlined } from '@ant-design/icons-vue';
-import { getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import { formatToDateTime } from "/@/utils/dateUtil";
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
@@ -61,7 +62,7 @@ const rules = ref<any>({
 })
 
 enum api {
-  check = '/magicapi/zrzy-form/magic/form/form/check'
+    check = '/magicapi/zrzy-form/magic/form/form/check'
 }
 
 const emit = defineEmits(['handOver'])
@@ -122,11 +123,11 @@ function handleModalOk() {
         const value = formatToDateTime(time);
         if (formState.value.id) {
             url = '/magicapi/zrzy-form/magic/form/form/edit' // 编辑
-            formState.value.update_time = value
+            formState.value.updateTime = value
 
         } else {
             url = '/magicapi/zrzy-form/magic/form/form/add' // 新增
-            formState.value.create_time = value
+            formState.value.createTime = value
         }
         defHttp.post({ url: url, data: formState.value }, { withToken: false }).then((res) => {
             if (!res.message) {
@@ -149,7 +150,8 @@ function handleModalOk() {
     })
 }
 function changeType(_value, label) {
-    formState.value.type_name = label[0]
+    debugger
+    formState.value.typeName = label[0]
 }
 
 /**
@@ -158,27 +160,27 @@ function changeType(_value, label) {
  * @param value
  */
 async function checkFormCode(_rule: any, value: string) {
-  if (value === '') {
-    return Promise.reject('请输入表单编码!');
-  } else {
-    if (!value.match(/^[A-Za-z0-9_]*$/)) {
-      return Promise.reject('请输入字母数字或下划线!')
+    if (value === '') {
+        return Promise.reject('请输入表单编码!');
     } else {
-      if (propsRecord.value && (value == propsRecord.value.code)) {
-        return Promise.resolve()
-      } else {
-        await defHttp.post({ url: api.check, params: { code: value } }, { withToken: true }).then((res) => {
-          if (res && res.code == 200) {
-            return Promise.resolve()
-          } else {
-            return Promise.reject(res.message)
-          }
-        }).catch(err => {
-          return Promise.reject(err)
-        })
-      }
+        if (!value.match(/^[A-Za-z0-9_]*$/)) {
+            return Promise.reject('请输入字母数字或下划线!')
+        } else {
+            if (propsRecord.value && (value == propsRecord.value.code)) {
+                return Promise.resolve()
+            } else {
+                await defHttp.post({ url: api.check, params: { code: value } }, { withToken: true }).then((res) => {
+                    if (res && res.code == 200) {
+                        return Promise.resolve()
+                    } else {
+                        return Promise.reject(res.message)
+                    }
+                }).catch(err => {
+                    return Promise.reject(err)
+                })
+            }
+        }
     }
-  }
 }
 
 defineExpose({

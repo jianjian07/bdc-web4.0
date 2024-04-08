@@ -14,12 +14,13 @@
                             <a-menu-item key="1" @click="logOut"><poweroff-outlined />
                                 <span style="margin:10px;">退出系统</span>
                             </a-menu-item>
-                            <a-menu-item key="2" @click="toggleTabs"><poweroff-outlined />
+                            <a-menu-item key="2" @click="toggleTabs">
+                                <TagsOutlined />
                                 <span style="margin:10px;">标签页</span>
                             </a-menu-item>
-                            <a-menu-item key="2"><key-outlined />
+                            <!-- <a-menu-item key="3"><key-outlined />
                                 <span style="margin:10px;">修改密码</span>
-                            </a-menu-item>
+                            </a-menu-item> -->
                         </a-menu>
                     </template>
                 </a-dropdown>
@@ -31,7 +32,7 @@
 <script setup lang="ts">
 import { LayoutHeader, Modal } from 'ant-design-vue';
 import SiderTrigger from './../trigger/SiderTrigger.vue'
-import { PoweroffOutlined, KeyOutlined } from '@ant-design/icons-vue';
+import { PoweroffOutlined, KeyOutlined, TagsOutlined } from '@ant-design/icons-vue';
 import { computed } from 'vue';
 import { getUrl } from '/@/utils';
 import { useUserStore } from '/@/store/modules/user';

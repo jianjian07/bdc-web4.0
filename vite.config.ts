@@ -1,7 +1,7 @@
 import { ConfigEnv, UserConfig, defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path';
-
+import path, { resolve } from 'path';
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
@@ -32,7 +32,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         '/#/': pathResolve('types') + '/',
       },
     },
-    plugins: [vue()],
+    plugins: [
+      createSvgIconsPlugin({
+        // svg所在文件夹位置
+        iconDirs: [path.resolve(process.cwd(), 'src/assets/svg')],
+        symbolId: 'icon-[name]',
+      }),
+      vue()],
   }
 }
 function pathResolve(dir: string) {

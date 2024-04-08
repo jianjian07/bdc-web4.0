@@ -48,7 +48,8 @@
                                 <a-divider type="vertical" />
                             </template>
                             <a @click="editData(record)">编辑</a>
-                            <a-popconfirm title="是否确定删除该数据字典项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
+                            <a-popconfirm title="是否确定删除该数据字典项？" ok-text="确定" cancel-text="取消"
+                                @confirm="deleteData(record)">
                                 <a>删除</a>
                             </a-popconfirm>
                         </a-space>
@@ -62,10 +63,10 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, defineAsyncComponent, watch } from "vue";
+import { ref, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-const DictModal = defineAsyncComponent(() => import("/@/views/sysmanage/modules/DictModal.vue"));
+const DictModal = defineAsyncComponent(() => import("/@/views/sysmanage/modules/dictModal.vue"));
 const props = defineProps({
     open: {
         type: Boolean,
