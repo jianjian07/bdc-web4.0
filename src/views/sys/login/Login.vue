@@ -40,7 +40,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
-import { message } from 'ant-design-vue';
+import { message, notification } from 'ant-design-vue';
+import { useUserStore } from '/@/store/modules/user';
+const userStore = useUserStore();
 const formData = reactive({
     username: "admin",
     password: "123456",
@@ -52,7 +54,13 @@ const loading = ref<boolean>(false);
 function handleLogin() {
     if (!loading.value) {
         loading.value = true
-        console.log("点击登录")
+        const userinfo = userStore.login(formData);
+        notification.success({
+            message: "登录提示",
+            description: "欢迎回来",
+            duration: 3, //超时时间
+        });
+        // console.log("点击登录")
     }
 }
 /**

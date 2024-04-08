@@ -1,28 +1,17 @@
 <script setup lang="ts">
-import Login from '/@/views/sys/login/Login.vue'
 </script>
 
 <template>
-  <!-- <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/bdc.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div> -->
   <a-config-provider :theme="{
     token: {
-      algorithm: theme.defaultAlgorithm,
       colorPrimary: '#00b96b',
+      fontSize: 13
     },
   }">
-
-    <Login />
+    <RouterView />
   </a-config-provider>
 </template>
 <script lang="ts">
-import { theme } from 'ant-design-vue'
 </script>
 <style scoped>
 .logo {

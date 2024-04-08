@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "pid": "0",
+    "children": [
+      {
+        "id": "22",
+        "pid": "1",
+        "children": [
+          {
+            "id": "23",
+            "pid": "22",
+            "children": [],
+            "hasChildren": null,
+            "createTime": "2022-10-28 14:43:04",
+            "title": "土地利用科",
+            "key": "23",
+            "value": "23",
+            "sortid": null,
+            "enabled": true,
+            "list": null
+          },
+          {
+            "id": "24",
+            "pid": "22",
+            "children": [],
+            "hasChildren": null,
+            "createTime": "2022-10-28 14:43:20",
+            "title": "信息中心",
+            "key": "24",
+            "value": "24",
+            "sortid": null,
+            "enabled": true,
+            "list": null
+          }
+        ],
+        "hasChildren": true,
+        "createTime": "2023-05-09 14:22:12",
+        "title": "XX区自然资源和规划局",
+        "key": "22",
+        "value": "22",
+        "sortid": null,
+        "enabled": true,
+        "list": null
+      }
+    ],
+    "hasChildren": true,
+    "createTime": "2022-02-24 14:09:00",
+    "title": "XX市自然资源和规划局",
+    "key": "1",
+    "value": "1",
+    "sortid": null,
+    "enabled": true,
+    "list": null
+  }
+]

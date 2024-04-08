@@ -1,13 +1,30 @@
 import { createApp } from 'vue'
-// import './style.css'
+import './style.css'
 import App from './App.vue'
 import { registerGlobComp } from './components/registerGlobComp'
+
+import { setupStore } from './store';
+import { router, setupRouter } from './router';
+import { setupRouterGuard } from './router/guard';
+import { initGlobalSetting } from './settings/initSetting';
+
+import formImagining from 'form-imagining'
+// import 'form-imagining/dist/style.css'
 import 'ant-design-vue/dist/reset.css';
 // createApp(App).mount('#app')
 async function bootstrap() {
     const app = createApp(App)
+    // 配置存储 先挂载pinna实例
+    setupStore(app)
     // 注册全局
     registerGlobComp(app)
+    // 加载全局配置
+    initGlobalSetting()
+    // 配置路由
+    setupRouter(app)
+    // 路由保护
+    setupRouterGuard(router)
+    app.use(formImagining)
     app.mount('#app', true)
 }
 bootstrap()

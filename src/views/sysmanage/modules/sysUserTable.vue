@@ -1,0 +1,253 @@
+<template>
+  <div class="sys-user-table">
+    <div class="sys-user-table-header">
+      <a-form
+          :model="searchForm"
+          layout="inline"
+      >
+        <a-form-item label="用户名">
+          <a-input v-model:value="searchForm.name" placeholder="请输入用户名"/>
+        </a-form-item>
+        <a-form-item label="状态">
+          <a-select v-model:value="searchForm.state" placeholder="请选择状态" style="width: 180px">
+            <a-select-option value="">全部</a-select-option>
+            <a-select-option value="1">正常</a-select-option>
+            <a-select-option value="0">禁用</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-space>
+          <a-button type="primary" @click="initData">查询</a-button>
+          <a-button @click="reset">重置</a-button>
+          <a-button>导出</a-button>
+          <a-button>
+            <template #icon><plus-outlined/></template>新增
+          </a-button>
+        </a-space>
+      </a-form>
+    </div>
+    <div class="sys-user-table-body">
+      <a-table
+          :columns="columns"
+          :data-source="userList"
+          :pagination="pagination"
+          :scroll="{ y: 800 }"
+          @change="onTableChange"
+          rowKey="id">
+        <template #bodyCell="{ column, text, record, index }">
+          <template v-if="column.dataIndex === 'index'">
+            {{ index + 1 }}
+          </template>
+          <template v-if="column.dataIndex == 'enabled'">
+            <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用" @change="changeEnabled($event, record)"/>
+          </template>
+          <template v-if="column.dataIndex == 'loginLocked'">
+            <span v-if="record.loginLocked" style="color:rgb(245,34,45)">已锁定</span>
+            <span v-else>未锁定</span>
+          </template>
+          <template v-if="column.dataIndex === 'operation'">
+            <a @click="handleEdit(record)">编辑</a>
+            <a-divider type="vertical"/>
+            <a-popconfirm
+                :disabled="record.username == 'admin'"
+                cancel-text="否"
+                ok-text="是"
+                @confirm="handleDel(record)"
+            >
+              <template #title>
+                <span>确认<span style="color:red">删除</span>该用户?</span>
+              </template>
+              <a v-if="record.username == 'admin'" disabled>删除</a>
+              <a v-else>删除</a>
+            </a-popconfirm>
+          </template>
+        </template>
+      </a-table>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { computed, onMounted, reactive, ref } from "vue"
+import { PlusOutlined } from '@ant-design/icons-vue'
+import userDemo from '/@/mock/test/userDemo.json'
+import { defHttp } from "/@/utils/http/axios"
+// 查询条件
+let searchForm = reactive({
+  name: '',
+  state: ''
+})
+// 列名
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+    width: 60,
+  },
+  {
+    title: '用户名',
+    dataIndex: 'username',
+    key: 'username',
+  },
+  {
+    title: '姓名',
+    dataIndex: 'realName',
+    key: 'realName',
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    key: 'sex',
+  },
+  {
+    title: '状态',
+    dataIndex: 'enabled',
+    key: 'enabled',
+  },
+  {
+    title: '是否锁定',
+    dataIndex: 'loginLocked',
+    key: 'loginLocked',
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    key: 'operation',
+  },
+]
+
+let page = ref<any>({
+  total: 0,
+  current: 1
+})
+// 分页
+const pagination = computed(() => ({
+  total: page.value.total,
+  current: page.value.current,
+  pageSize: 10,
+}))
+// 用户列表
+let userList = ref<any>([])
+
+enum api {
+  list = '/api/zrzy-system/sys/v1/user/page'
+}
+
+onMounted(() => {
+  initData()
+})
+
+/**
+ * 加载数据
+ */
+function initData() {
+  let params = {
+    userName: searchForm.name,
+    enabled: searchForm.state,
+    deptId: '',
+    pageNo: page.value.current,
+    pageSize: pagination.value.pageSize
+  }
+  defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
+    if (res.code == 200) {
+      userList.value = res.result.records
+      page.value.current = res.result.current
+      page.value.total = res.result.total
+    } else {
+      userList.value = []
+    }
+  }).catch(err => {
+    userList.value = []
+  })
+}
+
+/**
+ * 改变状态
+ * @param e
+ * @param record
+ */
+function changeEnabled(e, record) {
+
+}
+
+/**
+ * 编辑
+ * @param record
+ */
+function handleEdit(record) {
+
+}
+
+/**
+ * 删除
+ * @param record
+ */
+function handleDel(record) {
+
+}
+
+/**
+ * 表格变化
+ * @param pagination
+ * @param filters
+ * @param sorter
+ * @param currentDataSource
+ */
+function onTableChange(pagination, filters, sorter, { currentDataSource }) {
+  page.value.current = pagination.current
+  page.value.total = pagination.total
+  initData()
+}
+
+/**
+ * 重置
+ */
+function reset() {
+  searchForm = {
+    name: '',
+    state: ''
+  }
+  page.value.current = 1
+  initData()
+}
+
+</script>
+
+<style lang="less" scoped>
+.sys-user-table {
+  width: calc(100% - 250px);
+  height: 100%;
+  padding: 10px;
+
+  .sys-user-table-header {
+    margin-bottom: 10px;
+    padding: 0 5px;
+  }
+
+  .sys-user-table-body {
+    height: calc(100% - 50px);
+
+    :deep(.ant-table-wrapper) {
+      height: 100%;
+
+      .ant-table {
+        height: calc(100% - 60px);
+
+        .ant-table-container {
+          height: 100%;
+
+
+          .ant-table-body {
+            height: calc(100% - 60px);
+          }
+        }
+      }
+    }
+  }
+}
+</style>
