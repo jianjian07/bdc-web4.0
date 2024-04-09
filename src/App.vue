@@ -6,7 +6,7 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
   <a-config-provider :locale="zhCN" :theme="{
     token: {
       colorPrimary: '#00b96b',
-      fontSize: 13
+      fontSize: 14
     },
   }">
     <RouterView />

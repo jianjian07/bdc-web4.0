@@ -3,9 +3,9 @@
     <a-sub-menu :key="item.id" v-if="item.children && item.children.length">
       <template #title>
         <span class="anticon">
-          <svg-icon :name="item.icon" width="14px" height="14px" color="#fff" style="margin-right: 10px;"></svg-icon>
+          <svg-icon :name="item.icon" width="14px" height="14px" color="#fff"></svg-icon>
         </span>
-        <span>{{ item.name }}</span>
+        <span style="margin-left:0.5rem">{{ item.name }}</span>
       </template>
       <subMenu :menu="item.children"></subMenu>
     </a-sub-menu>

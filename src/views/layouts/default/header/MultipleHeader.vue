@@ -25,16 +25,12 @@
 import { computed, defineAsyncComponent, ref, watch } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { RedoOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue';
-// import TabAction from "/@/views/layouts/default/header/TabAction.vue"
-// import TestButton from "/@/views/layouts/default/header/TestButton.vue"
 import { useRouter } from "vue-router"
 import { usePermissionStore } from "/@/store/modules/permission"
-const TestButton = defineAsyncComponent(() => import("/@/views/layouts/default/header/TestButton.vue"));
 const TabAction = defineAsyncComponent(() => import("/@/views/layouts/default/header/TabAction.vue"));
 const tabStore = useTabsStore()
 // tab选中面板key
 const activeKeys = computed(() => tabStore.getTabActiveKey)
-// console.log("activeKeys哈哈哈哈哈" + activeKeys)
 // tab列表
 const tabList = computed(() => tabStore.getTabList);
 // 全屏状态
@@ -118,7 +114,7 @@ watch(() => activeKeys.value, (newVal, oldVal) => {
  * 获取地址栏参数
  * @param url
  */
-function getUrl(url) {
+function getUrl(url: string) {
   if (url.includes('?')) {
     let arr = url.split('?')
     let res = arr[1].split('&')
@@ -154,7 +150,7 @@ function handleChange(key) {
  */
 function handleEdit(targetKey: string | MouseEvent, action: string) {
   if (action == 'remove') {
-    let find = tabList.value.find(f => f.fullPath == targetKey)
+    let find = tabList.value.find((f: any) => f.fullPath == targetKey)
     if (find) {
       tabStore.removeTab(find)
     }
@@ -197,6 +193,11 @@ function dataFilter(data: any) {
   box-shadow: 0 1px 4px #00152914;
 
   :deep(.ant-tabs) {
+    .ant-tabs-nav-wrap {
+      height: 40px;
+      margin-top: 4px;
+    }
+
     .ant-tabs-tab {
       background-color: #fff;
       padding: 0 20px 0 30px;
@@ -211,6 +212,47 @@ function dataFilter(data: any) {
 
     .ant-tabs-tab-active {
       border-bottom: 2px solid #00b96b !important;
+
+      &:hover {
+        .ant-tabs-tab-remove {
+          opacity: 1;
+
+          .anticon-close:hover {
+            background-color: #c0c4cc;
+            transform-origin: 100% 50%;
+            border-radius: 100%;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+            svg {
+              width: 11px;
+              color: white;
+            }
+          }
+        }
+      }
+    }
+
+    .ant-tabs-nav {
+      margin: 0;
+      height: 50px;
+      padding-left: 10px;
+
+      .ant-tabs-tab-remove {
+        position: relative;
+        left: 10px;
+        margin: 0;
+        padding: 0;
+        font-size: 10px;
+        opacity: 0;
+
+        .anticon-close {
+          width: 14px;
+          height: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
     }
   }
 }

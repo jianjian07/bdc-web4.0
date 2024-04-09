@@ -3,10 +3,12 @@
         <div style="display: flex;padding: 0 8px;align-items: center;">
             <sider-trigger></sider-trigger>
             <div style="font-size: 20px;font-weight: 600;letter-spacing: 0.1em;">不动产登记系统</div>
-            <div style="position: absolute;right: 20px;">
+            <div class="icons-list" style="position: absolute;right: 20px;display: flex;">
+                <c-notice></c-notice>
                 <a-dropdown class="oper-css">
                     <div class="ant-dropdown-link" @click.prevent>
-                        <img style="border-radius: 50%;width: 30px;height: 30px;" :src="getAvatarUrl" />
+                        <img style="border-radius: 50%;width: 25px;height: 25px;margin-top: -5px;"
+                            :src="getAvatarUrl" />
                         <span style="margin-left: 10px;">{{ userInfo.realname }}</span>
                     </div>
                     <template #overlay>
@@ -24,6 +26,7 @@
                         </a-menu>
                     </template>
                 </a-dropdown>
+
             </div>
         </div>
 
@@ -32,11 +35,12 @@
 <script setup lang="ts">
 import { LayoutHeader, Modal } from 'ant-design-vue';
 import SiderTrigger from './../trigger/SiderTrigger.vue'
-import { PoweroffOutlined, KeyOutlined, TagsOutlined } from '@ant-design/icons-vue';
-import { computed } from 'vue';
+import { PoweroffOutlined, TagsOutlined } from '@ant-design/icons-vue';
+import { computed, defineAsyncComponent } from 'vue';
 import { getUrl } from '/@/utils';
 import { useUserStore } from '/@/store/modules/user';
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
+const CNotice = defineAsyncComponent(() => import("/@/views/layouts/default/header/Notice.vue"));
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 const { toggleShowTabs } = useTabsSetting()
@@ -67,12 +71,9 @@ const getAvatarUrl = computed(() => {
 });
 </script>
 <style lang="less" scoped>
-.oper-css {
-    padding: 0 10px;
-}
+@import url("./index.less");
 
-.oper-css:hover {
-    cursor: pointer;
-    background-color: #e5e7eb;
+.icons-list :deep(.anticon) {
+    font-size: 20px;
 }
 </style>
