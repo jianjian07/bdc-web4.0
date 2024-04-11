@@ -118,7 +118,7 @@ async function loadData(type?: string | undefined) {
     }
     let url = '/magicapi/zrzy-form/magic/form/form/list'
     defHttp.post({ url: url, params: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName, page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: false }).then((res) => {
-        console.log("res.list", res.list)
+        // console.log("res.list", res.list)
         datalist.value = res.list
         pagination.value.total = res.total
     }).catch(err => {
@@ -209,7 +209,7 @@ function copyData(record: any) {
  * @param record
  */
 function preview(record: any) {
-    router.push("/workflow/public/" + record.id + "?formCode=" + record.code)
+    router.push("/online/form/view/" + record.id)
 }
 /**
 * 分页
