@@ -54,10 +54,12 @@
                         </template>
                         <a @click="editData(record)">编辑</a>
                         <a @click="design(record)">设计</a>
+                        <CVfd :formId="record.id"></CVfd>
+                        <!-- <a @click="vfd(record)">VFD</a> -->
                         <a @click="address(record)">地址</a>
                         <!--                        <a @click="onlineAddress(record)">地址2</a>-->
                         <a @click="copyData(record)">复制</a>
-                        <a @click="preview(record)">在线预览</a>
+                        <a @click="preview(record)">预览</a>
                         <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
                             <a>删除</a>
                         </a-popconfirm>
@@ -78,6 +80,7 @@ import { router } from "/@/router";
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import ClipboardJS from 'clipboard'
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
+import CVfd from './modules/Vfd.vue'
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
 }
@@ -256,6 +259,9 @@ function handOver(val) {
     if (val.isAutoOpenDesign) {
         // design(val.data)
     }
+}
+function vfd(record: any) {
+
 }
 </script>
 <style lang="less" scoped>
