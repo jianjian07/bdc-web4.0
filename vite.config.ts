@@ -6,7 +6,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
   const env = loadEnv(mode, root);
-  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_GLOB_API_URL } = env;
+  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_GLOB_API_URL, VITE_GLOB_TYYW_API_URL } = env;
   return {
     base: VITE_PUBLIC_PATH,
     server: {
@@ -22,6 +22,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           target: VITE_GLOB_API_URL,// 代理的目标地址
           changeOrigin: true,// 开启跨域
           rewrite: path => path.replace(/^\/magicapi/, '')// 路由重写
+        },
+        '/tyyw': {
+          target: VITE_GLOB_TYYW_API_URL,// 代理的目标地址
+          changeOrigin: true,// 开启跨域
+          rewrite: path => path.replace(/^\/tyyw/, '')// 路由重写
         }
       }
     },
