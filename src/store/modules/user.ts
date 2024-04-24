@@ -19,7 +19,7 @@ import {
 } from '/@/enums/cacheEnum'
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams, ThirdLoginParams } from '/@/api/sys/model/userModel';
-import { getUserInfo, licence, loginApi, getSysDict } from '/@/api/sys/user';
+import { getUserInfo, licence, loginApi, getSysDict, login_tyyw } from '/@/api/sys/user';
 // import { useI18n } from '/@/hooks/web/useI18n';
 // import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '../../router';
@@ -27,7 +27,7 @@ import { usePermissionStore } from '/@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '../../router/routes/basic';
 import { isArray } from '/@/utils/is';
-import { Modal } from 'ant-design-vue';
+import { Modal, notification } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { createVNode } from 'vue';
 import { getCategoryDict, getDataDict, getRuleList } from "/@/api/sys/dict"
@@ -256,6 +256,30 @@ export const useUserStore = defineStore({
         const { token } = data;
         // save token
         this.setToken(token);
+        return this.afterLoginAction(goHome, data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    async login_tyyw(
+      params: LoginParams & {
+        goHome?: boolean;
+      }
+    ): Promise<GetUserInfoModel | null> {
+      try {
+        const { goHome = true, ...loginParams } = params;
+        const data: any = await login_tyyw(loginParams);
+        if (data && data.message) {
+          return Promise.reject(data);
+        }
+        const { token } = data;
+        // save token
+        this.setToken(token);
+        notification.success({
+          message: "登录提示",
+          description: "欢迎回来",
+          duration: 3, //超时时间
+        });
         return this.afterLoginAction(goHome, data);
       } catch (error) {
         return Promise.reject(error);

@@ -8,6 +8,7 @@ import JSEncrypt from "jsencrypt";
 
 enum api {
   // getTokenApi = '/api/auth/oauth/token',
+  getTokenApiTyyw = '/tyyw/auth/oauth/token',
   getTokenApi = '/api/zrzy-system/api/v1/auth/authorization',
   // getUserInfoApi = '/api/sys/zrzy-usermanager-biz/user/info',//旧，未使用
   // licenseApi = '/onemap/zrzy-om-licence/licence',
@@ -18,31 +19,31 @@ enum api {
 /**
  * @description: 用户登录
  */
-export function loginApi_(params: LoginParams) {
-  // const encryPwd = encryption({
-  //   data: {
-  //     password: params.password
-  //   },
-  //   key: 'zondyzrzykjghsyb',
-  //   param: ['password']
-  // })
-  // const password = encodeURIComponent(encryPwd.password)
-  // return new Promise((resolve) => {
-  //   let url = `${api.getTokenApi}?username=${params.username}&password=${password}&grant_type=password&scope=server`
-  //   defHttp.post({
-  //     url: url,
-  //     headers: { 'Authorization': `Basic ${window.btoa('zrzy-om:zrzy-om')}` }
-  //   }, { withToken: false }).then((res) => {
-  //     resolve({
-  //       userId: res.user_id,
-  //       username: res.username,
-  //       token: 'Bearer' + ' ' + res.access_token
-  //     })
-  //   }).catch((err => {
-  //     resolve(null)
-  //   }))
-  // })
-  // // licence()
+export function login_tyyw(params: LoginParams) {
+  const encryPwd = encryption({
+    data: {
+      password: params.password
+    },
+    key: 'zondyzrzykjghsyb',
+    param: ['password']
+  })
+  const password = encodeURIComponent(encryPwd.password)
+  return new Promise((resolve) => {
+    let url = `${api.getTokenApiTyyw}?username=${params.username}&password=${password}&grant_type=password&scope=server`
+    defHttp.post({
+      url: url,
+      headers: { 'Authorization': `Basic ${window.btoa('zrzy:zrzy')}` }
+    }, { withToken: false }).then((res) => {
+      resolve({
+        userId: res.user_id,
+        username: res.username,
+        token: 'Bearer' + ' ' + res.access_token
+      })
+    }).catch((err => {
+      resolve(null)
+    }))
+  })
+  // licence()
 }
 /**
  * @description: 用户登录
@@ -61,8 +62,8 @@ export function loginApi(params: LoginParams) {
         })
       } else {
         resolve({
-          code:res.code,
-          message:res.message
+          code: res.code,
+          message: res.message
         })
       }
     }).catch((err => {

@@ -28,7 +28,8 @@
     "bpmn-js-token-simulation": "^0.31.0",
     "bpmn-moddle": "^8.0.1",
     "bpmnlint": "8.3.2",
-    "camunda-bpmn-moddle": "^7.0.1"
+    "camunda-bpmn-moddle": "^7.0.1",
+    "mitt": "^3.0.1"
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",

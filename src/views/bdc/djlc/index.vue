@@ -14,7 +14,8 @@
                     <div id="js-properties-panel" class="panel">
                     </div>
                     <div class="custom-properties-panel">
-                        <a-collapse v-if="info != null" v-model:activeKey="activeKey_collapse">
+                        <Demo v-if="show" :currentElementId="currentElementId"></Demo>
+                        <!-- <a-collapse v-if="info != null" v-model:activeKey="activeKey_collapse">
                             <a-collapse-panel key="1" header="基础设置">
                                 <a-form :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
                                     <a-form-item label="节点id">
@@ -54,7 +55,7 @@
                                 </a-form-item>
                             </a-collapse-panel>
 
-                        </a-collapse>
+                        </a-collapse> -->
                     </div>
 
 
@@ -92,9 +93,12 @@ import Demo from "./Demo.vue";
 import customTranslate from "./customTranslate";
 import { xmlStr } from './xml.ts' // 放在下面了
 import monacoEditor from '/@/components/monaco/monacoEditor.vue'
+import { useModelerStore } from '/@/store/modules/modeler'
+const modelerStore = useModelerStore()
 const activeKey = ref('1');
 const activeKey_collapse = ref('1');
 const visible = ref(false);
+let show = ref(false)
 let containerEl = ref(null);
 let bpmnModeler = reactive({})
 let moddleElement = ref({})
@@ -152,47 +156,68 @@ let init = () => {
     //     xmlStr
     //     // bpmnModeler.value.get("canvas").zoom("fit-viewport");
     // });
-    // selection.changed监听选中的元素
-    bpmnModeler.on('selection.changed', (e) => {
-        // console.log('###HH', e)
-        selectedElementsArr.selectedElements = e.newSelection // 数组, 可能有多个
-        // console.log('###H', selectedElementsArr.selectedElements)
-        // console.log(element, e.newSelection[0])
-        element = e.newSelection[0] // 默认取第一个
-        info.value = e.newSelection[0]
-        // console.log('节点类型', info.value.type)
-        if (element != undefined && element.type === "bpmn:Task") {
-            visible.value = true
-        } else {
-            visible.value = false
-        }
-        if (e.newSelection.length == 0) {
-            moddleElement.value = bpmnModeler.getDefinitions().rootElements[0]
-        }
-    })
+    bpmnModeler.on("import.done", () => {
 
-    //使用element.changed监听发生改变的元素
-    bpmnModeler.on('element.changed', (e) => {
+        const a = "2"
+        debugger
+        setCurrentElement(null)
+        // setCurrentElement(null);
+    });
+    // // selection.changed监听选中的元素
+    // bpmnModeler.on('selection.changed', (e) => {
+    //     selectedElementsArr.selectedElements = e.newSelection // 数组, 可能有多个
+    //     element = e.newSelection[0] // 默认取第一个
+    //     info.value = e.newSelection[0]
+    //     if (element != undefined && element.type === "bpmn:Task") {
+    //         visible.value = true
+    //     } else {
+    //         visible.value = false
+    //     }
+    //     if (e.newSelection.length == 0) {
+    //         moddleElement.value = bpmnModeler.getDefinitions().rootElements[0]
+    //     }
+    // })
+
+    // //使用element.changed监听发生改变的元素
+    bpmnModeler.on('element.click', (e) => {
+        // show.value = false
         const { element } = e
-        // console.log('@@@$$$', element)
-        // const { element: currentElement } = this
-        // 如果没有 element
-        if (!info.value) {
-            return
-        }
-        if (element.id === info.value.id) {
-            info.value = element
-        }
 
-        // console.log('我变了')
+        // if (!info.value) {
+        //     return
+        // }
+        // if (element.id === info.value.id) {
+        //     info.value = element
+        // }
+        // if (element && element.id === currentElementId.value) {
+        //     setCurrentElement(element);
+        // }
+        setCurrentElement(element);
+        show.value = true
     })
     aa()
 
 };
+let currentElementId = ref(-1)
+function setCurrentElement(activatedElement) {
+    let activatedElementTypeName = "";
+    debugger
+    if (!activatedElement) {
+        activatedElement = modelerStore.getElRegistry?.find(
+            (el) => el.type === "bpmn:Process" || el.type === "bpmn:Collaboration"
+        );
 
+        if (!activatedElement) {
+            return console.log("No Element found!");
+        }
+    }
+    currentElementId.value = activatedElement.id;
+    modelerStore.setElement(markRaw(activatedElement));
+}
 function aa() {
 
     const result = bpmnModeler.importXML(xml.value)
+    modelerStore.setModeler(bpmnModeler)
 }
 function handlerRedo() {
     // console.log("xml" + xml.value.toString())
