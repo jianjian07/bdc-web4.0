@@ -6,6 +6,7 @@ import modal from 'ant-design-vue/es/modal';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { h } from 'vue';
 import { router } from '/@/router';
+import { pinyin } from 'pinyin-pro';
 const titleModel = {
     "type": "header",
     "icon": "header",
@@ -204,12 +205,13 @@ export async function vfdToForm_bf(formId: string) {
     })
 }
 function getSql(mySelect: any, myUpdate: any, formId: string) {
+    debugger
     let list: any = []
     // 我的查询
     mySelect.SQL.forEach((sql: any) => {
         const name = sql.Name._text
-        const fields = sql.Fields._text
-        const body = sql.Body._text
+        const fields = convertToPinyin(sql.Fields._text)
+        const body = convertToPinyin(sql.Body._text.replace(/dbo\./g, ''))
 
         list.push({
             name: name,
@@ -224,8 +226,8 @@ function getSql(mySelect: any, myUpdate: any, formId: string) {
     // 我的更新
     myUpdate.SQL.forEach((sql: any) => {
         const name = sql.Name._text
-        const fields = sql.Fields._text
-        const body = sql.Body._text
+        const fields = convertToPinyin(sql.Fields._text)
+        const body = convertToPinyin(sql.Body._text)
         list.push({
             name: name,
             cType: 'sql',
@@ -531,9 +533,18 @@ function getModel(controlList: any, name: string) {
         const { ID, ReadField, WriteField } = controlList[w].attributes;
         if (ID == name) {
             model = ReadField;
-            if (WriteField != "")
-                writeFields = WriteField.split(';');
+            if (WriteField != "") {
+                let write = convertToPinyin(WriteField)
+                writeFields = write.split(';');
+            }
         }
     }
+    model = convertToPinyin(model)
+    // 增加判断  如果是中文,转换为拼音首字母
     return { model, writeFields };
+}
+
+
+function convertToPinyin(text: string) {
+    return pinyin(text, { pattern: 'first', separator: '' }).toUpperCase()
 }

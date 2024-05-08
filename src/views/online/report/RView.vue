@@ -12,8 +12,19 @@ import { getDictItemsByCode, getTreeDictItemsByCode } from '/@/utils/form/common
 import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
+const props = defineProps({
+    id: {
+        type: String,
+        default: "-1"
+    }
+})
+
 const route = useRoute();
-const code = ref(route.params?.code.toString());
+let code = props.id;
+if (code == "-1") {
+    code = route?.params?.code.toString()
+}
+// const code = ref(route.params?.code.toString());
 let dataSource = ref()
 let paginations = ref()
 let columns = ref<any>([])
@@ -26,13 +37,13 @@ let reportInfo = reactive<any>({
     searchInfo: [],
 })
 let editableData: any = reactive({});
-reportInfo.formId = Number.parseInt(code.value)
+reportInfo.formId = Number.parseInt(code)
 
 const info = await getReport({ id: reportInfo.formId })
 const data = JSON.parse(info.content)
 const config = data.config
 reportInfo.tableName = info.table_name
-const { eventScript, baseScript, ...restConfig } = config
+const { eventScript, baseScript, cBasicInfo, ...restConfig } = config
 let vue3Script = ref({
     importScript: '',//import导入
     variableScript: '',//变量
@@ -46,6 +57,37 @@ if (generateData.columns != '') {
 reportInfo.searchInfo = generateData.searchData
 paginations.value = generateData.paginations;
 viewData.value = {}
+// 20240130验证：变量定义 名称固定formProps
+let basicInfo = ref<any>({})
+if (cBasicInfo) {
+    for (let index = 0; index < cBasicInfo.length; index++) {
+        const name = cBasicInfo[index].name
+        const type = cBasicInfo[index].type
+        const value = cBasicInfo[index].default
+        basicInfo.value[name] = transformValueByType(value, type)
+    }
+}
+function transformValueByType(value: any, type: string): any {
+    switch (type) {
+        case 'string':
+            return value;
+        case 'number':
+            return Number(value);
+        case 'boolean':
+            return Boolean(value);
+        case 'object':
+        case 'array':
+            try {
+                return JSON.parse(value);
+            } catch (error) {
+                console.error(`转换失败: ${value}`, error);
+                return null; // 或者返回一个默认的对象 {}
+            }
+        default:
+            return value;
+    }
+}
+const emit = defineEmits(['ok', 'rowChange'])
 const generateVue3 = defineComponent({
     template: generateData.html,
     props: {
@@ -60,10 +102,12 @@ const generateVue3 = defineComponent({
         }
         return {
             viewData,
+            basicInfo,
             reportInfo,
             paginations,
             dataSource,
             columns,
+            emit,
             ...events,
             defHttp,
             editableData,

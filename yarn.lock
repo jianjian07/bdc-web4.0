@@ -1338,6 +1338,13 @@ commander@^7.2.0:
   resolved "https://registry.npmmirror.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
 
+commander@~1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/commander/-/commander-1.1.1.tgz#50d1651868ae60eccff0a2d9f34595376bc6b041"
+  integrity sha512-71Rod2AhcH3JhkBikVpNd0pA+fWsmAaVoti6OR38T76chA7vE3pSerS0Jor4wDw+tOueD2zLVvFOw5H0Rcj7rA==
+  dependencies:
+    keypress "0.1.x"
+
 common-path-prefix@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmmirror.com/common-path-prefix/-/common-path-prefix-3.0.0.tgz#7d007a7e07c58c4b4d5f433131a19141b29f11e0"
@@ -1986,10 +1993,10 @@ form-data@^4.0.0:
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
-form-imagining@0.0.82-3:
-  version "0.0.82-3"
-  resolved "https://registry.npmmirror.com/form-imagining/-/form-imagining-0.0.82-3.tgz#e4aaa4109e79f79b559da7fec60eb56fb085912f"
-  integrity sha512-Bmx9/Lw+n8KgvX1lKqZjg5Amen5HtHPLtm+lFH+SMNQKDwy/tWl33yqWu0DUsA8WF0gsux5rvBZnutSg9o940A==
+form-imagining@0.0.82-8:
+  version "0.0.82-8"
+  resolved "https://registry.npmmirror.com/form-imagining/-/form-imagining-0.0.82-8.tgz#d76a0e7583b9820023b413765afcbc4b9b4766d3"
+  integrity sha512-KgxbQddLtDbw8QMByj7Z95hnS0Kg7NwoHemw1FUn5ohiMknUOsG1d6N6hmFyj96W9Gkf7JYMzX+dC9hfcRo7Uw==
   dependencies:
     ant-design-vue "4.1.2"
     axios "^1.6.2"
@@ -2591,6 +2598,11 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+keypress@0.1.x:
+  version "0.1.0"
+  resolved "https://registry.npmmirror.com/keypress/-/keypress-0.1.0.tgz#4a3188d4291b66b4f65edb99f806aa9ae293592a"
+  integrity sha512-x0yf9PL/nx9Nw9oLL8ZVErFAk85/lslwEP7Vz7s5SI1ODXZIgit3C5qyWjw4DxOuO/3Hb4866SQh28a1V1d+WA==
+
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
   resolved "https://registry.npmmirror.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -3109,6 +3121,18 @@ pinia@^2.1.7:
   dependencies:
     "@vue/devtools-api" "^6.5.0"
     vue-demi ">=0.14.5"
+
+pinyin-pro@^3.20.3:
+  version "3.20.3"
+  resolved "https://registry.npmmirror.com/pinyin-pro/-/pinyin-pro-3.20.3.tgz#ab6a548d00d91988cc874af3984d1651eb1b431b"
+  integrity sha512-k6SKRkOkw2ZH1+cW6s/AQyDTO/UzjnaAFOxMp4lC2dF/1NajzOWBiatRsG0c2NZgo+iCwOD8YN5XijArfjUZjg==
+
+pinyin@^4.0.0-alpha.0:
+  version "4.0.0-alpha.0"
+  resolved "https://registry.npmmirror.com/pinyin/-/pinyin-4.0.0-alpha.0.tgz#cb5fd10445509d161821d3a4e08daca24aad3188"
+  integrity sha512-hdxO/2RuLWarhLaIcGKdXjkFZ0hFr3W/Yrvrd0YPxuIafixMZSAa4jvxskYLgYHE8OkOXkGsxMsEScwGzqKe3g==
+  dependencies:
+    commander "~1.1.1"
 
 pkg-dir@^7.0.0:
   version "7.0.0"

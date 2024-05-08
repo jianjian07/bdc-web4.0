@@ -17,7 +17,7 @@ import { isEmpty } from "../is";
  * @param options
  */
 export function initTable(viewData, dataSource, reportInfo, paginations) {
-    const url = '/imaginform/zrzy-form/form/report/list'
+    const url = '/api/zrzy-form/form/report/list'
     let searchData = getSearchData(viewData, reportInfo)
     const data = {
         searchData: searchData,

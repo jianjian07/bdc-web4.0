@@ -1,5 +1,6 @@
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
+import { router } from "/@/router"
 
 enum api {
     roleDegisnList = '/tyyw/jeecg-cloud-joa/joa/designform/designFormCommuse/roleDegisnList', //工作流列表  返回对象错误
@@ -26,8 +27,13 @@ export function getDegisnList() {
  */
 export function addFlow(params: any) {
     defHttp.post({ url: api.add, data: { ...params } }, { withToken: true }).then(res => {
-        debugger
-        message.success('添加成功')
+        // debugger
+        // message.success('添加成功')
+        // 带查询参数，传递过去的内容会自动拼接变成/home?user=david
+        router.push({ path: '/bdc/casedoing', query: { slbh: res, processId: params.guid } });
+
+        // router.push("/bdc/casedoing" + '/' + res)
+
     }).catch(err => {
         debugger
         message.error('流程创建失败' + err)

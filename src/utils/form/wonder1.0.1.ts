@@ -9,8 +9,9 @@ import { router } from "/@/router"
 import { isJsonData } from "/@/utils/form/commonUtils"
 export let validateInfos: any = reactive({})
 
-export async function getData(object: { value: object }, formId?: number) {
-    if (Object.keys(object.value).length == 0) {
+export async function getData(object1: { value: object }, formId?: number) {
+    debugger
+    if (Object.keys(object1.value).length == 0) {
         return
     }
     const query = router.currentRoute.value.query
@@ -21,7 +22,7 @@ export async function getData(object: { value: object }, formId?: number) {
         url: url,
         data: {
             formId: formId ? formId : 14,
-            param: { doc_no: query.doc_no ? query.doc_no : 'QG1-20221434' }
+            param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' }
         }
     },
         { withToken: true }).then((res) => {
@@ -29,7 +30,7 @@ export async function getData(object: { value: object }, formId?: number) {
                 if (res.code == 200) {
                     let result = JSON.parse(res.result)
                     for (const resKey in result) {
-                        object.value[resKey] = result[resKey]
+                        object1.value[resKey] = result[resKey]
                     }
                     // console.log('res.result',JSON.parse(res.result))
                     // object.value = JSON.parse(res.result)
@@ -276,7 +277,7 @@ function updateFormDatas(formRes) {
             url: url,
             data: {
                 formId: formRes.formId ? formRes.formId : 14,
-                param: { doc_no: query.doc_no ? query.doc_no : 'QG1-20221434' },
+                param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' },
                 formData: formRes.data,
             }
         },

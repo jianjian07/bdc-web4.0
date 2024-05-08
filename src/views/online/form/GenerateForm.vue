@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import {
     getData,
     getDataByApi,
-    getInheritData,
+    // getInheritData,
     onSubmitForm,
     validateInfos,
     validateFun,
@@ -38,6 +38,16 @@ const props = defineProps({
         type: String,
         default: '1'
     },
+    reload: {
+        type: String,
+        default: ""
+    }
+})
+watch(() => props.reload, async (newVal) => {
+    if (newVal != "") {
+        debugger
+        await getData(viewData, formId)
+    }
 })
 const { isSaved, caseCode, disabled } = useAttrs()
 const VNodes = useVNodes();
@@ -93,11 +103,9 @@ viewData.value = getViewDataByFormId(info.id)
 const apiArr = _sourcedata.filter((item: { cType: string; }) => item.cType == 'javascript')
 let apiDataSource = apiArr
 await getDataByApi(viewData, apiDataSource)
-if (isSaved) {
-    await getData(viewData, formId)
-} else {
-    await getInheritData(viewData, caseCode)
-}
+
+await getData(viewData, formId)
+
 // 20240130验证：变量定义 名称固定formProps
 let basicInfo = ref<any>({})
 if (cBasicInfo) {
@@ -192,7 +200,6 @@ const generateVue3 = defineComponent({
             computed,
             defHttp,
             editableData,
-            // tableSelectProps,
             search,
             onChange,
             initTable,
@@ -330,8 +337,8 @@ function loadSourceData(formId: any) {
     return new Promise((resolve, reject) => {
         const _url = "/magicapi/zrzy-form/magic/form/source/list"
         defHttp.post({ url: _url, params: { formId: formId, dType: 'select' } }, { withToken: true }).then((res) => {
-            if (res && res.list) {
-                resolve(res.list)
+            if (res.length > 0) {
+                resolve(res)
             } else {
                 resolve([])
             }

@@ -23,6 +23,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,// 开启跨域
           rewrite: path => path.replace(/^\/magicapi/, '')// 路由重写
         },
+        '/imaginform': {
+          target: env.VITE_GLOB_API_URL,
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/imaginform/, '')
+        },
         '/tyyw': {
           target: VITE_GLOB_TYYW_API_URL,// 代理的目标地址
           changeOrigin: true,// 开启跨域
