@@ -1,6 +1,6 @@
 <template>
     <div style="padding: 5px;">
-        <a-space-compact block style="padding-left: 100px;">
+        <a-space-compact block style="padding-left: 110px;margin-bottom: 5px;">
             <a-button type="primary" size="small" @click="openList">
                 <template #icon>
                     <TableOutlined />
@@ -41,7 +41,6 @@ import { computed, defineAsyncComponent, ref } from 'vue';
 import { TableOutlined, EditOutlined } from '@ant-design/icons-vue';
 import { defHttp } from '/@/utils/http/axios';
 import { useRoute } from 'vue-router';
-import { sendSaveFun } from './bdc';
 import { guid } from '/@/utils';
 let activeKey = ref('1');
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"));
@@ -151,4 +150,4 @@ const setRef = (el: any) => {
 
 </script>
 
-<style scoped lang="less"></style>./bdc
+<style scoped lang="less"></style>

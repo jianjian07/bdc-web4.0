@@ -96,7 +96,6 @@ function loadData() {
         const result = res.result
         datalist.value = result.records
         pagination.value.total = result.total
-        debugger
     }).catch(err => {
 
     })
