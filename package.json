@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@bpmn-io/properties-panel": "2.2.1",
-    "ant-design-vue": "4.1.2",
+    "ant-design-vue": "4.2.1",
     "axios": "^1.6.8",
     "bpmn-js": "13.2.0",
     "bpmn-js-bpmnlint": "0.21.0",

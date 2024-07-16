@@ -10,7 +10,6 @@ import { isJsonData } from "/@/utils/form/commonUtils"
 export let validateInfos: any = reactive({})
 
 export async function getData(object1: { value: object }, formId?: number) {
-    debugger
     if (Object.keys(object1.value).length == 0) {
         return
     }

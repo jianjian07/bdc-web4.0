@@ -30,38 +30,40 @@
         </a-form>
     </div>
     <div class="wonder-table-css">
-        <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-            @change="onChange($event, loadData)">
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'status'">
-                    <span>
-                        <a-tag color="orange" v-if="record.taskBack">
-                            <template #icon>
-                                <RollbackOutlined />
+        <a-spin :spinning="spinning">
+            <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
+                @change="onChange($event, loadData)">
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'status'">
+                        <span>
+                            <a-tag color="orange" v-if="record.taskBack">
+                                <template #icon>
+                                    <RollbackOutlined />
+                                </template>
+                                回退
+                            </a-tag>
+                            <a-tag color="red" v-if="record.taskUrge">
+                                <template #icon>
+                                    <AlertOutlined />
+                                </template>
+                                催办
+                            </a-tag>
+                            <a-tag color="green"
+                                v-if="!record.taskUrgent && !record.taskBack && !record.taskSupervise">正常</a-tag>
+                        </span>
+                    </template>
+                    <template v-if="column.key === 'action'">
+                        <a-space>
+                            <template #split>
+                                <a-divider type="vertical" />
                             </template>
-                            回退
-                        </a-tag>
-                        <a-tag color="red" v-if="record.taskUrge">
-                            <template #icon>
-                                <AlertOutlined />
-                            </template>
-                            催办
-                        </a-tag>
-                        <a-tag color="green"
-                            v-if="!record.taskUrgent && !record.taskBack && !record.taskSupervise">正常</a-tag>
-                    </span>
+                            <a @click="handleCase(record)">办理</a>
+                            <a>移交</a>
+                        </a-space>
+                    </template>
                 </template>
-                <template v-if="column.key === 'action'">
-                    <a-space>
-                        <template #split>
-                            <a-divider type="vertical" />
-                        </template>
-                        <a @click="handleCase(record)">办理</a>
-                        <a>移交</a>
-                    </a-space>
-                </template>
-            </template>
-        </a-table>
+            </a-table>
+        </a-spin>
     </div>
 </template>
 
@@ -75,6 +77,7 @@ enum api {
 }
 let datalist = ref([]);
 let formData: any = ref({})
+let spinning = ref<boolean>(true);
 const columns = [
     { title: "状态", dataIndex: "status", align: "center", key: "status", width: 200 },
     { title: "案卷名称", dataIndex: "processDefinitionName", align: "center" },
@@ -92,10 +95,12 @@ let pagination = ref({
 })
 loadData()
 function loadData() {
-    defHttp.get({ url: api.list }, { withToken: true }).then(res => {
+    spinning.value = true
+    defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
         const result = res.result
         datalist.value = result.records
         pagination.value.total = result.total
+        spinning.value = false
     }).catch(err => {
 
     })
@@ -128,7 +133,8 @@ function clear() {
  * @param record 
  */
 function handleCase(record: any) {
-    router.push("/bdc/casedoing" + '/' + record.id)
+    router.push({ path: '/bdc/casedoing', query: { slbh: record.id, taskId: record.taskId } });
+    // router.push("/bdc/casedoing" + '/' + record.id)
 }
 </script>
 

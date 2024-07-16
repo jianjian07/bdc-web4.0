@@ -98,7 +98,6 @@ function onReload(obj: any) {
         url: '/api/zrzy-bdc/bdc/case/addCase',
         data: _data
     }, { withToken: true }).then((res) => {
-        debugger
         open.value = false
         reload.value = guid()
         console.log('数据提取成功')

@@ -41,13 +41,16 @@ import {
     Card,
     Result,
     Tag,
-    FloatButton
+    FloatButton,
+    Skeleton,
+    Flex
 } from 'ant-design-vue';
 
 export function registerGlobComp(app: App) {
     app.component("svg-icon", SvgIcon)
     app.component("spin-mask", SpinMask)
     app
+        .use(Flex)
         .use(Layout)
         .use(Carousel)
         .use(Upload)
@@ -92,5 +95,6 @@ export function registerGlobComp(app: App) {
         .use(Card)
         .use(FloatButton)
         .use(Result)
-        .use(Tag);
+        .use(Tag)
+        .use(Skeleton);
 }
