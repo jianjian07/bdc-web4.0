@@ -5,7 +5,7 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
 <template>
   <a-config-provider :locale="zhCN" :theme="{
     token: {
-      colorPrimary: '#00b96b',
+      colorPrimary: 'rgb(24, 144, 255)',
       fontSize: 13
     },
   }">

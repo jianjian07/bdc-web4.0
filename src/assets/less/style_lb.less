@@ -1,0 +1,17 @@
+// 列表类统一样式  避免每个文件都有，且不统一
+.cc-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    ::v-deep(.ant-tree) {
+        .ant-tree-switcher {
+            height: 32px;
+            line-height: 32px;
+        }
+
+        .ant-tree-node-content-wrapper {
+            line-height: 32px;
+        }
+    }
+}

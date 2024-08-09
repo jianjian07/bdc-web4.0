@@ -227,6 +227,7 @@ export const useUserStore = defineStore({
     formatDictList(newArr) {
       let newData = newArr.map(item => {
         item.label = item.dict_name
+        item.labelplus = item.dict_name + '(' + item.dict_code + ')';
         item.value = item.dict_code
         if (item.children) {
           if (item.children.length == 0) {

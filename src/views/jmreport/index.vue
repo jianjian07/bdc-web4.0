@@ -185,14 +185,14 @@ function addData() {
  * 编辑表单
 */
 function editData(record) {
-    window.open('http://192.168.27.87:1004/zrzy-form/jmreport/index/' + record.id, '_blank')
+    window.open('http://192.168.27.87:7004/zrzy-form/jmreport/index/' + record.id, '_blank')
 }
 /**
  * 在线预览
  * @param record
  */
 function preview(record: any) {
-    window.open('http://192.168.27.87:1004/zrzy-form/jmreport/view/' + record.id, '_blank')
+    window.open('http://192.168.27.87:7004/zrzy-form/jmreport/view/' + record.id, '_blank')
 }
 /**
  * 删除表单
