@@ -47,7 +47,8 @@
             </a-space>
         </div>
         <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-            @change="onChange($event, loadData)"><template #bodyCell="{ column, record }">
+            @change="onChange($event, loadData)" @expand="onExpand" :expandedRowKeys="expandedRowKeys"><template
+                #bodyCell="{ column, record }">
                 <template v-if="column.key === 'action'">
                     <a-space>
                         <template #split>
@@ -66,7 +67,7 @@
     <DictModal v-if="open" :open="open" @ok="handOk" :dataInfo="dataInfo" :title="title"></DictModal>
     <!-- <a-drawer title="字典列表" :width="720" :open="drawerOpen" :body-style="{ paddingBottom: '80px' }"
         :footer-style="{ textAlign: 'right' }" @close="onClose"> -->
-    <DictItemsList v-if="drawerOpen" :open="drawerOpen" :parentId="parentId" @onClose="onClose" />
+    <DictItemsList v-if="drawerOpen" :open="drawerOpen" :parentId="parentId" :data="dictData" @onClose="onClose" />
     <!-- </a-drawer> -->
 </template>
 
@@ -75,15 +76,16 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { del } from "/@/api/sys/dict";
-const DictModal = defineAsyncComponent(() => import("/@/views/sysmanage/modules/dictModal.vue"));
-const DictItemsList = defineAsyncComponent(() => import("/@/views/sysmanage/modules/dictItemsList.vue"));
+import { del, updateHasChild } from "/@/api/sys/dict";
+const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
+const DictItemsList = defineAsyncComponent(() => import("/@/views/system/dict/components/dictItemsList.vue"));
 const columns = [
     { title: "字典名称", dataIndex: "dictName" },
     { title: "字典编码", dataIndex: "dictCode" },
     { title: "说明", dataIndex: "description" },
     { title: '操作', key: 'action', width: 200 }
 ]
+
 let datalist: any = ref([]);
 let formData: any = ref([]);
 onMounted(() => {
@@ -99,9 +101,19 @@ let pagination = ref({
 */
 async function loadData() {
     let url = '/magicapi/zrzy-form/magic/dict/list'
-    defHttp.post({ url: url, params: { dict_code: formData.value.code || '', dict_name: formData.value.name || '', dict_type: 0, parent_id: "0", page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: false, joinParamsToUrl: true }).then((res) => {
-        datalist.value = res.list
+    defHttp.post({ url: url, params: { dict_code: formData.value.code || '', dict_name: formData.value.name || '', dict_type: 1, parent_id: "0", page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+
+        const { list } = res;
+        datalist.value = list
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].hasChild == "1") {
+                datalist.value[i].key = datalist.value[i].id
+                datalist.value[i].children = []
+            }
+        }
         pagination.value.total = res.total
+
+
     }).catch(err => {
         console.info(err)
     })
@@ -113,8 +125,8 @@ function refreshData() {
     formData.value = {}
     loadData()
 }
-/**
- * 查询
+/*
+* 查询
 */
 function searchData() {
     pagination.value.current = 1
@@ -122,12 +134,17 @@ function searchData() {
 }
 let drawerOpen = ref(false)
 let parentId = ref("0")
+let dictData = ref<any>()
 function design(record: any) {
+    dictData.value = record
     parentId.value = record.id
     drawerOpen.value = true
 }
-function onClose() {
+function onClose(value: any) {
     drawerOpen.value = false
+    if (value.refreshParentPage) {
+        dictData.value.children = value.children
+    }
 }
 /**
 * 分页
@@ -138,7 +155,36 @@ function onChange(pag: any, callback: any) {
     pagination.value = pag
     callback()
 }
+const expandedRowKeys = ref<any>([]);
+function onExpand(expanded, record) {
+    // let url = '/magicapi/zrzy-form/magic/dict/query'
+    if (expanded) {
+        expandedRowKeys.value.push(record.id);
+        if (record.children.length > 0) {
+            return
+        } else {
+            loadChildList(record)
+            // defHttp.post({ url: url, params: { parent_id: record.id } }, { withToken: true }).then((res) => {
+            //     let childList = res
+            //     for (let i = 0; i < childList.length; i++) {
+            //         if (childList[i].hasChild == "1") {
+            //             childList[i].key = childList[i].id
+            //             childList[i].children = []
+            //         }
+            //     }
+            //     record.children = childList
+            // }).catch(err => {
+            //     console.info(err)
+            // })
+        }
 
+    } else {
+        let keyIndex = expandedRowKeys.value.indexOf(record.id);
+        if (keyIndex >= 0) {
+            expandedRowKeys.value.splice(keyIndex, 1);
+        }
+    }
+}
 let open = ref(false)
 let dataInfo = ref<any>({})
 let title = ref("")
@@ -155,36 +201,97 @@ function editData(record: any) {
 */
 function addData() {
     parentId.value = "0"
-    dataInfo.value = { parentId: "0", dictType: "0" }
+    dataInfo.value = { parentId: "0", dictType: "1" }
     title.value = "新增字典"
     open.value = true
 }
 function handOk(value: any) {
     open.value = false
-    if (value.isAdd == true) {
-        loadData()
-    }
+    let find = findNodeById(datalist.value, Number(dataInfo.value.parentId))
+    loadChildList(find)
+    // return
+    // if (value.isAdd == true) {
+    //     loadData()
+    // }
 }
+
+function loadChildList(record) {
+    let url = '/magicapi/zrzy-form/magic/dict/query'
+    defHttp.post({ url: url, params: { parent_id: record.id } }, { withToken: true }).then((res) => {
+        let childList = res
+        for (let i = 0; i < childList.length; i++) {
+            if (childList[i].hasChild == "1") {
+                childList[i].key = childList[i].id
+                childList[i].children = []
+            }
+        }
+        record.children = childList
+    }).catch(err => {
+        console.info(err)
+    })
+}
+
+/**
+ * 根据id找节点
+ * @param arr
+ * @param key
+ */
+function findNodeById(arr, id) {
+    for (let i = 0; i < arr.length; i++) {
+        let node = arr[i];
+        if (node.id === id) return node;
+        if (node.children && node.children.length > 0) {
+            let foundNode = findNodeById(node.children, id);
+            if (foundNode) return foundNode;
+        }
+    }
+    return null;
+}
+
 /**
  * 删除表单
 */
-function deleteData(record: any) {
-    if (!record.id) return
-    let url = '/magicapi/zrzy-form/magic/dict/count'
-    defHttp.post({ url: url, params: { parentId: record.id } }, { withToken: false }).then(async (res) => {
-        if (res[0].num > 0) {
-            message.info("该字典存在子项,不能删除！")
-        }
-        else {
-            const res = await del(record.id)
-            if (res == 1) {
-                message.success('删除成功')
+async function deleteData(record: any) {
+    if (record.children != undefined) {
+        message.info("该字典存在子项,不能删除！");
+        return;
+    } else {
+        const res = await del(record.id)
+        if (res == 1) {
+            message.success('删除成功')
+            if (record.parentId == "0") {
                 datalist.value.splice(datalist.value.indexOf(record), 1)
             } else {
-                message.error('删除失败' + res.message)
+                const find = findParent(datalist.value, record.parentId)
+                if (find) {
+                    if (dataInfo.value.children.length > 1) {
+                        dataInfo.value.children.splice(dataInfo.value.children.indexOf(record), 1)
+                    } else {
+                        delete dataInfo.value["children"];
+                        //将父级的children置空
+                        updateHasChild(dataInfo.value.id, "0")
+                    }
+                }
             }
         }
-    })
+    }
+}
+// 递归查找上级
+const findParent = (list: any[], id: string) => {
+    for (let item of list) {
+        if (item.id == id) {
+            dataInfo.value = item
+            return true
+        }
+        if (item.children && item.children.length > 0) {
+            let isFind = findParent(item.children, id)
+            if (isFind) {
+                dataInfo.value = item
+                return true
+            }
+        }
+    }
+    return false
 }
 </script>
 <style lang="less" scoped>

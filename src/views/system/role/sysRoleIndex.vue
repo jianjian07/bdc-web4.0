@@ -97,8 +97,8 @@ import { SearchOutlined, PlusOutlined, RedoOutlined } from '@ant-design/icons-vu
 import { computed, onMounted, ref } from "vue"
 import roleList from '/@/mock/test/roleList.json'
 import sysMenuList from '/@/mock/test/sysMenuDemo.json'
-import SysRoleModal from "/@/views/sysmanage/modules/sysRoleModal.vue"
-import SysRoleDeptModal from "/@/views/sysmanage/modules/sysRoleDeptModal.vue"
+import SysRoleModal from "/@/views/system/role/components/sysRoleModal.vue"
+import SysRoleDeptModal from "/@/views/system/role/components/sysRoleDeptModal.vue"
 
 
 // 查询内容

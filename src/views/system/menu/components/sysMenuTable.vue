@@ -86,7 +86,7 @@ import { ref, watch } from "vue"
 import { SearchOutlined, PlusOutlined, ColumnHeightOutlined, VerticalAlignMiddleOutlined, DownOutlined, DeleteOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import menuDemo from '/@/mock/test/menuDemo.json'
 import pidMenu from '/@/mock/test/pidMenuDemo.json'
-import SysMenuForm from "/@/views/sysmanage/modules/sysMenuForm.vue"
+import SysMenuForm from "/@/views/system/menu/components/sysMenuForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 const props = defineProps({

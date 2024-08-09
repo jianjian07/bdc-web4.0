@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts" setup>
-import SysUserDept from "/@/views/sysmanage/modules/sysUserDept.vue"
-import SysUserTable from "/@/views/sysmanage/modules/sysUserTable.vue"
+import SysUserDept from "/@/views/system/user/components/sysUserDept.vue"
+import SysUserTable from "/@/views/system/user/components/sysUserTable.vue"
 
 </script>
 

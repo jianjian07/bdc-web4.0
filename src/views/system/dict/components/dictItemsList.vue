@@ -66,7 +66,7 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-const DictModal = defineAsyncComponent(() => import("/@/views/sysmanage/modules/dictModal.vue"));
+const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
 const props = defineProps({
     open: {
         type: Boolean,
