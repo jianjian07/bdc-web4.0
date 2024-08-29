@@ -31,8 +31,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import BdList from '/@/views/sysmanage/case/components/BdList.vue';
-import BtnList from '/@/views/sysmanage/case/components/BtnList.vue';
+import BdList from '/@/views/system/case/components/BdList.vue';
+import BtnList from '/@/views/system/case/components/BtnList.vue';
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import { defHttp } from '/@/utils/http/axios';
 const props = defineProps({

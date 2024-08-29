@@ -45,52 +45,82 @@
                 新增
             </a-button>
         </div>
-        <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-            @change="onChange($event, loadData)"><template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'action'">
+        <a-table :columns="columns" :data-source="datalist" :pagination="pagination" :loading="loading"
+            @change="onChange($event, loadData)">
+            <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'isLocked'">
+                    <a-tag :color="record.isLocked == 1 ? 'warning' : 'success'">
+                        {{ record.isLocked == 1 ? '已锁定 ' + (record.lockedTime == null ? "" : record.lockedTime) :
+            '未锁定' }}
+                    </a-tag>
+                </template>
+                <template v-else-if="column.key === 'action'">
                     <a-space>
                         <template #split>
                             <a-divider type="vertical" />
                         </template>
                         <a @click="editData(record)">编辑</a>
                         <a @click="design(record)">设计</a>
-                        <CVfd :formId="record.id"></CVfd>
-                        <!-- <a @click="vfd(record)">VFD</a> -->
-                        <a @click="address(record)">地址</a>
-                        <!--                        <a @click="onlineAddress(record)">地址2</a>-->
-                        <a @click="copyData(record)">复制</a>
-                        <a @click="preview(record)">预览</a>
-                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
-                            <a>删除</a>
-                        </a-popconfirm>
+                        <!-- <a @click="preview(record)">预览</a> -->
+                        <a v-if="record.isLocked == 1" @click="unLock(record)">解锁</a>
+                        <a-dropdown>
+                            <a class="ant-dropdown-link" @click.prevent>
+                                更多
+                                <DownOutlined />
+                            </a>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item @click="copyData(record)">复制</a-menu-item>
+                                    <a-menu-item key="1">
+                                        <CVfd :formId="record.id"></CVfd>
+                                    </a-menu-item>
+                                    <a-menu-item key="2" @click="address(record)">地址</a-menu-item>
+                                    <a-menu-item @click="revert(record)">回滚</a-menu-item>
+                                    <a-menu-item key="3">
+                                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
+                                            @confirm="deleteData(record)">
+                                            <a>删除</a>
+                                        </a-popconfirm>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </a-space>
                 </template>
             </template>
         </a-table>
     </div>
     <form-add-modal ref="formModal" @handOver="handOver"></form-add-modal>
+    <HistoryDrawer v-if="open" :open="open" :dataId="dataId" @ok="handOk" />
 </template>
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import ClipboardJS from 'clipboard'
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
+import HistoryDrawer from '/@/views/online/form/modules/HistoryDrawer.vue';
 import CVfd from './modules/Vfd.vue'
+let open = ref(false)
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
+    lockFormUrl = '/api/zrzy-form/wform/lockForm',
+    unlockFormUrl = '/api/zrzy-form/wform/unlockForm',
 }
 const columns = [
     { title: "表单名称", dataIndex: "formName", ellipsis: true },
     { title: "表单编码", dataIndex: "code", width: 150 },
-    { title: "表单分类", dataIndex: "typeName", width: 220 },
+    // { title: "是否锁定", dataIndex: "isLocked", width: 80 },
+    // { title: "表单分类", dataIndex: "typeName", width: 220 },
     { title: "分类编码", dataIndex: "formType", width: 120 },
-    { title: "创建时间", dataIndex: "createTime", width: 140 },
-    { title: '操作', key: 'action', width: 400, fixed: 'right', }
+    { title: "是否锁定", dataIndex: "isLocked", width: 150 },
+    { title: "加锁时间", dataIndex: "lockedTime", ellipsis: true, width: 0 },
+    { title: "修改时间", dataIndex: "updateTime", width: 140 },
+    { title: '操作', key: 'action', width: 300, fixed: 'right', }
 ]
 let datalist: any = ref([]);
 let formData: any = ref({ formName: '', code: '', formType: '' });
@@ -104,6 +134,7 @@ let pagination = ref({
     current: 1,
     pageSize: 10,
 })
+let loading = ref(false)
 /**
  * 表格数据加载
 */
@@ -116,12 +147,18 @@ async function loadData(type?: string | undefined) {
             pageSize: 10,
         }
     }
-    let url = '/magicapi/zrzy-form/magic/form/form/list'
-    defHttp.post({ url: url, params: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName, page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: false }).then((res) => {
-        // console.log("res.list", res.list)
-        datalist.value = res.list
-        pagination.value.total = res.total
+    loading.value = true
+    let url = '/api/zrzy-form/form/list'
+    defHttp.post({ url: url, params: { page: pagination.value.current, size: pagination.value.pageSize }, data: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
+        console.log("res.list", res.result)
+        if (res.success) {
+            datalist.value = res.result.records
+            pagination.value.total = res.result.total
+        }
+
+        loading.value = false
     }).catch(err => {
+        loading.value = false
         console.info(err)
     })
 }
@@ -165,7 +202,45 @@ function refreshData() {
     loadData()
 }
 function design(record: any) {
-    router.push("/online/form/design" + '/' + record.id)
+    if (record.isLocked == 1) {
+        message.error('该表单已锁定，无法编辑')
+    } else {
+        defHttp.post({ url: Api.lockFormUrl, params: { id: record.id } }, { withToken: true }).then((res) => {
+            if (res.success) {
+                record.isLocked = 1
+                record.lockedTime = new Date().toLocaleString()
+                router.push("/online/form/design" + '/' + record.id)
+            } else {
+                message.error(res.message)
+            }
+        }).catch(_err => {
+        })
+    }
+}
+/**
+ * 解锁
+ * @param record 
+ */
+function unLock(record: any) {
+    defHttp.post({ url: Api.unlockFormUrl, params: { id: record.id } }, { withToken: true }).then((res) => {
+        if (res.success) {
+            record.isLocked = 0
+        } else {
+            message.error(res.message)
+        }
+    }).catch(_err => {
+    })
+}
+let dataId = ref()
+/**
+ * 回滚
+*/
+function revert(record: any) {
+    dataId.value = record.id
+    open.value = true
+}
+function handOk() {
+    open.value = false
 }
 function address(record: any) {
     const { formType, code } = record;
@@ -229,7 +304,7 @@ function addData() {
 /**
  * 编辑表单
 */
-function editData(record) {
+function editData(record: any) {
     formModal.value.edit(record)
 }
 /**
