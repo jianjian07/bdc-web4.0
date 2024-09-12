@@ -10,6 +10,10 @@
                 <a-input v-model:value="formData.dictCode" />
             </a-form-item>
 
+            <a-form-item label="状态" name="status" :rules="[{ required: true, message: '请选择字典状态' }]">
+                <a-switch v-model:checked="formData.status" checkedValue="1" unCheckedValue="0"></a-switch>
+            </a-form-item>
+
             <a-form-item label="描述" name="description">
                 <a-textarea v-model:value="formData.description" placeholder="输入描述" :rows="4" />
             </a-form-item>
@@ -36,7 +40,8 @@ const props = defineProps({
         default: {}
     }
 })
-let { hasChild, ...restConfig } = props.dataInfo
+
+let { hasChild, key, ...restConfig } = props.dataInfo
 let formData = ref<any>(restConfig)
 let open = ref(props.open)
 const emit = defineEmits(["ok"])
@@ -45,34 +50,27 @@ const emit = defineEmits(["ok"])
  */
 function handleOk() {
     // 执行保存
-    let url = ''
-    if (formData.value.hasOwnProperty("id")) {
-        url = "/magicapi/zrzy-form/magic/dict/edit"
-    } else {
-        url = "/magicapi/zrzy-form/magic/dict/add"
-    }
+    let url = '/api/zrzy-system/sys/datadict/insertOrUpdate'
+    formData.value.delFlag = 0
     defHttp.post({ url: url, data: formData.value }, { withToken: true }).then((res) => {
-        message.success("保存成功")
-        if (formData.value.dictType == "1") {//分类字典
-            //将父级的children置空
-            updateHasChild(props.dataInfo.parentId, "1")
-            // updateHasChild()
-            emit("ok", { isAdd: true, refreshParentPage: true })
-        } else {
-            emit("ok", { isAdd: true })
+        if (res.result) {
+            message.success("保存成功")
+            if (formData.value.dictType == "1") {//分类字典
+                //将父级的children置空
+                updateHasChild(props.dataInfo.parentId, "1")
+                // updateHasChild()
+                emit("ok", { isAdd: true, refreshParentPage: true })
+            } else {
+                emit("ok", { isAdd: true })
+            }
+        }
+        else {
+            message.error("保存失败")
         }
     }).catch(err => {
         console.info(err)
     })
 }
-// function updateHasChild() {
-//     debugger
-//     const url = "/magicapi/zrzy-form/magic/dict/updateHasChild"
-//     defHttp.post({ url: url, data: { id: props.dataInfo.parentId, hasChild: "1" } }, { withToken: true }).then((res) => {
-//     }).catch(err => {
-//         console.info(err)
-//     })
-// }
 function onCancel() {
     // 执行取消
     emit("ok", { isAdd: false })

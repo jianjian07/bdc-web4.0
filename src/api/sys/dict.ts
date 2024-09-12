@@ -2,16 +2,17 @@ import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { useUserStore } from "/@/store/modules/user"
 enum api {
-    getDictApi = '/magicapi/zrzy-form/magic/dict/tree',
-    delUrl = '/magicapi/zrzy-form/magic/dict/delete',
-    updateHasChildUrl = '/magicapi/zrzy-form/magic/dict/updateHasChild',
-    getRuleListApi = '/magicapi/zrzy-form/magic/form/rule/list'
+    getDictApi = '/api/zrzy-system/sys/datadict/tree',
+    delUrl = '/api/zrzy-system/sys/datadict/deleteByIdList',//'/magicapi/zrzy-form/magic/dict/delete',//
+    updateHasChildUrl = '/api/zrzy-system/sys/datadict/updateHasChild',
+    getRuleListApi = '/api/zrzy-form/onlWonderRule/getRuleList'
 }
 
 //***其它接口待重构，后续字典相关会统一提取到这个脚本文件  页面只保留业务逻辑处理
 export function del(id: string) {
     return new Promise<any>((resolve) => {
-        defHttp.post({ url: api.delUrl, params: { id: id } }, { withToken: true }).then((res) => {
+        const strings = [id];
+        defHttp.post({ url: api.delUrl, data: strings }, { withToken: true }).then((res) => {
             resolve(res)
         }).catch(err => {
             message.error('删除失败')
@@ -24,7 +25,7 @@ export function del(id: string) {
  * @param hasChild
  */
 export function updateHasChild(parentId: string, hasChild: string) {
-    defHttp.post({ url: api.updateHasChildUrl, data: { id: parentId, hasChild: hasChild } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: api.updateHasChildUrl, params: { id: parentId, hasChild: hasChild } }, { withToken: true }).then((res) => {
     }).catch(err => {
         console.info(err)
     })
@@ -33,11 +34,17 @@ export function updateHasChild(parentId: string, hasChild: string) {
 // 数据字典
 export function getDataDict() {
     const userStore = useUserStore();
-    defHttp.post({ url: api.getDictApi, params: { dict_type: '0' } }, { withToken: true }).then((res) => {
-        if (res) {
-            let dicts = userStore.formatDictList(res)
-            userStore.setAllDicts(dicts)
-        }
+    return new Promise((resolve, reject) => {
+        defHttp.get({ url: api.getDictApi, params: { dictType: '0' } }, { withToken: true }).then((res) => {
+            if (res) {
+                let dicts = userStore.formatDictList(res.result)
+                userStore.setAllDicts(dicts)
+                resolve(true);
+            }
+            else {
+                reject(false);
+            }
+        })
     })
 
 }
@@ -45,9 +52,9 @@ export function getDataDict() {
 // 分类字典
 export function getCategoryDict() {
     const userStore = useUserStore();
-    defHttp.post({ url: api.getDictApi, params: { dict_type: '1' } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getDictApi, params: { dictType: '1' } }, { withToken: true }).then((res) => {
         if (res) {
-            let dicts = userStore.formatDictList(res)
+            let dicts = userStore.formatDictList(res.result)
             userStore.setAllCategory(dicts)
         }
     })
@@ -56,7 +63,9 @@ export function getCategoryDict() {
 // 规则
 export function getRuleList() {
     const userStore = useUserStore();
-    defHttp.post({ url: api.getRuleListApi }, { withToken: true }).then((res) => {
+
+    defHttp.get({ url: api.getRuleListApi }, { withToken: true }).then((res) => {
+        res.list = res.result.records;
         if (res && res.list) {
             let sysValidateRuleList = res.list.filter(f => f.ruleType == 'validate')
             if (sysValidateRuleList) {

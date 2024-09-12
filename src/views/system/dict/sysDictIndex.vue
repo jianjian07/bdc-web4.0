@@ -55,6 +55,7 @@
                         </template>
                         <a @click="editData(record)">编辑</a>
                         <a @click="design(record)">字典配置</a>
+                        <a @click="copy(record)">复制</a>
                         <a-popconfirm title="是否确定删除该数据字典项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
                             <a>删除</a>
                         </a-popconfirm>
@@ -72,8 +73,8 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { ref, onMounted, defineAsyncComponent } from "vue";
+import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { del } from "/@/api/sys/dict";
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
@@ -82,26 +83,31 @@ const columns = [
     { title: "字典名称", dataIndex: "dictName" },
     { title: "字典编码", dataIndex: "dictCode" },
     { title: "说明", dataIndex: "description" },
-    { title: '操作', key: 'action', width: 200 }
+    { title: '操作', key: 'action', width: 250 }
 ]
 let datalist: any = ref([]);
 let formData: any = ref([]);
+
+enum api {
+    list = '/api/zrzy-system/sys/datadict/list',
+    copy = '/api/zrzy-system/sys/datadict/copyDict'
+}
 onMounted(() => {
     loadData() // 初始化加载数据
 })
 let pagination = ref({
     total: 0,
     current: 1,
-    pageSize: 10,
+    pageSize: 2,
 })
 /**
  * 表格数据加载
 */
 async function loadData() {
-    let url = '/magicapi/zrzy-form/magic/dict/list'
-    defHttp.post({ url: url, params: { dict_code: formData.value.code || '', dict_name: formData.value.name || '', dict_type: 0, parent_id: "0", page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: false, joinParamsToUrl: true }).then((res) => {
-        datalist.value = res.list
-        pagination.value.total = res.total
+    defHttp.post({ url: api.list, data: { dictCode: formData.value.code || '', dictName: formData.value.name || '', dictType: 0, parentId: "0" }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+        const { result } = res
+        datalist.value = result.records
+        pagination.value.total = result.total
     }).catch(err => {
         console.info(err)
     })
@@ -126,6 +132,24 @@ function design(record: any) {
     parentId.value = record.id
     drawerOpen.value = true
 }
+
+/**
+ * 复制
+ * @param record
+ */
+function copy(record: any) {
+    defHttp.get({ url: api.copy, params: { dictCode: record.dictCode } }, { withToken: true }).then((res) => {
+        if (res && res.code == 200) {
+            message.success('复制成功')
+            loadData()
+        } else {
+            message.warning(res.message)
+        }
+    }).catch(err => {
+        message.warning(err)
+    })
+}
+
 function onClose() {
     drawerOpen.value = false
 }
@@ -155,7 +179,7 @@ function editData(record: any) {
 */
 function addData() {
     parentId.value = "0"
-    dataInfo.value = { parentId: "0", dictType: "0" }
+    dataInfo.value = { parentId: "0", dictType: "0", status: "1", delFlag: 0 }
     title.value = "新增字典"
     open.value = true
 }
@@ -170,14 +194,14 @@ function handOk(value: any) {
 */
 function deleteData(record: any) {
     if (!record.id) return
-    let url = '/magicapi/zrzy-form/magic/dict/count'
-    defHttp.post({ url: url, params: { parentId: record.id } }, { withToken: false }).then(async (res) => {
-        if (res[0].num > 0) {
+    let url = '/api/zrzy-system/sys/datadict/getChildrenCount'
+    defHttp.get({ url: url, params: { parentId: record.id } }, { withToken: true }).then(async (res) => {
+        if (res.result > 0) {
             message.info("该字典存在子项,不能删除！")
         }
         else {
             const res = await del(record.id)
-            if (res == 1) {
+            if (res.result == 1) {
                 message.success('删除成功')
                 datalist.value.splice(datalist.value.indexOf(record), 1)
             } else {

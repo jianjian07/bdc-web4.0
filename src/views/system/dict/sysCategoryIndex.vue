@@ -56,6 +56,7 @@
                         </template>
                         <a @click="editData(record)">编辑</a>
                         <a @click="design(record)">字典配置</a>
+                        <a v-if="record.parentId == '0'" @click="copy(record)">复制</a>
                         <a-popconfirm title="是否确定删除该数据字典项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
                             <a>删除</a>
                         </a-popconfirm>
@@ -73,8 +74,8 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { ref, onMounted, defineAsyncComponent } from "vue";
+import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { del, updateHasChild } from "/@/api/sys/dict";
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
@@ -83,11 +84,17 @@ const columns = [
     { title: "字典名称", dataIndex: "dictName" },
     { title: "字典编码", dataIndex: "dictCode" },
     { title: "说明", dataIndex: "description" },
-    { title: '操作', key: 'action', width: 200 }
+    { title: '操作', key: 'action', width: 250 }
 ]
 
 let datalist: any = ref([]);
 let formData: any = ref([]);
+
+enum api {
+    list = '/api/zrzy-system/sys/datadict/list',
+    copy = '/api/zrzy-system/sys/datadict/copyDict'
+}
+
 onMounted(() => {
     loadData() // 初始化加载数据
 })
@@ -96,24 +103,24 @@ let pagination = ref({
     current: 1,
     pageSize: 10,
 })
-/**
- * 表格数据加载
-*/
 async function loadData() {
-    let url = '/magicapi/zrzy-form/magic/dict/list'
-    defHttp.post({ url: url, params: { dict_code: formData.value.code || '', dict_name: formData.value.name || '', dict_type: 1, parent_id: "0", page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: true }).then((res) => {
-
-        const { list } = res;
-        datalist.value = list
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].hasChild == "1") {
-                datalist.value[i].key = datalist.value[i].id
-                datalist.value[i].children = []
-            }
+    defHttp.post({ url: api.list, data: { dictCode: formData.value.code || '', dictName: formData.value.name || '', dictType: 1, parentId: "0" }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+        const { success, result } = res
+        if (success) {
+            // 更新具有 children 的项
+            const updatedRecords = result.records.map((item, index) => {
+                if (item.hasChild === '1') {
+                    return {
+                        ...item,
+                        key: item.id,
+                        children: []
+                    };
+                }
+                return item;
+            });
+            datalist.value = updatedRecords
+            pagination.value.total = result.total
         }
-        pagination.value.total = res.total
-
-
     }).catch(err => {
         console.info(err)
     })
@@ -140,10 +147,29 @@ function design(record: any) {
     parentId.value = record.id
     drawerOpen.value = true
 }
+
+/**
+ * 复制
+ * @param record
+ */
+function copy(record: any) {
+    defHttp.get({ url: api.copy, params: { dictCode: record.dictCode } }, { withToken: true }).then((res) => {
+        if (res && res.code == 200) {
+            message.success('复制成功')
+            loadData()
+        } else {
+            message.warning(res.message)
+        }
+    }).catch(err => {
+        message.warning('复制失败')
+    })
+}
+
 function onClose(value: any) {
     drawerOpen.value = false
     if (value.refreshParentPage) {
         dictData.value.children = value.children
+        dictData.value.key = dictData.value.id
     }
 }
 /**
@@ -164,18 +190,6 @@ function onExpand(expanded, record) {
             return
         } else {
             loadChildList(record)
-            // defHttp.post({ url: url, params: { parent_id: record.id } }, { withToken: true }).then((res) => {
-            //     let childList = res
-            //     for (let i = 0; i < childList.length; i++) {
-            //         if (childList[i].hasChild == "1") {
-            //             childList[i].key = childList[i].id
-            //             childList[i].children = []
-            //         }
-            //     }
-            //     record.children = childList
-            // }).catch(err => {
-            //     console.info(err)
-            // })
         }
 
     } else {
@@ -201,24 +215,26 @@ function editData(record: any) {
 */
 function addData() {
     parentId.value = "0"
-    dataInfo.value = { parentId: "0", dictType: "1" }
+    dataInfo.value = { parentId: "0", dictType: "1", status: "1", delFlag: 0 }
     title.value = "新增字典"
     open.value = true
 }
 function handOk(value: any) {
+    debugger
     open.value = false
-    let find = findNodeById(datalist.value, Number(dataInfo.value.parentId))
-    loadChildList(find)
-    // return
-    // if (value.isAdd == true) {
-    //     loadData()
-    // }
+    // let find = findNodeById(datalist.value, Number(dataInfo.value.parentId))
+    // loadChildList(find)
+    // // return
+    if (value.isAdd == true) {
+        loadData()
+    }
 }
 
 function loadChildList(record) {
-    let url = '/magicapi/zrzy-form/magic/dict/query'
-    defHttp.post({ url: url, params: { parent_id: record.id } }, { withToken: true }).then((res) => {
-        let childList = res
+    let url = '/api/zrzy-system/sys/datadict/queryByParentId'
+    defHttp.get({ url: url, params: { parentId: record.id } }, { withToken: true }).then((res) => {
+        debugger
+        let childList = res.result
         for (let i = 0; i < childList.length; i++) {
             if (childList[i].hasChild == "1") {
                 childList[i].key = childList[i].id
@@ -241,7 +257,7 @@ function findNodeById(arr, id) {
         let node = arr[i];
         if (node.id === id) return node;
         if (node.children && node.children.length > 0) {
-            let foundNode = findNodeById(node.children, id);
+            let foundNode: any = findNodeById(node.children, id);
             if (foundNode) return foundNode;
         }
     }
@@ -257,25 +273,26 @@ async function deleteData(record: any) {
         return;
     } else {
         const res = await del(record.id)
-        if (res == 1) {
+        if (res.result == 1) {
             message.success('删除成功')
             if (record.parentId == "0") {
                 datalist.value.splice(datalist.value.indexOf(record), 1)
             } else {
-                const find = findParent(datalist.value, record.parentId)
-                if (find) {
-                    if (dataInfo.value.children.length > 1) {
-                        dataInfo.value.children.splice(dataInfo.value.children.indexOf(record), 1)
+                let _find = findNodeById(datalist.value, Number(record.parentId))
+                if (_find) {
+                    if (_find.children.length > 1) {
+                        _find.children.splice(_find.children.indexOf(record), 1)
                     } else {
-                        delete dataInfo.value["children"];
+                        delete _find["children"];
                         //将父级的children置空
-                        updateHasChild(dataInfo.value.id, "0")
+                        updateHasChild(_find.id, "0")
                     }
                 }
             }
         }
     }
 }
+
 // 递归查找上级
 const findParent = (list: any[], id: string) => {
     for (let item of list) {

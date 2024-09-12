@@ -42,6 +42,9 @@
             </div>
             <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
                 @change="onChange($event, loadData)"><template #bodyCell="{ column, record }">
+                    <template v-if="column.dataIndex == 'status'">
+                        {{ record.status == 1 ? '有效' : '无效' }}
+                    </template>
                     <template v-if="column.key === 'action'">
                         <a-space>
                             <template #split>
@@ -66,6 +69,7 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+import { del, updateHasChild } from "/@/api/sys/dict";
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
 const props = defineProps({
     open: {
@@ -94,6 +98,7 @@ let parentId = ref(props.parentId)
 const columns = [
     { title: "名称", dataIndex: "dictName", width: 400 },
     { title: "子项值", dataIndex: "dictCode", width: 500 },
+    { title: "状态", dataIndex: "status", width: 100 },
     { title: '操作', key: 'action', width: 600 }
 ]
 let datalist: any = ref([]);
@@ -109,18 +114,22 @@ loadData()
  * 表格数据加载
 */
 async function loadData() {
-    let url = '/magicapi/zrzy-form/magic/dict/list'
+    let url = '/api/zrzy-system/sys/datadict/list';//'/magicapi/zrzy-form/magic/dict/list'
     defHttp.post({
-        url: url, params: {
-            dict_code: formData.value.code || '',
-            dict_name: formData.value.name || '',
-            parent_id: parentId.value,
-            page: pagination.value.current,
-            size: pagination.value.pageSize
+        url: url, data: {
+            dictCode: formData.value.code || '',
+            dictName: formData.value.name || '',
+            parentId: parentId.value
+        }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }
+    }, { withToken: true }).then((res) => {
+        const { success, result } = res
+        if (success) {
+            datalist.value = result.records
+            pagination.value.total = result.total
+            if (result.records && result.records.length < 1) { //更新hasChild状态
+                updateHasChild(parentId.value, "0");
+            }
         }
-    }, { withToken: false }).then((res) => {
-        datalist.value = res.list
-        pagination.value.total = res.total
     }).catch(err => {
         console.info(err)
     })
@@ -148,7 +157,7 @@ let title = ref("")
  * 添加表单
 */
 function addData() {
-    dataInfo.value = { parentId: props.parentId, dictType: props.data.dictType != "1" ? "0" : "1" }
+    dataInfo.value = { parentId: props.parentId, dictType: props.data.dictType != "1" ? "0" : "1", status: "1", delFlag: 0 }
     title.value = "新增"
     open.value = true
 }
@@ -173,23 +182,17 @@ function handOk(value: any) {
 /**
  * 删除表单
 */
-function deleteData(record: any) {
+async function deleteData(record: any) {
     if (!record.id) return
-    let url = '/magicapi/zrzy-form/magic/dict/delete' // 删除
-    defHttp.post({ url: url, params: { id: record.id } }, { withToken: false, joinParamsToUrl: true }).then((res) => {
-        if (!res.message) {
-            message.success('删除成功')
-            loadData()
-        } else {
-            message.error('删除失败' + res.message)
-        }
-    }).catch(err => {
-        message.error('删除失败')
-    })
+    const res = await del(record.id)
+    if (res.result == 1) {
+        message.success('删除成功')
+        loadData()
+    }
 }
 const emit = defineEmits(["onClose"])
 function onClose() {
-    emit("onClose", { refreshParentPage: true, children: datalist.value })
+    emit("onClose", { refreshParentPage: true, children: datalist.value.length > 0 ? datalist.value : undefined })
 }
 </script>
 <style lang="less" scoped>

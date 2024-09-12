@@ -31,8 +31,8 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "pinyin-pro": "^3.20.3",
-    "vue": "^3.4.21",
-    "vue-router": "4.3.0"
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",
