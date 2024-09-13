@@ -91,8 +91,8 @@ let datalist: any = ref([]);
 let formData: any = ref([]);
 
 enum api {
-    list = '/api/zrzy-system/sys/datadict/list',
-    copy = '/api/zrzy-system/sys/datadict/copyDict'
+    list = '/api/zrzy-bdc/sys/dict/list',
+    copy = '/api/zrzy-bdc/sys/dict/copyDict'
 }
 
 onMounted(() => {
@@ -231,7 +231,7 @@ function handOk(value: any) {
 }
 
 function loadChildList(record) {
-    let url = '/api/zrzy-system/sys/datadict/queryByParentId'
+    let url = '/api/zrzy-bdc/sys/dict/queryByParentId'
     defHttp.get({ url: url, params: { parentId: record.id } }, { withToken: true }).then((res) => {
         debugger
         let childList = res.result

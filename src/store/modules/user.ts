@@ -214,26 +214,29 @@ export const useUserStore = defineStore({
       this.licence = licence;
     },
     resetState() {
-      // debugger
-      this.userInfo = null;
-      this.szUserInfo = null;
-      this.dictItems = [];
-      this.token = '';
+      this.setUserInfo(null);
+      this.setSzUserInfo(null);
+      this.setToken('');
       //   this.roleList = [];
       this.sessionTimeout = false;
       this.menuIndex = -1
       this.licence = ''
     },
-    formatDictList(newArr) {
-      let newData = newArr.map(item => {
-        item.label = item.dict_name
-        item.labelplus = item.dict_name + '(' + item.dict_code + ')';
-        item.value = item.dict_code
+    formatDictList(newArr: any, parent?: any) {
+      let newData = newArr.map((item: any) => {
+        item.label = item.dictName
+        item.value = item.dictCode
+        if (parent && !parent.status) {
+          item.status = 0
+        }
+        if (!item.status) {
+          item.class = 'option-hidden'
+        }
         if (item.children) {
           if (item.children.length == 0) {
             delete item.children
           } else {
-            item.children = this.formatDictList(item.children)
+            item.children = this.formatDictList(item.children, item)
           }
         }
         return item
@@ -367,7 +370,7 @@ export const useUserStore = defineStore({
       // 分类字典
       getCategoryDict()
       // 规则
-      getRuleList()
+      // getRuleList()
       // if (szUserInfo) {
       //   if (userToken.iszsEnv != '0') {
       //     this.setToken(szUserInfo.token.access_token);

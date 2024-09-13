@@ -5,7 +5,7 @@
         <a-radio-group v-model:value="formState.type" button-style="solid">
           <a-radio-button :value="0">目录</a-radio-button>
           <a-radio-button :value="1">菜单</a-radio-button>
-          <a-radio-button :value="2">按钮</a-radio-button>
+          <a-radio-button :value="2">权限点</a-radio-button>
         </a-radio-group>
       </a-form-item>
       <a-form-item label="菜单图标" v-show="formState.type != 2">
@@ -33,22 +33,22 @@
           <a-radio-button :value="false">否</a-radio-button>
         </a-radio-group>
       </a-form-item>
-      <a-form-item v-show="formState.type != 2" label="菜单名称" name="name">
+      <a-form-item v-if="formState.type != 2" label="菜单名称" name="name">
         <a-input v-model:value="formState.name" placeholder="菜单名称"></a-input>
       </a-form-item>
-      <a-form-item v-show="formState.type == 2" label="按钮名称">
-        <a-input v-model:value="formState.name" placeholder="按钮名称"></a-input>
+      <a-form-item v-if="formState.type == 2" label="名称">
+        <a-input v-model:value="formState.name" placeholder="名称"></a-input>
       </a-form-item>
-      <a-form-item v-show="formState.type != 0 && formState.iframe == false" label="权限标识">
+      <a-form-item v-if="formState.type != 0 && formState.iframe == false" label="权限标识">
         <a-input v-model:value="formState.permission" placeholder="权限标识"></a-input>
       </a-form-item>
-      <a-form-item v-show="formState.type != 2" label="路由地址" name="path">
+      <a-form-item v-if="formState.type != 2" label="路由地址" name="path">
         <a-input v-model:value="formState.path" placeholder="路由地址"></a-input>
       </a-form-item>
-      <a-form-item v-show="formState.type != 2" label="组件路径" name="component">
+      <a-form-item v-if="formState.type != 2" label="组件路径" name="component">
         <a-input v-model:value="formState.component" placeholder="组件路径"></a-input>
       </a-form-item>
-      <a-form-item v-show="formState.type != 2">
+      <a-form-item v-if="formState.type != 2">
         <template #label>
           <div class="label" style="margin-right: 5px">组件名称</div>
           <a-popover>
@@ -107,6 +107,10 @@ const props = defineProps({
   sysId: {
     type: [String, Number],
     default: ''
+  },
+  powerType: {
+    type: Number,
+    default: 1
   }
 })
 
@@ -114,7 +118,7 @@ let formRef = ref()
 let formState = ref<any>({
   name: '',
   icon: '',
-  type: 1,
+  type: 2,
   iframe: false,
   hidden: false,
   cache: false,
@@ -122,7 +126,8 @@ let formState = ref<any>({
   pid: 0,
   subsystemId: props.sysId
 })
-
+debugger
+formState.value.type = props.powerType
 const rules = ref<any>({
   type: [{ required: true, message: '请输入菜单类型!' }],
   name: [{ required: true, message: formState.type == 2 ? '请输入按钮名称' : '请输入菜单名称!' }],
@@ -162,7 +167,7 @@ function initFields() {
   if (props.record) {
     setFields(props.record)
   } else {
-    resetFields()
+    // resetFields()
   }
 }
 
@@ -200,6 +205,7 @@ function setFields(record) {
  * 提交
  */
 function handleOk() {
+  debugger
   formRef.value.validate().then(() => {
     let apiUrl = props.type == '新增' ? api.add : api.edit
     defHttp.post({ url: apiUrl, params: formState.value }, { withToken: true }).then((res) => {
@@ -223,7 +229,7 @@ function handleOk() {
 
 .zjmc-info {
   &:hover {
-    // color: @primary-color
+    //color: @primary-color
   }
 }
 </style>

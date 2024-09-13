@@ -1,6 +1,7 @@
 <template>
   <div class="sys-role-dept-modal">
-    <a-modal v-model:open="modalVisible" :width="760" title="部门人员" :confirm-loading="confirmLoading" @ok="handleModalOk">
+    <a-modal v-model:open="modalVisible" :width="760" title="部门人员" :confirm-loading="confirmLoading"
+      @ok="handleModalOk">
       <a-input-search style="margin-bottom: 10px" v-model:value="searchName" placeholder="请输入关键字搜索" enter-button
         @search="onSearch" />
       <div class="sys-role-dept-tree">
@@ -46,7 +47,6 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, ref, watch } from "vue"
 import deptList from '/@/mock/test/departUser.json'
-import userList from '/@/mock/test/searchUser.json'
 import { GoldOutlined, UserOutlined } from '@ant-design/icons-vue';
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
@@ -330,4 +330,3 @@ function findNodeByKey(arr, key) {
   }
 }
 </style>
-

@@ -1,0 +1,149 @@
+[
+  {
+    "id": null,
+    "pid": null,
+    "children": [
+      {
+        "id": null,
+        "pid": null,
+        "children": [
+          {
+            "id": null,
+            "pid": null,
+            "children": [
+              {
+                "id": null,
+                "pid": null,
+                "children": null,
+                "hasChildren": false,
+                "createTime": null,
+                "title": "张三",
+                "key": "27",
+                "value": "zs",
+                "sortid": null,
+                "list": null,
+                "slots": {
+                  "icon": "user"
+                },
+                "enabled": true
+              }
+            ],
+            "hasChildren": true,
+            "createTime": null,
+            "title": "土地利用科",
+            "key": "D-23",
+            "value": "D-23",
+            "sortid": null,
+            "list": null,
+            "slots": {
+              "icon": "gold"
+            },
+            "enabled": true
+          }
+        ],
+        "hasChildren": null,
+        "createTime": null,
+        "title": "XX区自然资源和规划局",
+        "key": "D-22",
+        "value": "D-22",
+        "sortid": null,
+        "list": null,
+        "slots": {
+          "icon": "gold"
+        },
+        "enabled": true
+      },
+      {
+        "id": null,
+        "pid": null,
+        "children": null,
+        "hasChildren": false,
+        "createTime": null,
+        "title": "管理员",
+        "key": "12",
+        "value": "admin",
+        "sortid": null,
+        "list": null,
+        "slots": {
+          "icon": "user"
+        },
+        "enabled": true
+      },
+      {
+        "id": null,
+        "pid": null,
+        "children": null,
+        "hasChildren": false,
+        "createTime": null,
+        "title": "潘艳龙",
+        "key": "22",
+        "value": "pyl",
+        "sortid": null,
+        "list": null,
+        "slots": {
+          "icon": "user"
+        },
+        "enabled": true
+      },
+      {
+        "id": null,
+        "pid": null,
+        "children": null,
+        "hasChildren": false,
+        "createTime": null,
+        "title": "原永芹",
+        "key": "24",
+        "value": "yuanyongqin",
+        "sortid": null,
+        "list": null,
+        "slots": {
+          "icon": "user"
+        },
+        "enabled": true
+      },
+      {
+        "id": null,
+        "pid": null,
+        "children": null,
+        "hasChildren": false,
+        "createTime": null,
+        "title": "黄超讯",
+        "key": "29",
+        "value": "hcx",
+        "sortid": null,
+        "list": null,
+        "slots": {
+          "icon": "user"
+        },
+        "enabled": true
+      },
+      {
+        "id": null,
+        "pid": null,
+        "children": null,
+        "hasChildren": false,
+        "createTime": null,
+        "title": "周胜",
+        "key": "30",
+        "value": "zhousheng",
+        "sortid": null,
+        "list": null,
+        "slots": {
+          "icon": "user"
+        },
+        "enabled": true
+      }
+    ],
+    "hasChildren": true,
+    "createTime": null,
+    "title": "XX市自然资源和规划局",
+    "key": "D-1",
+    "value": "D-1",
+    "sortid": null,
+    "list": null,
+    "slots": {
+      "icon": "gold"
+    },
+    "enabled": true
+  }
+]

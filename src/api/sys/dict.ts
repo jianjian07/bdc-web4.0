@@ -2,9 +2,9 @@ import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { useUserStore } from "/@/store/modules/user"
 enum api {
-    getDictApi = '/api/zrzy-system/sys/datadict/tree',
-    delUrl = '/api/zrzy-system/sys/datadict/deleteByIdList',//'/magicapi/zrzy-form/magic/dict/delete',//
-    updateHasChildUrl = '/api/zrzy-system/sys/datadict/updateHasChild',
+    getDictApi = '/api/zrzy-bdc/sys/dict/tree',
+    delUrl = '/api/zrzy-bdc/sys/dict/deleteByIdList',//'/magicapi/zrzy-form/magic/dict/delete',//
+    updateHasChildUrl = '/api/zrzy-bdc/sys/dict/updateHasChild',
     getRuleListApi = '/api/zrzy-form/onlWonderRule/getRuleList'
 }
 

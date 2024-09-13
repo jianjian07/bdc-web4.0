@@ -2,15 +2,12 @@
   <div class="sys-role">
     <div class="sys-role-header">
       <div class="left-content">
-        <a-form
-            :model="searchFormState"
-            layout="inline"
-        >
+        <a-form :model="searchFormState" layout="inline">
           <a-form-item label="角色名称" name="name">
-            <a-input v-model:value="searchFormState.name" placeholder="请输入角色名称"/>
+            <a-input v-model:value="searchFormState.name" placeholder="请输入角色名称" />
           </a-form-item>
           <a-form-item>
-            <a-button type="primary">
+            <a-button type="primary" @click="loadRole">
               <template #icon></template>
               查询
             </a-button>
@@ -24,7 +21,7 @@
           <a-form-item>
             <a-button @click="handleAddRole">
               <template #icon>
-                <plus-outlined/>
+                <plus-outlined />
               </template>
               新增
             </a-button>
@@ -40,30 +37,21 @@
     </div>
     <div class="sys-role-content">
       <div class="left-content">
-        <a-alert :message="currentRole.length > 0 ? '已选中' : '未选中'" class="sys-role-table-header" show-icon type="info"/>
+        <a-alert :message="currentRole.length > 0 ? '已选中' : '未选中'" class="sys-role-table-header" show-icon
+          type="info" />
         <div class="sys-role-table-body">
-          <a-table
-              :columns="columns"
-              :data-source="currentRoleList"
-              :pagination="pagination"
-              :row-selection="rowSelection"
-              :scroll="{ y: 300 }"
-              rowKey="id">
+          <a-table :columns="columns" :data-source="roleList" :pagination="pagination" :row-selection="rowSelection"
+            :scroll="{ y: 300 }" rowKey="id">
             <template #bodyCell="{ column, text, record, index }">
               <template v-if="column.dataIndex === 'index'">
                 {{ index + 1 }}
               </template>
               <template v-if="column.dataIndex === 'operation'">
                 <a @click="handleDept(record)">分配</a>
-                <a-divider type="vertical"/>
+                <a-divider type="vertical" />
                 <a @click="handleEditRole(record)">编辑</a>
-                <a-divider type="vertical"/>
-                <a-popconfirm
-                    cancel-text="否"
-                    ok-text="是"
-                    title="确定要删除该用户吗?"
-                    @confirm="handleDelRole(record)"
-                >
+                <a-divider type="vertical" />
+                <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?" @confirm="handleDelRole(record.id, index)">
                   <a>删除</a>
                 </a-popconfirm>
               </template>
@@ -73,15 +61,9 @@
       </div>
       <div class="right-content">
         <a-collapse v-model:activeKey="activeCollapseKey">
-          <a-collapse-panel v-for="(item,index) in sysMenuList" :key="item.id" :header="item.title">
-            <a-tree
-                v-model:checkedKeys="checkedKeys"
-                :defaultExpandAll="false"
-                :show-line="true"
-                :tree-data="item.list"
-                check-strictly
-                checkable
-            >
+          <a-collapse-panel v-for="(item, index) in sysMenuList" :key="index" :header="item.title">
+            <a-tree v-model:checkedKeys="checkedKeys" :defaultExpandAll="false" :show-line="true" :tree-data="item.list"
+              check-strictly checkable>
             </a-tree>
           </a-collapse-panel>
         </a-collapse>
@@ -93,18 +75,46 @@
 </template>
 
 <script lang="ts" setup>
-import { SearchOutlined, PlusOutlined, RedoOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, ref } from "vue"
-import roleList from '/@/mock/test/roleList.json'
-import sysMenuList from '/@/mock/test/sysMenuDemo.json'
 import SysRoleModal from "/@/views/system/role/components/sysRoleModal.vue"
 import SysRoleDeptModal from "/@/views/system/role/components/sysRoleDeptModal.vue"
-
-
+import { defHttp } from '/@/utils/http/axios';
+import { message } from 'ant-design-vue'
+enum api {
+  getAllMenu = '/api/zrzy-system/menu/getAllMenu',
+  getMenusByRoleId = '/api/zrzy-system/role/getMenusByRoleId',//根据角色得到配置的菜单
+  saveRoleMenu = '/api/zrzy-system/role/saveRoleMenu',
+  listRoleApi = '/api/zrzy-system/role/list',//角色列表
+  deleteRoleApi = '/api/zrzy-system/role/removeById',//删除角色
+}
+let sysMenuList = ref([{
+  title: "规划实施业务管理系统",
+  list: []
+}])
+onMounted(() => {
+  loadRole()
+  loadMenu()
+})
+let roleList = ref([])
+function loadRole() {
+  defHttp.get({ url: api.listRoleApi, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, name: searchFormState.value.name } }, { withToken: true }).then((res) => {
+    roleList.value = res.result.records
+    pagination.value.total = res.result.total
+  }).catch(err => {
+    console.info(err)
+  })
+}
+function loadMenu() {
+  defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
+    sysMenuList.value[0].list = res.result
+  }).catch(err => {
+    console.info(err)
+  })
+}
 // 查询内容
 let searchFormState = ref<any>({})
-// 角色列表
-let currentRoleList = ref<any>([])
+
 // 当前选中的角色
 let currentRole = ref<any>([])
 // 角色弹窗
@@ -113,9 +123,8 @@ let roleModal = ref()
 let roleDeptModal = ref()
 // 当前选中的折叠面板
 let activeCollapseKey = ref<any>()
-// 选中的系统菜单
-let checkedKeys = ref<any>([])
 
+const checkedKeys = ref<any>([]);
 const columns = [
   {
     title: '序号',
@@ -174,16 +183,6 @@ const pagination = computed(() => ({
   pageSize: 10,
 }))
 
-onMounted(() => {
-  initData()
-})
-
-function initData() {
-  currentRoleList.value = roleList.records
-  page.value.total = roleList.total
-  page.value.current = roleList.current
-}
-
 /**
  * 添加角色
  */
@@ -203,8 +202,13 @@ function handleEditRole(record) {
  * 删除角色
  * @param record
  */
-function handleDelRole(record) {
-
+function handleDelRole(id: number, index: number) {
+  defHttp.post({ url: api.deleteRoleApi, params: { id: id } }, { withToken: true }).then((res) => {
+    roleList.value.splice(index, 1)
+    message.success('删除成功')
+  }).catch(err => {
+    console.info(err)
+  })
 }
 
 /**
@@ -220,19 +224,37 @@ function handleDept(record) {
  * @param role
  */
 function getRoleSysMenuKeys(roleId) {
-  let keys = ["427", "441", "547", "568", "442", "466", "426", "420", "421", "544", "424", "418",
-    "557", "423", "422", "415", "565", "567", "632", "633", "636"]
-  checkedKeys.value = keys
+  let keys = [4, 5, 35]
+  defHttp.get({ url: api.getMenusByRoleId, params: { roleId: roleId } }, { withToken: true }).then((res) => {
+    checkedKeys.value = res.result
+  }).catch(err => {
+    console.info(err)
+  })
 }
 
 /**
  * 保存
  */
 function handleSave() {
-  let params = {
-    id: currentRole.value[0].id,
-    name: currentRole.value[0].name,
-    menuIds: checkedKeys.value
+  if (currentRole.value.length == 0) {
+    message.error("请选择角色")
+  }
+  else if (checkedKeys.value.length == 0) {
+    message.error("请选择菜单")
+  }
+  else {
+    let params = {
+      roleId: currentRole.value[0].id,
+      // name: currentRole.value[0].name,
+      menuIds: checkedKeys.value.checked
+    }
+    defHttp.post({ url: api.saveRoleMenu, data: params }, { withToken: true }).then((res) => {
+      if (res.result) {
+        message.success("保存成功")
+      }
+    }).catch(err => {
+      console.info(err)
+    })
   }
 }
 </script>

@@ -1,12 +1,9 @@
 <template>
   <div class="sys-user-table">
     <div class="sys-user-table-header">
-      <a-form
-          :model="searchForm"
-          layout="inline"
-      >
+      <a-form :model="searchForm" layout="inline">
         <a-form-item label="用户名">
-          <a-input v-model:value="searchForm.name" placeholder="请输入用户名"/>
+          <a-input v-model:value="searchForm.name" placeholder="请输入用户名" />
         </a-form-item>
         <a-form-item label="状态">
           <a-select v-model:value="searchForm.state" placeholder="请选择状态" style="width: 180px">
@@ -18,27 +15,23 @@
         <a-space>
           <a-button type="primary" @click="initData">查询</a-button>
           <a-button @click="reset">重置</a-button>
-          <a-button>导出</a-button>
-          <a-button>
-            <template #icon><plus-outlined/></template>新增
+          <!-- <a-button>导出</a-button> -->
+          <a-button @click="addUser">
+            <template #icon><plus-outlined /></template>新增
           </a-button>
         </a-space>
       </a-form>
     </div>
     <div class="sys-user-table-body">
-      <a-table
-          :columns="columns"
-          :data-source="userList"
-          :pagination="pagination"
-          :scroll="{ y: 800 }"
-          @change="onTableChange"
-          rowKey="id">
+      <a-table :columns="columns" :data-source="userList" :pagination="pagination" :scroll="{ y: 800 }"
+        @change="onTableChange" rowKey="id">
         <template #bodyCell="{ column, text, record, index }">
           <template v-if="column.dataIndex === 'index'">
             {{ index + 1 }}
           </template>
           <template v-if="column.dataIndex == 'enabled'">
-            <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用" @change="changeEnabled($event, record)"/>
+            <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用"
+              @change="changeEnabled($event, record)" />
           </template>
           <template v-if="column.dataIndex == 'loginLocked'">
             <span v-if="record.loginLocked" style="color:rgb(245,34,45)">已锁定</span>
@@ -46,13 +39,9 @@
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <a @click="handleEdit(record)">编辑</a>
-            <a-divider type="vertical"/>
-            <a-popconfirm
-                :disabled="record.username == 'admin'"
-                cancel-text="否"
-                ok-text="是"
-                @confirm="handleDel(record)"
-            >
+            <a-divider type="vertical" />
+            <a-popconfirm :disabled="record.username == 'admin'" cancel-text="否" ok-text="是"
+              @confirm="handleDel(record)">
               <template #title>
                 <span>确认<span style="color:red">删除</span>该用户?</span>
               </template>
@@ -63,14 +52,18 @@
         </template>
       </a-table>
     </div>
+    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" @ok="ok"></user-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from "vue"
 import { PlusOutlined } from '@ant-design/icons-vue'
-import userDemo from '/@/mock/test/userDemo.json'
 import { defHttp } from "/@/utils/http/axios"
+import UserModal from "/@/views/system/user/components/UserModal.vue"
+let drawerOpen = ref(false)
+let title = ref('')
+let dataInfo = ref({})
 // 查询条件
 let searchForm = reactive({
   name: '',
@@ -174,13 +167,19 @@ function initData() {
 function changeEnabled(e, record) {
 
 }
-
+function addUser() {
+  drawerOpen.value = true
+  title.value = "新增用户"
+  dataInfo.value = {}
+}
 /**
  * 编辑
  * @param record
  */
 function handleEdit(record) {
-
+  drawerOpen.value = true
+  title.value = "编辑用户"
+  dataInfo.value = record
 }
 
 /**
@@ -215,12 +214,14 @@ function reset() {
   page.value.current = 1
   initData()
 }
-
+function ok() {
+  drawerOpen.value = false
+}
 </script>
 
 <style lang="less" scoped>
 .sys-user-table {
-  width: calc(100% - 250px);
+  width: calc(100%);
   height: 100%;
   padding: 10px;
 

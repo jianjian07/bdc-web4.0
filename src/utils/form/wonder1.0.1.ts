@@ -14,7 +14,7 @@ export async function getData(object1: { value: object }, formId?: number) {
         return
     }
     const query = router.currentRoute.value.query
-    const url = '/imaginform/zrzy-form/generate/select'
+    const url = '/api/zrzy-form/generate/select'
     // formId: 14, param: { DOC_NO: 'QG1-20221434' } }
     //formId: 1, param: { code: 'demo1' }
     await defHttp.post({
@@ -88,7 +88,7 @@ export async function getInheritData(object: { value: object }, caseCode: string
  */
 export function initTable(options: { dataSourceObj: { value: object }, bindName: string, pagination?: any, formId: number }) {
     const query = router.currentRoute.value.query
-    const url = '/imaginform/zrzy-form/generate/getGridModels'
+    const url = '/api/zrzy-form/generate/getGridModels'
     let params = {
         isPage: false
     }
@@ -269,7 +269,7 @@ export function getFormUpdateData(formDoms) {
 
 function updateFormDatas(formRes) {
     return new Promise((resolve) => {
-        const url = "/imaginform/zrzy-form/generate/update"
+        const url = "/api/zrzy-form/generate/update"
         const query = router.currentRoute.value.query
         // code: 'demo1'
         defHttp.post({

@@ -24,8 +24,11 @@
       <div class="sys-menu-table-content">
         <div class="sys-menu-table-title">
           <a-space>
-            <a-button type="primary" @click="handleAddMenu">
+            <a-button type="primary" @click="handleAddMenu(1)">
               <template #icon><plus-outlined /></template>新增菜单
+            </a-button>
+            <a-button type="primary" @click="handleAddMenu(2)">
+              <template #icon><plus-outlined /></template>新增权限点
             </a-button>
             <a-button type="primary" @click="handleExpandTable">
               <template #icon><column-height-outlined /></template>展开全部
@@ -53,7 +56,16 @@
             :row-selection="rowSelection" :scroll="{ y: 300 }">
             <template #bodyCell="{ column, text, record }">
               <template v-if="column.dataIndex === 'type'">
-                {{ record.type == 0 ? '目录' : record.type == 1 ? '菜单' : '按钮' }}
+                <a-tag color="orange" v-if="record.type == 0">
+                  目录
+                </a-tag>
+                <a-tag color="blue" v-if="record.type == 1">
+                  子菜单
+                </a-tag>
+                <a-tag color="red" v-if="record.type == 2">
+                  权限点
+                </a-tag>
+                <!-- {{ record.type == 0 ? '目录' : record.type == 1 ? '菜单' : '权限点' }} -->
               </template>
               <template v-if="column.dataIndex === 'operation'">
                 <a @click="handleEditMenu(record)">编辑</a>
@@ -71,8 +83,8 @@
   <a-drawer v-model:open="drawerShow" class="custom-class" root-class-name="root-class-name"
     :root-style="{ color: 'blue' }" :title="drawerTitle + '菜单'" placement="right" width="500"
     :footer-style="{ textAlign: 'right' }" @after-open-change="afterOpenChange">
-    <sys-menu-form v-if="drawerShow" ref="menuForm" :type="drawerTitle" :tree-root="rootMenu" :sysId="currentSysKey"
-      :record="currentRecord" @formOk="getFormOk">
+    <sys-menu-form v-if="drawerShow" ref="menuForm" :type="drawerTitle" :powerType="powerType" :tree-root="rootMenu"
+      :sysId="currentSysKey" :record="currentRecord" @formOk="getFormOk">
     </sys-menu-form>
     <template #footer>
       <a-button style="margin-right: 8px" @click="handleCloseDrawer">取消</a-button>
@@ -84,8 +96,6 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { SearchOutlined, PlusOutlined, ColumnHeightOutlined, VerticalAlignMiddleOutlined, DownOutlined, DeleteOutlined, RedoOutlined } from '@ant-design/icons-vue';
-import menuDemo from '/@/mock/test/menuDemo.json'
-import pidMenu from '/@/mock/test/pidMenuDemo.json'
 import SysMenuForm from "/@/views/system/menu/components/sysMenuForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
@@ -103,11 +113,11 @@ const columns = [
     key: 'name',
     width: 200,
   },
-  // {
-  //   title: '菜单类型',
-  //   dataIndex: 'type',
-  //   key: 'type',
-  // },
+  {
+    title: '菜单类型',
+    dataIndex: 'type',
+    key: 'type',
+  },
   {
     title: '路径',
     dataIndex: 'path',
@@ -118,6 +128,12 @@ const columns = [
     title: '组件',
     dataIndex: 'component',
     key: 'component',
+    ellipsis: true
+  },
+  {
+    title: '权限标识',
+    dataIndex: 'permission',
+    key: 'permission',
     ellipsis: true
   },
   {
@@ -278,11 +294,12 @@ function getAllParentKeys(data: any = [], arr: any = []) {
   })
   return arr
 }
-
+let powerType = ref(1)
 /**
  * 新增菜单
  */
-function handleAddMenu() {
+function handleAddMenu(vType) {
+  powerType.value = vType
   drawerShow.value = true
   currentRecord.value = null
   drawerTitle.value = '新增'

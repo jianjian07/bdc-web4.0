@@ -27,6 +27,12 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
+import { defHttp } from '/@/utils/http/axios';
+import { message } from "ant-design-vue";
+enum api {
+  updateRoleApi = '/api/zrzy-system/role/update',//修改角色
+  addRoleApi = '/api/zrzy-system/role/add',//新增角色
+}
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
 // 弹窗标题
@@ -82,11 +88,16 @@ function edit(record) {
  */
 function handleModalOk() {
   formRef.value.validate().then(() => {
+    let _url = api.addRoleApi
     if (formState.value.id) {
-
-    } else {
-
+      _url = api.updateRoleApi
     }
+    defHttp.post({ url: _url, data: formState.value }, { withToken: true }).then((res) => {
+      message.success(modalTitle.value + '成功')
+      modalVisible.value = false
+    }).catch(err => {
+      console.info(err)
+    })
     console.log('values', formState.value,);
   })
     .catch(error => {
