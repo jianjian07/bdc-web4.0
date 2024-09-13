@@ -244,7 +244,7 @@ function getSql(mySelect: any, myUpdate: any, formId: string) {
 // 批量插入
 function updateFormInfo(vfdModel: any) {
     // 重复导入时，要先删除再导入
-    defHttp.post({ url: "/api/zrzy-form/form/vfdToForm", data: vfdModel }, { withToken: true }).then(async (_res) => {
+    defHttp.post({ url: "/api/zrzy-form/wform/vfdToForm", data: vfdModel }, { withToken: true }).then(async (_res) => {
         if (_res.code == 200) {
             message.success("VFD导入成功")
             modal.confirm({

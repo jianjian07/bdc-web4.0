@@ -63,7 +63,7 @@ import { router } from "/@/router";
 import ClipboardJS from 'clipboard'
 
 enum Api {
-    copyUrl = '/api/zrzy-form/form/copyData',
+    copyUrl = '/api/zrzy-form/wform/copyData',
 }
 const columns = [
     { title: "id", dataIndex: "id", width: 150 },

@@ -17,7 +17,7 @@ import { isEmpty } from "../is";
  * @param options
  */
 export function initTable(viewData, dataSource, reportInfo, paginations) {
-    const url = '/api/zrzy-form/form/report/list'
+    const url = '/api/zrzy-form/wform/report/list'
     let searchData = getSearchData(viewData, reportInfo)
     const data = {
         searchData: searchData,
@@ -93,10 +93,10 @@ export const save = (key: string, editableData, dataSource: any, reportInfo: any
         // 当更新列为空时，默认id
         const colName = reportInfo.keyCol || "id"
         const keyValue = editableData[key][colName]
-        let url = '/imaginform/zrzy-form/form/report/update'
+        let url = '/imaginform/zrzy-form/wform/report/update'
         if (keyValue == "") {
             // 执行新增的操作
-            url = '/imaginform/zrzy-form/form/report/add'
+            url = '/imaginform/zrzy-form/wform/report/add'
         } else {
             data[colName] = keyValue;
         }

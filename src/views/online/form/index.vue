@@ -107,7 +107,7 @@ import HistoryDrawer from '/@/views/online/form/modules/HistoryDrawer.vue';
 import CVfd from './modules/Vfd.vue'
 let open = ref(false)
 enum Api {
-    copyUrl = '/api/zrzy-form/form/copyData',
+    copyUrl = '/api/zrzy-form/wform/copyData',
     lockFormUrl = '/api/zrzy-form/wform/lockForm',
     unlockFormUrl = '/api/zrzy-form/wform/unlockForm',
 }
@@ -148,7 +148,7 @@ async function loadData(type?: string | undefined) {
         }
     }
     loading.value = true
-    let url = '/api/zrzy-form/form/list'
+    let url = '/api/zrzy-form/wform/list'
     defHttp.post({ url: url, params: { page: pagination.value.current, size: pagination.value.pageSize }, data: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
         console.log("res.list", res.result)
         if (res.success) {
