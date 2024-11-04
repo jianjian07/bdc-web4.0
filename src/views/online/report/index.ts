@@ -1,7 +1,7 @@
 import { defHttp } from "/@/utils/http/axios"
 
 enum Api {
-    queryUrl = '/magicapi/zrzy-form/magic/form/report/query'
+    queryUrl = '/api/zrzy-form/form/report/query'
 }
 /**
  * 查询报表
@@ -9,5 +9,5 @@ enum Api {
  */
 export const getReport = async (params: any) => {
     const data = await defHttp.post({ url: Api.queryUrl, params }, { withToken: true })
-    return data
+    return data.result
 }

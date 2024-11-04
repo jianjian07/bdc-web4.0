@@ -41,7 +41,8 @@
 import { reactive, ref } from 'vue';
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { useUserStore } from '/@/store/modules/user';
-import { login_tyyw } from '/@/api/sys/user';
+import { message, notification } from 'ant-design-vue';
+import { encryptionAES } from '/@/utils/cipher';
 const userStore = useUserStore();
 const formData = reactive({
     username: "admin",
@@ -52,21 +53,50 @@ const loading = ref<boolean>(false);
  * 登录
  */
 function handleLogin() {
-    if (!loading.value) {
-        loading.value = true
-        userStore.login_tyyw(formData);
-
-        // console.log("点击登录")
+    if (!formData.username || !formData.password) {
+        notification.warning({
+            message: "登录失败",
+            description: "请输入账号密码",
+            duration: 3, //超时时间
+        });
+        return
     }
+    loading.value = true
+    // 登录参数加密
+    let loginParam = {
+        username: encryptionAES(formData.username),
+        password: encryptionAES(formData.password)
+    }
+    //审计提示中危，不能log账号密码，注释掉
+    // console.log("loginParam", loginParam)
+    userStore.login(loginParam).then((res) => {
+        loading.value = false
+        if (res) {
+            notification.success({
+                message: "登录提示",
+                description: "欢迎回来",
+                duration: 3, //超时时间
+            });
+        } else {
+            notification.error({
+                message: "登录失败",
+                duration: 3, //超时时间
+            });
+        }
+    }).catch(err => {
+        loading.value = false
+        notification.error({
+            message: "登录失败",
+            description: err.message,
+            duration: 3, //超时时间
+        });
+    });
 }
 /**
  * 忘记密码
  */
 function forgetPassword() {
-    // message.warn("尚未开放")
-    login_tyyw(formData).then((res) => {
-        console.log(res)
-    })
+    message.warn("尚未开放")
 }
 </script>
 <style scoped>

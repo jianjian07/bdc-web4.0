@@ -3,13 +3,11 @@ import { defHttp } from "/@/utils/http/axios"
 import { router } from "/@/router"
 
 enum api {
-    roleDegisnList = '/tyyw/jeecg-cloud-joa/joa/designform/designFormCommuse/roleDegisnList', //工作流列表  返回对象错误
-    list = '/tyyw/jeecg-cloud-joa/joa/designform/designFormCommuse/queryPorcessList',
-    ceshi = "/tyyw/jeecg-cloud-bpm/process/extActProcessForm/list",
+    porcessList = '/tyyw/jeecg-cloud-joa/joa/designform/designFormCommuse/queryPorcessList',
     add = '/api/zrzy-bdc/bdc/process/start',
     taskList = '/api/zrzy-bdc/bdc/process/list',//自己
-    taskList1 = '/tyyw/jeecg-cloud-bpm/process/extActDesignFlowData/list?column=createTime&order=desc&pageNo=1&pageSize=10',//jeecg
-    sss = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des'//统一运维
+    // taskList1 = '/tyyw/jeecg-cloud-bpm/process/extActDesignFlowData/list?column=createTime&order=desc&pageNo=1&pageSize=10',//jeecg
+    // sss = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des'//统一运维
 }
 
 /**
@@ -17,7 +15,7 @@ enum api {
  */
 export function getDegisnList() {
     return new Promise((resolve) => {
-        defHttp.get({ url: api.list }, { withToken: true }).then(res => {
+        defHttp.get({ url: api.porcessList }, { withToken: true }).then(res => {
             resolve(res.result)
         })
     })

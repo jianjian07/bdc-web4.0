@@ -73,7 +73,8 @@ import { ref } from 'vue';
 import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 enum api {
-    list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des'//统一运维
+    list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
+    tasklist = '/api/zrzy-bdc/act/task/list'
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -96,13 +97,15 @@ let pagination = ref({
 loadData()
 function loadData() {
     spinning.value = true
-    defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
-        const result = res.result
-        datalist.value = result.records
-        pagination.value.total = result.total
+    defHttp.get({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
+        if (res.success) {
+            const result = res.result
+            datalist.value = result.records
+            pagination.value.total = result.total
+        }
         spinning.value = false
-    }).catch(err => {
-
+    }).catch(_err => {
+        spinning.value = false
     })
 }
 /**
@@ -133,7 +136,7 @@ function clear() {
  * @param record 
  */
 function handleCase(record: any) {
-    router.push({ path: '/bdc/casedoing', query: { slbh: record.id, taskId: record.taskId } });
+    router.push({ path: '/bdc/casedoing', query: { slbh: record.id, taskId: 121 } });
     // router.push("/bdc/casedoing" + '/' + record.id)
 }
 </script>

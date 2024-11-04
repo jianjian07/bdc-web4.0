@@ -30,15 +30,21 @@ export function updateHasChild(parentId: string, hasChild: string) {
         console.info(err)
     })
 }
-
-// 数据字典
-export function getDataDict() {
+/**
+ * 数据字典/分类字典整合
+ * @returns 
+ */
+export function getDict() {
     const userStore = useUserStore();
     return new Promise((resolve, reject) => {
-        defHttp.get({ url: api.getDictApi, params: { dictType: '0' } }, { withToken: true }).then((res) => {
+        defHttp.get({ url: api.getDictApi }, { withToken: true }).then((res) => {
             if (res) {
-                let dicts = userStore.formatDictList(res.result)
+                let dictList = res.result.filter((f: { dictType: string; }) => f.dictType == '0')
+                let categoryDictList = res.result.filter((f: { dictType: string; }) => f.dictType == '1')
+                let dicts = userStore.formatDictList(dictList)
                 userStore.setAllDicts(dicts)
+                let categorydicts = userStore.formatDictList(categoryDictList)
+                userStore.setAllCategory(categorydicts)
                 resolve(true);
             }
             else {
@@ -46,19 +52,35 @@ export function getDataDict() {
             }
         })
     })
-
 }
+// // 数据字典
+// export function getDataDict() {
+//     const userStore = useUserStore();
+//     return new Promise((resolve, reject) => {
+//         defHttp.get({ url: api.getDictApi, params: { dictType: '0' } }, { withToken: true }).then((res) => {
+//             if (res) {
+//                 let dicts = userStore.formatDictList(res.result)
+//                 userStore.setAllDicts(dicts)
+//                 resolve(true);
+//             }
+//             else {
+//                 reject(false);
+//             }
+//         })
+//     })
 
-// 分类字典
-export function getCategoryDict() {
-    const userStore = useUserStore();
-    defHttp.get({ url: api.getDictApi, params: { dictType: '1' } }, { withToken: true }).then((res) => {
-        if (res) {
-            let dicts = userStore.formatDictList(res.result)
-            userStore.setAllCategory(dicts)
-        }
-    })
-}
+// }
+
+// // 分类字典
+// export function getCategoryDict() {
+//     const userStore = useUserStore();
+//     defHttp.get({ url: api.getDictApi, params: { dictType: '1' } }, { withToken: true }).then((res) => {
+//         if (res) {
+//             let dicts = userStore.formatDictList(res.result)
+//             userStore.setAllCategory(dicts)
+//         }
+//     })
+// }
 
 // 规则
 export function getRuleList() {

@@ -30,7 +30,7 @@ import { isArray } from '/@/utils/is';
 import { Modal, notification } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { createVNode } from 'vue';
-import { getCategoryDict, getDataDict, getRuleList } from "/@/api/sys/dict"
+import { getCategoryDict, getDataDict, getDict, getRuleList } from "/@/api/sys/dict"
 // import { useGlobSetting } from '/@/hooks/setting';
 // import { useSso } from '/@/hooks/web/useSso';
 
@@ -254,6 +254,10 @@ export const useUserStore = defineStore({
       try {
         const { goHome = true, ...loginParams } = params;
         const data: any = await loginApi(loginParams);
+        // const data: any = {
+        //   username: params.username,
+        //   token: 'Bearer' + ' 789456'
+        // }
         if (data && data.message) {
           return Promise.reject(data);
         }
@@ -365,10 +369,11 @@ export const useUserStore = defineStore({
       if (userInfo) {
         this.setUserInfo(userInfo);
       }
-      // 数据字典
-      getDataDict()
-      // 分类字典
-      getCategoryDict()
+      getDict()
+      // // 数据字典
+      // getDataDict()
+      // // 分类字典
+      // getCategoryDict()
       // 规则
       // getRuleList()
       // if (szUserInfo) {

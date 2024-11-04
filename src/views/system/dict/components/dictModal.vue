@@ -17,6 +17,9 @@
             <a-form-item label="描述" name="description">
                 <a-textarea v-model:value="formData.description" placeholder="输入描述" :rows="4" />
             </a-form-item>
+            <a-form-item label="排序" name="description">
+                <a-input-number id="inputNumber" v-model:value="formData.sort" :min="0" />
+            </a-form-item>
         </a-form>
     </a-modal>
 </template>

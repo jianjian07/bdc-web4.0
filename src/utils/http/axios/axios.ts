@@ -1,19 +1,20 @@
 import { notification } from "ant-design-vue";
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelTokenSource } from "axios";
 import { cloneDeep, isString } from "lodash-es";
-import { setObjToUrlParams } from "../..";
-import { AxiosOptions } from "./axiosModel";
-// import { CreateAxiosOptions } from "../../http/axiosTransform";
 import { RequestOptions, Result } from "/#/axios";
 import { RequestEnum } from "/@/enums/httpEnum";
 // import { useMessage } from "/@/hooks/web/useMessage";
 import { useUserStoreWithOut } from "/@/store/modules/user";
+import { encryptByMd5 } from "/@/utils/cipher";
+import { setObjToUrlParams } from "/@/utils"
+import { AxiosOptions } from "/@/utils/http/axios/axiosModel"
 // import { options } from "/@/views/bigscreen/cchart";
 // const { notification } = useMessage();
 export class RequestHttp {
     private axiosInstance: AxiosInstance;
     private readonly options: AxiosOptions;
     private source: CancelTokenSource;
+
     /**
      * 构造函数
      */
@@ -26,6 +27,7 @@ export class RequestHttp {
         const cancelToken = axios.CancelToken
         this.source = cancelToken.source()
     }
+
     /**
      * 创建axios
      * @param config axios配置
@@ -34,6 +36,7 @@ export class RequestHttp {
 
         this.axiosInstance = axios.create(config)
     }
+
     /**
      * 拦截器配置
      */
@@ -45,6 +48,9 @@ export class RequestHttp {
             config => {
                 // 处理config
                 config = this.beforeRequest(config)
+                if (!config.url) {
+                    return Promise.reject('noURL')
+                }
                 // 拦截器配置
                 return this.requestInterceptors(config);
             },
@@ -56,7 +62,7 @@ export class RequestHttp {
         this.axiosInstance.interceptors.response.use(
             response => {
                 if (response.status == 200) {
-                    this.checkStatus(response.data.code);
+                    this.checkStatus(response.data.code, true);
                     return Promise.resolve(response);
                 } else {
                     this.handleErrorData(response.data)
@@ -68,6 +74,7 @@ export class RequestHttp {
             }
         );
     }
+
     /**
      * 请求之前处理config
      * @param config
@@ -98,9 +105,10 @@ export class RequestHttp {
         }
         return config;
     }
+
     // 请求之前处理config
     private beforeRequest(config) {
-        const { joinParamsToUrl, joinTime = true } = config.requestOptions;
+        const { joinParamsToUrl, joinTime = false } = config.requestOptions;
         const params = config.params || {};
         const data = config.data || false;
         if (config.method?.toUpperCase() === RequestEnum.GET) {
@@ -114,7 +122,7 @@ export class RequestHttp {
             }
         } else {
             if (!isString(params)) {
-                if (Reflect.has(config, 'data') && config.data && Object.keys(config.data).length > 0) {
+                if (Reflect.has(config, 'data') && config.data) {
                     config.data = data;
                     config.params = params;
                 } else {
@@ -134,6 +142,55 @@ export class RequestHttp {
         }
         return config;
     }
+
+    /**按ascii码从小到大排序
+     *
+     * @param obj
+     * @returns {string}
+     */
+    private sortAscii(obj) {
+        let arr = new Array();
+        let num = 0;
+        for (let i in obj) {
+            // undefined的数据不做拼接
+            if (obj[i] === undefined) {
+                continue
+            }
+            arr[num] = i;
+            num++;
+        }
+        // 去重
+        arr = Array.from(new Set(arr));
+        let sortArr = arr.sort();
+        let str = '';             //自定义排序字符串
+        for (let i in sortArr) {
+            str += sortArr[i];
+        }
+        return str;
+    }
+
+    private signParams(data) {
+        let s_data = this.sortAscii(data);
+        let sign = encryptByMd5(s_data)
+        return sign
+    }
+
+    /**
+     * 判断是否是
+     * @param obj
+     * @private
+     */
+    private isArrayLike(obj) {
+        let arr = new Array();
+        let num = 0;
+        for (let i in obj) {
+            if (i == '0') {
+                return true
+            }
+        }
+        return false
+    }
+
     private joinTimestamp(join: boolean, restful = false): string | object {
         if (!join) {
             return restful ? '' : {};
@@ -144,6 +201,7 @@ export class RequestHttp {
         }
         return { _t: now };
     }
+
     /**
      * 请求拦截器配置
      * @param config
@@ -164,9 +222,55 @@ export class RequestHttp {
             if (config.requestOptions.xAuthToken != undefined) {
                 Reflect.set(config.headers, 'x-auth-token', config.requestOptions.xAuthToken)
             }
+            let url: string = config.url
+            let urlObj = {}
+            if (url && url.indexOf('?') > -1) {
+                urlObj = this.urlParamsToObject(url)
+            }
+            let params = {}
+            params = Object.assign(params, config.params)
+            if (urlObj && Object.keys(urlObj).length > 0) {
+                params = Object.assign(params, urlObj)
+            }
+            if (config.data && Object.keys(config.data).length > 0) {
+                params = Object.assign(params, config.data)
+            }
+            // 添加签名，解决API成批分配问题
+            let sign = ''
+            // 暂不考虑数组 及 伪数组
+            if (Array.isArray(params) || this.isArrayLike(params) || !params || Object.keys(params).length === 0) {
+                sign = encryptByMd5("noParams")
+            } else {
+                sign = this.signParams(params);
+            }
+            config.headers.xSign = sign
         }
         return config;
     }
+
+    private urlParamsToObject(url) {
+        var obj = {}; // 创建空对象用于存储参数
+        var params = url.slice(url.indexOf('?') + 1).split('&'); // 将参数部分分割成数组
+        for (var i = 0; i < params.length; i++) {
+            var keyValue = params[i].split('='); // 将参数键值对分割成数组
+            var key = decodeURIComponent(keyValue[0]); // 解码参数键
+            var value = decodeURIComponent(keyValue[1] || ''); // 解码参数值，默认为空字符串
+            if (key === '') {
+                continue; // 如果参数键为空，则跳过当前循环
+            }
+            if (obj.hasOwnProperty(key)) {
+                if (Array.isArray(obj[key])) {
+                    obj[key].push(value); // 如果参数键已存在且对应的值是数组，则追加新值到数组中
+                } else {
+                    obj[key] = [obj[key], value]; // 如果参数键已存在且对应的值不是数组，则将原值和新值组成数组
+                }
+            } else {
+                obj[key] = value; // 如果参数键不存在，则直接将值存入对象
+            }
+        }
+        return obj;
+    }
+
     /**
      * 错误信息的处理
      * @param err
@@ -176,7 +280,7 @@ export class RequestHttp {
             this.source.cancel('连接超时！'); // 取消其他正在进行的请求
             // this.goLogin()
         }
-        let message = this.checkStatus(err.response.status);
+        let message = err == 'noURL' ? '请检查请求URL是否填写' : this.checkStatus(err.response?.status);
         notification.error({
             message: "axios提示",
             description: message,
@@ -184,7 +288,8 @@ export class RequestHttp {
         });
         return;
     }
-    private checkStatus(status: any) {
+
+    private checkStatus(status: any, showMsg?: boolean) {
         let message = ""
         switch (status) {
             case 400:
@@ -211,6 +316,13 @@ export class RequestHttp {
             default:
                 message = "网络连接出错";
         }
+        if (showMsg && (status == 401 || status == 424)) {
+            notification.error({
+                message: "axios提示",
+                description: message,
+                duration: 3, //超时时间
+            });
+        }
         return message
     }
 
@@ -224,6 +336,7 @@ export class RequestHttp {
         userStore.setToken(undefined)
         userStore.logout(true)
     }
+
     /**
      *
      * @param config
@@ -262,18 +375,23 @@ export class RequestHttp {
                 });
         });
     }
+
     get<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
         return this.request({ ...config, method: RequestEnum.GET }, options)
     }
+
     post<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
         return this.request({ ...config, method: RequestEnum.POST }, options)
     }
+
     delete<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
         return this.request({ ...config, method: RequestEnum.DELETE }, options)
     }
+
     put<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
         return this.request({ ...config, method: RequestEnum.PUT }, options)
     }
+
     // post1<T = any>(url: string, params: any): Promise<T> {
     //     const config = {
     //         method: 'POST',

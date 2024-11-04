@@ -104,10 +104,12 @@ async function loadData(type?: string | undefined) {
             pageSize: 10,
         }
     }
-    let url = '/magicapi/zrzy-form/magic/form/report/list'
-    defHttp.post({ url: url, params: { code: formData.value.code || '', title: formData.value.title || '', page: pagination.value.current, size: pagination.value.pageSize } }, { withToken: false, joinParamsToUrl: true }).then((res) => {
-        datalist.value = res.list
-        pagination.value.total = res.total
+    let url = '/api/zrzy-form/form/report/pages'
+    defHttp.post({ url: url, data: { code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+        if (!res.success) return
+        const { records, total } = res.result
+        datalist.value = records
+        pagination.value.total = total
     }).catch(err => {
         console.info(err)
     })
@@ -159,7 +161,7 @@ function editData(record: any) {
 */
 function deleteData(record) {
     if (!record.id) return
-    let url = '/magicapi/zrzy-form/magic/form/report/delete' // 删除
+    let url = '/api/zrzy-form/form/report/delete' // 删除
     defHttp.post({ url: url, params: { id: record.id } }, { withToken: false }).then((res) => {
         if (!res.message) {
             message.success('删除成功')

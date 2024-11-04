@@ -32,7 +32,7 @@
             </a-tab-pane>
         </a-tabs>
         <!-- <a-button type="link" @click="savaVue">保存</a-button> -->
-        <CBtnsVue :vueRefs="demoRefs" />
+        <!-- <CBtnsVue :vueRefs="demoRefs" /> -->
     </div>
 </template>
 

@@ -1,6 +1,5 @@
 import { defineStore } from "pinia"
 import { store } from "/@/store"
-import { nextTick } from "vue"
 import { router } from "/@/router"
 
 interface TabsState {
@@ -26,14 +25,14 @@ export const useTabsStore = defineStore({
     cacheTabList: []
   }),
   getters: {
-    getTabList() {
+    getTabList(): any {
       return this.tabList;
     },
     getTabActiveKey(): string {
       return this.tabActiveKey;
     },
-    getCurrentTab() {
-      const tabIndex = this.tabList.findIndex(t => t.fullPath == this.tabActiveKey)
+    getCurrentTab(): any {
+      const tabIndex = this.tabList.findIndex((t: any) => t.fullPath == this.tabActiveKey)
       if (tabIndex > -1) {
         return this.tabList[tabIndex]
       } else {
@@ -46,12 +45,12 @@ export const useTabsStore = defineStore({
     getIsFullScreen(): boolean {
       return this.isFullScreen
     },
-    getCacheTabs() {
+    getCacheTabs(): any {
       return this.cacheTabList
     }
   },
   actions: {
-    addTab(tab) {
+    addTab(tab: any) {
       const tabFind = this.tabList.some(t => t.fullPath == tab.fullPath)
       if (!tabFind) {
         this.tabList.push(tab)
@@ -59,7 +58,7 @@ export const useTabsStore = defineStore({
       this.tabActiveKey = tab.fullPath
       this.setCacheTabList()
     },
-    removeTab(tab) {
+    removeTab(tab: any) {
       const tabIndex = this.tabList.findIndex(t => t.fullPath == tab.fullPath)
       if (tabIndex !== -1) {
         this.tabList.splice(tabIndex, 1)
@@ -76,7 +75,7 @@ export const useTabsStore = defineStore({
     resetCacheTabList() {
       this.cacheTabList = []
     },
-    setTabActiveKey(key) {
+    setTabActiveKey(key: string) {
       this.tabActiveKey = key
     },
     setCacheTabList() {
@@ -89,16 +88,16 @@ export const useTabsStore = defineStore({
       }
       router.push('/redirect')
     },
-    closeCurrentTab(tab) {
+    closeCurrentTab(tab: any) {
       this.removeTab(tab)
     },
-    closeOtherTab(tab) {
+    closeOtherTab(tab: any) {
       // 除了自己和第一个都关掉
       this.closeLeftTab(tab)
       this.closeRightTab(tab)
       this.setCacheTabList()
     },
-    closeLeftTab(tab) {
+    closeLeftTab(tab: any) {
       const tabIndex = this.tabList.findIndex(t => t.fullPath == tab.fullPath)
       if (tabIndex !== -1) {
         let leftTabIndex = tabIndex - 1
@@ -111,7 +110,7 @@ export const useTabsStore = defineStore({
       }
       this.setCacheTabList()
     },
-    closeRightTab(tab) {
+    closeRightTab(tab: any) {
       const tabIndex = this.tabList.findIndex(t => t.fullPath == tab.fullPath)
       if (tabIndex !== -1) {
         let rightTabIndex = tabIndex + 1

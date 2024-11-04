@@ -205,12 +205,16 @@ function setFields(record) {
  * 提交
  */
 function handleOk() {
-  debugger
+
   formRef.value.validate().then(() => {
     let apiUrl = props.type == '新增' ? api.add : api.edit
-    defHttp.post({ url: apiUrl, params: formState.value }, { withToken: true }).then((res) => {
-      message.success(props.type + '成功')
-      emit('formOk')
+    defHttp.post({ url: apiUrl, data: formState.value }, { withToken: true }).then((res) => {
+      if (res.success) {
+        message.success(props.type + '成功')
+        emit('formOk')
+      } else {
+        message.error(props.type + '失败')
+      }
     }).catch(err => {
       message.error(props.type + '失败')
     })

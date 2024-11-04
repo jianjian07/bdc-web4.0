@@ -52,7 +52,7 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
     tabStore.resetTabList()
   }
   if (tabList.value.length > 0) {
-    if (newValue.fullPath !== activeKeys.value && newValue.name != REDIRECT_ROUTE.name) {
+    if (newValue.fullPath !== activeKeys.value && ((newValue.name != REDIRECT_ROUTE.name) && (newValue.name != REDIRECT_ROUTE.children[0].name))) {
       tabStore.addTab(newValue)
     }
   } else {
@@ -90,7 +90,7 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
         })
       }
       // 重载界面不设置
-      if (newValue.name != REDIRECT_ROUTE.name) {
+      if ((newValue.name != REDIRECT_ROUTE.name) && (newValue.name != REDIRECT_ROUTE.children[0].name)) {
         tabStore.addTab(newValue)
       }
     }

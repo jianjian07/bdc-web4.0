@@ -1,6 +1,7 @@
 import type { App } from 'vue';
 import SvgIcon from './icon/SvgIcon.vue'
 import SpinMask from './common/SpinMask.vue'
+import CTable from '/@/components/table/index.vue'
 import {
     Layout,
     Carousel,
@@ -49,6 +50,7 @@ import {
 export function registerGlobComp(app: App) {
     app.component("svg-icon", SvgIcon)
     app.component("spin-mask", SpinMask)
+    app.component("c-table", CTable)
     app
         .use(Flex)
         .use(Layout)

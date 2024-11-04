@@ -4,7 +4,7 @@
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="6" :offset="0">
                     <a-form-item label="表单分类">
-                        <a-tree-select v-model:value="formData.formType" :tree-data="getDictItemsByCode('BDFL')"
+                        <a-tree-select v-model:value="formData.formType" :tree-data="getTreeDictItemsByCode('BDFL')"
                             allowClear @select="onSelect" @change="changeType">
                         </a-tree-select>
                     </a-form-item>
@@ -50,18 +50,16 @@
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'isLocked'">
                     <a-tag :color="record.isLocked == 1 ? 'warning' : 'success'">
-                        {{ record.isLocked == 1 ? '已锁定 ' + (record.lockedTime == null ? "" : record.lockedTime) :
-            '未锁定' }}
+                        {{ record.isLocked == 1 ? '已锁定 ' + (record.lockedTime == null ? "" : record.lockedTime) : '未锁定'
+                        }}
                     </a-tag>
                 </template>
-                <template v-else-if="column.key === 'action'">
+                <template v-if="column.key === 'action'">
                     <a-space>
                         <template #split>
                             <a-divider type="vertical" />
                         </template>
-                        <a @click="editData(record)">编辑</a>
                         <a @click="design(record)">设计</a>
-                        <!-- <a @click="preview(record)">预览</a> -->
                         <a v-if="record.isLocked == 1" @click="unLock(record)">解锁</a>
                         <a-dropdown>
                             <a class="ant-dropdown-link" @click.prevent>
@@ -70,13 +68,16 @@
                             </a>
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item @click="copyData(record)">复制</a-menu-item>
-                                    <a-menu-item key="1">
-                                        <CVfd :formId="record.id"></CVfd>
+                                    <a-menu-item>
+                                        <a @click="editData(record)">编辑</a>
                                     </a-menu-item>
-                                    <a-menu-item key="2" @click="address(record)">地址</a-menu-item>
-                                    <a-menu-item @click="revert(record)">回滚</a-menu-item>
-                                    <a-menu-item key="3">
+                                    <a-menu-item>
+                                        <a @click="copyData(record)">复制</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
+                                        <a @click="revert(record)">回滚</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
                                         <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
                                             @confirm="deleteData(record)">
                                             <a>删除</a>
@@ -85,6 +86,15 @@
                                 </a-menu>
                             </template>
                         </a-dropdown>
+                        <!--                        <a @click="editData(record)">编辑</a>-->
+                        <!--                        <a @click="design(record)">设计</a>-->
+                        <!--&lt;!&ndash;                        <a @click="address(record)">地址</a>&ndash;&gt;-->
+                        <!--                        <a @click="copyData(record)">复制</a>-->
+                        <!--                        <a @click="revert(record.id)">回滚</a>-->
+                        <!--                        &lt;!&ndash; <a @click="preview(record)">在线预览</a> &ndash;&gt;-->
+                        <!--                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">-->
+                        <!--                            <a>删除</a>-->
+                        <!--                        </a-popconfirm>-->
                     </a-space>
                 </template>
             </template>
@@ -100,27 +110,24 @@ import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
 import ClipboardJS from 'clipboard'
+import HistoryDrawer from './modules/HistoryDrawer.vue';
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
-import HistoryDrawer from '/@/views/online/form/modules/HistoryDrawer.vue';
-import CVfd from './modules/Vfd.vue'
-let open = ref(false)
 enum Api {
-    copyUrl = '/api/zrzy-form/wform/copyData',
-    lockFormUrl = '/api/zrzy-form/wform/lockForm',
-    unlockFormUrl = '/api/zrzy-form/wform/unlockForm',
+    copyUrl = '/api/zrzy-form/form/copyData',
+    lockFormUrl = '/api/zrzy-form/form/lockForm',
+    unlockFormUrl = '/api/zrzy-form/form/unlockForm',
 }
 const columns = [
     { title: "表单名称", dataIndex: "formName", ellipsis: true },
-    { title: "表单编码", dataIndex: "code", width: 150 },
-    // { title: "是否锁定", dataIndex: "isLocked", width: 80 },
+    { title: "表单编码", dataIndex: "code", width: 200 },
     // { title: "表单分类", dataIndex: "typeName", width: 220 },
     { title: "分类编码", dataIndex: "formType", width: 120 },
     { title: "是否锁定", dataIndex: "isLocked", width: 150 },
     { title: "加锁时间", dataIndex: "lockedTime", ellipsis: true, width: 0 },
     { title: "修改时间", dataIndex: "updateTime", width: 140 },
-    { title: '操作', key: 'action', width: 300, fixed: 'right', }
+    { title: '操作', key: 'action', width: 180, fixed: 'right', }
 ]
 let datalist: any = ref([]);
 let formData: any = ref({ formName: '', code: '', formType: '' });
@@ -135,6 +142,18 @@ let pagination = ref({
     pageSize: 10,
 })
 let loading = ref(false)
+let dataId = ref()
+let open = ref(false)
+/**
+ * 回滚
+*/
+function revert(record: any) {
+    dataId.value = record.id
+    open.value = true
+}
+function handOk() {
+    open.value = false
+}
 /**
  * 表格数据加载
 */
@@ -148,8 +167,8 @@ async function loadData(type?: string | undefined) {
         }
     }
     loading.value = true
-    let url = '/api/zrzy-form/wform/list'
-    defHttp.post({ url: url, params: { page: pagination.value.current, size: pagination.value.pageSize }, data: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
+    let url = '/api/zrzy-form/form/list'
+    defHttp.post({ url: url, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
         console.log("res.list", res.result)
         if (res.success) {
             datalist.value = res.result.records
@@ -166,24 +185,25 @@ async function loadData(type?: string | undefined) {
  * 表单分类改变
 */
 function onSelect(_value: any, node: any, _extra: any) {
-    if (_value == undefined) {
-        formTypeValue.value = ''
-    } else {
-        const array: any = node.children;
-        let arrType: any = []
-        if (node.children != undefined && array.length > 0) {
-            array.forEach((item: any) => {
-                arrType.push("'" + item.dict_code + "'")
-            });
-        }
-        const selectValue = "'" + _value + "'"
-        if (arrType.length == 0) {
-            formTypeValue.value = selectValue
-        } else {
-            arrType.push(selectValue)
-            formTypeValue.value = arrType.join(',')
-        }
-    }
+    // if (_value == undefined) {
+    //     formTypeValue.value = ''
+    // } else {
+    //     const array: any = node.children;
+    //     let arrType: any = []
+    //     if (node.children != undefined && array.length > 0) {
+    //         array.forEach((item: any) => {
+    //             arrType.push("'" + item.dictCode + "'")
+    //         });
+    //     }
+    //     const selectValue = "'" + _value + "'"
+    //     if (arrType.length == 0) {
+    //         formTypeValue.value = selectValue
+    //     } else {
+    //         arrType.push(selectValue)
+    //         formTypeValue.value = arrType.join(',')
+    //     }
+    // }
+    formTypeValue.value = _value
     pagination.value.current = 1
     loadData()
 }
@@ -198,8 +218,12 @@ function changeType(_value: any) {
  * 重置
 */
 function refreshData() {
-    formData.value = {}
-    loadData()
+    formData.value = {
+        formName: '',
+        code: '',
+        formType: ''
+    }
+    loadData('query')
 }
 function design(record: any) {
     if (record.isLocked == 1) {
@@ -209,7 +233,7 @@ function design(record: any) {
             if (res.success) {
                 record.isLocked = 1
                 record.lockedTime = new Date().toLocaleString()
-                router.push("/online/form/design" + '/' + record.id)
+                router.push("/online/wonderform/design" + '/' + record.id)
             } else {
                 message.error(res.message)
             }
@@ -219,7 +243,7 @@ function design(record: any) {
 }
 /**
  * 解锁
- * @param record 
+ * @param record
  */
 function unLock(record: any) {
     defHttp.post({ url: Api.unlockFormUrl, params: { id: record.id } }, { withToken: true }).then((res) => {
@@ -230,17 +254,6 @@ function unLock(record: any) {
         }
     }).catch(_err => {
     })
-}
-let dataId = ref()
-/**
- * 回滚
-*/
-function revert(record: any) {
-    dataId.value = record.id
-    open.value = true
-}
-function handOk() {
-    open.value = false
 }
 function address(record: any) {
     const { formType, code } = record;
@@ -284,7 +297,7 @@ function copyData(record: any) {
  * @param record
  */
 function preview(record: any) {
-    router.push("/online/form/view/" + record.id)
+    router.push("/workflow/public/" + record.id + "?formCode=" + record.code)
 }
 /**
 * 分页
@@ -304,7 +317,7 @@ function addData() {
 /**
  * 编辑表单
 */
-function editData(record: any) {
+function editData(record) {
     formModal.value.edit(record)
 }
 /**
@@ -313,7 +326,7 @@ function editData(record: any) {
 function deleteData(record) {
     if (!record.id) return
     let url = '/magicapi/zrzy-form/magic/form/form/delete' // 删除
-    defHttp.post({ url: url, params: { id: record.id } }, { withToken: false, joinParamsToUrl: true }).then((res) => {
+    defHttp.post({ url: url, params: { id: record.id } }, { withToken: true, joinParamsToUrl: true }).then((res) => {
         if (!res.message) {
             message.success('删除成功')
             loadData()
@@ -334,9 +347,6 @@ function handOver(val) {
     if (val.isAutoOpenDesign) {
         // design(val.data)
     }
-}
-function vfd(record: any) {
-
 }
 </script>
 <style lang="less" scoped>

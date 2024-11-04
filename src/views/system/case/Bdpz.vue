@@ -1,12 +1,6 @@
 <template>
     <div class="cc-container">
-        <div style="width: 280px;padding: 10px 8px;">
-            <a-directory-tree multiple :tree-data="treeData" @select="onSelect" v-model:expandedKeys="expandedKeys"
-                v-model:selectedKeys="selectedKeys">
-                <template #icon="">
-                </template>
-            </a-directory-tree>
-        </div>
+        <CLCLB @select="onSelect"></CLCLB>
         <div class="line"></div>
         <div style="min-width: 700px;max-width:calc(100% - 300px);border:0px solid yellowgreen;padding-left: 20px;">
             <div style="float: right;padding: 10px;">
@@ -41,64 +35,35 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import BdpzDrawer from '/@/views/system/case/components/BdpzDrawer.vue';
 import { h } from 'vue';
 import { CopyrightCircleOutlined } from '@ant-design/icons-vue';
 import { defHttp } from '/@/utils/http/axios';
+import CLCLB from "/@/views/components/LCLB.vue"
 enum api {
-    processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
     nodelist = '/api/zrzy-bdc/act/process/extActProcessNode/list'
 }
-const expandedKeys = ref<string[]>(['100']);
-const selectedKeys = ref<string[]>([]);
+
 let open = ref(false)
 let selectIndex = ref(0)
-let treeData = ref([])
+
 let nodeList = ref([])
 let title = ref("");
 let flowName = ref('')
 let nodeInfo: any = ref({})
-onMounted(() => {
-    loadTreeData()
-})
-function loadTreeData() {
-    defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
-        treeData.value = res.result
-        debugger
-        if (res.result.length > 0) {
-            const firstProcess = res.result[0].children[0]
-            selectedKeys.value.push(firstProcess.key)
-            loadNode(firstProcess)
-        }
-    })
-}
 /**
  * 选中工作流
  * @param _selectedKeys 
  * @param e 
  */
-function onSelect(_selectedKeys: any, e: any) {
-    const selectProcess = e.node
-    loadNode(selectProcess);
+function onSelect(process: any) {
+    defHttp.get({ url: api.nodelist, params: { processId: process.key } }, { withToken: true }).then((res) => {
+        nodeList.value = res.result;
+    });
+    flowName.value = '流程[' + process.title + ']';
+    nodeInfo.value.tiguid = process.key;
 }
-/**
- * 加载节点
- * @param process 选中的流程
- */
-function loadNode(process: any) {
-    flowName.value = '';
-    if (process.type == '1') {
-        defHttp.get({ url: api.nodelist, params: { processId: process.key } }, { withToken: true }).then((res) => {
-            nodeList.value = res.result;
-        });
-        flowName.value = '流程[' + process.title + ']';
-        nodeInfo.value.tiguid = process.key;
-    } else {
-        nodeList.value = [];
-    }
-}
-
 function onConfig(item: any, index: number) {
     const name = '-节点[' + item.processNodeName + "]表单配置";
     title.value = flowName.value + name;

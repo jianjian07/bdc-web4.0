@@ -96,10 +96,11 @@ let parentId = ref(props.parentId)
 //     loadData() // 初始化加载数据
 // })
 const columns = [
-    { title: "名称", dataIndex: "dictName", width: 400 },
-    { title: "子项值", dataIndex: "dictCode", width: 500 },
+    { title: "名称", dataIndex: "dictName", width: 300 },
+    { title: "子项值", dataIndex: "dictCode", width: 200 },
     { title: "状态", dataIndex: "status", width: 100 },
-    { title: '操作', key: 'action', width: 600 }
+    { title: "排序", dataIndex: "sort", width: 100 },
+    { title: '操作', key: 'action', width: 200 }
 ]
 let datalist: any = ref([]);
 let formData = ref<any>({});

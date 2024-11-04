@@ -28,7 +28,8 @@
             </a-form-item>
             <a-form-item label="SQL/API" id="content" :rules="[{ required: true }]">
                 <monaco-editor v-model="reportData.dataSource" :language="reportData.cType"
-                    style="width: 100%;border: 1px solid #e5e7eb;" height="250px" update:modelValue="reportData.dataSource">
+                    style="width: 100%;border: 1px solid #e5e7eb;" height="250px"
+                    update:modelValue="reportData.dataSource">
                 </monaco-editor>
             </a-form-item>
             <a-form-item style="float: right;">
@@ -67,11 +68,13 @@ const props = defineProps({
     }
 })
 let reportData = ref<any>(JSON.parse(JSON.stringify(props.data)))
-if (reportData.value.isLoad == 1) {
-    reportData.value.isLoad = true
-} else {
-    reportData.value.isLoad = false
-}
+let isLoad = ref(false)
+isLoad.value = reportData.value.isLoad == 1
+// if (reportData.value.isLoad == 1) {
+//     reportData.value.isLoad = true
+// } else {
+//     reportData.value.isLoad = false
+// }
 let dataSources = ref([])
 getDataSources()
 async function getDataSources() {
@@ -85,7 +88,7 @@ const emit = defineEmits(['ok'])
 function onOk() {
     let url = ''
     if (reportData.value.id) {
-        url = '/magicapi/zrzy-form/magic/form/report/edit' // 编辑
+        url = '/api/zrzy-form/form/report/edit' // 编辑
     } else {
         const _value =
         {
@@ -111,17 +114,18 @@ function onOk() {
             }
         }
         reportData.value.content = JSON.stringify(_value)
-        url = '/magicapi/zrzy-form/magic/form/report/add' // 新增
+        url = '/api/zrzy-form/form/report/add' // 新增
     }
-    debugger
-    defHttp.post({ url: url, data: reportData.value }, { withToken: false }).then((res) => {
-        if (!res.message) {
+    // reportData.value.isLoad = isLoad.value ? 1 : 0
+    reportData.value.isLoad = isLoad.value
+    defHttp.post({ url: url, data: reportData.value }, { withToken: true }).then((res) => {
+        if (!res.success) {
             message.success('保存成功')
         } else {
             message.error('保存失败' + res.message)
         }
     }).catch(err => {
-        message.error('保存失败')
+        message.error('保存失败' + err.message)
     }).finally(() => {
         emit('ok', { refresh: true })
     })
