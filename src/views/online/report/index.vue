@@ -15,7 +15,7 @@
                 <a-col :span="4" :offset="0">
                     <a-form-item style="text-align: center;">
                         <a-space>
-                            <a-button type="primary" @click="loadData('query')">
+                            <a-button type="primary" @click="loadData">
                                 <template #icon>
                                     <component :is="SearchOutlined"></component>
                                 </template>查询
@@ -95,15 +95,15 @@ let pagination = ref({
 /**
  * 表格数据加载
 */
-async function loadData(type?: string | undefined) {
+async function loadData() {
     // 解决翻页后查询不到的问题
-    if (type == 'query') {
-        pagination.value = {
-            total: 0,
-            current: 1,
-            pageSize: 10,
-        }
-    }
+    // if (type == 'query') {
+    //     pagination.value = {
+    //         total: 0,
+    //         current: 1,
+    //         pageSize: 10,
+    //     }
+    // }
     let url = '/api/zrzy-form/form/report/pages'
     defHttp.post({ url: url, data: { code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
         if (!res.success) return

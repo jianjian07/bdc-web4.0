@@ -243,7 +243,7 @@ const rowSelection = computed(() => {
     return {
         type: props.mode === 'multiple' ? 'checkbox' : 'radio',
         selectedRowKeys: selectedValue.value,
-        onSelect(record, selected) {
+        onSelect(record: any, selected: any) {
             debugger
             if (props.mode == 'multiple') {
                 selectRow(selected, record)
@@ -252,34 +252,34 @@ const rowSelection = computed(() => {
                 emit('row-change', [record])
             }
         },
-        onSelectAll(selected, selectionRows, changeRows) {
+        onSelectAll(selected: any, _selectionRows: any, changeRows: any) {
             if (selected) {
                 selectedRow.value = selectedRow.value.concat(changeRows)
             }
             if (!selected) {
                 let selectionRows = JSON.parse(JSON.stringify(selectedRow.value))
-                const delIndex = []
-                selectionRows.forEach((item, index) => {
-                    changeRows.forEach(val => {
+                const delIndex: any = []
+                selectionRows.forEach((item: any, index: any) => {
+                    changeRows.forEach((val: any) => {
                         if (item[props.keyName] === val[props.keyName]) {
                             delIndex.push(index)
                         }
                     })
                 })
-                delIndex.forEach(item => {
+                delIndex.forEach((item: any) => {
                     delete selectionRows[item]
                 })
-                selectionRows = selectionRows.filter(item => {
+                selectionRows = selectionRows.filter((item: any) => {
                     return item !== undefined
                 })
                 selectedRow.value = selectionRows
             }
-            selectedValue.value = selectedRow.value.map(m => m[props.keyName])
+            selectedValue.value = selectedRow.value.map((m: any) => m[props.keyName])
             emit('row-change', selectedRow.value)
         },
     }
 })
-const customRow = (record) => {
+const customRow = (record: any) => {
     return {
         onClick: (event) => {
             if (props.mode == 'multiple') {
@@ -293,21 +293,22 @@ const customRow = (record) => {
         }
     }
 }
-function selectRow(selected, record) {
+function selectRow(selected: any, record: any) {
     if (selected) {
         selectedRow.value.push(record)
     } else {
-        const delIndex = selectedRow.value.findIndex(val => {
+        const delIndex = selectedRow.value.findIndex((val: any) => {
             return val[props.keyName] === record[props.keyName.toUpperCase()]
         })
         selectedRow.value.splice(delIndex, 1)
     }
-    selectedValue.value = selectedRow.value.map(m => m[props.keyName])
+    selectedValue.value = selectedRow.value
+    // selectedValue.value = selectedRow.value.map((m: any) => m[props.keyName])
     emit('row-change', selectedRow.value)
 }
 watch(() => props.value, async (newVal) => {
     if (!isRowChange.value) {
-        selectedRow.value = props.value ? props.value.map(v => props.dataSource.find(f => f[props.keyName] == v)) : []
+        selectedRow.value = props.value ? props.value.map((v: string) => props.dataSource.find((f: any) => f[props.keyName] == v)) : []
     }
     isRowChange.value = false
 }, {

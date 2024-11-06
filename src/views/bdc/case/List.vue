@@ -93,6 +93,9 @@ let pagination = ref({
     total: 0,
     current: 1,
     pageSize: 10,
+    showTotal: () => {
+        return `共 ${pagination.value.total} 条数据`
+    }
 })
 loadData()
 function loadData() {
@@ -121,7 +124,7 @@ function searchData() {
 * @param callback 回调函数
 */
 function onChange(pag: any, callback: any) {
-    pagination.value = pag
+    pagination.value.current = pag.current
     callback()
 }
 /**

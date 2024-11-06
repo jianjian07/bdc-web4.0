@@ -8,27 +8,30 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { generateReportHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { getDictItemsByCode, getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
-import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
+import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, useVNodes } from '/@/utils/form/commonUtils';
+import {
+    initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
+} from "/@/utils/form/wonder-report"
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
+import { message } from 'ant-design-vue';
+const VNodes = useVNodes();
 const props = defineProps({
     id: {
         type: String,
         default: "-1"
     }
 })
-
 const route = useRoute();
 let code = props.id;
 if (code == "-1") {
     code = route?.params?.code.toString()
 }
-// const code = ref(route.params?.code.toString());
 let dataSource = ref()
 let paginations = ref()
 let columns = ref<any>([])
 let viewData = ref<any>({})
+let loading = ref<boolean>(false)
 let reportInfo = reactive<any>({
     formId: '',
     tableName: '',
@@ -36,13 +39,23 @@ let reportInfo = reactive<any>({
     keyCol: '',
     searchInfo: [],
 })
+let options = {
+    viewData: viewData,
+    dataSource: dataSource,
+    reportInfo: reportInfo,
+    paginations: paginations,
+    loading: loading,
+    sortField: "",
+    sortOrder: ""
+}
+let eLoading = ref<boolean>(false)
 let editableData: any = reactive({});
 reportInfo.formId = Number.parseInt(code)
-
 const info = await getReport({ id: reportInfo.formId })
 const data = JSON.parse(info.content)
 const config = data.config
-reportInfo.tableName = info.table_name
+reportInfo.tableName = info.tableName
+reportInfo.title = info.title
 const { eventScript, baseScript, cBasicInfo, ...restConfig } = config
 let vue3Script = ref({
     importScript: '',//import导入
@@ -54,9 +67,11 @@ columns.value = []
 if (generateData.columns != '') {
     columns.value = JSON.parse(generateData.columns)//拷贝
 }
+let reportApiSource = info.dataSource
 reportInfo.searchInfo = generateData.searchData
 paginations.value = generateData.paginations;
 viewData.value = {}
+let events: any = {}
 // 20240130验证：变量定义 名称固定formProps
 let basicInfo = ref<any>({})
 if (cBasicInfo) {
@@ -90,39 +105,61 @@ function transformValueByType(value: any, type: string): any {
 const emit = defineEmits(['ok', 'rowChange'])
 const generateVue3 = defineComponent({
     template: generateData.html,
+    components: {
+        VNodes
+    },
     props: {
         message: String,
     },
     setup() {
         // 脚本
-        const events = <any>{}
+        // const events = <any>{}
         generateTs();
         if (paginations.value) {
-            paginations.value.onChange = onChange
+            // paginations.value.onChange = handleTableChange
         }
         return {
+            emit,
             viewData,
             basicInfo,
             reportInfo,
             paginations,
             dataSource,
             columns,
-            emit,
+            loading,
             ...events,
             defHttp,
             editableData,
             search,
-            onChange,
-            initTable,
+            handleTableChange,
+            initTableV2,
+            execInitFun,
             edit,
             save,
             cancel,
             getDictItemsByCode,
-            getTreeDictItemsByCode
+            getTreeDictItemsByCode,
+            onExportExcel,
+            onExportExcelApi,
+            onCExport,
+            formatMultipleSelectValue
         }
         function search() {
             paginations.value.current = 1
-            initTable(viewData, dataSource, reportInfo, paginations);
+            execInitFun()
+        }
+        function onCExport(_data: any) {
+            let exportColumns = ref(_data)
+            if (exportColumns.value.length == 0) {
+                message.warning('请选择要导出的列')
+                return
+            } else {
+                if (info.cType == 'sql') {
+                    onExportExcel(exportColumns, viewData, reportInfo, eLoading);
+                } else {
+                    onExportExcelApi({ reportInfo: reportInfo, viewData: viewData, paginations: paginations, reportApiSource: reportApiSource, bLoading: eLoading, exportColumns: exportColumns });
+                }
+            }
         }
         /**
          * 分页
@@ -131,7 +168,19 @@ const generateVue3 = defineComponent({
         */
         function onChange(pag: any) {
             paginations.value.current = pag
-            initTable(viewData, dataSource, reportInfo, paginations);
+            execInitFun()
+        }
+        /**
+         * table的change事件
+         * @param data 
+         */
+        function handleTableChange(data: any) {
+            const { sorter, pagination } = data
+            const { field, order } = sorter
+            options.sortField = field;
+            options.sortOrder = order
+            paginations.value.current = pagination.current
+            initTableV2(options);
         }
 
         /**
@@ -160,11 +209,18 @@ const generateVue3 = defineComponent({
         }
     },
     mounted() {
-        if (info.is_load == 1) {
-            initTable(viewData, dataSource, reportInfo, paginations);
+        if (info.isLoad == 1) {
+            execInitFun()
         }
     }
 })
+function execInitFun() {
+    if (info.cType == 'sql') {
+        initTableV2(options)
+    } else {
+        initApiTable(viewData, dataSource, reportApiSource, paginations, loading)
+    }
+}
 </script>
 <style lang="less">
 @import url('/@/assets/less/form.less');

@@ -1,6 +1,19 @@
 <template>
-    <div class="foot-btn-css">
-        <a-button type="link" @click="saveVue3">保存</a-button>
+    <div class="foot-css">
+        <div class="foot-btn-css" style="width: 300px;">
+            <a-space>
+                <a-button type="primary" size="small" @click="saveVue3">保存</a-button>
+                <a-button type="primary" size="small" @click="saveVue3">移交</a-button>
+                <a-button type="primary" size="small" @click="saveVue3">回退</a-button>
+            </a-space>
+        </div>
+        <div class="foot-btn-css foot-btn-right-css">
+            <a-space>
+                <a-button type="primary" size="small" @click="saveVue3">查看附件</a-button>
+                <a-button type="primary" size="small" @click="saveVue3">楼盘表</a-button>
+                <a-button type="primary" size="small" @click="saveVue3">图形</a-button>
+            </a-space>
+        </div>
     </div>
 </template>
 
@@ -40,11 +53,23 @@ function checkDemoRefs() {
 </script>
 
 <style scoped lang="less">
+.foot-css {
+    height: 45px;
+    background-color: #1890ff33;
+    padding: 5px;
+    display: flex;
+}
+
 .foot-btn-css {
-    background-color: #00b96b;
-    height: 50px;
-    position: fixed;
-    bottom: 10px;
-    width: 100%;
+    background-color: #fff;
+    height: 35px;
+    line-height: 35px;
+    padding: 0px 10px;
+}
+
+.foot-btn-right-css {
+    position: absolute;
+    right: 0px;
+    text-align: right;
 }
 </style>

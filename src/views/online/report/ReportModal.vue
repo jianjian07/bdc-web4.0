@@ -26,6 +26,9 @@
             <a-form-item label="是否初屏加载" name="isLoad">
                 <a-switch v-model:checked="reportData.isLoad" checked-children="是" un-checked-children="否" />
             </a-form-item>
+            <a-form-item label="MyBatis语法" name="isMybatis">
+                <a-switch v-model:checked="reportData.isMybatis" checked-children="是" un-checked-children="否" />
+            </a-form-item>
             <a-form-item label="SQL/API" id="content" :rules="[{ required: true }]">
                 <monaco-editor v-model="reportData.dataSource" :language="reportData.cType"
                     style="width: 100%;border: 1px solid #e5e7eb;" height="250px"
@@ -62,19 +65,15 @@ const props = defineProps({
         type: Object,
         default: () => {
             return {
-                isLoad: false
+                isLoad: false,
+                isMybatis: false
             }
         }
     }
 })
 let reportData = ref<any>(JSON.parse(JSON.stringify(props.data)))
-let isLoad = ref(false)
-isLoad.value = reportData.value.isLoad == 1
-// if (reportData.value.isLoad == 1) {
-//     reportData.value.isLoad = true
-// } else {
-//     reportData.value.isLoad = false
-// }
+reportData.value.isLoad = reportData.value.isLoad == 1 ? true : false
+reportData.value.isMybatis = reportData.value.isMybatis == 1 ? true : false
 let dataSources = ref([])
 getDataSources()
 async function getDataSources() {
@@ -116,16 +115,17 @@ function onOk() {
         reportData.value.content = JSON.stringify(_value)
         url = '/api/zrzy-form/form/report/add' // 新增
     }
-    // reportData.value.isLoad = isLoad.value ? 1 : 0
-    reportData.value.isLoad = isLoad.value
+    reportData.value.isLoad = reportData.value.isLoad ? 1 : 0
+    reportData.value.isMybatis = reportData.value.isMybatis ? 1 : 0
+    //reportData.value.isLoad = isLoad.value
     defHttp.post({ url: url, data: reportData.value }, { withToken: true }).then((res) => {
-        if (!res.success) {
+        if (res.success) {
             message.success('保存成功')
         } else {
-            message.error('保存失败' + res.message)
+            message.error(res.message)
         }
     }).catch(err => {
-        message.error('保存失败' + err.message)
+        message.error(err.message)
     }).finally(() => {
         emit('ok', { refresh: true })
     })
