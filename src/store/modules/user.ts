@@ -57,7 +57,9 @@ interface UserState {
   loginInfo?: Nullable<LoginInfo>;
   igsInfo?: [],
   menuIndex?: number,
-  licence?: string
+  licence?: string,
+  // 是否移交（发送弹窗）
+  saveFormFlag?: boolean
 }
 
 export const useUserStore = defineStore({
@@ -93,7 +95,9 @@ export const useUserStore = defineStore({
     loginInfo: null,
     igsInfo: [],
     menuIndex: -1,
-    licence: ''
+    licence: '',
+    // 是否移交（发送弹窗）
+    saveFormFlag: true
   }),
   getters: {
     getUserInfo(): UserInfo {
@@ -147,6 +151,9 @@ export const useUserStore = defineStore({
     getLicence(): string {
       return this.licence || '';
     },
+    getSaveFormFlag(): boolean {
+      return this.saveFormFlag
+    }
   },
   actions: {
     setIgsList(list: any) {
@@ -212,6 +219,9 @@ export const useUserStore = defineStore({
     },
     setLicence(licence: string) {
       this.licence = licence;
+    },
+    setSaveFormFlag(bool: boolean) {
+      this.saveFormFlag = bool
     },
     resetState() {
       this.setUserInfo(null);

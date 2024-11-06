@@ -1,75 +1,289 @@
 <template>
-    <div class="foot-css">
-        <div class="foot-btn-css" style="width: 300px;">
-            <a-space>
-                <a-button type="primary" size="small" @click="saveVue3">保存</a-button>
-                <a-button type="primary" size="small" @click="saveVue3">移交</a-button>
-                <a-button type="primary" size="small" @click="saveVue3">回退</a-button>
-            </a-space>
-        </div>
-        <div class="foot-btn-css foot-btn-right-css">
-            <a-space>
-                <a-button type="primary" size="small" @click="saveVue3">查看附件</a-button>
-                <a-button type="primary" size="small" @click="saveVue3">楼盘表</a-button>
-                <a-button type="primary" size="small" @click="saveVue3">图形</a-button>
-            </a-space>
-        </div>
+  <div class="foot-css">
+    <div class="foot-btn-css" v-if="leftBtnList.length > 0">
+      <a-space :size="spaceSize">
+        <template v-for="(btn, index) in leftBtnList">
+          <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.name }}</a-button>
+        </template>
+      </a-space>
     </div>
+    <div class="foot-btn-middle-css" id="btn-middle-list">
+      <div class="button-container" v-if="middleBtnList.length > 0">
+        <div class="foot-btn-css">
+          <a-space :size="spaceSize">
+            <a-button v-if="canScrollLeft" class="scroll-button" size="small" type="primary" @click="scrollLeft">
+              <template #icon>
+                 <DoubleLeftOutlined />
+              </template>
+            </a-button>
+           <template v-for="(btn, index) in visibleButtons" :key="index">
+             <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.name }}</a-button>
+           </template>
+            <a-button v-if="canScrollRight" class="scroll-button" size="small" type="primary" @click="scrollRight">
+              <template #icon>
+                 <DoubleRightOutlined />
+              </template>
+            </a-button>
+          </a-space>
+         
+          
+     
+    
+<!--        &lt;!&ndash; 向右箭头按钮 &ndash;&gt;-->
+<!--        <button v-if="canScrollRight" @click="scrollRight" class="scroll-button">-->
+<!--          ➡️-->
+<!--        </button>-->
+        </div>
+       
+      </div>
+    </div>
+    
+    <div v-if="rightBtnList.length > 0" class="foot-btn-css foot-btn-right-css">
+      <a-space :size="spaceSize">
+        <template v-for="(btn, index) in rightBtnList">
+          <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.name }}</a-button>
+        </template>
+        
+      </a-space>
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
-import { sendSaveFun } from './bdc';
+<script lang="ts" setup>
+import { computed, nextTick, onMounted, ref, watch } from "vue"
+import { sendSaveFun } from './bdc'
+import * as bdc from '/@/views/bdc/public/bdc'
+import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
-    vueRefs: {
-        type: Object,
-        default: []
-    }
+  vueRefs: {
+    type: Object,
+    default: []
+  },
+  btnList: {
+    type: Array,
+    default: []
+  },
+  spinning: {
+    type: Boolean,
+    default: false
+  }
 })
 let vueRefs: any = []
 vueRefs = props.vueRefs
-function saveVue3() {
-    checkDemoRefs()
-    sendSaveFun('baseSave', vueRefs)
+// 左侧基础按钮
+let leftBtnList = ref<any>([])
+// 中侧按钮
+let middleBtnList = ref<any>([])
+// 右侧按钮
+let rightBtnList = ref<any>([])
+// 按钮间隔
+const spaceSize = 16
+// 保存loading
+let loading = ref<boolean>(false)
+// 定义每次最多显示的按钮数量
+let maxVisibleButtons = ref(0);
+// 定义当前可见范围的起始索引
+const startIndex = ref(0);
+
+const emit = defineEmits(['update:spinning'])
+
+watch(() => props.spinning, (newVal) => {
+  loading.value = newVal
+})
+
+watch(() => loading.value, (newVal) => {
+  emit('update:spinning',newVal)
+})
+
+watch(() => props.btnList, (newVal: any) => {
+  leftBtnList.value = newVal && newVal.list1 ? newVal.list1 : []
+  rightBtnList.value = newVal && newVal.list3 ? newVal.list3 : []
+  middleBtnList.value = newVal && newVal.list2 ? newVal.list2 : []
+  nextTick(() => {
+    maxVisibleButtons.value = getMaxMiddleBtnCount()
+  })
+}, {
+  immediate: true,
+  deep: true
+})
+
+onMounted(() => {
+  loading.value = props.spinning
+})
+
+function getMaxMiddleBtnCount() {
+  let count = 0
+  let dom = document.getElementById('btn-middle-list')
+  let btnList = visibleButtons.value.length ? visibleButtons.value : middleBtnList.value 
+  if (dom) {
+    // 按钮可占宽度(去掉左右边距和左右按钮宽度)
+    let btnWidth  = dom.offsetWidth - 30 - 20 - 34 * 2
+    let width = 0
+    for (let i = 0; i < btnList.length; i++) {
+      let name = btnList[i].name
+      width += (name.length) * 14 + 14
+      if (i !== 0) {
+        width += (spaceSize / 2)
+      }
+      if (width < btnWidth) {
+        count ++
+      } else {
+        break
+      }
+    }
+  }
+  return count
 }
+
+function getBtnCount(index, width) {
+  
+}
+
+/**
+ * 按钮点击事件
+ */
+async function handleClick(btn) {
+  if (btn.func && bdc[btn.func]) {
+    checkDemoRefs()
+    let _bdc: any = bdc //  定义 不然打包后eval获取不到
+    console.log('_bdc',_bdc)
+    let params = isJsonData(btn.params) ? JSON.parse(btn.params) : btn.params
+    let _params = `(vueRefs,loading${params ? (',' + params) : params})`
+    await eval(`_bdc[btn.func]`+ _params)
+  }
+}
+
+/**
+ * 判断是否可以转json
+ * @param str
+ */
+function isJsonData(str) {
+    if (typeof str === "string") {
+        try {
+            var obj = JSON.parse(str)
+            if (obj && typeof obj === "object") {
+                return true
+            } else {
+                return false
+            }
+        } catch (e) {
+            // console.log("$isJSON error：", e)
+            return false
+        }
+    } else {
+        return false
+    }
+}
+
+
+// 计算当前可见的按钮
+const visibleButtons = computed(() =>
+  middleBtnList.value.slice(startIndex.value, startIndex.value + maxVisibleButtons.value)
+);
+
+// 判断是否可以右滚动
+const canScrollRight = computed(() => 
+  startIndex.value + maxVisibleButtons.value < middleBtnList.value.length
+);
+
+// 判断是否可以左滚动
+const canScrollLeft = computed(() => 
+  startIndex.value > 0
+);
+
+// 右滚动函数
+const scrollRight = () => {
+  if (canScrollRight.value) {
+    startIndex.value = Math.min(startIndex.value + maxVisibleButtons.value, middleBtnList.value.length - maxVisibleButtons.value);
+    nextTick(() => {
+      maxVisibleButtons.value = getMaxMiddleBtnCount()
+    })
+  }
+};
+
+// 左滚动函数
+const scrollLeft = () => {
+  if (canScrollLeft.value) {
+    startIndex.value = Math.max(startIndex.value - maxVisibleButtons.value, 0);
+    nextTick(() => {
+      maxVisibleButtons.value = getMaxMiddleBtnCount()
+    })
+  }
+};
+
+// function saveVue3() {
+//   checkDemoRefs()
+//   sendSaveFun('baseSave', vueRefs)
+// }
+
 /**
  * 获取dom
  */
 function checkDemoRefs() {
-    debugger
-    if (vueRefs && vueRefs[0]) {
-        let el = vueRefs[0]
-        if (el && el.$.exposed && el.$.exposed.multipleRef) {
-            let arr = el.$.exposed.multipleRef()
-            if (arr) {
-                vueRefs = [el, ...arr]
-                // 去重
-                vueRefs = Array.from(new Set(vueRefs))
-                console.log('vueRefs', vueRefs)
-            }
-        }
+  if (vueRefs && vueRefs[0]) {
+    let el = vueRefs[0]
+    if (el) {
+      let mulArr = getMultipleRef([el], [])
+      vueRefs = mulArr
+      vueRefs = Array.from(new Set(vueRefs))
+      // console.log('msarr', mulArr)
     }
+  }
+}
+
+function getMultipleRef(list: any[], arr: any[]) {
+  list.forEach((item: any) => {
+    arr.push(item)
+    if ((item && item.multipleRef && item.multipleRef())) {
+      // console.log('item.multipleRef(',item.multipleRef())
+      return getMultipleRef(item.multipleRef(), arr)
+    } else if (item && item.$ && item.$.exposed && item.$.exposed.multipleRef && item.$.exposed.multipleRef()) {
+      // console.log('item.$.exposed.multipleRef()',item.$.exposed.multipleRef())
+      return getMultipleRef(item.$.exposed.multipleRef(), arr)
+    } else if (item && item._ && item._.exposed && item._.exposed.multipleRef && item._.exposed.multipleRef()) {
+      // console.log('item._.exposed.multipleRef()')
+      return getMultipleRef(item._.exposed.multipleRef(), arr)
+    }
+  })
+  return arr
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .foot-css {
-    height: 45px;
-    background-color: #1890ff33;
-    padding: 5px;
-    display: flex;
+  height: 45px;
+  background-color: #1890ff33;
+  padding: 5px;
+  display: flex;
 }
 
 .foot-btn-css {
-    background-color: #fff;
-    height: 35px;
-    line-height: 35px;
-    padding: 0px 10px;
+  background-color: #fff;
+  height: 35px;
+  line-height: 35px;
+  padding: 0px 10px;
 }
 
 .foot-btn-right-css {
-    position: absolute;
-    right: 0px;
-    text-align: right;
+  //position: absolute;
+  //right: 0px;
+  //text-align: right;
 }
+
+.foot-btn-middle-css {
+  height: 35px;
+  line-height: 35px;
+  padding: 0px 10px;
+  margin: 0 5px;
+  flex: auto;
+  overflow: hidden;
+}
+
+.button-container {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+}
+
 </style>

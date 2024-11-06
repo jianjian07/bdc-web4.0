@@ -153,23 +153,15 @@ export function saveData() {
  */
 export function saveFormData(formDoms: any) {
     return new Promise(async (resolve) => {
-        let res: any = getFormInfo(formDoms)
-        let promises: any = []
-        let validateFlag = true
-        for (let i = 0; i < res.length; i++) {
-            if (!res[i].validate) {
-                validateFlag = false
-            }
-            promises.push(updateFormDatas(res[i]))
+        let _result: any = await getFormInfo(formDoms)
+        let allRes: any = []
+        for (let i = 0; i < _result.length; i++) {
+            const promiseRes = await updateFormDatas(_result[i])
+            allRes.push(promiseRes)
         }
-        if (!validateFlag) {
-            message.warning('请检查表单填写')
-        }
-        let allRes: any = await Promise.all(promises)
-        let status = allRes ? allRes.filter(r => r).length == res.length : false
+        let status = allRes ? allRes.filter(r => r).length == _result.length : false
         if (status) {
-            message.info("保存成功")
-            resolve(res)
+            resolve(_result)
         } else {
             resolve(null)
         }
@@ -210,21 +202,21 @@ export function saveHandleData(formDoms: any) {
  * 获取表单校验及更新数据信息
  * @param formDoms
  */
-export function getFormInfo(formDoms) {
+export async function getFormInfo(formDoms) {
     let res: any = []
     if (formDoms) {
         for (let i = 0; i < formDoms.length; i++) {
             let d
             let formId
             if (formDoms[i].onSubmit) {
-                d = formDoms[i].onSubmit()
+                d = await formDoms[i].onSubmit()
                 formId = formDoms[i].formId
             } else if (formDoms[i].$ && formDoms[i].$.exposed && formDoms[i].$.exposed.onSubmit) {
                 // 组件同步请求数据后 无法用上方代码直接获取到暴露到子组件方法
-                d = formDoms[i].$.exposed.onSubmit()
+                d = await formDoms[i].$.exposed.onSubmit()
                 formId = formDoms[i].$.exposed.formId
             }
-            console.log('ddd', d)
+            // console.log('ddd', d)
             if (d) {
                 res.push({
                     data: [d.updateData],

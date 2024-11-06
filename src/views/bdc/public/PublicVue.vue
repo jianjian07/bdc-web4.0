@@ -1,8 +1,9 @@
 <template>
     <div>
-        <div class="title">不动产首次登记(张三,李四)</div>
-        <CBtnsVue :vueRefs="demoRefs" />
-        <div style="width: 100%;height: 100%;display: flex;background-color:#f5f5f5; padding: 5px 0px;">
+        <div class="title">{{ formConfig.title }}</div>
+        <CBtnsVue :vueRefs="demoRefs" :btnList="btnList" v-model:spinning="spinning"/>
+         <a-spin :spinning="spinning">
+            <div style="width: 100%;height: 100%;display: flex;background-color:#f5f5f5; padding: 5px 0px;">
             <div style="width: calc(100% - 305px);background-color: #fff;padding: 5px;">
                 <a-space-compact style="margin: 5px 10px;">
                     <a-button type="primary" @click="openList">
@@ -29,11 +30,12 @@
                 附件 待开发
             </div>
         </div>
+         </a-spin>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 import { TableOutlined, EditOutlined } from '@ant-design/icons-vue';
 import { defHttp } from '/@/utils/http/axios';
 import { useRoute } from 'vue-router';
@@ -47,6 +49,119 @@ const component = computed(() => {
     return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"));
 })
 let open = ref(false);
+// 表单配置
+let formConfig = ref<any>({})
+// 表单上方配置按钮
+let btnList = ref<any>({
+  list1: [],
+  list2: [],
+  list3: []
+})
+// 表单内配置按钮
+let formBtnList = ref<any>([])
+// 表单loading
+let spinning = ref<boolean>(false)
+
+onMounted(() => {
+  getFormConfig()
+})
+
+function getFormConfig() {
+  formConfig.value = {
+    title: '不动产首次登记(张三,李四)',
+    btnConfig: {
+      list1: [{
+        name: '保存',
+        func: 'baseSave',
+        // 保存方法如果传参不打引号会立刻执行
+        // params: `{
+        //     beforeFun: bdc.aa('1'),
+        //     afterFun: bdc.aa(1),
+        //     params: { a:1 }
+        //   }
+        // `,
+        params: `{
+            beforeFun: "aa(demoRefs,1)",
+            afterFun: "aa(1)",
+            params: { a:1 }
+          }
+        `,
+      },{
+        name: '移交',
+        func: 'handOver',
+        params: '',
+      },{
+        name: '回退',
+        func: 'handBack',
+        params: '1,"2"'
+      }],
+      list2: [{
+        name: '打印询问笔录',
+        func: 'lookFile'
+      },{
+        name: '打印受理通知书',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '跳转附件',
+        func: 'lookFile'
+      },{
+        name: '打印测试5',
+        func: 'lookFile'
+      },{
+        name: '打印测试6',
+        func: 'lookFile'
+      },{
+        name: '打印受理通知书',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      },{
+        name: '打印缴费通知单',
+        func: 'lookFile'
+      }],
+      list3: [{
+        name: '查看附件',
+        func: 'lookFile',
+        params: `{ a: 1, b: '1' } `
+      },{
+        name: '楼盘表',
+        func: 'lookLpb'
+      }],
+      list4: []
+    }
+  }
+  
+  Object.keys(btnList.value).forEach((key) => {
+    btnList.value[key] = formConfig.value.btnConfig[key] || []
+  })
+  
+  formBtnList.value = formConfig.value.btnConfig.list4 || []
+}
 function openList() {
     open.value = true
     // let modal = cModal({
