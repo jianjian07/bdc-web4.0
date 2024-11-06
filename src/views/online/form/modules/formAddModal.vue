@@ -129,7 +129,7 @@ function handleModalOk() {
             url = '/magicapi/zrzy-form/magic/form/form/add' // 新增
             formState.value.createTime = value
         }
-        defHttp.post({ url: url, data: formState.value }, { withToken: false }).then((res) => {
+        defHttp.post({ url: url, data: formState.value }, { withToken: true }).then((res) => {
             if (!res.message) {
                 message.success('保存成功')
                 emit('handOver', {

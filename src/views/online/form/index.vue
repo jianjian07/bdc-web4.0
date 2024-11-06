@@ -233,7 +233,7 @@ function design(record: any) {
             if (res.success) {
                 record.isLocked = 1
                 record.lockedTime = new Date().toLocaleString()
-                router.push("/online/wonderform/design" + '/' + record.id)
+                router.push("/online/form/design" + '/' + record.id)
             } else {
                 message.error(res.message)
             }
