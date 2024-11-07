@@ -25,25 +25,28 @@
               </template>
             </a-button>
           </a-space>
-         
-          
-     
-    
-<!--        &lt;!&ndash; 向右箭头按钮 &ndash;&gt;-->
-<!--        <button v-if="canScrollRight" @click="scrollRight" class="scroll-button">-->
-<!--          ➡️-->
-<!--        </button>-->
         </div>
-       
       </div>
     </div>
-    
     <div v-if="rightBtnList.length > 0" class="foot-btn-css foot-btn-right-css">
       <a-space :size="spaceSize">
-        <template v-for="(btn, index) in rightBtnList">
+        <template v-for="(btn, index) in rightBtnList.slice(0,3)">
           <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.name }}</a-button>
         </template>
-        
+        <a-popover placement="bottomRight">
+          <template #content>
+            <div class="right-other-list">
+              <template v-for="(btn, index) in rightBtnList.slice(3,rightBtnList.length)">
+                <a-button class="right-other-btn" size="small" type="primary" @click="handleClick(btn)">{{ btn.name }}</a-button>
+              </template>
+            </div>
+          </template>
+          <a-button size="small" type="primary" style="transform: rotate(90deg)">
+             <template #icon>
+                 <DoubleRightOutlined />
+              </template>
+          </a-button>
+        </a-popover>
       </a-space>
     </div>
   </div>
@@ -54,6 +57,7 @@ import { computed, nextTick, onMounted, ref, watch } from "vue"
 import { sendSaveFun } from './bdc'
 import * as bdc from '/@/views/bdc/public/bdc'
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
+import { isJsonData } from "/@/utils/form/commonUtils"
 
 const props = defineProps({
   vueRefs: {
@@ -61,7 +65,7 @@ const props = defineProps({
     default: []
   },
   btnList: {
-    type: Array,
+    type: Object,
     default: []
   },
   spinning: {
@@ -136,10 +140,6 @@ function getMaxMiddleBtnCount() {
   return count
 }
 
-function getBtnCount(index, width) {
-  
-}
-
 /**
  * 按钮点击事件
  */
@@ -148,33 +148,13 @@ async function handleClick(btn) {
     checkDemoRefs()
     let _bdc: any = bdc //  定义 不然打包后eval获取不到
     console.log('_bdc',_bdc)
-    let params = isJsonData(btn.params) ? JSON.parse(btn.params) : btn.params
+    console.log('vueRefs',vueRefs)
+    let params =  btn.params ? (isJsonData(btn.params) ? JSON.parse(btn.params) : btn.params) : ''
     let _params = `(vueRefs,loading${params ? (',' + params) : params})`
     await eval(`_bdc[btn.func]`+ _params)
   }
 }
 
-/**
- * 判断是否可以转json
- * @param str
- */
-function isJsonData(str) {
-    if (typeof str === "string") {
-        try {
-            var obj = JSON.parse(str)
-            if (obj && typeof obj === "object") {
-                return true
-            } else {
-                return false
-            }
-        } catch (e) {
-            // console.log("$isJSON error：", e)
-            return false
-        }
-    } else {
-        return false
-    }
-}
 
 
 // 计算当前可见的按钮
@@ -221,8 +201,8 @@ const scrollLeft = () => {
  * 获取dom
  */
 function checkDemoRefs() {
-  if (vueRefs && vueRefs[0]) {
-    let el = vueRefs[0]
+  if (vueRefs) {
+    let el = [...vueRefs]
     if (el) {
       let mulArr = getMultipleRef([el], [])
       vueRefs = mulArr
@@ -234,16 +214,21 @@ function checkDemoRefs() {
 
 function getMultipleRef(list: any[], arr: any[]) {
   list.forEach((item: any) => {
-    arr.push(item)
-    if ((item && item.multipleRef && item.multipleRef())) {
-      // console.log('item.multipleRef(',item.multipleRef())
-      return getMultipleRef(item.multipleRef(), arr)
-    } else if (item && item.$ && item.$.exposed && item.$.exposed.multipleRef && item.$.exposed.multipleRef()) {
-      // console.log('item.$.exposed.multipleRef()',item.$.exposed.multipleRef())
-      return getMultipleRef(item.$.exposed.multipleRef(), arr)
-    } else if (item && item._ && item._.exposed && item._.exposed.multipleRef && item._.exposed.multipleRef()) {
-      // console.log('item._.exposed.multipleRef()')
-      return getMultipleRef(item._.exposed.multipleRef(), arr)
+    if (Array.isArray(item)) {
+      let _list = getMultipleRef(item, [])
+      arr = [...arr, ..._list]
+    } else {
+      arr.push(item)
+      if ((item && item.multipleRef && item.multipleRef())) {
+        // console.log('item.multipleRef(',item.multipleRef())
+        return getMultipleRef(item.multipleRef(), arr)
+      } else if (item && item.$ && item.$.exposed && item.$.exposed.multipleRef && item.$.exposed.multipleRef()) {
+        // console.log('item.$.exposed.multipleRef()',item.$.exposed.multipleRef())
+        return getMultipleRef(item.$.exposed.multipleRef(), arr)
+      } else if (item && item._ && item._.exposed && item._.exposed.multipleRef && item._.exposed.multipleRef()) {
+        // console.log('item._.exposed.multipleRef()')
+        return getMultipleRef(item._.exposed.multipleRef(), arr)
+      }
     }
   })
   return arr
@@ -286,4 +271,10 @@ function getMultipleRef(list: any[], arr: any[]) {
   align-items: center;
 }
 
+.right-other-list {
+  max-width: 400px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
 </style>

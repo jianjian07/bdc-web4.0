@@ -3,7 +3,7 @@
     height: getTabsShow ? (fullscreen ? 'calc(100vh - 60px)' : 'calc(100vh - 110px)') : 'calc(100vh - 50px)',
     margin: '5px', backgroundColor: 'white'
   }" class="content-main">
-    <a-spin :spinning="!isRouterAlive" tip="Loading...">
+    <a-spin style="height: 100%" :spinning="!isRouterAlive" tip="Loading...">
       <Suspense>
         <RouterView>
           <template #default="{ Component, route }">
@@ -41,9 +41,10 @@ const caches = computed(() => {
 </script>
 <style lang="less" scoped>
 .content-main {
+  overflow-y: hidden;
+  
   :deep(.ant-spin-nested-loading) {
     height: 100%;
-    overflow-y: auto;
 
     .ant-spin-container {
       height: 100%;

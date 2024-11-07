@@ -41,6 +41,15 @@ const props = defineProps({
     reload: {
         type: String,
         default: ""
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
+    },
+    // 后续表单id改为用表单编码读取
+    formCode: {
+        type: String,
+        default: ''
     }
 })
 /**
@@ -73,7 +82,7 @@ formInfo.formId = Number.parseInt(code.value)
 let formId = Number.parseInt(code.value)
 let formDisabled = ref(false)
 // 如果有传值优先读取父组件传值
-if (disabled != undefined && typeof disabled == 'Boolean') {
+if (disabled != undefined && typeof disabled == 'boolean') {
     formDisabled.value = disabled
 }
 let generateRef = ref()
@@ -160,7 +169,7 @@ await generateTs();
 
 const generateVue3 = defineComponent({
     template: generateData.html,
-    props: [],
+    props: props,
     components: {
         VNodes,
         InfoCircleOutlined
@@ -187,6 +196,7 @@ const generateVue3 = defineComponent({
         })
 
         return {
+            formDisabled,
             formRef,
             basicInfo,
             spFilePath,
