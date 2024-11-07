@@ -268,7 +268,8 @@ function updateFormDatas(formRes) {
             url: url,
             data: {
                 formId: formRes.formId ? formRes.formId : 14,
-                param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' },
+                param: { ...query },
+                // param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' },
                 formData: formRes.data,
             }
         },
