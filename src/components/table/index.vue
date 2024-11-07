@@ -152,7 +152,7 @@ function filterFun(value: Array<string>) {
         return false
     })
 }
-const emit = defineEmits(['columns-change', 'export', 'update-value', 'row-change', 'getTable', 'change'])
+const emit = defineEmits(['columns-change', 'export', 'update-value', 'row-change', 'getTable', 'change', 'update:value'])
 function changeColumn(checked) {
     const filterValue = filterFun(checked)
     filterColumns.value = filterValue
@@ -231,6 +231,7 @@ let selectedValue = computed({
     },
     set(val) {
         isRowChange.value = true
+        emit('update:value', val)
         emit("update-value", val);
     }
 });
@@ -283,6 +284,7 @@ const customRow = (record: any) => {
     return {
         onClick: (event) => {
             if (props.mode == 'multiple') {
+                console.log('selectedValue.value',selectedValue.value)
                 let find = selectedValue.value?.find(f => f == record[props.keyName])
                 let check = !find
                 selectRow(check, record)
@@ -302,7 +304,8 @@ function selectRow(selected: any, record: any) {
         })
         selectedRow.value.splice(delIndex, 1)
     }
-    selectedValue.value = selectedRow.value
+    // selectedValue.value = selectedRow.value
+    selectedValue.value = selectedRow.value.map(m => m[props.keyName])
     // selectedValue.value = selectedRow.value.map((m: any) => m[props.keyName])
     emit('row-change', selectedRow.value)
 }
