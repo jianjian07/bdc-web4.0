@@ -25,6 +25,7 @@ export function getDegisnList() {
  */
 export function addFlow(params: any) {
     defHttp.post({ url: api.add, data: { ...params } }, { withToken: true }).then(res => {
+        debugger
         if (res.success) {
             router.push({ path: '/bdc/casedoing', query: { slbh: res.result.slbh, taskId: res.result.taskId } });
         } else {

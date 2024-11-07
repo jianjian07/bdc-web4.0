@@ -1,23 +1,29 @@
 <template>
     <div class="cc-container">
-        <div style="line-height: 3em;">
-            <a-row>
-                <a-col :span="24" style="text-align: right;padding-right: 20px;">当前选中流程
+        <div>
+            <div style="line-height: 3em; background-color: #fff;padding: 10px 0px;">
+                <div style="text-align: right;padding-right: 20px;">
+                    当前选中流程
                     【<span style="color:#1890ff;font-weight: 600;">
-                        {{ aaa }}
+                        {{ processInfo.title }}
                     </span>】
-                </a-col>
-                <a-col :span="24" style="text-align: right;padding-right: 20px;">
-                    <a-button type="primary" :icon="h(ArrowRightOutlined)" size="small">创建流程</a-button>
-                </a-col>
-            </a-row>
-            <CLCLB @select="onSelect"></CLCLB>
+                </div>
+                <div style="text-align: right;padding-right: 20px;">
+                    <a-button type="primary" :icon="h(ArrowRightOutlined)" size="small"
+                        @click="handleAdd">创建流程</a-button>
+                </div>
+            </div>
+            <div style="margin-top: 8px;line-height: 3em; background-color: #fff">
+                <CLCLB @select="onSelect"></CLCLB>
+            </div>
         </div>
 
-        <div class="line"></div>
-        <a-table :columns="columns" :data-source="dataSource" style="width: 100%;">
+        <div style="width: 100%;background-color: #fff;margin-left:8px;">
+            <a-table :columns="columns" :data-source="dataSource" style="width: 100%;">
 
-        </a-table>
+            </a-table>
+        </div>
+
     </div>
 </template>
 
@@ -26,6 +32,7 @@ import { ref, h } from "vue";
 import CLCLB from "/@/views/components/LCLB.vue"
 import { defHttp } from "/@/utils/http/axios";
 import { ArrowRightOutlined } from '@ant-design/icons-vue';
+import { addFlow } from "../utils/case";
 enum api {
     getProcessList = "/api/zrzy-bdc/bdc/slsq/list"
 }
@@ -47,8 +54,8 @@ const columns = [
     },
     {
         title: '创建时间',
-        dataIndex: 'SLRQ',
-        key: 'SLRQ',
+        dataIndex: 'slsj',
+        key: 'slsj',
     },
     {
         title: '当前环节',
@@ -72,14 +79,23 @@ function a() {
         dataSource.value = res.result.records
     })
 }
-let aaa = ref('')
+let processInfo: any = ref('')
 
 /**
  * 选中流程事件
  * @param process 选中的流程
  */
 function onSelect(process: any) {
-    aaa.value = process.title
+
+    processInfo.value = process
+}
+function handleAdd() {
+    // 跳转至创建流程页面
+    const params = {
+        regType: '0101',
+        guid: processInfo.value.value
+    }
+    addFlow(params)
 }
 </script>
 

@@ -13,10 +13,12 @@
                             </a-button>
                         </a-form-item> </a-col>
                     <a-col :span="4" :offset="0"> </a-col></a-row></a-form>
+
             <!-- :row-selection="{ preserveSelectedRowKeys: true, selectedRowKeys: basicInfo.state.selectedRowKeys, onChange: onSelectChange }" -->
             <c-table :columns="columns" :data-source="dataSource" @columns-change="onColumnsChange" :loading="loading"
                 @export="onCExport" :eLoading="eLoading" :isSelectList="true" mode="multiple" keyName="bdcdyh"
-                :pagination="paginations" @change="handleTableChange" @row-change="rowSelection">
+                :pagination="paginations" @change="handleTableChange" @row-change="rowSelection"
+                @update-value="onUpdateValue">
                 <template #rowbar="{ record }">
 
                     <a-button type="link" @click="(record)"></a-button>
@@ -118,6 +120,9 @@ function createSc() {
 }
 function rowSelection(data: any) {
     basicInfo.value.selectedRowKeys = data;
+}
+function onUpdateValue(data: any) {
+
 }
 </script>
 

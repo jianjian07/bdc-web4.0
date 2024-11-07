@@ -43,12 +43,10 @@
         <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
             @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
-                <template v-if="column.dataIndex === 'isLoad'">
-                    <span>
-                        <a-tag v-if="record.isLoad === 1" color="green"
-                            style="padding-left:15px;padding-right:15px;">是</a-tag>
-                        <a-tag v-else color="red" style="padding-left:15px;padding-right:15px;">否</a-tag>
-                    </span>
+                <template v-if="column.dataIndex === 'isLoad' || column.dataIndex === 'isMybatis'">
+                    <a-tag :color="record[column.dataIndex] === 1 ? 'green' : 'red'" style="padding: 0 15px;">
+                        {{ record[column.dataIndex] === 1 ? '是' : '否' }}
+                    </a-tag>
                 </template>
                 <template v-if="column.key === 'action'">
                     <span>
@@ -74,10 +72,13 @@ import { message } from 'ant-design-vue';
 import { router } from "/@/router";
 const ReportModal = defineAsyncComponent(() => import("/@/views/online/report/ReportModal.vue"));
 const columns = [
+    { title: "ID", dataIndex: "id", width: 80 },
     { title: "初始加载", dataIndex: "isLoad", width: 100 },
-    { title: "编号", dataIndex: "code", width: 150 },
-    { title: "报表标题", dataIndex: "title", width: 300 },
-    { title: '操作', key: 'action', width: 150 }
+    { title: "编号", dataIndex: "code", width: 180 },
+    { title: "报表标题", dataIndex: "title" },
+    { title: "数据来源", dataIndex: "cType" },
+    { title: "MyBatis", dataIndex: "isMybatis" },
+    { title: '操作', key: 'action', width: 230 }
 ]
 let datalist: any = ref([]);
 let formData: any = ref([]);

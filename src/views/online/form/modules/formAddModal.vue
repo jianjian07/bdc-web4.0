@@ -11,7 +11,7 @@
                     <a-input v-model:value="formState.code" placeholder="表单编码"></a-input>
                 </a-form-item>
                 <a-form-item label="表单分类">
-                    <a-tree-select v-model:value="formState.formType" :tree-data="getDictItemsByCode('BDFL')" allowClear
+                    <a-tree-select v-model:value="formState.formType" :tree-data="getDictItemsByCode('bdfl')" allowClear
                         @change="changeType">
                     </a-tree-select>
                 </a-form-item>

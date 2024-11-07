@@ -38,12 +38,9 @@
                     </template>
                     新增
                 </a-button>
-                <!-- <a-button @click="deleteBatch">
-                    <template #icon>
-                        <DeleteOutlined />
-                    </template>
-                    删除
-                </a-button> -->
+                <a-button @click="handleCache">
+                    redis缓存
+                </a-button>
             </a-space>
         </div>
         <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
@@ -90,7 +87,8 @@ let formData: any = ref([]);
 
 enum api {
     list = '/api/zrzy-bdc/sys/dict/list',
-    copy = '/api/zrzy-bdc/sys/dict/copyDict'
+    copy = '/api/zrzy-bdc/sys/dict/copyDict',
+    cacheUrl = '/api/zrzy-bdc/sys/dict/setRedisDict'
 }
 onMounted(() => {
     loadData() // 初始化加载数据
@@ -207,6 +205,13 @@ function deleteData(record: any) {
             } else {
                 message.error('删除失败' + res.message)
             }
+        }
+    })
+}
+function handleCache() {
+    defHttp.post({ url: api.cacheUrl }, { withToken: true }).then(async (res) => {
+        if (res.success) {
+            message.success('缓存成功')
         }
     })
 }

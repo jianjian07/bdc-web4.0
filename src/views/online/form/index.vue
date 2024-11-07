@@ -71,6 +71,9 @@
                                     <a-menu-item>
                                         <a @click="editData(record)">编辑</a>
                                     </a-menu-item>
+                                    <a-menu-item key="1">
+                                        <CVfd :formId="record.id"></CVfd>
+                                    </a-menu-item>
                                     <a-menu-item>
                                         <a @click="copyData(record)">复制</a>
                                     </a-menu-item>
@@ -113,6 +116,7 @@ import { router } from "/@/router";
 import { getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
 import ClipboardJS from 'clipboard'
 import HistoryDrawer from './modules/HistoryDrawer.vue';
+import CVfd from './modules/Vfd.vue'
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',

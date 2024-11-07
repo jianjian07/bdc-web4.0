@@ -102,7 +102,7 @@ export function initTable(options: { dataSourceObj: { value: object }, bindName:
         data: {
             formId: options.formId ? options.formId : 14,
             readName: options.bindName,
-            param: { doc_no: query.doc_no ? query.doc_no : '06-09098' },
+            param: { slbh: query.slbh ? query.slbh : '06-09098' },
             ...params
         }
     }, { withToken: true }).then((res) => {
