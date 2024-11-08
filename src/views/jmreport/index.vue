@@ -3,7 +3,7 @@
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="6" :offset="0">
-                    <a-form-item label="表单名称">
+                    <a-form-item label="报表名称">
                         <a-input v-model:value="formData.name" />
                     </a-form-item>
                 </a-col>
@@ -30,7 +30,7 @@
                 <template #icon>
                     <plus-outlined />
                 </template>
-                新增
+                新建报表
             </a-button>
         </div>
         <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
@@ -51,31 +51,29 @@
             </template>
         </a-table>
     </div>
-    <!-- <form-add-modal ref="formModal" @handOver="handOver"></form-add-modal> -->
 </template>
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent } from "vue";
+import { ref, onMounted } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { router } from "/@/router";
-import ClipboardJS from 'clipboard'
+
 
 enum Api {
     copyUrl = '/api/zrzy-form/wform/copyData',
 }
 const columns = [
     { title: "id", dataIndex: "id", width: 150 },
-    { title: "表单名称", dataIndex: "name", ellipsis: true },
-    { title: "表单编码", dataIndex: "code", width: 150 },
-    { title: "表单分类", dataIndex: "typeName", width: 220 },
+    { title: "报表名称", dataIndex: "name", width: 220, ellipsis: true },
+    // { title: "表单编码", dataIndex: "code", width: 150 },
+    { title: "报表分类", dataIndex: "typeName", width: 220 },
     { title: "创建时间", dataIndex: "createTime", width: 140 },
     { title: '操作', key: 'action', width: 400, fixed: 'right', }
 ]
 let datalist: any = ref([]);
 let formData: any = ref({ formName: '', code: '', formType: '' });
-let formModal = ref(); // 新增弹窗
+
 let formTypeValue = ref('');
 onMounted(() => {
     loadData() // 初始化加载数据
@@ -97,11 +95,8 @@ async function loadData(type?: string | undefined) {
             pageSize: 10,
         }
     }
-    //pageNo=1&pageSize=10&reportType=datainfo
     let url = '/api/zrzy-form/jmreport/excelQuery'
     defHttp.get({ url: url, params: { name: formData.name, pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: false }).then((res) => {
-        // console.log("res.list", res.list)
-        debugger
         if (res.success) {
             datalist.value = res.result.records
             pagination.value.total = res.result.total
@@ -135,13 +130,6 @@ function onSelect(_value: any, node: any, _extra: any) {
     }
     pagination.value.current = 1
     loadData()
-}
-function changeType(_value: any) {
-    if (_value == undefined) {
-        formTypeValue.value = ''
-        pagination.value.current = 1
-        loadData()
-    }
 }
 /**
  * 重置
@@ -179,7 +167,14 @@ function onChange(pag: any, callback: any) {
  * 添加表单
 */
 function addData() {
-    formModal.value.add()
+    let url = '/api/zrzy-form/jmreport/save'
+    defHttp.post({ url: url }, { withToken: false }).then((res) => {
+        if (res.success) {
+            window.open('http://192.168.27.87:7004/zrzy-form/jmreport/index/' + res.result.id, '_blank')
+        }
+    }).catch(err => {
+        console.info(err)
+    })
 }
 /**
  * 编辑表单
@@ -211,20 +206,6 @@ function deleteData(record) {
     }).catch(err => {
         message.error('删除失败')
     })
-}
-/**
- * 表单创建后回调
- * @param val { isAutoOpenDesign: boolean, data: { code: '', formName: '' } }
-*/
-function handOver(val) {
-    loadData()
-    // 是否默认新建的表单设计
-    if (val.isAutoOpenDesign) {
-        // design(val.data)
-    }
-}
-function vfd(record: any) {
-
 }
 </script>
 <style lang="less" scoped>

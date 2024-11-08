@@ -208,41 +208,47 @@ function getSql(mySelect: any, myUpdate: any, formId: string) {
     debugger
     let list: any = []
     // 我的查询
-    mySelect.SQL.forEach((sql: any) => {
-        const name = sql.Name._text
-        const fields = convertToPinyin(sql.Fields._text)
-        const body = convertToPinyin(sql.Body._text.replace(/dbo\./g, ''))
+    if (mySelect.SQL != undefined) {
+        if (mySelect.SQL.length == undefined) {
+            mySelect.SQL = [mySelect.SQL]
+        }
+        mySelect.SQL.forEach((sql: any) => {
+            const name = sql.Name._text
+            const fields = convertToPinyin(sql.Fields._text)
+            const body = convertToPinyin(sql.Body._text.replace(/dbo\./g, ''))
 
-        list.push({
-            name: name,
-            cType: 'sql',
-            dType: 'select',
-            fields: JSON.stringify(fields.split(';')),
-            formId: formId,
-            isList: 0,
-            content: body,
-        })
-    });
-    // 我的更新
-    if (myUpdate.SQL.length == undefined) {
-        myUpdate.SQL = [myUpdate.SQL]
+            list.push({
+                name: name,
+                cType: 'sql',
+                dType: 'select',
+                fields: JSON.stringify(fields.split(';')),
+                formId: formId,
+                isList: 0,
+                content: body,
+            })
+        });
     }
-    myUpdate.SQL.forEach((sql: any) => {
-        const name = sql.Name._text
-        const fields = convertToPinyin(sql.Fields._text)
-        const body = convertToPinyin(sql.Body._text)
-        list.push({
-            name: name,
-            cType: 'sql',
-            dType: 'update',
-            fields: JSON.stringify(fields.split(';')),
-            formId: formId,
-            isList: 0,
-            content: body,
-        })
-    });
+    // 我的更新
+    if (myUpdate.SQL != undefined) {
+        if (myUpdate.SQL.length == undefined) {
+            myUpdate.SQL = [myUpdate.SQL]
+        }
+        myUpdate.SQL.forEach((sql: any) => {
+            const name = sql.Name._text
+            const fields = convertToPinyin(sql.Fields._text)
+            const body = convertToPinyin(sql.Body._text)
+            list.push({
+                name: name,
+                cType: 'sql',
+                dType: 'update',
+                fields: JSON.stringify(fields.split(';')),
+                formId: formId,
+                isList: 0,
+                content: body,
+            })
+        });
+    }
     return list;
-    // batchInsert(list);
 }
 // 批量插入
 function updateFormInfo(vfdModel: any) {

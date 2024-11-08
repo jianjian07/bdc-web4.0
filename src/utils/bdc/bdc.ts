@@ -1,3 +1,4 @@
+import { message } from "ant-design-vue";
 import { defHttp } from "../http/axios";
 import { router } from "/@/router";
 import { guid } from '/@/utils';
@@ -26,8 +27,9 @@ export function extractData(options: any) {
         data: _data
     }, { withToken: true }).then((res) => {
         if (res.success) {
-            open.value = false
-            reload.value = guid()
+            message.success('数据提取成功')
+            options.open.value = false
+            options.reload.value = guid()
         }
     })
     // console.log("选中的单元" + JSON.stringify(_data))

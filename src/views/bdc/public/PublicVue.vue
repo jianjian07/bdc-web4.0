@@ -1,38 +1,38 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ formConfig.title }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs"/>
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
           <div class="form-btn-list">
-          <a-space-compact style="margin: 5px 10px;">
-            <template v-for="(btn, index) in formBtnList">
-              <a-button type="primary" @click="handleClick(btn)">
-                {{ btn.name }}
-              </a-button>
-            </template>
-          </a-space-compact>
-          <a-drawer v-if="open" v-model:open="open" :footer-style="{ textAlign: 'right' }"
-                    :style="{ position: 'absolute' }"
-                    title="不动产首次登记列表" width="1000" @close="onClose">
-            <!-- <CRView id="1" @ok="onReload"></CRView> -->
-            <CqList @ok="onReload"></CqList>
-          </a-drawer>
-        </div>
+            <a-space-compact style="margin: 5px 10px;">
+              <template v-for="(btn, index) in formBtnList">
+                <a-button type="primary" @click="handleClick(btn)">
+                  {{ btn.name }}
+                </a-button>
+              </template>
+            </a-space-compact>
+            <a-drawer v-if="open" v-model:open="open" :footer-style="{ textAlign: 'right' }"
+              :style="{ position: 'absolute' }" title="不动产首次登记列表" width="1000" @close="onClose">
+              <!-- <CRView id="1" @ok="onReload"></CRView> -->
+              <CqList @ok="onReload"></CqList>
+            </a-drawer>
+          </div>
           <div class="form-body">
             <template v-for="(form, index) in formList">
-              <component v-bind:is="component" :id="form.formId" :formCode="form.formCode" :disabled="form.readOnly" :ref="setRef" :reload="reload">
+              <component v-bind:is="component" :id="form.formId" :formCode="form.formCode" :disabled="form.readOnly"
+                :ref="setRef" :reload="reload">
               </component>
             </template>
             <tdxx-list></tdxx-list>
-            
+
           </div>
         </div>
         <div class="split-line" id="drag-line" @mousedown="onDragStart"></div>
         <div class="right-content" :style="{ width: rightWidth + 'px' }">
           <div style="width: 100%">
-           
+
             附件 待开发
           </div>
         </div>
@@ -75,7 +75,7 @@ let formList = ref<any>([])
 let spinning = ref<boolean>(false)
 let formContent = ref()
 // 容器的宽度
-let containerWidth = 0 
+let containerWidth = 0
 let leftWidth = ref<any>(500)
 let rightWidth = ref<any>(300)
 let startX = 0
@@ -124,23 +124,23 @@ function getFormConfig() {
           }
         `,
       }, { name: '移交', func: 'handOver', params: '', },
-        { name: '回退', func: 'handBack', params: '1,"2"' }],
+      { name: '回退', func: 'handBack', params: '1,"2"' }],
       list2: [{ name: '打印询问笔录', func: 'lookFile' },
-        { name: '打印受理通知书', func: 'lookFile' },
-        { name: '打印缴费通知单', func: 'lookFile' },
-        { name: '跳转附件', func: 'lookFile' },
-        { name: '打印测试5', func: 'lookFile' },
-        { name: '打印测试6', func: 'lookFile' }],
+      { name: '打印受理通知书', func: 'lookFile' },
+      { name: '打印缴费通知单', func: 'lookFile' },
+      { name: '跳转附件', func: 'lookFile' },
+      { name: '打印测试5', func: 'lookFile' },
+      { name: '打印测试6', func: 'lookFile' }],
       list3: [{ name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-        { name: '楼盘表', func: 'lookLpb' },
-        { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-        { name: '图形', func: 'lookLpb' },
-        { name: '楼盘表', func: 'lookLpb' },
-        { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-        { name: '图形', func: 'lookLpb' }],
+      { name: '楼盘表', func: 'lookLpb' },
+      { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
+      { name: '图形', func: 'lookLpb' },
+      { name: '楼盘表', func: 'lookLpb' },
+      { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
+      { name: '图形', func: 'lookLpb' }],
       list4: [{ name: '土地', func: 'openList' },
-        { name: '楼盘表', func: 'lookTd' },
-        { name: '林权', func: 'lookTd' }
+      { name: '楼盘表', func: 'lookTd' },
+      { name: '林权', func: 'lookTd' }
       ]
     },
     formList: [
@@ -180,10 +180,10 @@ function getFormConfig() {
 async function handleClick(btn) {
   if (btn.func) {
     checkDemoRefs()
-    console.log('demoRefs',demoRefs)
-    let params =  btn.params ? (isJsonData(btn.params) ? JSON.parse(btn.params) : btn.params) : ''
+    console.log('demoRefs', demoRefs)
+    let params = btn.params ? (isJsonData(btn.params) ? JSON.parse(btn.params) : btn.params) : ''
     let _params = `(demoRefs,spinning${params ? (',' + params) : params})`
-    await eval(`${btn.func}`+ _params)
+    await eval(`${btn.func}` + _params)
   }
 }
 
@@ -219,32 +219,9 @@ let reload = ref("")
  * 刷新
  */
 function onReload(obj: any) {
-  debugger
+  obj.open = open
+  obj.reload = reload
   extractData(obj)
-  // const data = obj.data
-  // let bdcModels = []
-  // let _data: any =
-  // {
-  //     "djdl": "CQ",
-  //     "slbh": slbh,
-  //     "guid": "process1713234366021",
-  //     "regType": "",
-  //     "djlb": "",
-  //     "bdcModels": []
-  // }
-  // for (let index = 0; index < data.length; index++) {
-  //     const dyh = data[index];
-  //     bdcModels.push({ bdcdyh: dyh })
-  // }
-  // _data.bdcModels = bdcModels
-  // defHttp.post({
-  //     url: '/api/zrzy-bdc/bdc/case/addCase',
-  //     data: _data
-  // }, { withToken: true }).then((res) => {
-  //     open.value = false
-  //     reload.value = guid()
-  //     console.log('数据提取成功')
-  // })
 }
 
 // function savaVue() {
@@ -290,7 +267,7 @@ function getMultipleRef(list: any[], arr: any[]) {
       }
     }
   })
-  console.log('arr',arr)
+  console.log('arr', arr)
   return arr
 }
 
@@ -305,7 +282,7 @@ function onDragStart(event) {
 }
 
 function onDragging(event) {
-   const deltaX = event.clientX - startX
+  const deltaX = event.clientX - startX
   let newLeftWidth = leftWidth.value + deltaX
   let newRightWidth = containerWidth - newLeftWidth - 10
 
@@ -317,12 +294,12 @@ function onDragging(event) {
     newRightWidth = 250
     newLeftWidth = containerWidth - newRightWidth - 10
   }
-  
+
   if (newLeftWidth + newRightWidth + 10 > containerWidth) {
     newLeftWidth = containerWidth - newRightWidth - 10
     newRightWidth = containerWidth - newLeftWidth - 10
   }
-  
+
   leftWidth.value = newLeftWidth
   rightWidth.value = newRightWidth
 
@@ -394,7 +371,7 @@ function onDragEnd() {
   position: relative;
   cursor: col-resize;
   //background-color: ;
-  
+
   &::after {
     content: "";
     position: absolute;

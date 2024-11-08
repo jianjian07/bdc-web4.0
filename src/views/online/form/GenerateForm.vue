@@ -18,21 +18,20 @@ import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
 import dayjs from 'dayjs';
 import {
-  getData,
-  getDataByApi,
-  // getInheritData,
-  onSubmitForm,
-  validateInfos,
-  validateFun,
-  getAccount,
-  syncChange,
-  onTableSelectClear,
-  onTableSelectRowChange,
-  getSelectAllCheck,
-  setSelectAllCheck,
-  hideField,
-  initCTableV2, 
-  initAllCTableV2
+    getData,
+    getDataByApi,
+    // getInheritData,
+    onSubmitForm,
+    validateInfos,
+    validateFun,
+    getAccount,
+    syncChange,
+    onTableSelectClear,
+    onTableSelectRowChange,
+    getSelectAllCheck,
+    setSelectAllCheck,
+    hideField,
+    initCTableV2
 } from "/@/utils/form/wonder1.0.1"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props = defineProps({
@@ -101,7 +100,6 @@ let vue3Script = ref({
     contentScript: ''//ts内容
 })
 const generateData = generateFormHtml(info, vue3Script)
-console.log('generateDatagenerateData',generateData)
 // columns.value = []
 let selectJsonSetting = ref<any>(generateData.selectJsonSetting)
 // getSelectJsonSetting(selectJsonSetting)
@@ -189,70 +187,16 @@ const generateVue3 = defineComponent({
     },
     setup() {
         let formRef = ref()
-        // if (paginations.value) {
-        //     paginations.value.onChange = onChange
-        // }
-      
-        initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value })
-      
+        if (paginations.value) {
+            paginations.value.onChange = onChange
+        }
+
         onBeforeUpdate(() => {
             // dom变化时清空 会重新设置
             demoRefs = []
         })
 
-        function search() {
-            paginations.value.current = 1
-            initTable(viewData, dataSource, formInfo, paginations);
-        }
-
-        /**
-         * 分页 (报表)
-         * @param pag
-         * @param paginationName 分页对象
-         */
-        function onChange(pag: any) {
-            paginations.value.current = pag
-            initTable(viewData, dataSource, formInfo, paginations);
-        }
-        
-         /**
-          * 分页 (表单)
-          * @param pag 
-          * @param paginationName 分页对象
-          */
-        function onChange1(pag: any, paginationName: string) {
-            paginations[paginationName] = pag
-            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName]});
-        }
-        
-        /**
-         * 保存
-         */
-        function onSubmit() {
-            return onSubmitForm(formRef.value, onBeforeValidate)
-        }
-
-        function onBeforeValidate() {
-            if (events['onBeforeValidate']) {
-                events['onBeforeValidate']()
-            }
-        }
-
-        /**
-         * 用于多表单
-         * @returns {*[]|null}
-         */
-        function multipleRef() {
-            let arr = []
-            for (let i = 0; i < demoRefs.length; i++) {
-                if (demoRefs[i].child) {
-                    arr.push(demoRefs[i].child)
-                }
-            }
-            return arr.length ? arr : null
-        }
-        
-          return {
+        return {
             formDisabled,
             formRef,
             basicInfo,
@@ -272,8 +216,6 @@ const generateVue3 = defineComponent({
             editableData,
             search,
             onChange,
-            onChange1,
-            initCTableV2,
             initTable,
             edit,
             save,
@@ -299,6 +241,48 @@ const generateVue3 = defineComponent({
             onSubmit,
             multipleRef,
             getAccount
+        }
+
+        function search() {
+            paginations.value.current = 1
+            initTable(viewData, dataSource, formInfo, paginations);
+        }
+
+        /**
+         * 分页
+         * @param pag
+         * @param paginationName 分页对象
+         */
+        function onChange(pag: any) {
+            paginations.value.current = pag
+            initTable(viewData, dataSource, formInfo, paginations);
+        }
+
+        /**
+         * 保存
+         */
+        function onSubmit() {
+            return onSubmitForm(formRef.value, onBeforeValidate)
+        }
+
+        function onBeforeValidate() {
+            if (events['onBeforeValidate']) {
+                events['onBeforeValidate']()
+            }
+        }
+
+        /**
+         * 用于多表单
+         * @returns {*[]|null}
+         */
+        function multipleRef() {
+            let arr = []
+            for (let i = 0; i < demoRefs.length; i++) {
+                if (demoRefs[i].child) {
+                    arr.push(demoRefs[i].child)
+                }
+            }
+            return arr.length ? arr : null
         }
 
     },
@@ -354,11 +338,7 @@ function a() {
 function getViewDataByFormId(formId: String) {
     let _viewData = {}
     for (let index = 0; index < _sourcedata.length; index++) {
-        if (_sourcedata[index].isList) {
-          Reflect.set(_viewData, _sourcedata[index].name, [])
-        } else {
-          Reflect.set(_viewData, _sourcedata[index].name, {})
-        }
+        Reflect.set(_viewData, _sourcedata[index].name, {})
     }
     return _viewData;
 }
