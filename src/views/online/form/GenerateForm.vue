@@ -18,19 +18,20 @@ import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
 import dayjs from 'dayjs';
 import {
-    getData,
-    getDataByApi,
-    // getInheritData,
-    onSubmitForm,
-    validateInfos,
-    validateFun,
-    getAccount,
-    syncChange,
-    onTableSelectClear,
-    onTableSelectRowChange,
-    getSelectAllCheck,
-    setSelectAllCheck,
-    hideField
+  getData,
+  getDataByApi,
+  // getInheritData,
+  onSubmitForm,
+  validateInfos,
+  validateFun,
+  getAccount,
+  syncChange,
+  onTableSelectClear,
+  onTableSelectRowChange,
+  getSelectAllCheck,
+  setSelectAllCheck,
+  hideField, 
+  initCTableV2
 } from "/@/utils/form/wonder1.0.1"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props = defineProps({
@@ -256,7 +257,6 @@ const generateVue3 = defineComponent({
             paginations.value.current = pag
             initTable(viewData, dataSource, formInfo, paginations);
         }
-
 
         /**
          * 保存

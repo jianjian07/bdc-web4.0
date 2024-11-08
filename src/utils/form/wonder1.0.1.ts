@@ -117,6 +117,38 @@ export function initTable(options: { dataSourceObj: { value: object }, bindName:
         }
     })
 }
+
+export function initCTableV2(options: { viewData: { value: object }, bindName: string, pagination?: any, formId: number }) {
+    const query = router.currentRoute.value.query
+    const url = '/api/zrzy-form/generate/getGridModels'
+    let params = {
+        isPage: false
+    }
+    if (options.pagination != false) {
+        params.isPage = true
+        params["current"] = options.pagination.current
+        params["size"] = options.pagination.pageSize
+    }
+    defHttp.post({
+        url: url,
+        data: {
+            formId: options.formId ? options.formId : 14,
+            readName: options.bindName,
+            param: { slbh: query.slbh ? query.slbh : '06-09098' },
+            ...params
+        }
+    }, { withToken: true }).then((res) => {
+        if (res && res.code == 200) {
+            if (params.isPage) {
+                options.viewData.value[options.bindName] = res.result.records
+                options.pagination.total = res.result.total
+            } else {
+                options.viewData.value[options.bindName] = res.result
+            }
+        }
+    })
+}
+
 export function getData2() {
     // 根据当前流程获取到对应的表单
     // viewData = res.result.ViewData

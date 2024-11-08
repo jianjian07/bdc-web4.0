@@ -25,11 +25,14 @@
               <component v-bind:is="component" :id="form.formId" :formCode="form.formCode" :disabled="form.readOnly" :ref="setRef" :reload="reload">
               </component>
             </template>
+            <tdxx-list></tdxx-list>
+            
           </div>
         </div>
         <div class="split-line" id="drag-line" @mousedown="onDragStart"></div>
         <div class="right-content" :style="{ width: rightWidth + 'px' }">
           <div style="width: 100%">
+           
             附件 待开发
           </div>
         </div>
@@ -39,13 +42,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { TableOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
 import { guid } from '/@/utils'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
+import TdxxList from "/@/views/bdc/pages/public/TdxxList.vue"
 
 let activeKey = ref('1')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
@@ -87,10 +91,19 @@ const setRef = (el: any) => {
 }
 
 onMounted(() => {
-  containerWidth = formContent.value.offsetWidth;
-  leftWidth.value = containerWidth - rightWidth.value - 10; // 10px 是 split-line 的宽度
+  window.addEventListener('resize', handleResize)
+  handleResize()
   getFormConfig()
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+})
+
+function handleResize() {
+  containerWidth = formContent.value?.offsetWidth;
+  leftWidth.value = containerWidth - rightWidth.value - 10; // 10px 是 split-line 的宽度
+}
 
 function getFormConfig() {
   formConfig.value = {
@@ -142,6 +155,12 @@ function getFormConfig() {
       {
         formCode: 'FWYF',
         formId: '28',
+        readOnly: true,
+        isPl: true
+      },
+      {
+        formCode: 'FWYF',
+        formId: '34',
         readOnly: true,
         isPl: true
       }
