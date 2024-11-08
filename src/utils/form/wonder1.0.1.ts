@@ -118,13 +118,31 @@ export function initTable(options: { dataSourceObj: { value: object }, bindName:
     })
 }
 
-export function initCTableV2(options: { viewData: { value: object }, bindName: string, pagination?: any, formId: number }) {
+/**
+ * 查询所有表单表格
+ * @param options
+ */
+export function initAllCTableV2(options: { viewData: { value: object }, paginations?: any, formId: number }) {
+    let paginations = JSON.parse(JSON.stringify(options.paginations))
+    for (const key in paginations) {
+        let pagination = paginations[key]
+        if (pagination.bindName) {
+            initCTableV2({ viewData: options.viewData, formId: options.formId, pagination: pagination});
+        }
+    }
+}
+
+/**
+ * table 数据源方法 (新)
+ * @param options
+ */
+export function initCTableV2(options: { viewData: { value: object }, pagination?: any, formId: number }) {
     const query = router.currentRoute.value.query
     const url = '/api/zrzy-form/generate/getGridModels'
     let params = {
         isPage: false
     }
-    if (options.pagination != false) {
+    if (options.pagination.pageSize) {
         params.isPage = true
         params["current"] = options.pagination.current
         params["size"] = options.pagination.pageSize
@@ -133,17 +151,17 @@ export function initCTableV2(options: { viewData: { value: object }, bindName: s
         url: url,
         data: {
             formId: options.formId ? options.formId : 14,
-            readName: options.bindName,
+            readName: options.pagination.bindName,
             param: { slbh: query.slbh ? query.slbh : '06-09098' },
             ...params
         }
     }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
             if (params.isPage) {
-                options.viewData.value[options.bindName] = res.result.records
+                options.viewData.value[options.pagination.bindName] = res.result.records
                 options.pagination.total = res.result.total
             } else {
-                options.viewData.value[options.bindName] = res.result
+                options.viewData.value[options.pagination.bindName] = res.result
             }
         }
     })

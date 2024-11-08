@@ -83,11 +83,9 @@ let startX = 0
 let demoRefs: any = []
 // 动态设置ref 在组件渲染后才能设置
 const setRef = (el: any) => {
-  console.log('elelel',el)
   if (el) {
     demoRefs.push(el)
   }
-  console.log('demoRefs',demoRefs)
 }
 
 onMounted(() => {

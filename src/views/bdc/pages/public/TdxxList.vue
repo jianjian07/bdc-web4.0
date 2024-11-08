@@ -21,7 +21,7 @@
 import { defHttp } from "/@/utils/http/axios";
 import { ref, reactive, onMounted, computed, onBeforeUpdate,useAttrs, watch } from "vue";
 import { getDictItemsByCode,getTreeDictItemsByCode,formatMultipleSelectValue,formatMultipleTreeSelectValue, getCasDictItemsByCode, useVNodes } from '/@/utils/form/commonUtils';
-import { getData,getDataByApi,getInheritData,initTable, initCTableV2,validateInfos, validateFun, onSubmitForm, syncChange, onTableSelectClear, onTableSelectChange, onTableSelectRowChange, getSelectAllCheck, setSelectAllCheck, getAccount, hideField, getSelectJsonSetting } from "/@/utils/form/wonder1.0.1";
+import { getData,getDataByApi,initTable, initCTableV2, initAllCTableV2, validateInfos, validateFun, onSubmitForm, syncChange, onTableSelectClear, onTableSelectChange, onTableSelectRowChange, getSelectAllCheck, setSelectAllCheck, getAccount, hideField, getSelectJsonSetting } from "/@/utils/form/wonder1.0.1";
 import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
@@ -39,38 +39,35 @@ let viewData = ref<any>({"BDC_TDDJ":[]})
 let formSetting = []
 let apiDataSource = []
 let isSubmit = ref(true)
-let { isSaved, caseCode, disabled } = useAttrs()
+let { disabled } = useAttrs()
 
 // 如果有传值优先读取父组件传值
 if (disabled != undefined && typeof disabled == 'boolean') {
   formDisabled.value = disabled
 }
 
-
-    let paginations = reactive({"pagination1":{"total":0,"current":1,"pageSize":5,"change":"onChange1($event,'pagination1')","showSizeChanger":false}});
+    let paginations = reactive({"pagination1":{"bindName":"BDC_TDDJ","total":0,"current":1,"pageSize":5,"change":"onChange1($event,'pagination1')","showSizeChanger":false}});
         const columns={"columns1":[{"title":"宗地代码","dataIndex":"ZDDM","className":"tableClass","id":"column-fa90fa16-a115-10cf-51b9-ee6a959452e9","align":"left","options":{"hidden":false,"orderRule":""}},{"title":"宗地面积","dataIndex":"ZDMJ","id":"column-0ef7643b-6fbe-bb99-d15c-5957b6c9f4bb","align":"left","options":{"hidden":false,"orderRule":""}},{"title":"使用权面积","dataIndex":"SYQMJ","id":"column-1f2ea13c-9828-ab3a-bae9-ccf71d76811c","align":"left","options":{"hidden":false,"orderRule":""}},{"title":"土地用途","dataIndex":"TDYT","id":"column-fd2c5167-3ec4-63a6-61cf-a535f96f2979","align":"left","options":{"hidden":false,"orderRule":""}},{"title":"土地坐落","dataIndex":"TDZL","id":"column-d15e1c7c-fe71-354b-dc62-a04b89dd3ce4","align":"left","options":{"hidden":false,"orderRule":""}},{"title":"操作","key":"action"}]};
 
 // 在线模式，只支持变量basicInfo
 
 
 
-        initCTableV2({ viewData: viewData, bindName: 'BDC_TDDJ', formId: formId, pagination: paginations['pagination1'] });
-    /**
-     * 分页
-     * @param pag 
-     * @param paginationName 分页对象
-    */
-    function onChange1(pag: any, paginationName: string) {
-        paginations[paginationName] = pag
-        initCTableV2({ viewData: viewData, bindName: 'BDC_TDDJ', formId: formId, pagination: paginations[paginationName]});
-    }
-    
+            initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations });
+            
+             /**
+              * 分页
+              * @param pag 
+              * @param paginationName 分页对象
+              */
+            function onChange1(pag: any, paginationName: string) {
+                paginations[paginationName] = pag
+                initCTableV2({ viewData: viewData, formId: formId, pagination: paginations[paginationName]});
+            }
+        
 await getDataByApi(viewData, apiDataSource)
-if (isSaved) {
-  await getData(viewData, formId)
-} else {
-  // await getInheritData(viewData, caseCode)
-}
+await getData(viewData, formId)
+
     
     
     function hideFields(index: number) {

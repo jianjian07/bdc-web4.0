@@ -58,7 +58,7 @@ reportInfo.title='首次登记查询列表-禁随意修改';
 
 
 
- let basicInfo = ref<any>({"state":"{\"selectedRowKeys\": [], \"selectedRows\":[],\"loading\": false}"})
+ let basicInfo = ref<any>({"state":{"selectedRowKeys":[],"selectedRows":[],"loading":false}})
 
     let selectedValue: any = ref([])
     let options = {
