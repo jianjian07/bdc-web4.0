@@ -2,6 +2,7 @@
 import { useUserStore } from "/@/store/modules/user"
 import { saveFormData, saveHandleData, validateInfos } from "/@/utils/form/wonder1.0.1"
 import { message } from "ant-design-vue"
+import { cModal } from "/@/components/cModal/index"
 const userStore = useUserStore()
 enum api {
   configList = '/api/zrzy-dzzw/caseConfig/getCaseState',
@@ -92,7 +93,25 @@ export async function baseSave(demoRefs: any, loading: any, params: any) {
 }
 
 export async function handOver(demoRefs: any, loading: any, params: any) {
-  return await sendSaveFun('handOver', demoRefs, loading, params)
+  let res = await sendSaveFun('handOver', demoRefs, loading, params)
+  // 测试 默认放开
+  res = true
+  if (res) {
+     let modal = cModal({
+      title: '移交',
+      isFullScreen: true,
+      filePath: 'views/bdc/public/HandleModal',
+      onOk: (res: any) => {
+          console.log('res',res)
+          
+          // res为弹窗内组件的dom
+          // modal.setConfirmLoading(false)
+          // modal.destroy()
+      }
+    })
+  }
+ 
+  return res
 }
 
 // 保存前方法测试

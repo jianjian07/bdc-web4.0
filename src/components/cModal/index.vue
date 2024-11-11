@@ -1,11 +1,11 @@
 <template>
   <a-config-provider :locale="zhCN">
-    <a-modal class="commonModal" v-model:open="modalVisible" :width="fullScreen ? '100%' : width"
-      :wrap-class-name="fullScreen ? 'full-common-modal' : ''" :confirmLoading="confirmLoading" :maskClosable="false"
+    <a-modal class="commonModal" v-model:open="modalVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
+      :wrap-class-name="(fullScreen || isFullScreen) ? 'full-common-modal' : ''" :confirmLoading="confirmLoading" :maskClosable="false"
       :okText="okText" :cancelText="cancelText" v-bind="footerBind" @ok="handleOk" @cancel="handleClose">
       <template #title>
         {{ title }}
-        <div class="fullscreen-custom" @click="handleFullscreen">
+        <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
           <FullscreenExitOutlined v-if="fullScreen" />
           <FullscreenOutlined v-else />
         </div>
@@ -47,6 +47,10 @@ const props = defineProps({
   filePath: {
     type: String,
     default: 'components/wonderform/free/PreviewDemo'
+  },
+  isFullScreen: {
+    type: Boolean,
+    default: false
   },
   formData: {
     type: [Object, String, Number, Array]
@@ -184,6 +188,7 @@ function handleFullscreen() {
 
   .ant-modal-body {
     flex: 1;
+    overflow: auto;
   }
 }
 </style>

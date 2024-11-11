@@ -78,7 +78,7 @@ let containerWidth = 0
 let leftWidth = ref<any>(500)
 let rightWidth = ref<any>(300)
 let startX = 0
-// 组件实例
+// 通用表单组件实例
 let demoRefs: any = []
 // 动态设置ref 在组件渲染后才能设置
 const setRef = (el: any) => {

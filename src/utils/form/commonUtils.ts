@@ -59,12 +59,12 @@ export const getApiRuleByCode = (ruleCode: string) => {
     return find ? find : null
 }
 
-function findNode(arr, key) {
+export function findNode(arr, key, valueName = 'value') {
     for (let i = 0; i < arr.length; i++) {
         let node = arr[i];
-        if (node.value === key) return node;
+        if (node[valueName] === key) return node;
         if (node.children && node.children.length > 0) {
-            let foundNode = findNode(node.children, key);
+            let foundNode = findNode(node.children, key, valueName);
             if (foundNode) return foundNode;
         }
     }
