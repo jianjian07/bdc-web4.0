@@ -25,8 +25,7 @@
                 :ref="setRef" :reload="reload">
               </component>
             </template>
-            <tdxx-list></tdxx-list>
-
+            <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
         <div class="split-line" id="drag-line" @mousedown="onDragStart"></div>
@@ -145,17 +144,17 @@ function getFormConfig() {
     },
     formList: [
       {
-        formCode: 'SJYF',
-        formId: '21',
+        formCode: 'SJXX_PL',
+        formId: '36',
         readOnly: false,
         isPl: false
       },
-      {
-        formCode: 'FWYF',
-        formId: '28',
-        readOnly: true,
-        isPl: true
-      },
+      // {
+      //   formCode: 'FWYF',
+      //   formId: '28',
+      //   readOnly: true,
+      //   isPl: true
+      // },
       {
         formCode: 'FWYF',
         formId: '34',
@@ -211,8 +210,8 @@ function onClose() {
   open.value = false
 }
 
-const route = useRoute()
-const slbh = route.query.slbh?.toString()
+// const route = useRoute()
+// const slbh = route.query.slbh?.toString()
 let reload = ref("")
 
 /**

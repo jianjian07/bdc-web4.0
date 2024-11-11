@@ -127,7 +127,7 @@ export function initAllCTableV2(options: { viewData: { value: object }, paginati
     for (const key in paginations) {
         let pagination = paginations[key]
         if (pagination.bindName) {
-            initCTableV2({ viewData: options.viewData, formId: options.formId, pagination: pagination});
+            initCTableV2({ viewData: options.viewData, formId: options.formId, pagination: pagination });
         }
     }
 }
@@ -152,7 +152,7 @@ export function initCTableV2(options: { viewData: { value: object }, pagination?
         data: {
             formId: options.formId ? options.formId : 14,
             readName: options.pagination.bindName,
-            param: { slbh: query.slbh ? query.slbh : '06-09098' },
+            param: { slbh: query.slbh ? query.slbh : '1932501' },
             ...params
         }
     }, { withToken: true }).then((res) => {

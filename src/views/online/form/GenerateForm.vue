@@ -31,13 +31,14 @@ import {
     getSelectAllCheck,
     setSelectAllCheck,
     hideField,
-    initCTableV2
+    initCTableV2,
+    initAllCTableV2
 } from "/@/utils/form/wonder1.0.1"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
-const props = defineProps({
+const props: any = defineProps({
     id: {
         type: String,
-        default: '1'
+        default: '34'
     },
     reload: {
         type: String,
@@ -68,7 +69,7 @@ const route = useRoute();
 const code = ref(props.id)
 // const code = ref(route.params?.code.toString());
 let dataSource = ref()
-let paginations = ref()
+let paginations: any = ref()
 let columns = ref<any>([])
 // let viewData = ref<any>([])
 let formInfo = reactive<any>({
@@ -87,8 +88,7 @@ if (disabled != undefined && typeof disabled == 'boolean') {
     formDisabled.value = disabled
 }
 let generateRef = ref()
-const info1 = await getForm({ id: formInfo.formId })
-const info = info1[0]
+const info = await getForm({ id: formInfo.formId })
 const data = JSON.parse(info.content)
 const config = data.config
 formInfo.tableName = info.table_name
@@ -100,6 +100,7 @@ let vue3Script = ref({
     contentScript: ''//ts内容
 })
 const generateData = generateFormHtml(info, vue3Script)
+debugger
 // columns.value = []
 let selectJsonSetting = ref<any>(generateData.selectJsonSetting)
 // getSelectJsonSetting(selectJsonSetting)
@@ -115,7 +116,7 @@ viewData.value = getViewDataByFormId(info.id)
 // api接口数据
 const apiArr = _sourcedata.filter((item: { cType: string; }) => item.cType == 'javascript')
 let apiDataSource = apiArr
-await getDataByApi(viewData, apiDataSource)
+// await getDataByApi(viewData, apiDataSource)
 
 await getData(viewData, formId)
 
@@ -188,7 +189,7 @@ const generateVue3 = defineComponent({
     setup() {
         let formRef = ref()
         if (paginations.value) {
-            paginations.value.onChange = onChange
+            paginations.value.onChange = onChange1
         }
 
         onBeforeUpdate(() => {
@@ -214,8 +215,9 @@ const generateVue3 = defineComponent({
             computed,
             defHttp,
             editableData,
-            search,
-            onChange,
+            // search,
+            // onChange,
+            onChange1,
             initTable,
             edit,
             save,
@@ -240,23 +242,34 @@ const generateVue3 = defineComponent({
             watch,
             onSubmit,
             multipleRef,
-            getAccount
+            getAccount,
+            initCTableV2,
+            initAllCTableV2
         }
 
-        function search() {
-            paginations.value.current = 1
-            initTable(viewData, dataSource, formInfo, paginations);
-        }
+        // function search() {
+        //     paginations.value.current = 1
+        //     initTable(viewData, dataSource, formInfo, paginations);
+        // }
 
         /**
          * 分页
-         * @param pag
+         * @param pag 
          * @param paginationName 分页对象
          */
-        function onChange(pag: any) {
-            paginations.value.current = pag
-            initTable(viewData, dataSource, formInfo, paginations);
+        function onChange1(pag: any, paginationName: string) {
+            paginations[paginationName] = pag
+            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations[paginationName] });
         }
+        // /**
+        //  * 分页
+        //  * @param pag
+        //  * @param paginationName 分页对象
+        //  */
+        // function onChange(pag: any) {
+        //     paginations.value.current = pag
+        //     initTable(viewData, dataSource, formInfo, paginations);
+        // }
 
         /**
          * 保存
@@ -347,11 +360,11 @@ function getViewDataByFormId(formId: String) {
  * @param formId
  */
 function loadSourceData(formId: any) {
-    return new Promise((resolve, reject) => {
-        const _url = "/magicapi/zrzy-form/magic/form/source/list"
-        defHttp.post({ url: _url, params: { formId: formId, dType: 'select' } }, { withToken: true }).then((res) => {
-            if (res.length > 0) {
-                resolve(res)
+    return new Promise((resolve) => {
+        const _url = "/api/zrzy-form/data/getNameList"
+        defHttp.get({ url: _url, params: { formId: formId } }, { withToken: true }).then((res) => {
+            if (res.success) {
+                resolve(res.result)
             } else {
                 resolve([])
             }
