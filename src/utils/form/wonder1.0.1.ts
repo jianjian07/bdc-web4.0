@@ -123,7 +123,7 @@ export function initTable(options: { dataSourceObj: { value: object }, bindName:
  * @param options
  */
 export function initAllCTableV2(options: { viewData: { value: object }, paginations?: any, formId: number }) {
-    let paginations = JSON.parse(JSON.stringify(options.paginations))
+    let paginations = options.paginations
     for (const key in paginations) {
         let pagination = paginations[key]
         if (pagination.bindName) {

@@ -18,21 +18,21 @@ import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
 import dayjs from 'dayjs';
 import {
-    getData,
-    getDataByApi,
-    // getInheritData,
-    onSubmitForm,
-    validateInfos,
-    validateFun,
-    getAccount,
-    syncChange,
-    onTableSelectClear,
-    onTableSelectRowChange,
-    getSelectAllCheck,
-    setSelectAllCheck,
-    hideField,
-    initCTableV2,
-    initAllCTableV2
+  getData,
+  getDataByApi,
+  // getInheritData,
+  onSubmitForm,
+  validateInfos,
+  validateFun,
+  getAccount,
+  syncChange,
+  onTableSelectClear,
+  onTableSelectRowChange,
+  getSelectAllCheck,
+  setSelectAllCheck,
+  hideField,
+  initCTableV2, 
+  initAllCTableV2
 } from "/@/utils/form/wonder1.0.1"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props: any = defineProps({
@@ -100,7 +100,7 @@ let vue3Script = ref({
     contentScript: ''//ts内容
 })
 const generateData = generateFormHtml(info, vue3Script)
-debugger
+// debugger
 // columns.value = []
 let selectJsonSetting = ref<any>(generateData.selectJsonSetting)
 // getSelectJsonSetting(selectJsonSetting)
@@ -188,89 +188,42 @@ const generateVue3 = defineComponent({
     },
     setup() {
         let formRef = ref()
-        if (paginations.value) {
-            paginations.value.onChange = onChange1
-        }
-
+        // if (paginations.value) {
+        //     paginations.value.onChange = onChange
+        // }
+      
+        initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value })
+      
         onBeforeUpdate(() => {
             // dom变化时清空 会重新设置
             demoRefs = []
         })
 
-        return {
-            formDisabled,
-            formRef,
-            basicInfo,
-            spFilePath,
-            childRef,
-            viewData,
-            formInfo,
-            isSaved,
-            caseCode,
-            paginations,
-            dataSource,
-            columns,
-            selectJsonSetting,
-            ...events,
-            computed,
-            defHttp,
-            editableData,
-            // search,
-            // onChange,
-            onChange1,
-            initTable,
-            edit,
-            save,
-            cancel,
-            handleChangeTab,
-            getDictItemsByCode,
-            getTreeDictItemsByCode,
-            getCasDictItemsByCode,
-            formatMultipleSelectValue,
-            formatMultipleTreeSelectValue,
-            syncChange,
-            onTableSelectClear,
-            onTableSelectRowChange,
-            getSelectAllCheck,
-            setSelectAllCheck,
-            validateFun,
-            validateInfos,
-            cModal,
-            Modal,
-            message,
-            dayjs,
-            watch,
-            onSubmit,
-            multipleRef,
-            getAccount,
-            initCTableV2,
-            initAllCTableV2
+        function search() {
+            paginations.value.current = 1
+            initTable(viewData, dataSource, formInfo, paginations);
         }
-
-        // function search() {
-        //     paginations.value.current = 1
-        //     initTable(viewData, dataSource, formInfo, paginations);
-        // }
 
         /**
-         * 分页
-         * @param pag 
+         * 分页 (报表)
+         * @param pag
          * @param paginationName 分页对象
          */
+        function onChange(pag: any) {
+            paginations.value.current = pag
+            initTable(viewData, dataSource, formInfo, paginations);
+        }
+        
+         /**
+          * 分页 (表单)
+          * @param pag 
+          * @param paginationName 分页对象
+          */
         function onChange1(pag: any, paginationName: string) {
             paginations[paginationName] = pag
-            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations[paginationName] });
+            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName]});
         }
-        // /**
-        //  * 分页
-        //  * @param pag
-        //  * @param paginationName 分页对象
-        //  */
-        // function onChange(pag: any) {
-        //     paginations.value.current = pag
-        //     initTable(viewData, dataSource, formInfo, paginations);
-        // }
-
+        
         /**
          * 保存
          */
@@ -296,6 +249,55 @@ const generateVue3 = defineComponent({
                 }
             }
             return arr.length ? arr : null
+        }
+        
+          return {
+            formDisabled,
+            formRef,
+            basicInfo,
+            spFilePath,
+            childRef,
+            viewData,
+            formInfo,
+            isSaved,
+            caseCode,
+            paginations,
+            dataSource,
+            columns,
+            selectJsonSetting,
+            ...events,
+            computed,
+            defHttp,
+            editableData,
+            search,
+            onChange,
+            onChange1,
+            initCTableV2,
+            initTable,
+            edit,
+            save,
+            cancel,
+            handleChangeTab,
+            getDictItemsByCode,
+            getTreeDictItemsByCode,
+            getCasDictItemsByCode,
+            formatMultipleSelectValue,
+            formatMultipleTreeSelectValue,
+            syncChange,
+            onTableSelectClear,
+            onTableSelectRowChange,
+            getSelectAllCheck,
+            setSelectAllCheck,
+            validateFun,
+            validateInfos,
+            cModal,
+            Modal,
+            message,
+            dayjs,
+            watch,
+            onSubmit,
+            multipleRef,
+            getAccount
         }
 
     },
@@ -351,7 +353,11 @@ function a() {
 function getViewDataByFormId(formId: String) {
     let _viewData = {}
     for (let index = 0; index < _sourcedata.length; index++) {
-        Reflect.set(_viewData, _sourcedata[index].name, {})
+        if (_sourcedata[index].isList) {
+          Reflect.set(_viewData, _sourcedata[index].name, [])
+        } else {
+          Reflect.set(_viewData, _sourcedata[index].name, {})
+        }
     }
     return _viewData;
 }
