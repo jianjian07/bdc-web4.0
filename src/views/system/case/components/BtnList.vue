@@ -1,97 +1,111 @@
 <template>
-    <div class="header-css">
-        <OrderedListOutlined /> 按钮配置
-        <a-button type="primary" size="small" style="margin-bottom: 8px;float: right;" @click="handleAdd"
-            :icon="h(PlusOutlined)">按钮</a-button>
-    </div>
-
-    <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
-        <template #bodyCell="{ column, text, record, index }">
-            <template v-if="column.dataIndex === 'operation'">
-                <span v-if="editableData[record.id]">
-                    <a @click="save(record.id)">保存</a>
+    <div class="list-css">
+        <div class="header-css">
+            <OrderedListOutlined /> 按钮配置
+            <a-button type="primary" size="small" style="margin-bottom: 8px;float: right;" @click="handleAdd"
+                :icon="h(PlusOutlined)">
+                按钮
+            </a-button>
+        </div>
+        <a-table bordered :data-source="btnList" :columns="columns" :pagination="false">
+            <template #bodyCell="{ column, text, record, index }">
+                <template v-if="column.dataIndex === 'operation'">
+                    <span v-if="editableData[record.id0]">
+                        <a @click="save(record.id0)">保存</a>
+                        <a-divider type="vertical" />
+                        <a-popconfirm title="确定取消编辑吗?" @confirm="cancel(record.id0)">
+                            <a>取消</a>
+                        </a-popconfirm>
+                    </span>
+                    <span v-else>
+                        <a @click="edit(record.id0)">编辑</a>
+                    </span>
                     <a-divider type="vertical" />
-                    <a-popconfirm title="确定取消编辑吗?" @confirm="cancel(record.id)">
-                        <a>取消</a>
+                    <a-popconfirm v-if="btnList.length" title="确定删除?" @confirm="onDelete(record.id0, index)">
+                        <a style="color:#ff4d4f">删除</a>
                     </a-popconfirm>
-                </span>
-                <span v-else>
-                    <a @click="edit(record.id)">编辑</a>
-                </span>
-                <a-divider type="vertical" />
-                <a-popconfirm v-if="dataSource.length" title="确定删除?" @confirm="onDelete(record.id, index)">
-                    <a style="color:#ff4d4f">删除</a>
-                </a-popconfirm>
-            </template>
-            <template v-else>
-                <template v-if="editableData[record.id]">
-                    <a-input v-if="column.componentType == 'input'"
-                        v-model:value="editableData[record.id][column.dataIndex]" style="margin: -5px 0" />
-                    <a-select v-else-if="column.componentType == 'select'"
-                        v-model:value="editableData[record.id][column.dataIndex]"
-                        :options="getDictItemsByCode('funbtn')" :field-names="{ label: 'labelplus', value: 'value' }"
-                        allowClear style="width: 100%;margin: -5px 0" />
+                </template>
+                <template v-else>
+                    <template v-if="editableData[record.id0]">
+                        <a-input v-if="column.componentType == 'input'"
+                            v-model:value="editableData[record.id0][column.dataIndex]" style="margin: -5px 0" />
+                        <a-select v-once v-else-if="column.componentType == 'select'"
+                            v-model:value="editableData[record.id0][column.dataIndex]"
+                            :options="getDictItemsByCode(column.dict)"
+                            :field-names="{ label: 'labelplus', value: 'value' }" allowClear
+                            style="width: 100%;margin: -5px 0" />
+                        <div v-else>
+                            {{ text }}
+                        </div>
+                    </template>
                     <div v-else>
-                        {{ text }}
+                        <a-select v-if="column.componentType == 'select'" :bordered="false"
+                            :options="getDictItemsByCode(column.dict)" v-model:value="record[column.dataIndex]"
+                            style="width: 100%;margin: -5px 0;border: 0px !important;background-color: #fff;"
+                            disabled />
+                        <div v-else>
+                            {{ text }}
+                        </div>
                     </div>
                 </template>
-                <div class="select-noboder" v-else>
-                    <a-select v-if="column.componentType == 'select'" :options="options[column.dict]"
-                        v-model:value="record[column.dataIndex]"
-                        style="width: 100%;margin: -5px 0;border: 0px !important;background-color: #fff;" disabled />
-                    <div v-else>
-                        {{ text }}
-                    </div>
-                </div>
             </template>
-        </template>
-    </a-table>
+        </a-table>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es';
-import { reactive, ref, h } from 'vue';
+import { reactive, ref, h, watch } from 'vue';
 import { PlusOutlined, OrderedListOutlined } from '@ant-design/icons-vue';
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import Enumerable from 'linq';
-getDictItemsByCode('FUNBTN')
-const options: any = {
-    anlx: [
-        {
-            value: 'save',
-            label: '保存(save)'
-        },
-        {
-            value: 'card',
-            label: '证号(card)'
-        }
-    ]
+import { defHttp } from '/@/utils/http/axios';
+import { message } from 'ant-design-vue';
+const props = defineProps({
+    nodeInfo: {
+        type: Object,
+        default: () => ({})
+    }
+});
+enum api {
+    listUrl = '/api/zrzy-bdc/flow/btn/list',
+    addUrl = '/api/zrzy-bdc/flow/btn/add',
+    updateUrl = '/api/zrzy-bdc/flow/btn/update',
+    deleteUrl = '/api/zrzy-bdc/flow/btn/delete'
 }
 const columns = [
     {
-        title: '按钮类型',
-        dataIndex: 'btnType',
-        width: 250,
+        title: '按钮',
+        dataIndex: 'funName',
+        width: 200,
         align: 'center',
         componentType: 'select',
-        dict: 'anlx'
+        dict: 'funbtn'
     },
     {
-        title: '按钮名称',
+        title: '名称',
         dataIndex: 'btnName',
         align: 'center',
-        width: 250,
+        width: 160,
         componentType: 'input'
     },
     {
         title: '参数',
-        dataIndex: 'params',
+        dataIndex: 'bz',
         align: 'center',
         componentType: 'input'
     },
     {
+        title: '位置',
+        dataIndex: 'anwz',
+        align: 'center',
+        width: 100,
+        componentType: 'select',
+        dict: 'anwz'
+    },
+    {
         title: '顺序',
-        dataIndex: 'sxh',
+        dataIndex: 'orderNum',
         width: 80,
         align: 'center',
         componentType: 'input'
@@ -103,52 +117,76 @@ const columns = [
         width: 210
     },
 ];
-const dataSource: any = ref([
-    {
-        id: '1',
-        btnType: 'card',
-        btnFun: '',
-        btnName: '生成证号',
-        params: '1,2',
-        sxh: 1,
-    },
-]);
+let btnList: any = ref([])
+watch(props.nodeInfo, (_newValue, _oldValue) => {
+    getList()
+});
+function getList() {
+    defHttp.post({ url: api.listUrl, data: { ...props.nodeInfo } }, { withToken: true }).then((res) => {
+        if (res.success) {
+            btnList.value = res.result;
+        }
+    });
+}
 
 /** 行编辑所需要代码 begin **/
 const editableData: any = reactive({});
+/** 编辑 **/
 const edit = (key: string) => {
-    editableData[key] = cloneDeep(dataSource.value.filter((item: any) => key == item.id)[0]);
+    editableData[key] = cloneDeep(btnList.value.filter((item: any) => key == item.id0)[0]);
 };
+/** 保存 **/
 const save = (key: string) => {
-    Object.assign(dataSource.value.filter((item: any) => key == item.id)[0], editableData[key]);
-    delete editableData[key];
+    let _data: any = {}
+    Object.assign(_data, editableData[key], props.nodeInfo)
+    let _url = api.updateUrl
+    if (key.includes('l')) {
+        _url = api.addUrl
+        _data.id0 = ''
+    }
+    defHttp.post({ url: _url, data: _data }, { withToken: true }).then((res) => {
+        if (res.success) {
+            editableData[key].id0 = res.result
+            Object.assign(btnList.value.filter(item => key == item.id0)[0], editableData[key]);
+            delete editableData[key];
+        }
+    });
 };
+/** 取消 **/
 const cancel = (key: string) => {
     delete editableData[key];
 };
+/** 删除 **/
 const onDelete = (key: string, index: number) => {
     delete editableData[key];
     if (key.includes('l')) {
-        dataSource.value.splice(index, 1);// 尚未保存到数据库
+        btnList.value.splice(index, 1);// 尚未保存到数据库
     } else {
         // 删除数据库该记录行
+        defHttp.post({ url: api.deleteUrl, params: { id: key } }, { withToken: true }).then((res) => {
+            if (res.success) {
+                message.success('删除成功')
+                btnList.value.splice(index, 1);
+            }
+        });
     }
 };
 /** 行编辑所需要代码 end **/
 const handleAdd = () => {
     let max = 0
-    if (dataSource.value.length > 0)
-        max = Enumerable.from(dataSource.value).max((item: any) => item.sxh);
+    if (btnList.value.length > 0)
+        max = Enumerable.from(btnList.value).max((item: any) => item.orderNum);
     const id = 'l' + new Date().getTime().toString();
     const newData = {
-        id: id,
+        id0: id,
         btnType: '',
-        btnFun: '',
+        funName: '',
         btnName: '',
-        params: '',
-        sxh: max + 1,
+        bz: '',
+        anwz: '',
+        orderNum: parseInt(max.toString()) + 1,
     };
-    dataSource.value.push(newData);
+    btnList.value.push(newData);
     editableData[id] = cloneDeep(newData);
 };
 </script>
@@ -161,12 +199,14 @@ const handleAdd = () => {
     font-size: 14px;
 }
 
-.select-noboder {
-    ::v-deep(.ant-select) {
-        .ant-select-selector {
-            border: 0px;
-            background: #fff;
-            color: rgba(0, 0, 0, 0.88);
+.list-css {
+    ::deep(.ant-table) {
+
+        .ant-table-thead>tr>th,
+        .ant-table-tbody>tr>td,
+        .ant-table tfoot>tr>th,
+        .ant-table tfoot>tr>td {
+            padding: 12px 8px;
         }
     }
 }

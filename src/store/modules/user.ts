@@ -236,6 +236,7 @@ export const useUserStore = defineStore({
       let newData = newArr.map((item: any) => {
         item.label = item.dictName
         item.value = item.dictCode
+        item.labelplus = item.dictName + '(' + item.dictCode + ')';
         if (parent && !parent.status) {
           item.status = 0
         }

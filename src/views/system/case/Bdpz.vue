@@ -1,89 +1,55 @@
 <template>
     <div class="cc-container">
-        <CLCLB @select="onSelect"></CLCLB>
-        <div class="line"></div>
-        <div style="min-width: 700px;max-width:calc(100% - 300px);border:0px solid yellowgreen;padding-left: 20px;">
-            <div style="float: right;padding: 10px;">
-                <a-button size="small" type="primary" :icon="h(CopyrightCircleOutlined)">
-                    根据已配置权利类型统赋
-                </a-button>
+        <div>
+            <div style="line-height: 3em; background-color: #fff;padding: 10px 0px;">
+                <div style="text-align: right;padding-right: 20px;">
+                    当前选中流程
+                    【<span style="color:#1890ff;font-weight: 600;">
+                        {{ processInfo.title }}
+                    </span>】
+                </div>
+                <!-- <div style="text-align: right;padding-right: 20px;">
+                    <a-button type="primary" :icon="h(ArrowRightOutlined)" size="small"
+                        @click="handleAdd">创建流程</a-button>
+                </div> -->
             </div>
-            <div style="padding-top:45px;">
-                <a-list item-layout="horizontal" :data-source="nodeList">
-                    <template #renderItem="{ item, index }">
-                        <a-list-item :class="selectIndex === index ? 'active' : ''">
-                            <template #actions>
-                                <a-tag color="blue" @click="onConfig(item, index)" style="cursor:pointer;">
-                                    配置
-                                </a-tag>
-                            </template>
-                            <a-list-item-meta :description="item.id">
-                                <template #title>
-                                    <a>{{ item.processNodeName }}</a>
-                                </template>
-                                <template #avatar>
-                                    <a-avatar :src="item.id">{{ index + 1 }}</a-avatar>
-                                </template>
-                            </a-list-item-meta>
-                        </a-list-item>
-                    </template>
-                </a-list>
+            <div style="margin-top: 8px;line-height: 3em; background-color: #fff">
+                <CLCLB @select="onSelect"></CLCLB>
             </div>
         </div>
+
+        <div style="width: 100%;background-color: #fff;margin-left:8px;">
+            <a-tabs v-model:activeKey="activeKey" style="padding: 5px;">
+                <a-tab-pane key="1" tab="基础配置">
+                    <FlowModal :lcid="processInfo.key" />
+                </a-tab-pane>
+                <a-tab-pane key="2" tab="表单配置" force-render>
+                    <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" />
+                </a-tab-pane>
+            </a-tabs>
+        </div>
+
     </div>
-    <BdpzDrawer v-if="open" :open="open" :title="title" :nodeData="nodeInfo" @ok="handOk" />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import BdpzDrawer from '/@/views/system/case/components/BdpzDrawer.vue';
-import { h } from 'vue';
-import { CopyrightCircleOutlined } from '@ant-design/icons-vue';
-import { defHttp } from '/@/utils/http/axios';
+import { ref, defineAsyncComponent } from "vue";
 import CLCLB from "/@/views/components/LCLB.vue"
-enum api {
-    nodelist = '/api/zrzy-bdc/act/process/extActProcessNode/list'
-}
-
-let open = ref(false)
-let selectIndex = ref(0)
-
-let nodeList = ref([])
-let title = ref("");
-let flowName = ref('')
-let nodeInfo: any = ref({})
+const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
+const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
+const activeKey = ref('1');
+let processInfo: any = ref('')
 /**
- * 选中工作流
- * @param _selectedKeys 
- * @param e 
+ * 选中流程事件
+ * @param process 选中的流程
  */
 function onSelect(process: any) {
-    defHttp.get({ url: api.nodelist, params: { processId: process.key } }, { withToken: true }).then((res) => {
-        nodeList.value = res.result;
-    });
-    flowName.value = '流程[' + process.title + ']';
-    nodeInfo.value.tiguid = process.key;
-}
-function onConfig(item: any, index: number) {
-    const name = '-节点[' + item.processNodeName + "]表单配置";
-    title.value = flowName.value + name;
-    nodeInfo.value.aid = item.id;
-    nodeInfo.value.atext = item.processNodeName;
-    open.value = true
-    selectIndex.value = index
-}
-function handOk() {
-    open.value = false
+    processInfo.value = process
 }
 </script>
 
 <style scoped lang="less">
 @import url('/@/assets/less/style_lb.less');
-
-.ant-list-item:hover,
-.active {
-    background-color: #e6f4ff;
-}
 
 .line {
     width: 1px;
