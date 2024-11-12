@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;">
-    <div class="title">{{ formConfig.title }}</div>
+    <div class="title">{{ formConfig.ajmc }}</div>
     <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
@@ -9,7 +9,7 @@
             <a-space-compact style="margin: 5px 10px;">
               <template v-for="(btn, index) in formBtnList">
                 <a-button type="primary" @click="handleClick(btn)">
-                  {{ btn.name }}
+                  {{ btn.btnName }}
                 </a-button>
               </template>
             </a-space-compact>
@@ -19,10 +19,10 @@
               <CqList @ok="onReload"></CqList>
             </a-drawer>
           </div>
-          <div class="form-body">
+          <div :class="['form-body',formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
-              <component v-bind:is="component" :id="form.formId" :formCode="form.formCode" :disabled="form.readOnly"
-                :ref="setRef" :reload="reload">
+              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId" :formCode="form.vfd" :disabled="form.iszd == '1'"
+              :ref="setRef" :reload="reload">
               </component>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
@@ -49,22 +49,24 @@ import { guid } from '/@/utils'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import TdxxList from "/@/views/bdc/pages/public/TdxxList.vue"
-
+const modules = import.meta.glob('/src/**/*.vue')
 let activeKey = ref('1')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
 const CqList = defineAsyncComponent(() => import("/@/views/bdc/public/components/CqList.vue"))
-const component = computed(() => {
+const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
 })
+
+const route = useRoute();
 let open = ref(false)
 // 表单配置
 let formConfig = ref<any>({})
 // 表单上方配置按钮
 let btnList = ref<any>({
-  list1: [],
-  list2: [],
-  list3: []
+  left: [],
+  center: [],
+  right: []
 })
 // 表单内配置按钮
 let formBtnList = ref<any>([])
@@ -86,6 +88,18 @@ const setRef = (el: any) => {
     demoRefs.push(el)
   }
 }
+const component = (path) => {
+  let _com = `/src/views/${path}.vue`
+  let isCorrect = Object.keys(modules).includes(_com)
+  if (isCorrect) {
+    return defineAsyncComponent(modules[`/src/views/${path}.vue`])
+  } else {
+    return null
+  }
+}
+enum api {
+  getFlowConfig = '/api/zrzy-bdc/flow/vue/getFlowConfig'
+}
 
 onMounted(() => {
   window.addEventListener('resize', handleResize)
@@ -103,73 +117,80 @@ function handleResize() {
 }
 
 function getFormConfig() {
-  formConfig.value = {
-    title: '不动产首次登记(张三,李四)',
-    btnConfig: {
-      list1: [{
-        name: '保存',
-        func: 'baseSave',
-        // 保存方法如果传参不打引号会立刻执行
-        // params: `{
-        //     beforeFun: bdc.aa('1'),
-        //     afterFun: bdc.aa(1),
-        //     params: { a:1 }
-        //   }
-        // `,
-        params: `{
-            beforeFun: "aa(demoRefs,1)",
-            afterFun: "aa(1)",
-            params: { a:1 }
-          }
-        `,
-      }, { name: '移交', func: 'handOver', params: '', },
-      { name: '回退', func: 'handBack', params: '1,"2"' }],
-      list2: [{ name: '打印询问笔录', func: 'lookFile' },
-      { name: '打印受理通知书', func: 'lookFile' },
-      { name: '打印缴费通知单', func: 'lookFile' },
-      { name: '跳转附件', func: 'lookFile' },
-      { name: '打印测试5', func: 'lookFile' },
-      { name: '打印测试6', func: 'lookFile' }],
-      list3: [{ name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-      { name: '楼盘表', func: 'lookLpb' },
-      { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-      { name: '图形', func: 'lookLpb' },
-      { name: '楼盘表', func: 'lookLpb' },
-      { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-      { name: '图形', func: 'lookLpb' }],
-      list4: [{ name: '土地', func: 'openList' },
-      { name: '楼盘表', func: 'lookTd' },
-      { name: '林权', func: 'lookTd' }
-      ]
-    },
-    formList: [
-      {
-        formCode: 'SJXX_PL',
-        formId: '36',
-        readOnly: false,
-        isPl: false
-      },
-      // {
-      //   formCode: 'FWYF',
-      //   formId: '28',
-      //   readOnly: true,
-      //   isPl: true
-      // },
-      {
-        formCode: 'FWYF',
-        formId: '34',
-        readOnly: true,
-        isPl: true
-      }
-    ]
-  }
-
-  Object.keys(btnList.value).forEach((key) => {
-    btnList.value[key] = formConfig.value.btnConfig[key] || []
+  let slbh = route.query.slbh
+  defHttp.get({ url: api.getFlowConfig, params: { slbh: '1932501' } }, { withToken: true }).then((res) => {
+    if (res && res.code == 200) {
+      formConfig.value = res.result
+      Object.keys(btnList.value).forEach((key) => {
+        btnList.value[key] = formConfig.value?.btnList.filter(btn => btn.anwz == key) || []
+      })
+  
+      formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
+      formList.value = formConfig.value?.vueList || []
+    } 
   })
-
-  formBtnList.value = formConfig.value.btnConfig.list4 || []
-  formList.value = formConfig.value.formList || []
+  
+  // formConfig.value = {
+  //   title: '不动产首次登记(张三,李四)',
+  //   btnConfig: {
+  //     list1: [{
+  //       name: '保存',
+  //       func: 'baseSave',
+  //       // 保存方法如果传参不打引号会立刻执行
+  //       // params: `{
+  //       //     beforeFun: bdc.aa('1'),
+  //       //     afterFun: bdc.aa(1),
+  //       //     params: { a:1 }
+  //       //   }
+  //       // `,
+  //       params: `{
+  //           beforeFun: "aa(demoRefs,1)",
+  //           afterFun: "aa(1)",
+  //           params: { a:1 }
+  //         }
+  //       `,
+  //     }, { name: '移交', func: 'handOver', params: '', },
+  //     { name: '回退', func: 'handBack', params: '1,"2"' }],
+  //     list2: [{ name: '打印询问笔录', func: 'lookFile' },
+  //     { name: '打印受理通知书', func: 'lookFile' },
+  //     { name: '打印缴费通知单', func: 'lookFile' },
+  //     { name: '跳转附件', func: 'lookFile' },
+  //     { name: '打印测试5', func: 'lookFile' },
+  //     { name: '打印测试6', func: 'lookFile' }],
+  //     list3: [{ name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
+  //     { name: '楼盘表', func: 'lookLpb' },
+  //     { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
+  //     { name: '图形', func: 'lookLpb' },
+  //     { name: '楼盘表', func: 'lookLpb' },
+  //     { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
+  //     { name: '图形', func: 'lookLpb' }],
+  //     list4: [{ name: '土地', func: 'openList' },
+  //     { name: '楼盘表', func: 'lookTd' },
+  //     { name: '林权', func: 'lookTd' }
+  //     ]
+  //   },
+  //   formList: [
+  //     {
+  //       formCode: 'SJXX_PL',
+  //       formId: '36',
+  //       readOnly: false,
+  //       isPl: false
+  //     },
+  //     // {
+  //     //   formCode: 'FWYF',
+  //     //   formId: '28',
+  //     //   readOnly: true,
+  //     //   isPl: true
+  //     // },
+  //     {
+  //       formCode: 'FWYF',
+  //       formId: '34',
+  //       readOnly: true,
+  //       isPl: true
+  //     }
+  //   ]
+  // }
+  
 }
 
 /**
@@ -177,12 +198,12 @@ function getFormConfig() {
  * @param btn
  */
 async function handleClick(btn) {
-  if (btn.func) {
+  if (btn.funName) {
     checkDemoRefs()
     console.log('demoRefs', demoRefs)
-    let params = btn.params ? (isJsonData(btn.params) ? JSON.parse(btn.params) : btn.params) : ''
+    let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
     let _params = `(demoRefs,spinning${params ? (',' + params) : params})`
-    await eval(`${btn.func}` + _params)
+    await eval(`${btn.funName}` + _params)
   }
 }
 
@@ -345,6 +366,10 @@ function onDragEnd() {
     height: calc(100% - 47px);
     overflow: auto;
     padding-bottom: 10px;
+  }
+  
+  .form-body-without-btn {
+    height: 100%;
   }
 }
 

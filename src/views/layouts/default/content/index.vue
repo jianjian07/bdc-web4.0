@@ -48,6 +48,7 @@ const caches = computed(() => {
 
     .ant-spin-container {
       height: 100%;
+      overflow: auto;
     }
   }
 }
