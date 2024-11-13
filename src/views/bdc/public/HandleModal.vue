@@ -344,7 +344,8 @@ function onClickNode(value) {
  * 清空移交对象
  */
 function onClearNode() {
-  
+  selectedKeys.value = []
+  selectedNodes.value = []
 }
 
 defineExpose({

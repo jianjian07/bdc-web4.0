@@ -1,48 +1,145 @@
 <template>
-    <div style="width: 100%; text-align: center;">
-        <div>
-            <a-space>
-                图例版：
-                <span class="zt" style="background-color: #C0C0C0"></span>查封
-                <span class="zt" style="background-color: #0000FF"></span> 抵押
-                <span class="zt" style="background-color: #9900FF"></span> 预告
-                <span class="zt" style="background-color: #FF0000"></span> 产权
-            </a-space>
+  <div style="width: 100%; text-align: center; height: 100%">
+    <div class="legend-tool-bar">
+      <div style="flex: 1"></div>
+      <div class="legend-icon">
+        <a-space>
+            图例版：
+            <span class="zt" style="background-color: #C0C0C0"></span>查封
+            <span class="zt" style="background-color: #0000FF"></span> 抵押
+            <span class="zt" style="background-color: #9900FF"></span> 预告
+            <span class="zt" style="background-color: #FF0000"></span> 产权
+        </a-space>
+      </div>
+      <div class="legend-btn">
+        <a-space>
+          <a-button size="small" type="primary" @click="checkAll">
+            <template #icon><CheckSquareOutlined /></template>全选
+          </a-button>
+          <a-button size="small" type="primary" @click="checkReverse">
+            <template #icon><CheckSquareOutlined /></template>反选
+          </a-button>
+          <a-button size="small" type="primary" @click="checkRow">
+            <template #icon><UnorderedListOutlined /></template>选行
+          </a-button>
+           <a-button size="small" type="primary" @click="checkCol">
+            <template #icon><PauseOutlined /></template>选列
+          </a-button>
+        </a-space>
+      </div>
+    </div>
+    <div class="lpb-main">
+      <div class="lpb-search-bar">
+        <div class="search-tool">
+          <a-form :model="zrzData" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+            <a-form-item label="宗地代码">
+              <a-input v-model:value="zrzData.zddm"></a-input>
+            </a-form-item>
+            <a-form-item label="栋号">
+              <a-input v-model:value="zrzData.dh"></a-input>
+            </a-form-item>
+            <a-form-item label="土地坐落">
+              <a-input v-model:value="zrzData.tdzl"></a-input>
+            </a-form-item>
+            <a-form-item label="房屋坐落">
+              <a-input v-model:value="zrzData.fwzl"></a-input>
+            </a-form-item>
+            <a-form-item label="小区名称">
+              <a-input v-model:value="zrzData.xqmc"></a-input>
+            </a-form-item>
+            <a-form-item label="测量号">
+              <a-input v-model:value="zrzData.clh"></a-input>
+            </a-form-item>
+            <div style="display: flex; justify-content: end">
+              <a-button type="primary" @click="loadList">
+                <template #icon><SearchOutlined /></template>查询
+              </a-button>
+            </div>
+          </a-form>
         </div>
-        <a-divider></a-divider>
-        <table style="margin: auto;">
+        <div class="search-result">
+          <a-table 
+              class="zrz-table ant-table-striped"
+              :columns="zrzColumns"
+              :data-source="zrzTableData"
+              :pagination="pagination"
+              :loading="tableLoading"
+              :scroll="{ y: 300 }"
+              :custom-row="customRow"
+              :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : null "
+              @change="handleTableChange"
+              size="small">
+          </a-table>
+        </div>
+      </div>
+      <div class="lpb-content">
+        <div v-if="cxxData.length" class="lpb-content-search-tool">
+          <div style="width: 30%">
+            <a-form-item label="层">
+              <a-select style="width: 100%" v-model:value="filterLpb.cData" :options="cxxOptions" :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
+            </a-form-item>
+          </div>
+          <div style="width: 32%; margin: 0 10px">
+            <a-form-item label="户">
+              <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>
+            </a-form-item>
+          </div>
+          <a-button type="primary" @click="handleFilterLpb">查询</a-button>
+        </div>
+        <template v-if="cxxData.length">
+          <table style="margin: auto;">
             <thead>
                 <tr class="title">
                     <td style="border: 0;background-color: #fff;"> </td>
                     <td style="border: 0;background-color: #fff;"> </td>
                     <td colspan="6" id="divtitle"
                         style="border: 0;background-color: #39bd8a;border-radius: 26px 26px 0px 0px; /* 去掉右下角的圆角 */">
-                        {{ zl }}
+                        {{ currentZrzInfo.zl }}
                     </td>
                 </tr>
                 <tr class="title">
                     <td>物理层</td>
                     <td>名义层</td>
-                    <td v-for="(item, index) in dyxx" :key="'dy' + index" colspan="3">{{ item.dyh }}单元</td>
+                    <td v-for="(item, index) in dyxx" :key="'dy' + index" :colspan="maxHs">{{ item.dyh }}单元</td>
                 </tr>
             </thead>
-            <tr v-for="(cInfo) in cxx1" :key="cInfo.wlc">
+            <tbody class="ant-table-tbody">
+              <tr v-for="(cInfo, cIndex) in cxx" :key="cInfo.wlc">
                 <td class="title">{{ cInfo.wlc }}</td>
                 <td class="title">{{ cInfo.myc }}层</td>
-                <template v-for="(dy) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
-                    <td v-for="(fwInfo, i) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
-                        :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="i"
-                        :class="checkDyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
-                        {{ fwInfo.shbw }}
-                        <div>
-                            <span v-if="fwInfo.cfzt == 1" class="zbzt" style="background-color: #C0C0C0;"></span>
-                            <span v-if="fwInfo.dyzt == 1" class="zbzt" style="background-color: #0000FF;"></span>
-                            <span v-if="fwInfo.ygzt == 1" class="zbzt" style="background-color: #9900FF;"></span>
-                            <span v-if="fwInfo.cqzt == 1" class="zbzt" style="background-color: #FF0000;"></span>
+                <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
+                    <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
+                        :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwIndex"
+                        :class="checkFw.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
+                       
+                        <div class="fw-td">
+                            <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0;"></span>
+                            <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF;"></span>
+                            <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF;"></span>
+                            <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000;"></span>
                         </div>
-
+                       <a-checkbox
+                          v-if="getClass(fwInfo) || checkShow(fwInfo)"
+                          :class="{ caseCheck: getClass(fwInfo)}"
+                          :checked="fwInfo.checked"
+                          :col="fwIndex"
+                          :row="cIndex"
+                          :dy="dyIndex"
+                          @change="onChangeCheckedBox(fwIndex, cIndex, dyIndex, fwInfo)">
+                        </a-checkbox>
+                       <span style="cursor: pointer" :class="[(getClass(fwInfo) || checkShow(fwInfo)) ? 'checked-shbw' :'unchecked-shbw']">{{ fwInfo.shbw }}</span>
+                      <div class="fw-td">
+                            <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0;"></span>
+                            <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF;"></span>
+                            <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF;"></span>
+                            <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000;"></span>
+                      </div>
+                      
                         <!-- {{ fwInfo.shbw + '|' + fwInfo.colspan }} -->
                     </td>
+                    <template v-for="blanc in (dy.maxHs - fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh).length)">
+                      <td></td>
+                    </template>
                     <!-- <td v-for="(item) in cInfo.hh" :key="cInfo.wlc.toString() + item" class="dy-css"
                         :rowspan="getShbw(cInfo.wlc, dy.dyh, item)?.conspan">
                         <div v-if="getShbw(cInfo.wlc, dy.dyh, item)">
@@ -53,6 +150,8 @@
                     </td> -->
                 </template>
             </tr>
+            </tbody>
+            
             <!-- <tr v-for="(cInfo) in cxx2" :key="cInfo.wlc">
                 <td>{{ cInfo.wlc }}</td>
                 <td>{{ cInfo.myc }}层</td>
@@ -66,64 +165,394 @@
                 </template>
             </tr> -->
         </table>
-        <div v-if="showAll && cxx.length > 5" style="text-align: center;padding: 10px;">
-            当前只显示<span style="color: #1677ff;">5</span>层，点击 <a-button type="link" @click="onShowAll">加载全部</a-button>
+          <div v-if="showAll && cxxData.length > 5" style="text-align: center;padding: 10px;">
+          当前只显示<span style="color: #1677ff;">5</span>层，点击 <a-button type="link" @click="onShowAll">加载全部</a-button>
+          </div> 
+        </template>
+        <template v-else>
+          <a-empty/>
+        </template>
+        
+      </div>
+      <div v-show="checkFw && checkFw.shbw" class="lpb-info">
+        <div class="lpb-info-header">
+          房屋
         </div>
+        <div class="lpb-info-content">
+          <div class="lpb-info-title lpb-info-row">{{ checkFw.bdcdyh }}</div>
+          <div class="lpb-info-btn lpb-info-row">
+            <a-space>
+              <a-button type="primary" size="small">
+                登记簿
+              </a-button>
+              <a-button type="primary" size="small">
+                打印
+              </a-button>
+            </a-space>
+          </div>
+          <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
+            <template v-for="(item) in fwKeys">
+              <a-form-item :label="item.label">
+                <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
+              </a-form-item>
+            </template>
+          </a-form>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
-let checkDyh = ref('')
+import { CheckSquareOutlined,UnorderedListOutlined,PauseOutlined,SearchOutlined } from '@ant-design/icons-vue';
+import { message } from "ant-design-vue"
+import { checkShowForSingle, checkShowForZh } from "/@/views/bdc/lpb/lpb"
+
+// 查询条件
+let zrzData = ref<any>({
+  zddm: '',
+  dh: '',
+  tdzl: '',
+  fwzl: '',
+  xqmc: '',
+  clh: ''
+})
+// 查询数据
+let zrzTableData = ref<any>([])
+// 表格列名
+let zrzColumns = ref<any>([{
+    title: '宗地代码',
+    dataIndex: 'zddm',
+    key: 'zddm',
+    width: 150
+  },{
+    title: '栋号',
+    dataIndex: 'dh',
+    key: 'dh',
+    width: 60
+  },{
+    title: '楼幢坐落',
+    dataIndex: 'zl',
+    key: 'zl',
+    width: 'auto'
+  }
+])
+// 表格查询loading
+let tableLoading = ref<boolean>(false)
+// 分页
+const pagination = ref<any>({ 
+  total: 0,
+  current: 1,
+  pageSize: 10,
+  showSizeChanger: true, 
+  showTotal: (total) => `共 ${total} 条数据` 
+})
+// 最大户数
+let maxHs = ref<number>(0)
+// 当前选择的幢数据
+let currentZrzInfo: any = ref({})
+// 当前案卷的不动产单元数组
+let currentCase = ref<any>([])
+// 当前选中的房屋
+let currentFw = ref<any>({
+  rowIndex: -1,
+  colIndex: -1,
+  dyIndex: -1
+})
+// 表格行事件
+const customRow = (record) => {
+  return {
+    onClick: (event) => {
+      if (!record.zbm) {
+        message.warning('幢编码为空,无法加载楼盘表')
+        return
+      }
+      currentZrzInfo.value = record
+      loadFwxx()
+    }
+  }
+}
+// 单元信息
+let dyxx = ref<any>([])
+// 层信息(总)
+let cxxData = ref<any>([])
+// 层信息(显示)
+let cxx = ref<any>([])
+// 房屋信息
+let fwxx = ref<any>([])
+// 选中的房屋
+let checkFw = ref<any>({})
+// 筛选楼盘表
+let filterLpb = ref<any>({
+  cData: null,
+  hData: null
+})
+// 查询层下拉框
+let cxxOptions = ref<any>([])
 // function getShbw(wlc: any, dyh: any, hbh: any) {
 //     const match = fwxx.find((t: any) => t.wlc === wlc && t.dyh === dyh && t.hbh === hbh);
 //     return match ? match : null;
 // }
-function onCheck(row: any) {
-    checkDyh.value = row.bdcdyh
-    console.log(row);
-}
 let zl = '园林办事处（城南）第二十五街坊潜江市红梅东路3号名筑仕嘉16栋'
 let showAll = ref(false)
 const date1 = new Date().getTime()
 console.log('date1:' + date1)
-let dyxx: any = []
-let cxx: any = []
-let fwxx: any = []
-await loadFwxx()
-async function loadFwxx() {
-    const res = await defHttp.get({ url: '/api/zrzy-bdc/bdc/lpb/lpb', params: { zbm: '05048025GB00202000216' } }, { withToken: true })
-    dyxx = res.result.dyhList
-    cxx = res.result.cxxList
-    fwxx = res.result.fwList
-}
 // console.log(fwxx)
 const date2 = new Date().getTime()
 console.log('date2:' + date2)
 console.log('时间差:' + (date2 - date1))
-let cxx1: any = ref([]);
-let cxx2: any = ref([]);
-if (cxx.length > 5) {
-    cxx1.value = cxx.slice(cxx.length - 5, cxx.length)
-    showAll.value = true
-} else {
-    cxx1.value = cxx
+
+// 详细信息
+const fwKeys = [
+  { label: '室号', value: 'shbw' },
+  { label: '权利人', value: 'qlr' },
+  { label: '坐落', value: 'zl' },
+  { label: '已办业务', value: 'yb' },
+  { label: '在办业务', value: 'zb' },
+  { label: '实际层', value: 'sjc' },
+  { label: '名义层', value: 'myc' },
+  { label: '户号', value: 'hh' },
+  { label: '户型', value: 'hx' },
+  { label: '户型结构', value: 'hxjg' },
+  { label: '房屋用途', value: 'fwyt' },
+  { label: '房屋类型', value: 'fwlx' },
+  { label: '房屋性质', value: 'fwxz' },
+  { label: '建筑面积(㎡)', value: 'jzmj' },
+  { label: '土地独用面积(㎡)', value: 'tddymj' },
+  { label: '土地分摊面积(㎡)', value: 'tdftmj' }
+]
+
+
+onMounted(() => {
+  initCurrentCase()
+})
+
+/**
+ * 获取当前案卷的不动产单元号数组
+ */
+function initCurrentCase() {
+  
 }
+
+/**
+ * 加载幢列表
+ */
+function loadList() {
+  // todo 接口查询列表
+  zrzTableData.value = [
+  { id: '1', zddm: '429005021004GB00003', dh: '25', zl: '园艺村紫月东路33号生态龙虾城25栋', zbm: '05048025GB00202000216' },  
+  { id: '2', zddm: '429005021004GB00003', dh: '30', zl: '园艺村紫月东路33号生态龙虾城30栋', zbm: '05048025GB00202000211' },   
+  { id: '3', zddm: '429005021004GB00003', dh: '29', zl: '园艺村紫月东路33号生态龙虾城29栋', zbm: '05048025GB00202000212' },
+  { id: '4', zddm: '429005021004GB00003', dh: '24', zl: '园艺村紫月东路33号生态龙虾城24栋', zbm: '05048025GB00202000213' },
+  { id: '5', zddm: '429005021004GB00003', dh: '18', zl: '园艺村紫月东路33号生态龙虾城18栋', zbm: '05048025GB00202000214' },
+  { id: '6', zddm: '429005021004GB00003', dh: '16', zl: '园艺村紫月东路33号生态龙虾城16栋', zbm: '05048025GB00202000215' },  
+  { id: '7', zddm: '429005021004GB00003', dh: '17', zl: '园艺村紫月东路33号生态龙虾城17栋', zbm: '05048025GB00202000217' },  
+  { id: '8', zddm: '429005021004GB00003', dh: '18', zl: '园艺村紫月东路33号生态龙虾城18栋', zbm: '05048025GB00202000218' },   
+  { id: '9', zddm: '429005021004GB00003', dh: '19', zl: '园艺村紫月东路33号生态龙虾城19栋', zbm: '05048025GB00202000219' },
+  { id: '10', zddm: '429005021004GB00003', dh: '20', zl: '园艺村紫月东路33号生态龙虾城20栋', zbm: '05048025GB00202000220' },
+  { id: '11', zddm: '429005021004GB00003', dh: '21', zl: '园艺村紫月东路33号生态龙虾城21栋', zbm: '05048025GB00202000221' },
+]
+}
+
+async function loadFwxx(isFilter = false) {
+    if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
+      const res = await defHttp.get({ url: '/api/zrzy-bdc/bdc/lpb/lpb', params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
+      if (res && res.result) {
+        dyxx.value = res.result.dyhList
+        cxxData.value = res.result.cxxList
+        showAll.value = cxxData.value.length > 5
+        cxx.value = cxxData.value.slice(cxxData.value.length - 5, cxxData.value.length)
+        fwxx.value = res.result.fwList
+        setMaxHs()
+        if (!isFilter) {
+           cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
+        }
+      }
+    }
+  
+}
+
+function onCheck(item: any) {
+  // todo 获取详细房屋数据
+  checkFw.value = item
+  console.log(item);
+}
+
+/**
+ * 设置最大户数
+ */
+function setMaxHs() {
+   dyxx.value.forEach((dy) => {
+    let dyMaxhs = 0
+    cxx.value.forEach((cInfo) => {
+      let fwList = fwxx.value.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)
+      dyMaxhs = fwList.length > dyMaxhs ? fwList.length : dyMaxhs
+    })
+    dy.maxHs = dyMaxhs
+    maxHs.value = dyMaxhs
+  })
+}
+
 function onShowAll() {
-    showAll.value = false
-    // cxx2.value = cxx.slice(10, cxx.length)
-    cxx1.value = cxx
+  showAll.value = false
+  cxx.value = JSON.parse(JSON.stringify(cxxData.value))
+  setMaxHs()
 }
 // watch(() => cxx1.value, async (newVal) => {
 //     console.log("cxx1变了" + newVal)
 // })
+
+/**
+ * 表格变化
+ * @param pag
+ */
+function handleTableChange(pag) {
+  pagination.value.current = pag.current
+  pagination.value.pageSize = pag.pageSize
+}
+
+
+/**
+ * 设置所有fwxx选中状态
+ * @param isChecked
+ * @param reverse
+ * @param currentCase
+ */
+function initFwxxChecked(isChecked, reverse = false, currentCase = []) {
+  let _cxx = cxx.value || []
+  let _dyxx = dyxx.value || []
+  _cxx.forEach((_cxxItem, _cxxIndex) => {
+    _dyxx.forEach((_dyxxItem, _dyxxIndex) => {
+      let _fwxx = fwxx.value.filter((t: any) => t.wlc === _cxxItem.wlc && t.dyh === _dyxxItem.dyh)
+      for (let i = 0; i < _fwxx.length; i++) {
+        _fwxx[i].checked = reverse ? !_fwxx[i].checked : isChecked
+        // 初始化已选中
+        if (currentCase && currentCase.length) {
+          for (let j = 0; j < currentCase.length ; j++) {
+            let caseItem = currentCase[j]
+            if (caseItem.bdcdyh == _fwxx[i].bdcdyh) {
+              _fwxx[i].checked = true
+              break;
+            }
+          }
+        }
+      }
+    })
+  })
+}
+
+/**
+ * 勾选框
+ * @param colIndex
+ * @param dyIndex
+ * @param rowIndex
+ * @param fwInfo
+ */
+function onChangeCheckedBox(colIndex, rowIndex, dyIndex, fwInfo) {
+  fwInfo.checked = !fwInfo.checked
+  currentFw.value.colIndex = colIndex
+  currentFw.value.rowIndex = rowIndex
+  currentFw.value.dyIndex = dyIndex
+}
+
+/**
+ * 设置行选或者列选
+ * @param type
+ */
+function setCheckRowOrCol(type) {
+  let _cxx = cxx.value || []
+  let _dyxx = dyxx.value || []
+  _cxx.forEach((_cxxItem,_cxxIndex) => {
+    _dyxx.forEach((_dyxxItem, _dyxxIndex) => {
+      let _fwxx = fwxx.value.filter((t: any) => t.wlc === _cxxItem.wlc && t.dyh === _dyxxItem.dyh)
+      for (let i = 0; i < _fwxx.length; i++) {
+        let _col = i
+        let _row = _cxxIndex
+        let _dy = _dyxxIndex
+        if (type == 'row') {
+          if (_row == currentFw.value.rowIndex) {
+            _fwxx[i].checked = true
+          }
+        } else {
+          if (_dy == currentFw.value.dyIndex && _col == currentFw.value.colIndex) {
+            _fwxx[i].checked = true
+          }
+        }
+      }
+    })
+  })
+}
+
+/**
+ * 全选
+ */
+function checkAll() {
+  initFwxxChecked(true)
+}
+
+/**
+ * 反选
+ */
+function checkReverse() {
+  initFwxxChecked(true, true)
+}
+
+/**
+ * 选行
+ */
+function checkRow() {
+  setCheckRowOrCol('row')
+}
+
+/**
+ * 选列
+ */
+function checkCol() {
+  setCheckRowOrCol('col')
+}
+
+/**
+ * 勾选框状态
+ * @param fwInfo
+ */
+function getClass(fwInfo) {
+  let caseBdcdyh = currentCase.value.filter(item => (item.zbm == currentZrzInfo.value.zbm) && item.bdcdyh == fwInfo.bdcdyh)
+  return caseBdcdyh.length > 0
+}
+
+/**
+ * 当前户是否可以选择
+ * @param fwInfo
+ */
+function checkShow(fwInfo) {
+  if (fwInfo && fwInfo.shbw) {
+    // todo 替换regType 取值 根据流程 还有组合流程
+    let regType = '0101'
+    if (regType.split(',').length == 1) {
+      return checkShowForSingle(regType, fwInfo)
+    } else {
+      return checkShowForZh(regType, fwInfo)
+    }
+  } else {
+    return false
+  }
+}
+
+/**
+ * 筛选楼盘表
+ */
+function handleFilterLpb() {
+  
+}
+
 </script>
 
 <style scoped lang="less">
 td {
     border: 1px solid #39bd8a;
-    width: 70px;
+    width: 100px;
     height: 30px;
 }
 
@@ -139,14 +568,22 @@ td {
     float: left;
     margin-left: 8px;
     border-radius: 50%;
+  
+  &:nth-of-type(1) {
+    margin-left: 0px;
+  }
 }
 
 .zbzt {
-    width: 6px;
-    height: 6px;
-    float: left;
-    margin-left: 2px;
-    border-radius: 3px;
+  width: 8px;
+  height: 8px;
+  float: left;
+  margin-left: 8px;
+  
+  &:nth-of-type(1) {
+    margin-left: 0px;
+  }
+  //border-radius: 3px;
 }
 
 .dy-css-base {
@@ -181,5 +618,166 @@ td {
         border-left-color: transparent;
         transform: rotate(45deg);
     }
+}
+
+.legend-tool-bar {
+  height: 50px;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+  display: flex;
+  align-items: center;
+  
+  .legend-icon {
+    flex: 2;
+  }
+  
+  .legend-btn {
+    flex: 1;
+    display: flex;
+    justify-content: end;
+    padding-right: 15px;
+  }
+}
+
+.lpb-main {
+  height: calc(100% - 50px);
+  display: flex;
+  
+  .lpb-search-bar {
+    width: 350px;
+    height: 100%;
+    border-right: 1px solid rgba(5, 5, 5, 0.06);
+    
+    .search-tool {
+      padding: 15px;
+      border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+      
+      :deep(.ant-form-item) {
+        margin-bottom: 10px;
+      }
+    }
+    
+    .search-result {
+      height: calc(100% - 315px);
+      overflow: auto;
+      
+      :deep(td) {
+        cursor: pointer;
+      }
+      .ant-table-striped :deep(.table-striped) td {
+        background-color: #fafafa;
+      }
+      
+      .ant-table-striped :deep(.active-table-row) td {
+        background-color: rgba(80, 148, 249, 0.1);
+      }
+      
+      :deep(.ant-table-body) {
+        overflow-y: scroll;
+        max-height: calc(100% - 42px) !important;
+      }
+
+      :deep(.ant-table-wrapper) {
+        height: 100%;
+      }
+
+      :deep(.ant-table) {
+        height: calc(100% - 56px);
+      }
+
+      :deep(.ant-table-container) {
+        height: 100%;
+      }
+
+      :deep(.ant-spin-container) {
+        height: 100%;
+      }
+
+      :deep(.ant-spin-nested-loading) {
+        height: 100%;
+      }
+      
+      :deep(.ant-pagination) {
+        margin-right: 10px;
+      }
+    }
+    
+  }
+  
+  .lpb-content {
+    //flex: auto;
+    padding: 15px;
+    height: 100%;
+    overflow: auto;
+    width: calc(100% - 650px);
+    
+    .lpb-content-search-tool {
+      display: flex;
+    }
+    
+    .fw-td {
+      text-align: center;
+      align:center;
+      display:flex;
+      flex-wrap: nowrap;
+      flex-direction:row;
+      justify-content:center;
+      //padding-left: 8px;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+    
+    .checked-shbw {
+      padding-left: 8px;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+    
+    .unchecked-shbw {
+      padding-left: 0px;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  }
+  
+  .lpb-info {
+    width: 300px;
+    height: 100%;
+    border-left: 1px solid rgba(5, 5, 5, 0.06);
+    
+    .lpb-info-header {
+      height: 30px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      text-align: left;
+      border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+    }
+    
+    .lpb-info-content {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 30px);
+      overflow: auto;
+      
+      .lpb-info-row {
+        padding: 10px 15px;
+        border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+      }
+      
+      .lpb-info-title {
+        color: #4678b2;
+        font-weight: bold;
+      }
+      
+      :deep(.ant-form-item-row) {
+        padding: 7px 15px;
+        border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+      }
+      
+      :deep(.ant-form-item) {
+        margin-bottom: 0;
+      }
+    }
+  }
 }
 </style>
