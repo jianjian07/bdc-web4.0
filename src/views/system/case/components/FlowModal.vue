@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
@@ -52,11 +52,8 @@ let flowInfo: any = ref({
 });
 
 flowInfo.value.lcid = props.lcid;
-watch(() => props.lcid, (newValue, _oldValue) => {
-    flowInfo.value.lcid = newValue
-    getFlowInfo(newValue)
-});
-const getFlowInfo = (lcid: string) => {
+getFlowInfo(props.lcid)
+function getFlowInfo(lcid: string) {
     defHttp.get({ url: api.queryByLcidUrl, params: { lcid: lcid } }, { withToken: true }).then((res) => {
         if (res.success) {
             flowInfo.value = res.result
@@ -74,7 +71,10 @@ function handleAdd() {
         }
     })
 }
-
+watch(() => props.lcid, (newValue, _oldValue) => {
+    flowInfo.value.lcid = newValue
+    getFlowInfo(newValue)
+});
 </script>
 
 <style scoped lang="less"></style>

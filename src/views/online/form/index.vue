@@ -124,6 +124,7 @@ enum Api {
     unlockFormUrl = '/api/zrzy-form/form/unlockForm',
 }
 const columns = [
+    { title: "ID", dataIndex: "id" },
     { title: "表单名称", dataIndex: "formName", ellipsis: true },
     { title: "表单编码", dataIndex: "code", width: 200 },
     // { title: "表单分类", dataIndex: "typeName", width: 220 },
