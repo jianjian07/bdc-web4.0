@@ -23,7 +23,8 @@
                 <template v-else>
                     <template v-if="editableData[record.id0]">
                         <a-input v-if="column.componentType == 'input'"
-                            v-model:value="editableData[record.id0][column.dataIndex]" style="margin: -5px 0" />
+                            v-model:value="editableData[record.id0][column.dataIndex]"
+                            @blur="column.blur ? searchFormInfo(editableData[record.id0]) : ''" style="margin: -5px 0" />
                         <a-select v-once v-else-if="column.componentType == 'select'"
                             v-model:value="editableData[record.id0][column.dataIndex]"
                             :options="getDictItemsByCode(column.dict)"
@@ -61,7 +62,8 @@ enum api {
     listUrl = '/api/zrzy-bdc/flow/vfd/list',
     addUrl = '/api/zrzy-bdc/flow/vfd/add',
     updateUrl = '/api/zrzy-bdc/flow/vfd/update',
-    deleteUrl = '/api/zrzy-bdc/flow/vfd/delete'
+    deleteUrl = '/api/zrzy-bdc/flow/vfd/delete',
+    queryByCodeUrl = '/api/zrzy-form/form/queryByCode'
 }
 const props = defineProps({
     nodeInfo: {
@@ -71,25 +73,26 @@ const props = defineProps({
 });
 const columns = [
     {
-        title: '名称',
-        dataIndex: 'vfdtitle',
-        width: 150,
-        align: 'center',
-        componentType: 'input'
-    },
-    {
-        title: '表单名/地址',
-        dataIndex: 'vfd',
-        width: 180,
-        componentType: 'input'
-    },
-    {
         title: '类别',
         dataIndex: 'bdlb',
         align: 'center',
         componentType: 'select',
         width: 100,
         dict: 'ymlb'
+    },
+    {
+        title: '表单名/地址',
+        dataIndex: 'vfd',
+        width: 180,
+        componentType: 'input',
+        blur: true
+    },
+    {
+        title: '名称',
+        dataIndex: 'vfdtitle',
+        width: 150,
+        align: 'center',
+        componentType: 'input'
     },
     {
         title: '批量',
@@ -207,6 +210,15 @@ const handleAdd = () => {
     dataSource.value.push(newData);
     editableData[id] = cloneDeep(newData);
 };
+function searchFormInfo(info) {
+    const code = info.vfd;
+    defHttp.get({ url: api.queryByCodeUrl, params: { code: code } }, { withToken: true }).then((res) => {
+        if (res.success) {
+            info.formId = res.result.id;
+            info.vfdtitle = res.result.formName;
+        }
+    })
+}
 </script>
 
 <style scoped lang="less">

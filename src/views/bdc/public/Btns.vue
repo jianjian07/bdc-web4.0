@@ -13,15 +13,15 @@
           <a-space :size="spaceSize">
             <a-button v-if="canScrollLeft" class="scroll-button" size="small" type="primary" @click="scrollLeft">
               <template #icon>
-                 <DoubleLeftOutlined />
+                <DoubleLeftOutlined />
               </template>
             </a-button>
-           <template v-for="(btn, index) in visibleButtons" :key="index">
-             <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
-           </template>
+            <template v-for="(btn, index) in visibleButtons" :key="index">
+              <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+            </template>
             <a-button v-if="canScrollRight" class="scroll-button" size="small" type="primary" @click="scrollRight">
               <template #icon>
-                 <DoubleRightOutlined />
+                <DoubleRightOutlined />
               </template>
             </a-button>
           </a-space>
@@ -30,21 +30,22 @@
     </div>
     <div v-if="rightBtnList.length > 0" class="foot-btn-css foot-btn-right-css">
       <a-space :size="spaceSize">
-        <template v-for="(btn, index) in rightBtnList.slice(0,3)">
+        <template v-for="(btn, index) in rightBtnList.slice(0, 3)">
           <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
         </template>
         <a-popover placement="bottomRight" v-if="rightBtnList.length > 3">
           <template #content>
             <div class="right-other-list">
               <template v-for="(btn, index) in rightBtnList.slice(3,rightBtnList.length)">
-                <a-button class="right-other-btn" size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+                <a-button class="right-other-btn" size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName
+                  }}</a-button>
               </template>
             </div>
           </template>
           <a-button size="small" type="primary" style="transform: rotate(90deg)">
-             <template #icon>
-                 <DoubleRightOutlined />
-              </template>
+            <template #icon>
+              <DoubleRightOutlined />
+            </template>
           </a-button>
         </a-popover>
       </a-space>
@@ -97,13 +98,13 @@ watch(() => props.spinning, (newVal) => {
 })
 
 watch(() => loading.value, (newVal) => {
-  emit('update:spinning',newVal)
+  emit('update:spinning', newVal)
 })
 
 watch(() => props.btnList, (newVal: any) => {
   leftBtnList.value = newVal && newVal.left ? newVal.left : []
-  rightBtnList.value = newVal && newVal.center ? newVal.center : []
-  middleBtnList.value = newVal && newVal.right ? newVal.right : []
+  middleBtnList.value = newVal && newVal.center ? newVal.center : []
+  rightBtnList.value = newVal && newVal.right ? newVal.right : []
   nextTick(() => {
     maxVisibleButtons.value = getMaxMiddleBtnCount()
   })
@@ -119,10 +120,10 @@ onMounted(() => {
 function getMaxMiddleBtnCount() {
   let count = 0
   let dom = document.getElementById('btn-middle-list')
-  let btnList = visibleButtons.value.length ? visibleButtons.value : middleBtnList.value 
+  let btnList = visibleButtons.value.length ? visibleButtons.value : middleBtnList.value
   if (dom) {
     // 按钮可占宽度(去掉左右边距和左右按钮宽度)
-    let btnWidth  = dom.offsetWidth - 30 - 20 - 34 * 2
+    let btnWidth = dom.offsetWidth - 30 - 20 - 34 * 2
     let width = 0
     for (let i = 0; i < btnList.length; i++) {
       let name = btnList[i].btnName
@@ -131,7 +132,7 @@ function getMaxMiddleBtnCount() {
         width += (spaceSize / 2)
       }
       if (width < btnWidth) {
-        count ++
+        count++
       } else {
         break
       }
@@ -147,11 +148,11 @@ async function handleClick(btn) {
   if (btn.funName && bdc[btn.funName]) {
     checkDemoRefs()
     let _bdc: any = bdc //  定义 不然打包后eval获取不到
-    console.log('_bdc',_bdc)
-    console.log('vueRefs',vueRefs)
-    let params =  btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
+    console.log('_bdc', _bdc)
+    console.log('vueRefs', vueRefs)
+    let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
     let _params = `(vueRefs,loading${params ? (',' + params) : params})`
-    await eval(`_bdc[btn.funName]`+ _params)
+    await eval(`_bdc[btn.funName]` + _params)
   }
 }
 
@@ -163,12 +164,12 @@ const visibleButtons = computed(() =>
 );
 
 // 判断是否可以右滚动
-const canScrollRight = computed(() => 
+const canScrollRight = computed(() =>
   startIndex.value + maxVisibleButtons.value < middleBtnList.value.length
 );
 
 // 判断是否可以左滚动
-const canScrollLeft = computed(() => 
+const canScrollLeft = computed(() =>
   startIndex.value > 0
 );
 

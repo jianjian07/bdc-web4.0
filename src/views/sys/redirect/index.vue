@@ -18,7 +18,6 @@ export default defineComponent({
   },
   beforeRouteEnter(to, from, next) {
     next((vm: any) => {
-      debugger
       vm.replaceRoute(from.fullPath, from.query);
     })
   }

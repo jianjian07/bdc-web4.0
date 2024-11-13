@@ -1,8 +1,7 @@
 import { message } from "ant-design-vue";
 import { defHttp } from "../http/axios";
 import { router } from "/@/router";
-import { guid } from '/@/utils';
-
+import { guid } from "..";
 export function extractData(options: any) {
     const route = router.currentRoute.value;
     const { data, dtype, open, reload } = options
@@ -18,8 +17,6 @@ export function extractData(options: any) {
         "djdl": "CQ",
         "slbh": slbh,
         "guid": "process1713234366021",
-        // "regType": "",
-        // "djlb": "",
         "dyhList": dyhList
     }
     defHttp.post({
@@ -32,5 +29,4 @@ export function extractData(options: any) {
             options.reload.value = guid()
         }
     })
-    // console.log("选中的单元" + JSON.stringify(_data))
 }

@@ -245,7 +245,6 @@ const rowSelection = computed(() => {
         type: props.mode === 'multiple' ? 'checkbox' : 'radio',
         selectedRowKeys: selectedValue.value,
         onSelect(record: any, selected: any) {
-            debugger
             if (props.mode == 'multiple') {
                 selectRow(selected, record)
             } else {
@@ -284,7 +283,7 @@ const customRow = (record: any) => {
     return {
         onClick: (event) => {
             if (props.mode == 'multiple') {
-                console.log('selectedValue.value',selectedValue.value)
+                console.log('selectedValue.value', selectedValue.value)
                 let find = selectedValue.value?.find(f => f == record[props.keyName])
                 let check = !find
                 selectRow(check, record)

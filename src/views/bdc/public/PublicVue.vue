@@ -19,10 +19,10 @@
               <CqList @ok="onReload"></CqList>
             </a-drawer>
           </div>
-          <div :class="['form-body',formBtnList.length == 0 ? 'form-body-without-btn' : '']">
+          <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
-              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId" :formCode="form.vfd" :disabled="form.iszd == '1'"
-              :ref="setRef" :reload="reload">
+              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"
+                :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">
               </component>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
@@ -88,7 +88,7 @@ const setRef = (el: any) => {
     demoRefs.push(el)
   }
 }
-const component = (path) => {
+const component = (path: string) => {
   let _com = `/src/views/${path}.vue`
   let isCorrect = Object.keys(modules).includes(_com)
   if (isCorrect) {
@@ -125,12 +125,12 @@ function getFormConfig() {
       Object.keys(btnList.value).forEach((key) => {
         btnList.value[key] = formConfig.value?.btnList.filter(btn => btn.anwz == key) || []
       })
-  
+
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
-    } 
+    }
   })
-  
+
   // formConfig.value = {
   //   title: '不动产首次登记(张三,李四)',
   //   btnConfig: {
@@ -191,7 +191,7 @@ function getFormConfig() {
   //     }
   //   ]
   // }
-  
+
 }
 
 /**
@@ -210,19 +210,6 @@ async function handleClick(btn) {
 
 function openList() {
   open.value = true
-  // let modal = cModal({
-  //     title: '首次列表',
-  //     filePath: 'views/online/report/RView',
-  //     width: 1200,
-  //     formData: {
-  //         formId: '1'
-  //     },
-  //     onOk: (_res: any) => {
-  //         // res为弹窗内组件的dom
-
-  //         modal.destroy()
-  //     }
-  // })
 }
 
 /**
@@ -366,36 +353,31 @@ function onDragEnd() {
   .form-body {
     height: calc(100% - 47px);
     overflow: auto;
-    padding-bottom: 10px;
+    padding: 0px 10px;
+
   }
-  
+
   .form-body-without-btn {
     height: 100%;
   }
 }
 
 .left-content {
-  // width: calc(100% - 310px);
   background-color: #fff;
   padding: 5px;
   height: 100%;
-  //transition: width 0.2s; /* 平滑过渡效果 */
 }
 
 .right-content {
-  // width: 300px;
-  // margin-left: 5px;
   background-color: #fff;
   padding: 5px;
   height: 100%;
-  // transition: width 0.2s; /* 平滑过渡效果 */
 }
 
 .split-line {
   width: 10px;
   position: relative;
   cursor: col-resize;
-  //background-color: ;
 
   &::after {
     content: "";
@@ -407,5 +389,25 @@ function onDragEnd() {
     left: 50%;
     transform: translate(-50%, -50%);
   }
+}
+
+/**修改滚动条样式（仅Google有效） */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(144, 147, 153, 0.3);
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #b6b7b9;
 }
 </style>
