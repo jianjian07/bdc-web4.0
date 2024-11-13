@@ -118,7 +118,7 @@ function handleResize() {
 
 function getFormConfig() {
   let slbh = route.query.slbh
-  let jdid = route.query.taskId
+  let jdid = route.query.nodeId
   defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid } }, { withToken: true }).then((res) => {
     if (res && res.code == 200) {
       formConfig.value = res.result
