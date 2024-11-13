@@ -80,11 +80,11 @@ let datalist = ref([]);
 let formData: any = ref({})
 let spinning = ref<boolean>(true);
 const columns = [
-    { title: "任务id", dataIndex: "id", align: "center" },
+    { title: "任务id", dataIndex: "taskId", align: "center" },
     { title: "状态", dataIndex: "status", align: "center", key: "status", width: 200 },
     { title: "案卷名称", dataIndex: "bpmBdcTitle", align: "center" },
     { title: "案卷编号", dataIndex: "slbh", align: "center" },
-    { title: "节点ID", dataIndex: "taskId", align: "center" },
+    { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },
     { title: "时长", dataIndex: "durationStr", align: "center" },
     { title: "提交人", dataIndex: "processApplyUserName", align: "center" },
@@ -141,7 +141,7 @@ function clear() {
  * @param record 
  */
 function handleCase(record: any) {
-    router.push({ path: '/bdc/casedoing', query: { slbh: record.id, taskId: record.taskId } });
+    router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
     // router.push("/bdc/casedoing" + '/' + record.id)
 }
 </script>
