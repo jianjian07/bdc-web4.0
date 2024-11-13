@@ -118,7 +118,8 @@ function handleResize() {
 
 function getFormConfig() {
   let slbh = route.query.slbh
-  defHttp.get({ url: api.getFlowConfig, params: { slbh: '1932501' } }, { withToken: true }).then((res) => {
+  let jdid = route.query.taskId
+  defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid } }, { withToken: true }).then((res) => {
     if (res && res.code == 200) {
       formConfig.value = res.result
       Object.keys(btnList.value).forEach((key) => {
