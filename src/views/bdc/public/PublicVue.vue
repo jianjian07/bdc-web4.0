@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ formConfig.ajmc }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" />
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :formTaskData="formTaskData" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
@@ -49,6 +49,7 @@ import { guid } from '/@/utils'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import TdxxList from "/@/views/bdc/pages/public/TdxxList.vue"
+import { message } from "ant-design-vue"
 const modules = import.meta.glob('/src/**/*.vue')
 let activeKey = ref('1')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
@@ -74,6 +75,8 @@ let formBtnList = ref<any>([])
 let formList = ref<any>([])
 // 表单loading
 let spinning = ref<boolean>(false)
+// 表单流程相关数据(给按钮提供数据)
+let formTaskData = ref<any>({})
 let formContent = ref()
 // 容器的宽度
 let containerWidth = 0
@@ -98,13 +101,15 @@ const component = (path: string) => {
   }
 }
 enum api {
-  getFlowConfig = '/api/zrzy-bdc/flow/vue/getFlowConfig'
+  getFlowConfig = '/api/zrzy-bdc/flow/vue/getFlowConfig',
+  getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo'
 }
 
 onMounted(() => {
   window.addEventListener('resize', handleResize)
   handleResize()
   getFormConfig()
+  getTaskInfo()
 })
 
 onBeforeUnmount(() => {
@@ -116,6 +121,9 @@ function handleResize() {
   leftWidth.value = containerWidth - rightWidth.value - 10; // 10px 是 split-line 的宽度
 }
 
+/**
+ * 获取表单配置
+ */
 function getFormConfig() {
   let slbh = route.query.slbh
   let jdid = route.query.nodeId
@@ -195,6 +203,40 @@ function getFormConfig() {
 }
 
 /**
+ * 获取流程信息
+ */
+function getTaskInfo() {
+  let taskId = route.query.taskId
+   defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        let taskData = res.result
+        let slbh = route.query.slbh
+        let lcmc = formConfig.value.ajmc
+        let cbsj, cbr
+        if (taskData.bpmLogList.length) {
+          cbsj = taskData.bpmLogList[0].opTime
+          cbr = taskData.bpmLogList[0].opUserName
+        } else {
+          cbsj = taskData.taskNameStartTime
+          cbr = taskData.taskAssigneeName
+        }
+        
+        formTaskData.value.transData = {
+          taskId: taskId,
+          slbh: slbh,
+          lcmc: lcmc,
+          jdmc: taskData.nodeName,
+          cbr: cbr,
+          cbsj: cbsj,
+          taskData: taskData
+        }
+      } else {
+        message.warning('获取流程数据失败:' + res.message)
+      }
+   })
+}
+
+/**
  * 按钮
  * @param btn
  */
@@ -203,7 +245,7 @@ async function handleClick(btn) {
     checkDemoRefs()
     console.log('demoRefs', demoRefs)
     let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
-    let _params = `(demoRefs,spinning${params ? (',' + params) : params})`
+    let _params = `(demoRefs,spinning,formTaskData${params ? (',' + params) : params})`
     await eval(`${btn.funName}` + _params)
   }
 }

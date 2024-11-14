@@ -1,71 +1,86 @@
 <template>
   <div class="handle-modal">
     <a-spin :spinning="spinning">
-      <a-row style="display:flex; height: 100%">
-        <a-col :md="8" style="padding: 20px;height: 100%;overflow-y: auto">
-          <h3 style="text-align: center">移交方向</h3>
-          <div style="text-align: center">
-            <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
-              <a-radio :value="1">向后</a-radio>
-              <a-radio :value="2">平级</a-radio>
-<!--              <a-radio :value="3" v-if="formState.taskData.histListSize>0">驳回</a-radio>-->
-            </a-radio-group>
-          </div>
-          <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-                <a-form-item class="form-item" label="受理编号">
-                  <span>&nbsp;{{ formState.slbh }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="业务名称">
-                  <span>&nbsp;{{ formState.lcmc }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="业务类型">
-                  <span>&nbsp;{{ formState.ywlx }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="当前节点">
-                  <span>&nbsp;{{ formState.jdmc }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="承办时间">
-                  <span>&nbsp;{{ formState.cbsj }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="剩余时限">
-                  <span>&nbsp;{{ formState.sysx }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="承办人">
-                  <span>&nbsp;{{ formState.cbr }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="收件人">
-                  <span>&nbsp;{{ formState.cbr }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="初审人">
-                  <span>&nbsp;{{ formState.csr }}</span>
-                </a-form-item>
-                <a-form-item class="form-item" label="备注">
-                  <a-textarea
-                    v-model="formState.bz"
-                    placeholder="请输入备注"
-                    :auto-size="{ minRows: 3, maxRows: 8 }"
-                  />
-                </a-form-item>
-              </a-form>
-        </a-col>
-        <a-col :md="8" class="mid-col" style="padding: 20px; height: 100%;overflow-y: auto; border-left: 1px solid #e8e8e8;border-right: 1px solid #e8e8e8; flex: auto">
-          <h3 style="text-align: center">承办人员</h3>
-          <div style="text-align: center; margin-bottom: 10px">
-            <a-radio-group v-model:value="handleUserType" @change="onChangeUserType">
-              <a-radio :value="1">移交到人</a-radio>
-              <a-radio :value="2">移交到角色</a-radio>
-            </a-radio-group>
-          </div>
-          <!-- todo 驳回 -->
-<!--          <div v-if="(formState.taskData.histListSize > 0) && (handleDirection == 3)">-->
-<!--            -->
+      <a-row style="display:flex; height: 100%; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8">
+<!--        <a-col :md="8" style="padding: 20px;height: 100%;overflow-y: auto">-->
+<!--          <h3 style="text-align: center">移交方向</h3>-->
+<!--          <div style="text-align: center">-->
+<!--            <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">-->
+<!--              <a-radio :value="1">向后</a-radio>-->
+<!--              <a-radio :value="2">平级</a-radio>-->
+<!--              <a-radio :value="3" v-if="formState?.taskData?.histListSize>0">驳回</a-radio>-->
+<!--            </a-radio-group>-->
 <!--          </div>-->
+<!--          <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">-->
+<!--                <a-form-item class="form-item" label="受理编号">-->
+<!--                  <span>&nbsp;{{ formState.slbh }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="业务名称">-->
+<!--                  <span>&nbsp;{{ formState.lcmc }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="业务类型">-->
+<!--                  <span>&nbsp;{{ formState.ywlx }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="当前节点">-->
+<!--                  <span>&nbsp;{{ formState.jdmc }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="承办时间">-->
+<!--                  <span>&nbsp;{{ formState.cbsj }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="剩余时限">-->
+<!--                  <span>&nbsp;{{ formState.sysx }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="承办人">-->
+<!--                  <span>&nbsp;{{ formState.cbr }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="收件人">-->
+<!--                  <span>&nbsp;{{ formState.cbr }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="初审人">-->
+<!--                  <span>&nbsp;{{ formState.csr }}</span>-->
+<!--                </a-form-item>-->
+<!--                <a-form-item class="form-item" label="备注">-->
+<!--                  <a-textarea-->
+<!--                    v-model="formState.bz"-->
+<!--                    placeholder="请输入备注"-->
+<!--                    :auto-size="{ minRows: 3, maxRows: 8 }"-->
+<!--                  />-->
+<!--                </a-form-item>-->
+<!--              </a-form>-->
+<!--        </a-col>-->
+        <a-col :md="12" class="mid-col" style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
+          <div>
+            <h3 style="text-align: center">移交方向</h3>
+            <div style="text-align: center; margin-bottom: 10px">
+              <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
+                <a-radio :value="1">向后</a-radio>
+                <a-radio :value="2">平级</a-radio>
+                <a-radio :value="3" v-if="formState?.taskData?.histListSize>0">驳回</a-radio>
+              </a-radio-group>
+            </div>
+            
+            <h3 style="text-align: center">承办人员</h3>
+            <div style="text-align: center; margin-bottom: 10px">
+              <a-radio-group v-model:value="handleUserType" @change="onChangeUserType">
+                <a-radio :value="1">移交到人</a-radio>
+                <a-radio :value="2">移交到角色</a-radio>
+              </a-radio-group>
+            </div>
+          </div>
+          
+          <div v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
+            <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange">
+              <template v-for="(item, index) in formState.taskData.histListNode">
+                <a-select-option v-if="item.NAME_ != formState.taskData.taskName" :value="item.TASK_DEF_KEY_">{{ item.NAME_ }}</a-select-option>
+              </template>
+            </a-select>
+          </div>
            <a-input-search  v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0"
                           placeholder="请输入承办人员名称" enterButton @search="onSearch" style="margin-bottom: 10px">
            </a-input-search>
           <a-spin class="tree-spin" :spinning="treeSpinning">
             <a-tree 
-                v-if="!treeSpinning"
+                v-if="!treeSpinning && treeData.length"
                 multiple 
                 :show-icon="true"
                 :block-node="true"
@@ -82,7 +97,7 @@
             </a-tree>
           </a-spin>
         </a-col>
-        <a-col :md="8" style="padding: 20px;height: 100%;overflow-y: auto">
+        <a-col :md="12" style="padding: 20px;height: 100%;min-height: 500px;overflow-y: auto">
           <h3 style="text-align: center">
             移交对象
             <a-popconfirm
@@ -110,8 +125,18 @@
 
 <script lang="ts" setup>
 import { TeamOutlined,UserOutlined,DeleteOutlined,CloseCircleOutlined } from '@ant-design/icons-vue';
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { findNode } from "/@/utils/form/commonUtils"
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
+import { useRoute } from "vue-router"
+const route = useRoute();
+const props = defineProps({
+  formData: {
+    type: Object,
+    default: {}
+  }
+})
 // 开启弹窗
 let open = ref<boolean>(false)
 // 加载状态
@@ -133,52 +158,9 @@ let formState = ref<any>({
   bz: ''
 })
 // 用户树
-let treeData = ref<any>([{
-  title: '审核',
-  key: 'xx-1',
-  class: 'first-tree-node',
-  children: [{
-    title: '首次审核',
-    key: 'xx-1-1',
-    iconName: 'team',
-    children: [{
-      title: '张三三',
-      key: 'xx-1-1-1',
-      iconName: 'user'
-    },{
-      title: '李四',
-      key: 'xx-1-1-2',
-      iconName: 'user'
-    }]
-  },{
-    title: '二次审核',
-    key: 'xx-2-1',
-    iconName: 'team',
-    children: [{
-      title: '王五',
-      key: 'xx-1-2-1',
-      iconName: 'user'
-    },{
-      title: '李四',
-      key: 'xx-1-2-2',
-      iconName: 'user'
-    }]
-  }]
-},{
-  title: '审批',
-  key: 'xx-2',
-  class: 'first-tree-node',
-  children: [{
-    title: '首次审核',
-    key: 'xx-2-1',
-    iconName: 'team',
-    children: [{
-      title: '张三',
-      key: 'xx-2-1-1',
-      iconName: 'user'
-    }]
-  }]
-}])
+let treeData = ref<any>([])
+// 用户数copy
+let treeDataCopy = ref<any>([])
 // todo 这个属性目前还不知道是什么
 let roleNum = ref<number>(0)
 // 树加载状态
@@ -193,27 +175,390 @@ let selectedNodes = ref<any>([])
 let hoverNodeIndex = ref<number>(-1)
 // 搜索词
 let searchKeys = []
+// 回退节点
+let rejectModelNode = ref<any>(null)
+
+enum api {
+  getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
+  extractUserRole = '/api/zrzy-system/UserRole/extractUserRole',
+  processComplete = '/api/zrzy-bdc/act/task/processComplete'
+}
+
+onMounted(() => {
+  formState.value = JSON.parse(JSON.stringify(props.formData))
+  setTransTree()
+})
+
+/**
+ * 设置默认向后移交的树
+ */
+function setTransTree() {
+  let transitionList = formState.value?.taskData?.transitionList
+  let stringList = transitionList.map(item => item.nextnode) || []
+  if (stringList.length) {
+    getTaskUserInfo(stringList, transitionList, 1)
+  }
+}
+
+/**
+ * 设置平级移交树
+ */
+function setPjTransTree() {
+  let taskData = formState.value?.taskData
+  if (taskData) {
+    let transitionList = [{ nextnode: taskData.nodeId, taskName: taskData.taskName, nodeId: taskData.nodeId }]
+    let stringList = transitionList.map(item => item.nextnode) || []
+    if (stringList.length) {
+      getTaskUserInfo(stringList, transitionList, 2)
+    }
+  }
+}
+
+/**
+ * 设置回退移交树
+ * @param rejectObj
+ */
+function setRejectTransTree(rejectObj) {
+  if (rejectObj) {
+    let transitionList = [{ nextnode: rejectObj.rejectNode, rejectNodeName: rejectObj.rejectNodeName ,rejectNode: rejectObj.rejectNode}]
+    let stringList = transitionList.map(item => item.nextnode) || []
+    getTaskUserInfo(stringList, transitionList, 3)
+  }
+}
+
+/**
+ * 获取用户信息
+ * @param stringList
+ */
+function getTaskUserInfo(stringList, transitionList, yjfx) {
+  resetData()
+  treeSpinning.value = true
+  defHttp.post({ url: api.getTaskUserInfo, data: { stringList: stringList } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      defHttp.post({ url: api.extractUserRole, data: res.result }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          let transTree = []
+          let roleList = res.result
+          let roleNumber = 0
+          if (roleList && roleList.length) {
+            transitionList.forEach(function(trans) {
+              let nextUserName = []
+              for (let i = 0; i < roleList.length; i++) {
+                let keyNameList = Object.keys(roleList[i])
+                keyNameList.forEach(item => {
+                  if (item == trans.nextnode) {
+                    let roleFlag = false
+                    let obj:any = transUserList(roleList[i], item, roleFlag, roleNumber, nextUserName)
+                    roleList[i] = obj.roleListI
+                    roleFlag = obj.roleFlag
+                    roleNumber = obj.roleNumber
+                    nextUserName = obj.nextUserName
+                    let tree = setTreePush(trans, roleFlag, nextUserName, yjfx)
+                    transTree.push(tree)
+                  }
+                })
+              }
+            })
+            treeData.value = transTree
+            treeDataCopy.value = JSON.parse(JSON.stringify(treeData.value))
+            roleNum.value = roleNumber
+            treeSpinning.value = false
+          }
+        }
+      })
+    } else {
+      message.warning(res.message)
+    }
+  }).catch(err => {
+    message.warning('请检查配置人员')
+  })
+}
+
+
+function resetData() {
+  selectedKeys.value = []
+  selectedNodes.value = []
+  treeData.value = []
+}
+
+/**
+ * 转换子节点
+ * @param roleListI
+ * @param value
+ * @param roleFlag
+ * @param roleNumber
+ * @param nextUserName
+ */
+function transUserList(roleListI, value, roleFlag, roleNumber, nextUserName) {
+  if (roleListI[value].length > 1) {
+    let roleNode = []
+    for (let j = 0; j < roleListI[value].length; j++) {
+      let child = []
+      for (let k = 0; k < roleListI[value][j].userList.length; k++) {
+        child.push({
+          title: roleListI[value][j].userList[k].realname,
+          key: value + ',' + roleListI[value][j].roleId + ',' + roleListI[value][j].userList[k].username,
+          value: roleListI[value][j].userList[k].username,
+          iconName: 'user'
+        })
+      }
+      roleNode.push({
+        title: roleListI[value][j].roleName,
+        key: value + ',' + roleListI[value][j].roleId,
+        value: roleListI[value][j].roleId,
+        iconName: 'team',
+        children: child
+      })
+      roleFlag = true
+      roleNumber += 1
+      nextUserName = roleNode
+    }
+  } else {
+    let role = roleListI[value][0]
+    let userList = []
+    if (role && role.userList) {
+      role.userList.forEach(function(userListItem) {
+        if (role.roleId || role.roleName) {
+          userList.push({
+            title: userListItem.realname,
+            key: value + ',' + role.roleId + ',' + userListItem.username,
+            value: userListItem.username,
+            iconName: 'user'
+          })
+        } else {
+          userList.push({
+            title: userListItem.realname,
+            key: value + ',' + userListItem.username,
+            value: userListItem.username,
+            iconName: 'team'
+          })
+        }
+      })
+    }
+    if ((role && role.roleId) || (role && role.roleName)) {
+      let children = []
+      children.push({
+        title: role.roleName,
+        key: value + ',' + role.roleId,
+        value: role.roleId,
+        children: userList,
+        iconName: 'team'
+      })
+      roleFlag = true
+      roleNumber += 1
+      nextUserName = children
+    } else {
+      roleFlag = false
+      let children = []
+      children = userList
+      nextUserName = children
+    }
+  }
+  // nextUserName , roleNum , roleList , roleFlag
+  let obj = {
+    nextUserName: nextUserName,
+    roleNumber: roleNumber,
+    roleListI: roleListI,
+    roleFlag: roleFlag
+  }
+  return obj
+}
+
+function setTreePush(item, roleFlag, nextUserName, yjfx) {
+  // 1 向后 2 平级 3 回退
+  const mapping = {
+    1: { title: item.nextnodeName, key: item.nextnode, value: item.nextnode },
+    2: { title: item.taskName, key: item.nodeId, value: item.nodeId },
+    3: { title: item.rejectNodeName, key: item.rejectNode, value: item.rejectNode }
+  };
+
+  const { title, key, value } = mapping[yjfx] || {};
+
+  return {
+    title: title,
+    key: key,
+    value: value,
+    role: roleFlag,
+    children: nextUserName
+  };
+}
 
 /**
  * 确认
  */
-function handleOk() {
-  
+async function handleOk() {
+  let nextnodeUserNameList: any = []
+  let nextnodeUserIdList: any = []
+  let nextnode = ''
+  if (selectedNodes.value.length) {
+    if (handleUserType.value == 1) {
+      nextnodeUserNameList = []
+      nextnodeUserIdList = []
+      nextnode = selectedNodes.value[0].key.split(',')[0]
+      selectedNodes.value.forEach(item => {
+        let arr = item.key.split(',')
+        nextnodeUserIdList.push(arr[arr.length - 1])
+        nextnodeUserNameList.push(item.title)
+      })
+      let obj = {
+        nextnode: nextnode,
+        nextnodeUserNameList: nextnodeUserNameList.toString(),
+        nextnodeUserIdList: nextnodeUserIdList.toString(),
+        yjfx: handleUserType.value
+      }
+      return await handleProcessOver(obj)
+    } else {
+      nextnodeUserNameList = []
+      nextnodeUserIdList = []
+      let nextnode = selectedNodes.value[0].key.split(',')[0]
+      selectedNodes.value.forEach(function (val) {
+        treeData.value.forEach(function (node) {
+          if (node.children) {
+            node.children.forEach(function (childNode) {
+              if (childNode.key === val.key) {
+                if (childNode.childrenCopy) {
+                  childNode.childrenCopy.forEach(function (childCopyItem) {
+                    let arr = childCopyItem.key.split(',')
+                    nextnodeUserNameList.push(childCopyItem.title)
+                    nextnodeUserIdList.push(arr[arr.length - 1])
+                  })
+                }
+              }
+            })
+          }
+        })
+      })
+      // 去重
+      let nameItems = [...new Set(nextnodeUserNameList)];
+      let idItems = [...new Set(nextnodeUserIdList)];
+      let obj = {
+        nextnode: nextnode,
+        nextnodeUserNameList: nameItems.toString(),
+        nextnodeUserIdList: idItems.toString(),
+        yjFx: handleUserType.value
+      }
+      return await handleProcessOver(obj)
+    }
+  } else {
+    message.warning('请选择移交的对象!')
+  }
+  return false
+}
+
+/**
+ * 调用移交接口
+ * @param obj
+ */
+function handleProcessOver(obj) {
+  return new Promise((resolve, reject) => {
+    let nextnode = obj.nextnode
+    let yjfx = obj.yjfx
+    let model = {
+      taskId: formState.value.taskId || route.query.taskId,
+      nextnode: obj.nextnode,
+      nextCodeCount: '',
+      reason: '',
+      processModel: yjfx == 3 ? 3: 1,
+      rejectModelNode: yjfx == 3 ? nextnode : '',
+      nextUserName: obj.nextnodeUserNameList,
+      nextUserId: obj.nextnodeUserIdList,
+      ccUserIds: '',
+      ccUserRealNames: '',
+      fileList: ''
+    }
+    spinning.value = true
+    defHttp.post({ url: api.processComplete, data: model }, { withToken: true }).then((res) => {
+      spinning.value = false
+      if (res && res.success) {
+        message.success('移交成功!')
+        resolve(true)
+      } else {
+        message.error('移交失败')
+        resolve(false)
+      }
+    }).catch(err => {
+      message.error(err)
+      resolve(false)
+    })
+    
+  })
+}
+
+/**
+ * 回退节点
+ */
+function onRejectModelChange(value) {
+  rejectModelNode.value = value
+  let obj: any = {}
+  obj.rejectNode = rejectModelNode.value
+  for (let i = 0; i < formState.value.taskData.histListNode.length; i++) {
+    if (rejectModelNode.value === formState.value.taskData.histListNode[i].TASK_DEF_KEY_) {
+      obj.rejectNodeName = formState.value.taskData.histListNode[i].NAME_
+    }
+  }
+  setTransData(3, obj)
 }
 
 /**
  * 移交方向改变
  */
-function onChangeDirection() {
+function onChangeDirection(e) {
+  let obj:any = {}
   // 重新初始化用户树
-  
+  if (e.target.value == 3) {
+    let nodeName
+    rejectModelNode.value = formState.value.taskData.histListNode[0].TASK_DEF_KEY_
+    nodeName = formState.value.taskData.histListNode[0].NAME_
+    if (rejectModelNode.value === formState.value.taskData.nodeId) {
+      if (formState.value.taskData.histListNode[1].TASK_DEF_KEY_) {
+        rejectModelNode.value = formState.value.taskData.histListNode[1].TASK_DEF_KEY_
+        nodeName = formState.value.taskData.histListNode[1].NAME_
+      } else {
+        rejectModelNode.value = null
+      }
+    }
+    obj.rejectNode = rejectModelNode.value
+    obj.rejectNodeName = nodeName
+  }
+  handleDirection.value = e.target.value
+  setTransData(handleDirection.value, obj)
+}
+
+/**
+ * 根据移交方向设置
+ */
+function setTransData(yjfx, rejectObj) {
+  if (yjfx == 1) {
+    // 默认向后移交
+    setTransTree()
+  } else if (yjfx == 2) {
+    // 平级移交
+    setPjTransTree()
+  } else {
+    // 回退移交
+    setRejectTransTree(rejectObj)
+  }
 }
 
 /**
  * 移交人员改变
  */
-function onChangeUserType() {
-  
+function onChangeUserType(e) {
+  resetData()
+  let value = e.target.value
+  if (value == 2) {
+    let tree = JSON.parse(JSON.stringify(treeDataCopy.value))
+    tree = tree.filter(item => item.role === true)
+    for (let i = 0; i < tree.length; i++) {
+      for (let j = 0; j < tree[i].children.length; j++) {
+        tree[i].children[j].childrenCopy = tree[i].children[j].children
+        delete tree[i].children[j].children
+      }
+    }
+    treeData.value = tree
+  } else {
+    treeData.value = treeDataCopy.value
+  }
 }
 
 /**
@@ -356,6 +701,7 @@ defineExpose({
 <style lang="less" scoped>
 .handle-modal {
   height: 100%;
+  min-height: 500px;
   
   :deep(.ant-spin-nested-loading) {
     height: 100%;
@@ -388,7 +734,7 @@ defineExpose({
 
 .mid-col {
   :deep(.ant-spin-nested-loading) {
-    height: calc(100% - 120px);
+    height: calc(100% - 130px);
     overflow-y: auto;
     border: none;
   }
@@ -418,6 +764,14 @@ defineExpose({
     position: relative;
     
   }
+}
+
+.tree-spin {
+  width: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 </style>

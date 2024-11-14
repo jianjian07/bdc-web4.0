@@ -183,7 +183,7 @@ function handleFullscreen() {
   .ant-modal-content {
     display: flex;
     flex-direction: column;
-    height: calc(100vh);
+    height: calc(100vh)!important;
   }
 
   .ant-modal-body {
