@@ -72,10 +72,6 @@ const props = defineProps({
   spinning: {
     type: Boolean,
     default: false
-  },
-  formTaskData: {
-    type: Object,
-    default: {}
   }
 })
 let vueRefs: any = []
@@ -155,7 +151,7 @@ async function handleClick(btn) {
     console.log('_bdc', _bdc)
     console.log('vueRefs', vueRefs)
     let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
-    let _params = `(vueRefs,loading,props.formTaskData${params ? (',' + params) : params})`
+    let _params = `(vueRefs,loading${params ? (',' + params) : params})`
     await eval(`_bdc[btn.funName]` + _params)
   }
 }

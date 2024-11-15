@@ -22,7 +22,7 @@ export function getTarget() {
  * @param _type
  * @param demoRefs
  */
-export async function sendSaveFun(type: string, demoRefs: any, loading: any, formTaskData: any, params?: any) {
+export async function sendSaveFun(type: string, demoRefs: any, loading: any, params?: any) {
   return new Promise(async (resolve) => {
     loading.value = true
     if (type == 'baseSave') {
@@ -71,6 +71,9 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, for
         } else {
           // 表单暂存，校验不通过，也提示表单保存成功
           msg = "暂存成功"
+          message.success(msg)
+          resolve(saveStatus)
+          return
         }
       } else {
         saveStatus = false
@@ -89,31 +92,28 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, for
   })
 }
 
-export async function baseSave(demoRefs: any, loading: any, formTaskData: any, params: any) {
+export async function baseSave(demoRefs: any, loading: any, params: any) {
   return await sendSaveFun('baseSave', demoRefs, loading, params)
 }
 
-export async function handOver(demoRefs: any, loading: any, formTaskData: any, params: any) {
+export async function handOver(demoRefs: any, loading: any, params: any) {
   // let res = await sendSaveFun('handOver', demoRefs, loading, params)
   // 测试弹窗默认true
   let res = true
   if (res) {
-    if (formTaskData.transData) {
-      let modal = cModal({
-        title: '移交',
-        width: '45vw',
-        filePath: 'views/bdc/public/HandleModal',
-        formData: formTaskData.transData,
-        onOk: async (res: any) => {
-          if (res && res.handleOk) {
-            let _result = await res.handleOk()
-            if (_result) {
-              modal.destroy()
-            }
+    let modal = cModal({
+      title: '移交',
+      width: '45vw',
+      filePath: 'views/bdc/public/HandleModal',
+      onOk: async (res: any) => {
+        if (res && res.handleOk) {
+          let _result = await res.handleOk()
+          if (_result) {
+            modal.destroy()
           }
         }
-      })
-    }
+      }
+    })
   } else {
     message.error('表单保存失败!')
   }
@@ -132,7 +132,7 @@ export async function aa(demoRefs, test) {
  * @param val1
  * @param val2
  */
-export function handBack(demoRefs: any, loading: any, formTaskData: any, val1, val2) {
+export function handBack(demoRefs: any, loading: any, val1, val2) {
   console.log('val1', val1)
   console.log('val2', val2)
 }

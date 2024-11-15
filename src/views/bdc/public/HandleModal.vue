@@ -181,13 +181,48 @@ let rejectModelNode = ref<any>(null)
 enum api {
   getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
   extractUserRole = '/api/zrzy-system/UserRole/extractUserRole',
-  processComplete = '/api/zrzy-bdc/act/task/processComplete'
+  processComplete = '/api/zrzy-bdc/act/task/processComplete',
+  getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo'
 }
 
 onMounted(() => {
-  formState.value = JSON.parse(JSON.stringify(props.formData))
-  setTransTree()
+  getTaskInfo()
 })
+
+/**
+ * 获取流程信息
+ */
+function getTaskInfo() {
+  let taskId = route.query.taskId
+   defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        let taskData = res.result
+        let slbh = route.query.slbh
+        // let lcmc = formConfig.value.ajmc
+        let cbsj, cbr
+        if (taskData.bpmLogList.length) {
+          cbsj = taskData.bpmLogList[0].opTime
+          cbr = taskData.bpmLogList[0].opUserName
+        } else {
+          cbsj = taskData.taskNameStartTime
+          cbr = taskData.taskAssigneeName
+        }
+        
+        formState.value = {
+          taskId: taskId,
+          slbh: slbh,
+          // lcmc: lcmc,
+          jdmc: taskData.nodeName,
+          cbr: cbr,
+          cbsj: cbsj,
+          taskData: taskData
+        }
+        setTransTree()
+      } else {
+        message.warning('获取流程数据失败:' + res.message)
+      }
+   })
+}
 
 /**
  * 设置默认向后移交的树
