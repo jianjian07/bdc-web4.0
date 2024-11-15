@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import BdpzDrawer from '/@/views/system/case/components/BdpzDrawer.vue';
+import BdpzDrawer from '/@/views/system/case/components/BdpzDrawer_copy.vue';
 import { h } from 'vue';
 import { CopyrightCircleOutlined } from '@ant-design/icons-vue';
 import { defHttp } from '/@/utils/http/axios';
