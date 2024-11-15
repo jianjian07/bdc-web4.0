@@ -2,12 +2,18 @@
   <a-config-provider :locale="zhCN">
     <a-modal class="commonModal" v-model:open="modalVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
       :wrap-class-name="(fullScreen || isFullScreen) ? 'full-common-modal' : ''" :confirmLoading="confirmLoading" :maskClosable="false"
-      :okText="okText" :cancelText="cancelText" v-bind="footerBind" @ok="handleOk" @cancel="handleClose">
+      v-bind="footerBind">
       <template #title>
         {{ title }}
         <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
           <FullscreenExitOutlined v-if="fullScreen" />
           <FullscreenOutlined v-else />
+        </div>
+      </template>
+      <template #footer>
+        <div :style="footerStyle">
+          <a-button @click="handleClose">{{ cancelText }}</a-button>
+          <a-button type="primary" @click="handleOk">{{ okText }}</a-button>
         </div>
       </template>
       <Suspense v-if="isFinish">
@@ -18,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from "vue"
+import { computed, defineAsyncComponent, onMounted, ref, defineExpose, defineProps } from "vue"
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 const modules = import.meta.glob('/src/**/*.vue')
@@ -74,6 +80,14 @@ const props = defineProps({
   footer: {
     type: Boolean,
     default: true
+  },
+  footerStyle: {
+    type: Object,
+    default: () => {
+      return {
+        'text-align': 'end'
+      }
+    }
   }
 })
 

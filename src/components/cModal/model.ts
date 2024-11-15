@@ -15,5 +15,6 @@ export interface cModalModel {
   onCancel?: Function,
   // 是否显示页脚
   footer?: boolean,
-  formData?: object | string | number | Array<any>
+  formData?: object | string | number | Array<any>,
+  footerStyle?: Object
 }
