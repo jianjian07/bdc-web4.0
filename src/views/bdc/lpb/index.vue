@@ -4,11 +4,19 @@
       <div style="flex: 1"></div>
       <div class="legend-icon">
         <a-space>
-            图例版：
-            <span class="zt" style="background-color: #C0C0C0"></span>查封
-            <span class="zt" style="background-color: #0000FF"></span> 抵押
-            <span class="zt" style="background-color: #9900FF"></span> 预告
-            <span class="zt" style="background-color: #FF0000"></span> 产权
+            <span style="white-space: nowrap">图例版：</span>
+            <span class="zt" style="background-color: #FE9E38"></span><span style="white-space: nowrap">合同备案</span>
+            <span class="zt" style="background-color: #75FBD4"></span><span style="white-space: nowrap"> 拆迁限制</span>
+            <span class="zt" style="background-color: #50A68D"></span><span style="white-space: nowrap"> 地役权</span>
+            <span class="zt" style="background-color: #0000FF"></span><span style="white-space: nowrap"> 抵押权</span>
+            <span class="zt" style="background-color: #805B23"></span><span style="white-space: nowrap"> 公共部位</span>
+            <span class="zt" style="background-color: #A5D147"></span><span style="white-space: nowrap"> 居住权</span>
+            <span class="zt" style="background-color: #FCFC60"></span><span style="white-space: nowrap"> 合同签约</span>
+            <span class="zt" style="background-color: #FF0000"></span><span style="white-space: nowrap"> 不动产权</span>
+            <span class="zt" style="background-color: #BF6B97"></span><span style="white-space: nowrap"> 限制登记</span>
+            <span class="zt" style="background-color: #C0C0C0"></span><span style="white-space: nowrap"> 查封(其他限制)</span>
+            <span class="zt" style="background-color: #9900FF"></span><span style="white-space: nowrap"> 预告</span>
+            <span class="zt" style="background-color: #9A992F"></span><span style="white-space: nowrap"> 异议</span>
         </a-space>
       </div>
       <div class="legend-btn">
@@ -76,7 +84,7 @@
         <div v-if="cxxData.length" class="lpb-content-search-tool">
           <div style="width: 30%">
             <a-form-item label="层">
-              <a-select style="width: 100%" v-model:value="filterLpb.cData" :options="cxxOptions" :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
+              <a-select style="width: 100%" allow-clear v-model:value="filterLpb.cData" :options="cxxOptions" :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
             </a-form-item>
           </div>
           <div style="width: 32%; margin: 0 10px">
@@ -113,10 +121,18 @@
                         :class="checkFw.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
                        
                         <div class="fw-td">
-                            <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0;"></span>
-                            <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF;"></span>
-                            <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF;"></span>
-                            <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000;"></span>
+                            <span v-if="fwInfo.zbhtbazt == 1" class="zbzt" style="background-color: #FE9E38"></span>
+                            <span v-if="fwInfo.zbcqxzzt == 1" class="zbzt" style="background-color: #75FBD4"></span>
+                            <span v-if="fwInfo.zbdyqzt == 1" class="zbzt" style="background-color: #50A68D"></span>
+                            <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF"></span>
+                            <span v-if="fwInfo.zbggbwzt == 1" class="zbzt" style="background-color: #805B23"></span>
+                            <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
+                            <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
+                            <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
+                            <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>
+                            <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0"></span>
+                            <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF"></span>
+                            <span v-if="fwInfo.zbyyzt == 1" class="zbzt" style="background-color: #9A992F"></span>
                         </div>
                        <a-checkbox
                           v-if="getClass(fwInfo) || checkShow(fwInfo)"
@@ -129,10 +145,18 @@
                         </a-checkbox>
                        <span style="cursor: pointer" :class="[(getClass(fwInfo) || checkShow(fwInfo)) ? 'checked-shbw' :'unchecked-shbw']">{{ fwInfo.shbw }}</span>
                       <div class="fw-td">
-                            <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0;"></span>
-                            <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF;"></span>
-                            <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF;"></span>
-                            <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000;"></span>
+                        <span v-if="fwInfo.htbazt == 1" class="zt" style="background-color: #FE9E38"></span>
+                        <span v-if="fwInfo.cqxzzt == 1" class="zt" style="background-color: #75FBD4"></span>
+                        <span v-if="fwInfo.dyqzt == 1" class="zt" style="background-color: #50A68D"></span>
+                        <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF"></span>
+                        <span v-if="fwInfo.ggbwzt == 1" class="zt" style="background-color: #805B23"></span>
+                        <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
+                        <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
+                        <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
+                        <span v-if="fwInfo.xzdjzt == 1" class="zt" style="background-color: #BF6B97"></span>
+                        <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0"></span>
+                        <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF"></span>
+                        <span v-if="fwInfo.yyzt == 1" class="zt" style="background-color: #9A992F"></span>
                       </div>
                       
                         <!-- {{ fwInfo.shbw + '|' + fwInfo.colspan }} -->
@@ -626,7 +650,8 @@ td {
   align-items: center;
   
   .legend-icon {
-    flex: 2;
+    flex: 3;
+    padding: 0 10px;
   }
   
   .legend-btn {
