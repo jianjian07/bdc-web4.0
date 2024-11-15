@@ -46,7 +46,7 @@
               </template>
             </div>
             <div class="oprBtns" v-if="isManage">
-              <div v-if="dataRef.parentId != '0'">
+              <div class="fileBtn" v-if="dataRef.parentId != '0'">
                 <a-popconfirm
                   title="确定删除该附件？"
                   ok-text="确定"
@@ -56,7 +56,7 @@
                   <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
                 </a-popconfirm>
               </div>
-              <div v-else>
+              <div class="cataBtn" v-else>
                 <template v-if="editableData[dataRef.id]">
                   <a-button type="link" size="small" @click.stop="saveCatalog(editableData[dataRef.id], dataRef)">保存</a-button>
                   <a-button type="link" size="small" @click.stop="delete editableData[dataRef.id]">取消</a-button>
@@ -64,16 +64,25 @@
                     <a-button type="link" size="small" @click.stop="">取消</a-button>
                   </a-popconfirm> -->
                 </template>
-                <template v-else>
+                <div style="display: flex" v-else>
                   <a-tooltip title="新增附件材料">
-                    <a-button style="margin-right: 5px" size="small" :icon="h(PlusOutlined)" @click.stop="addFile(dataRef, 'file')" />
+                    <!-- <a-button style="margin-right: 5px" size="small" :icon="h(PlusOutlined)" @click.stop="addFile(dataRef, 'file')" /> -->
+                    <a-upload
+                      multiple
+                      v-model:file-list="fileList"
+                      :before-upload="beforeUpload"
+                      :customRequest="customRequest"
+                    >
+                      <a-button style="margin-right: 5px" size="small" :icon="h(UploadOutlined)" />
+                      <template #itemRender=""></template>
+                    </a-upload>
                   </a-tooltip>
                   <a-tooltip title="编辑目录名称">
                     <a-button style="margin-right: 5px" size="small" :icon="h(EditOutlined)" @click.stop="editCatalog(dataRef)" />
                   </a-tooltip>
-                  <a-tooltip title="删除目录">
+                  <a-tooltip title="删除目录及附件">
                     <a-popconfirm
-                      title="确定删除该目录？"
+                      title="确定删除该目录及该目录下的附件？"
                       ok-text="确定"
                       cancel-text="取消"
                       @confirm="deleteCatalogOrFile(dataRef.id, 'folder')"
@@ -81,7 +90,7 @@
                       <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
                     </a-popconfirm>
                   </a-tooltip>
-                </template>
+                </div>
               </div>
             </div>
             <div v-else>
@@ -106,11 +115,13 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
-import Icon, { DownOutlined, FolderOutlined, FilePdfOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons-vue';
 
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
 let previewUrl: any = ref('')
+let fileList: any = ref([])
+let uploadData: any = ref({})
 
 const fieldNames = { children: 'children', title: 'materialName', key: 'id' }
 
@@ -124,7 +135,8 @@ const urlList = {
   addCatalog: '/api//zrzy-bdc/bdcdj/upfiles/casematerial/add', // 新增附件目录
   deleteCatalogOrFile: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/deleteMaterialAndUpfiles', // 删除附件目录或文件
   getCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/addSelectMaterialList', // 提取附件目录
-  updateCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updatePart' // 更新部分字段
+  updateCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updatePart', // 更新部分字段
+  uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch' // 批量上传文件
 }
 
 const props = defineProps({
@@ -268,6 +280,37 @@ function addFile(data:any = null, way:String = 'cata') {
   })
 }
 
+function beforeUpload() {
+  return false
+}
+
+const customRequest = (data: any) => {
+  debugger
+  const formData = new FormData()
+  const params = {
+    materialId: data.id,
+    materialName: data.materialName,
+    procInstId: props.formData.procInstId
+  }
+  fileList.value.forEach((ele:any) => {
+    formData.append(`files`, ele.originFileObj);
+  })
+  defHttp
+    .post(
+        {
+          url: urlList.uploadBatch,
+          data: formData,
+          params: params,
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+        { withToken: true }
+    ).then((res: any) => {
+      if(res && res.success) {
+        message.success('上传成功！')
+      }
+    })
+}
+
 // 删除附件目录或者文件
 function deleteCatalogOrFile(id: any, type: String = '') {
   defHttp.put(
@@ -320,11 +363,15 @@ function previewFile(data: any) {
       justify-content: space-between;
       align-items: center;
       .oprBtns {
-        display: none;
+        .fileBtn {
+          display: none;
+        }
       }
       &:hover {
         .oprBtns {
-          display: block;
+          .fileBtn {
+            display: block;
+          }
         }
       }
     }

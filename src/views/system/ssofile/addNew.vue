@@ -52,9 +52,9 @@
         </a-select>
         </a-form-item>
         <a-form-item
-          label="附件文件"
+          label="附件"
         >
-        <a-upload v-model:file-list="fileList" multiple >
+        <a-upload v-model:file-list="fileList" :before-upload="beforeUpload" multiple >
           <a-button>
             <upload-outlined></upload-outlined>
             选择文件
@@ -71,9 +71,13 @@
       
       <template v-else>
         <a-form-item
-          label="附件目录"
+          label="附件"
         >
-        <a-upload v-model:file-list="fileList" @change="handleSelectCata" multiple webkitdirectory directory>
+        <a-upload 
+          v-model:file-list="fileList"
+          :before-upload="beforeUpload"
+          multiple webkitdirectory directory
+        >
           <a-button>
             <upload-outlined></upload-outlined>
             选择目录
@@ -138,7 +142,7 @@ let fileList: any = ref([])
 let catalogOptions : any = ref([])
 const urlList = {
   getCatalog: '/api/zrzy-bdc/bdcdj/upfiles/file/queryMaterialTreeList', // 提取附件目录
-  uploadFile: '/api/zrzy-bdc/bdcdj/upfiles/file/upload'
+  uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch' // 批量上传文件
 }
 
 let isNew = computed(() => {
@@ -203,6 +207,10 @@ function handleSelectCata(info: any) {
   }
 }
 
+function beforeUpload() {
+  return false
+}
+
 // 新增的材料目录仅关联当前案卷
 const addCatalog = () => {
   return new Promise((resolve, reject) => {
@@ -246,32 +254,41 @@ const addCatalog = () => {
 }
 
 const uploadFile = () => {
-  if(isFileUpload.value == 'file' && !fileState.value.materialId) {
-    return
-  }
-  if(fileList.value.length == 0) {
-    message.warning('请选择要上传的附件材料')
-    return
-  }
-  console.log('fileList', fileList.value)
-  const formData = new FormData()
-  formData.append('materialId', fileState.value.materialId) // 附件目录主键
-  formData.append('materialName', fileState.value.materialName) // 附件目录名称
-  formData.append('procInstId', props.formData.procInstId)
-  formData.append('file', fileList.value[0].originFileObj)
-  defHttp
-    .post(
-        {
-          url: urlList.uploadFile,
-          params: formData,
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-        { withToken: true }
-    ).then((res: any) => {
-      if(res && res.success) {
-        message.success('上传成功！')
-      }
+  return new Promise((resolve, reject) => {
+    if(isFileUpload.value == 'file' && !fileState.value.materialId) {
+      return
+    }
+    if(fileList.value.length == 0) {
+      message.warning('请选择要上传的附件材料')
+      return
+    }
+    const formData = new FormData()
+    const params = {
+      materialId: fileState.value.materialId,
+      materialName: fileState.value.materialName,
+      procInstId: props.formData.procInstId
+    }
+    fileList.value.forEach((ele:any) => {
+      formData.append(`files`, ele.originFileObj);
     })
+    defHttp
+      .post(
+          {
+            url: urlList.uploadBatch,
+            data: formData,
+            params: params,
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+          { withToken: true }
+      ).then((res: any) => {
+        if(res && res.success) {
+          message.success('上传成功！')
+          resolve(true)
+        } else {
+          reject()
+        }
+      })
+  })
 }
 
 defineExpose({
