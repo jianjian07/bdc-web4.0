@@ -45,6 +45,7 @@
           v-model:value="fileState.materialId"
           :options="catalogOptions"
           :fieldNames="fieldNames"
+          @change="onChangeCatalog"
         >
         </a-select>
         </a-form-item>
@@ -97,7 +98,6 @@ import { defineProps, computed, reactive, ref, onMounted, watch, defineExpose } 
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
-import { resolve } from 'path';
 
 const props = defineProps({
   formData: { //流程信息
@@ -192,13 +192,8 @@ function removeFile(file: any) {
   fileList.value = fileList.value.filter((ele:any) => ele.uid != file.uid)
 }
 
-
-// 选择目录
-function handleSelectCata(info: any) {
-  let folderName:any = info.file.originFileObj.webkitRelativePath.split('/').length > 2 ? info.file.originFileObj.webkitRelativePath.split('/')[1] : ''
-  if(folderName && !folderList.value.includes(folderName)) {
-    folderList.value.push(folderName)
-  }
+function onChangeCatalog(value:any, option:any) {
+  fileState.value.materialName = option.title
 }
 
 function beforeUpload() {

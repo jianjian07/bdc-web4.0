@@ -295,7 +295,7 @@ function customRequest(data: any) {
   const formData = new FormData()
   const params = {
     materialId: data.data.materialId, // 附件目录主键
-    materialName: encodeURIComponent(data.data.materialName), // 附件目录名称
+    materialName: data.data.materialName, // 附件目录名称
     procInstId: data.data.procInstId // 流程实例ID
   }
 
