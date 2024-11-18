@@ -143,7 +143,7 @@ let isNew = computed(() => {
   return !props.formData.materialId
 })
 
-const fieldNames = { label: 'materialName', value: 'id', }
+const fieldNames = { label: 'materialName', value: 'materialId', }
 
 watch(() => isFileUpload.value, (val:String) => {
   if(val == 'file' && props.formData.type == 'file') {
@@ -253,7 +253,7 @@ const uploadFile = () => {
     }
     const formData = new FormData()
     const params = {
-      materialId: fileState.value.materialId, // 附件目录主键
+      materialId: fileState.value.materialId, // 附件目录ID
       materialName: fileState.value.materialName, // 附件目录名称
       procInstId: props.formData.procInstId //流程实例ID
     }

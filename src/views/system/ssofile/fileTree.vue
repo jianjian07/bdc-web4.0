@@ -77,7 +77,7 @@
                       v-model:file-list="fileList"
                       name="fiels"
                       :customRequest="customRequest"
-                      :data="{materialId: dataRef.id, materialName: dataRef.materialName, procInstId: formData.procInstId}"
+                      :data="{materialId: dataRef.materialId, materialName: dataRef.materialName, procInstId: formData.procInstId}"
                       @click.stop=""
                     >
                       <a-button style="margin-right: 5px" size="small" :icon="h(UploadOutlined)" />
