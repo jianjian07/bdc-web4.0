@@ -16,6 +16,7 @@ import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
+import eventBus from "/@/views/bdc/djlc/eventBus"
 import dayjs from 'dayjs';
 import {
   getData,
@@ -250,7 +251,7 @@ const generateVue3 = defineComponent({
             }
             return arr.length ? arr : null
         }
-        
+      
           return {
             formDisabled,
             formRef,
@@ -266,6 +267,7 @@ const generateVue3 = defineComponent({
             columns,
             selectJsonSetting,
             ...events,
+            eventBus,
             computed,
             defHttp,
             editableData,
