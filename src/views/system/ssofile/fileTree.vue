@@ -2,7 +2,6 @@
   <div class="ssoFileTree">
     <div class="treeList">
       <div class="addNewBtn" v-if="isManage">
-        <a-button type="primary" @click="showTable">材料信息</a-button>
         <a-button type="primary" @click="addCatalog">新增目录</a-button>
         <a-button type="primary" @click="addFile">新增附件</a-button>
       </div>
@@ -34,24 +33,30 @@
                 <!-- unknow -->
                 <svg v-else t="1731577154581" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3705" width="16" height="16"><path d="M205.5 64H665l232 232v639c0 13.807-11.193 25-25 25H205.5c-13.807 0-25-11.193-25-25V89c0-13.807 11.193-25 25-25z m449.145 25H205.5v846H872V306.355L654.645 89z" fill="#B7B7BD" p-id="3706"></path><path d="M665 64l-11 23.5v197c0 13.807 11.193 25 25 25h194.5L897 296 665 64z m14 49.355L850.145 284.5H679V113.355z" fill="#B7B7BD" p-id="3707"></path><path d="M255 571m10 0l556 0q10 0 10 10l0 0q0 10-10 10l-556 0q-10 0-10-10l0 0q0-10 10-10Z" fill="#B7B7BD" p-id="3708"></path><path d="M255 707m10 0l556 0q10 0 10 10l0 0q0 10-10 10l-556 0q-10 0-10-10l0 0q0-10 10-10Z" fill="#B7B7BD" p-id="3709"></path><path d="M255 639m10 0l556 0q10 0 10 10l0 0q0 10-10 10l-556 0q-10 0-10-10l0 0q0-10 10-10Z" fill="#B7B7BD" p-id="3710"></path><path d="M255 774m10 0l556 0q10 0 10 10l0 0q0 10-10 10l-556 0q-10 0-10-10l0 0q0-10 10-10Z" fill="#B7B7BD" p-id="3711"></path><path d="M255 842m10 0l556 0q10 0 10 10l0 0q0 10-10 10l-556 0q-10 0-10-10l0 0q0-10 10-10Z" fill="#B7B7BD" p-id="3712"></path><path d="M67 193m16 0l287 0q16 0 16 16l0 287q0 16-16 16l-287 0q-16 0-16-16l0-287q0-16 16-16Z" fill="#CCCCCC" p-id="3713"></path><path d="M226.274 240c14.845 0 29.79 4.862 41.18 13.738C280.444 263.86 288 278.458 288 295.57c0 22.53-15.93 43.423-46.252 63.48l-0.31 0.203V387c0 6.525-5.208 11.834-11.695 11.996l-0.305 0.004c-6.627 0-12-5.373-12-12v-34.314a12 12 0 0 1 5.673-10.196C250.988 325.189 264 309.227 264 295.57c0-9.498-3.99-17.207-11.298-22.902-7.059-5.5-16.796-8.668-26.428-8.668-9.598 0-19.202 3.147-26.147 8.625-7.064 5.571-10.985 13.116-11.123 22.435l-0.004 0.51c0 6.628-5.373 12-12 12s-12-5.372-12-12c0-33.201 28.361-55.57 61.274-55.57zM230 453c9.389 0 17-7.611 17-17s-7.611-17-17-17-17 7.611-17 17 7.611 17 17 17z" fill="#FFFFFF" p-id="3714"></path></svg>
               </icon>
-              <a-input
-                v-if="editableData[dataRef.id]"
-                v-model:value="editableData[dataRef.id].title"
-                style="margin: -5px 0"
-                size="small"
-                @click.stop=""
-              />
+              <div v-if="dataRef.parentId == '0'">
+                <a-input
+                  v-if="editableData[dataRef.id]"
+                  v-model:value="editableData[dataRef.id].materialName"
+                  style="margin: -5px 0"
+                  size="small"
+                  @click.stop=""
+                />
+                <template v-else>
+                  {{ dataRef.materialName }}
+                </template>
+              </div>
               <template v-else>
                 {{ dataRef.title }}
               </template>
             </div>
             <div class="oprBtns" v-if="isManage">
               <div class="fileBtn" v-if="dataRef.parentId != '0'">
+                <a-button style="margin-right: 5px" size="small" @click.stop="previewFile(dataRef)" :icon="h(EyeOutlined)"></a-button>
                 <a-popconfirm
                   title="确定删除该附件？"
                   ok-text="确定"
                   cancel-text="取消"
-                  @confirm="deleteCatalogOrFile(dataRef.id)"
+                  @confirm="deleteCatalogOrFile(dataRef)"
                 >
                   <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
                 </a-popconfirm>
@@ -70,8 +75,10 @@
                     <a-upload
                       multiple
                       v-model:file-list="fileList"
-                      :before-upload="beforeUpload"
+                      name="fiels"
                       :customRequest="customRequest"
+                      :data="{materialId: dataRef.id, materialName: dataRef.materialName, procInstId: formData.procInstId}"
+                      @click.stop=""
                     >
                       <a-button style="margin-right: 5px" size="small" :icon="h(UploadOutlined)" />
                       <template #itemRender=""></template>
@@ -85,7 +92,7 @@
                       title="确定删除该目录及该目录下的附件？"
                       ok-text="确定"
                       cancel-text="取消"
-                      @confirm="deleteCatalogOrFile(dataRef.id, 'folder')"
+                      @confirm="deleteCatalogOrFile(dataRef, 'folder')"
                     >
                       <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
                     </a-popconfirm>
@@ -102,9 +109,12 @@
         </template>
       </a-directory-tree>
     </div>
-    <div v-if="filePreview && !isManage" class="filePreview">
-      <a @click="filePreview = false">关闭</a>
-      <iframe :src="previewUrl" style="border: none" />
+    <div v-if="filePreview" class="filePreview">
+      <div class="oprBtns">
+        <a @click="downLoadFile">下载</a>
+        <a @click="filePreview = false">关闭</a>
+      </div>
+      <iframe :src="previewData.previewUrl" style="border: none" />
     </div>
   </div>
 </template>
@@ -115,13 +125,13 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
-import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
+
 
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
-let previewUrl: any = ref('')
+let previewData: any = ref('')
 let fileList: any = ref([])
-let uploadData: any = ref({})
 
 const urlList = {
   queryAll: '/api/zrzy-bdc/bdcdj/upfiles/file/queryMaterialTreeList', // 所有附件目录树和附件
@@ -129,6 +139,7 @@ const urlList = {
   addFile: '/api/zrzy-bdc/bdcdj/upfiles/file/addFile', // 添加材料
   deleteFile: '/api/zrzy-bdc/bdcdj/upfiles/file/deleteFile', // 删除附件材料 接口缺失
   getFileList: '/api/zrzy-bdc/bdcdj/upfiles/file/queryFileList', // 附件列表
+  downLoadFile: '/api/zrzy-bdc/bdcdj/upfiles/file/download', //附件下载
   // 附件目录
   addCatalog: '/api//zrzy-bdc/bdcdj/upfiles/casematerial/add', // 新增附件目录
   deleteCatalogOrFile: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/deleteMaterialAndUpfiles', // 删除附件目录或文件
@@ -136,6 +147,8 @@ const urlList = {
   updateCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updatePart', // 更新部分字段
   uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch' // 批量上传文件
 }
+
+const baseApi = ref(import.meta.env.VITE_GLOB_API_URL)
 
 const props = defineProps({
   isManage: {
@@ -278,21 +291,15 @@ function addFile(data:any = null, way:String = 'cata') {
   })
 }
 
-function beforeUpload() {
-  return false
-}
-
-const customRequest = (data: any) => {
-  debugger
+function customRequest(data: any) {
   const formData = new FormData()
   const params = {
-    materialId: data.id,
-    materialName: data.materialName,
-    procInstId: props.formData.procInstId
+    materialId: data.data.materialId, // 附件目录主键
+    materialName: encodeURIComponent(data.data.materialName), // 附件目录名称
+    procInstId: data.data.procInstId // 流程实例ID
   }
-  fileList.value.forEach((ele:any) => {
-    formData.append(`files`, ele.originFileObj);
-  })
+
+  formData.append(`files`, data.file);
   defHttp
     .post(
         {
@@ -305,21 +312,32 @@ const customRequest = (data: any) => {
     ).then((res: any) => {
       if(res && res.success) {
         message.success('上传成功！')
+        loadFileList()
       }
     })
 }
 
 // 删除附件目录或者文件
-function deleteCatalogOrFile(id: any, type: String = '') {
+// 删除目录时如果需要删除该目录下的文件，文件ID也需要传
+function deleteCatalogOrFile(item: any, type: String = '') {
+  let data = [
+    {
+      id: item.id, // 目录或者文件的id
+      fileType: type // 目录为foler，不传为file
+    }
+  ]
+  if(type == 'folder' && item.children) {
+    item.children.forEach((element: any) => {
+      data.push({
+        id: element.id,
+        fileType: ''
+      })
+    });
+  }
   defHttp.put(
     {
       url: urlList.deleteCatalogOrFile,
-      data: [
-        {
-          id: id, // 目录或者文件的id
-          fileType: type // 目录为foler，不传为file
-        }
-      ]
+      data: data
     },
     { withToken: true }
   ).then((res: any) => {
@@ -335,7 +353,36 @@ function deleteCatalogOrFile(id: any, type: String = '') {
 function previewFile(data: any) {
   // 后端返回kkFile路径预览附件
   filePreview.value = true
-  previewUrl.value = data.filePath
+  previewData.value = data
+  let encodeUrl = encodeURIComponent(Base64.encode(`${baseApi.value}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
+  previewData.value.previewUrl = `http://192.168.27.249:8012/onlinePreview?url=${encodeUrl}`
+}
+
+function downLoadFile() {
+  defHttp
+    .get({
+        url: urlList.downLoadFile,
+        params: { id: previewData.value.id },
+        responseType: "blob"
+    }, { withToken: true })
+    .then((res:any) => {
+        if (res.size == 0) {
+            message.error('下载附件出错！')
+            return
+        }
+        //处理二进制数据并创建 Blob 对象
+        const blob = new Blob([res])
+        const elink = document.createElement('a')
+        elink.download = previewData.value.title
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href)
+        document.body.removeChild(elink)
+    }).catch((err:any) => {
+      console.log("附件报错", err);
+    });
 }
 
 </script>
@@ -380,12 +427,18 @@ function previewFile(data: any) {
 
   .filePreview {
     flex: 1;
-    border: 2px solid #000;
     position: relative;
-    a {
+    .oprBtns {
       position: absolute;
-      right: 10px;
+      right: 0px;
       top: 10px;
+      a {
+        padding-right: 8px;
+      }
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
     }
   }
 }

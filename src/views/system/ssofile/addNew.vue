@@ -16,9 +16,6 @@
       >
         <a-input v-model:value="catalogState.materialName" />
       </a-form-item>
-      <!-- <a-form-item :wrapper-col="{ offset: 10, span: 16 }">
-        <a-button @click="addCatalog" type="primary" html-type="submit">{{ isNew ? '新增' : '修改' }}</a-button>
-      </a-form-item> -->
     </a-form>
     <!-- 新增附件 -->
     <a-form
@@ -91,9 +88,6 @@
         </a-upload>
         </a-form-item>
       </template>
-      <!-- <a-form-item :wrapper-col="{ offset: 10, span: 16 }">
-        <a-button @click="uploadFile" type="primary" html-type="submit">{{ isNew ? '新增' : '修改' }}</a-button>
-      </a-form-item> -->
     </a-form>
   </div>
 </template>
@@ -264,9 +258,9 @@ const uploadFile = () => {
     }
     const formData = new FormData()
     const params = {
-      materialId: fileState.value.materialId,
-      materialName: fileState.value.materialName,
-      procInstId: props.formData.procInstId
+      materialId: fileState.value.materialId, // 附件目录主键
+      materialName: fileState.value.materialName, // 附件目录名称
+      procInstId: props.formData.procInstId //流程实例ID
     }
     fileList.value.forEach((ele:any) => {
       formData.append(`files`, ele.originFileObj);
