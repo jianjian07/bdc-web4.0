@@ -11,9 +11,7 @@
         :tree-data="ssoFileList" 
         :selectable="false" 
         show-icon  
-        default-expand-all
-        @dragenter="onDragEnter"
-        @dragstart="onDragStart"
+        :default-expand-all="expandAll"
         @drop="onDrop"
         :draggable="isManage && editOrder"
       >
@@ -145,6 +143,7 @@ let previewData: any = ref('')
 let fileList: any = ref([])
 let editableData: any = ref([])
 let editOrder: any = ref(false)
+let expandAll: any = ref(true)
 
 const urlList = {
   queryAll: '/api/zrzy-bdc/bdcdj/upfiles/file/queryMaterialTreeList', // 所有附件目录树和附件
@@ -398,12 +397,6 @@ function downLoadFile() {
     });
 }
 
-function onDragEnter(info:any){
-  console.log(info);
-  // expandedKeys 需要展开时
-  // expandedKeys.value = info.expandedKeys;
-};
-
 function onDrop (info: any){
   console.log(info);
   if(info.dragNode.parentId != '0') {
@@ -417,6 +410,7 @@ function onDrop (info: any){
   const dragKey = info.dragNode.key;
   const dropPos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+  console.log('dropPosition', dropPosition, info.node.materialName, dropKey)
   const loop = (data: any, key: string | number, callback: any) => {
     data.forEach((item:any, index:any) => {
       if (item.key === key) {
@@ -432,30 +426,20 @@ function onDrop (info: any){
   // 拖动节点对象
   let dragObj: any;
 
+  // 树节点中去掉一个
   loop(data, dragKey, (item: any, index: number, arr: any) => {
     arr.splice(index, 1);
     dragObj = item;
   });
 
-  if (!info.dropToGap) {
-    // loop(data, dropKey, (item: any) => {
-    //   item.children = item.children || [];
-    //   /// where to insert 示例添加到头部，可以是随意位置
-    //   item.children.unshift(dragObj);
-    // });
-    return false
-  } else if (
-    (info.node.children || []).length > 0 && // Has children
-    info.node.expanded && // Is expanded
-    dropPosition === 1 // On the bottom gap
-  ) {
-    // loop(data, dropKey, (item: any) => {
-    //   item.children = item.children || [];
-    //   // where to insert 示例添加到头部，可以是随意位置
-    //   item.children.unshift(dragObj);
-    // });
-    return false
-  } else {
+  // 找到位置，插入；这里只允许目录移动，所以需要找到目录的位置
+  {
+    if (
+      info.node.children == undefined // Has children
+    ) {
+      message.warning('不允许拖动到其他目录子节点！')
+      return
+    }
     let ar: any = [];
     let i = 0;
     loop(data, dropKey, (_item: any, index: number, arr: any) => {
@@ -473,6 +457,7 @@ function onDrop (info: any){
 
 function handleOrder() {
   editOrder.value = !editOrder.value
+  expandAll.value = !expandAll.value
 
   if(!editOrder.value) {
     // 保存排序
