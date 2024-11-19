@@ -16,7 +16,7 @@ export function extractData(options: any) {
     {
         "djdl": "CQ",
         "slbh": slbh,
-        "guid": "process1713234366021",
+        "guid": "1780060462306840577",
         "dyhList": dyhList
     }
     defHttp.post({

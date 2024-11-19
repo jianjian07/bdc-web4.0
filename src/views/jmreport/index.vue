@@ -4,7 +4,7 @@
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="6" :offset="0">
                     <a-form-item label="报表名称">
-                        <a-input v-model:value="formData.name" />
+                        <a-input v-model:value="formData.name" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="4" :offset="0">
@@ -72,7 +72,7 @@ const columns = [
     { title: '操作', key: 'action', width: 400, fixed: 'right', }
 ]
 let datalist: any = ref([]);
-let formData: any = ref({ formName: '', code: '', formType: '' });
+let formData: any = ref({ name: '', code: '', formType: '' });
 
 let formTypeValue = ref('');
 onMounted(() => {
@@ -95,8 +95,8 @@ async function loadData(type?: string | undefined) {
             pageSize: 10,
         }
     }
-    let url = '/api/zrzy-form/jmreport/excelQuery'
-    defHttp.get({ url: url, params: { name: formData.name, pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: false }).then((res) => {
+    let url = '/api/zrzy-form/jmreport/query/report/folder'
+    defHttp.get({ url: url, params: { name: formData.value.name.trim(), pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: false }).then((res) => {
         if (res.success) {
             datalist.value = res.result.records
             pagination.value.total = res.result.total

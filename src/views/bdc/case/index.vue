@@ -86,14 +86,14 @@ let processInfo: any = ref('')
  * @param process 选中的流程
  */
 function onSelect(process: any) {
-
     processInfo.value = process
 }
 function handleAdd() {
     // 跳转至创建流程页面
     const params = {
         regType: '0101',
-        guid: processInfo.value.value
+        lcid: processInfo.value.key,
+        processKey: processInfo.value.value
     }
     addFlow(params)
 }

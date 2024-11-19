@@ -34,22 +34,21 @@
             <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
                 @change="onChange($event, loadData)">
                 <template #bodyCell="{ column, record }">
-                    <template v-if="column.key === 'status'">
+                    <template v-if="column.key === 'taskTimeStatus'">
                         <span>
-                            <a-tag color="orange" v-if="record.taskBack">
+                            <a-tag color="orange" v-if="record.taskTimeStatus == 1">
                                 <template #icon>
                                     <RollbackOutlined />
                                 </template>
-                                回退
+                                预警
                             </a-tag>
-                            <a-tag color="red" v-if="record.taskUrge">
+                            <a-tag color="red" v-if="record.taskTimeStatus == 2">
                                 <template #icon>
                                     <AlertOutlined />
                                 </template>
-                                催办
+                                超时
                             </a-tag>
-                            <a-tag color="green"
-                                v-if="!record.taskUrgent && !record.taskBack && !record.taskSupervise">正常</a-tag>
+                            <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
                         </span>
                     </template>
                     <template v-if="column.key === 'action'">
@@ -81,7 +80,7 @@ let formData: any = ref({})
 let spinning = ref<boolean>(true);
 const columns = [
     { title: "任务id", dataIndex: "taskId", align: "center" },
-    { title: "状态", dataIndex: "status", align: "center", key: "status", width: 200 },
+    { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 200 },
     { title: "案卷名称", dataIndex: "bpmBdcTitle", align: "center" },
     { title: "案卷编号", dataIndex: "slbh", align: "center" },
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },

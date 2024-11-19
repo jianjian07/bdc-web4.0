@@ -25,9 +25,8 @@ export function getDegisnList() {
  */
 export function addFlow(params: any) {
     defHttp.post({ url: api.add, data: { ...params } }, { withToken: true }).then(res => {
-        debugger
         if (res.success) {
-            router.push({ path: '/bdc/casedoing', query: { slbh: res.result.slbh, taskId: res.result.taskId } });
+            router.push({ path: '/bdc/casedoing', query: { slbh: res.result.slbh, nodeId: res.result.nodeId, taskId: res.result.taskId } });
         } else {
             message.error('流程创建失败')
         }
