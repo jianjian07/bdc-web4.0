@@ -162,6 +162,7 @@ const urlList = {
 }
 
 const baseApi = ref(import.meta.env.VITE_GLOB_API_URL)
+const kkFileApi = ref(import.meta.env.VITE_KKFILE_URL)
 
 const props = defineProps({
   isManage: {
@@ -367,7 +368,7 @@ function previewFile(data: any) {
   filePreview.value = true
   previewData.value = data
   let encodeUrl = encodeURIComponent(Base64.encode(`${baseApi.value}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
-  previewData.value.previewUrl = `http://192.168.27.249:8012/onlinePreview?url=${encodeUrl}`
+  previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
 }
 
 function downLoadFile() {
