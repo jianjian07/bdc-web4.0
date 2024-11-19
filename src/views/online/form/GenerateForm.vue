@@ -53,6 +53,10 @@ const props: any = defineProps({
     formCode: {
         type: String,
         default: ''
+    },
+    formData: {
+        type: Object,
+        default: {}
     }
 })
 /**
@@ -61,7 +65,7 @@ const props: any = defineProps({
 watch(() => props.reload, async (newVal) => {
     if (newVal != "") {
         debugger
-        await getData(viewData, formId)
+        await getData(viewData, formId, props.formData)
     }
 })
 const { isSaved, caseCode, disabled } = useAttrs()
@@ -119,7 +123,7 @@ const apiArr = _sourcedata.filter((item: { cType: string; }) => item.cType == 'j
 let apiDataSource = apiArr
 // await getDataByApi(viewData, apiDataSource)
 
-await getData(viewData, formId)
+await getData(viewData, formId, props.formData)
 
 // 20240130验证：变量定义 名称固定formProps
 let basicInfo = ref<any>({})

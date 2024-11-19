@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <component v-bind:is="generateForm" :id="formData.formId"
-                :formCode="formData.vfd" :disabled="formData.iszd == '1'" :ref="setRef">
+                :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
     </a-spin>
   </div>
@@ -74,6 +74,12 @@ function getMultipleRef(list: any[], arr: any[]) {
 
 async function saveData(params?: any) {
   console.log('保存表单',demoRefs)
+  if (params) {
+    params['params']  = params?.params || props.formData
+  } else {
+    params = { params: props.formData }
+  }
+  
   checkDemoRefs()
   return await sendSaveFun('baseSave', demoRefs, spinning, params)
 }

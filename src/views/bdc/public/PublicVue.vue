@@ -25,6 +25,7 @@
                 :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">
               </component>
             </template>
+            <qlr-list v-if="qlr" :qlr="qlr" :jdmc="jdmc"></qlr-list>
             <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
@@ -49,6 +50,7 @@ import { guid } from '/@/utils'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import TdxxList from "/@/views/bdc/pages/public/TdxxList.vue"
+import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { message } from "ant-design-vue"
 const modules = import.meta.glob('/src/**/*.vue')
 let activeKey = ref('1')
@@ -80,6 +82,10 @@ let formContent = ref()
 let containerWidth = 0
 let leftWidth = ref<any>(500)
 let rightWidth = ref<any>(300)
+// 权利人
+let qlr = ref<any>('')
+// 节点名称
+let jdmc = ref<any>('')
 let startX = 0
 // 通用表单组件实例
 let demoRefs: any = []
@@ -132,6 +138,9 @@ function getFormConfig() {
 
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
+      
+      jdmc.value = formConfig.value.jdmc || '收件'
+      qlr.value = formConfig.value.qlrlb || '权利人;义务人'
     }
   })
 

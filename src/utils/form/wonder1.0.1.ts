@@ -9,7 +9,7 @@ import { router } from "/@/router"
 import { isJsonData } from "/@/utils/form/commonUtils"
 export let validateInfos: any = reactive({})
 
-export async function getData(object1: { value: object }, formId?: number) {
+export async function getData(object1: { value: object }, formId?: number, params?: any) {
     if (Object.keys(object1.value).length == 0) {
         return
     }
@@ -21,7 +21,7 @@ export async function getData(object1: { value: object }, formId?: number) {
         url: url,
         data: {
             formId: formId ? formId : 14,
-            param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' }
+            param: { slbh: query.slbh ? query.slbh : 'QG1-20221434', ...params }
         }
     },
         { withToken: true }).then((res) => {
@@ -201,12 +201,12 @@ export function saveData() {
  * 基础保存(校验不通过也可以进行数据保存)
  * @param formDoms
  */
-export function saveFormData(formDoms: any) {
+export function saveFormData(formDoms: any, params?: any) {
     return new Promise(async (resolve) => {
         let _result: any = await getFormInfo(formDoms)
         let allRes: any = []
         for (let i = 0; i < _result.length; i++) {
-            const promiseRes = await updateFormDatas(_result[i])
+            const promiseRes = await updateFormDatas(_result[i], params)
             allRes.push(promiseRes)
         }
         let status = allRes ? allRes.filter(r => r).length == _result.length : false
@@ -223,7 +223,7 @@ export function saveFormData(formDoms: any) {
  * 不通过校验不进行保存
  * @param formDoms
  */
-export function saveHandleData(formDoms: any) {
+export function saveHandleData(formDoms: any, params?: any) {
     return new Promise(async (resolve) => {
         let res: any = getFormInfo(formDoms)
         let find = res.find(r => r.validate == false)
@@ -234,7 +234,7 @@ export function saveHandleData(formDoms: any) {
         } else {
             let promises: any = []
             for (let i = 0; i < res.length; i++) {
-                promises.push(updateFormDatas(res[i]))
+                promises.push(updateFormDatas(res[i]), params)
             }
             let allRes: any = await Promise.all(promises)
             let status = allRes ? allRes.filter(r => r).length == res.length : false
@@ -309,7 +309,7 @@ export function getFormUpdateData(formDoms) {
     return res
 }
 
-function updateFormDatas(formRes) {
+function updateFormDatas(formRes, params?: any) {
     return new Promise((resolve) => {
         const url = "/api/zrzy-form/generate/update"
         const query = router.currentRoute.value.query
@@ -318,7 +318,7 @@ function updateFormDatas(formRes) {
             url: url,
             data: {
                 formId: formRes.formId ? formRes.formId : 14,
-                param: { ...query },
+                param: { ...query, ...params },
                 // param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' },
                 formData: formRes.data,
             }

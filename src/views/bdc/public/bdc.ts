@@ -38,7 +38,7 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
       console.log('beforeRes', beforeRes)
     }
     if (beforeRes) {
-      commonSaveRes = await saveFormData(demoRefs)
+      commonSaveRes = await saveFormData(demoRefs, params.params)
       console.log('commonSaveRes', commonSaveRes)
       if (commonSaveRes && params && params.afterFun) {
         afterRes = await eval(params.afterFun)
