@@ -4,8 +4,19 @@
       <div class="addNewBtn" v-if="isManage">
         <a-button type="primary" @click="addCatalog">新增目录</a-button>
         <a-button type="primary" @click="addFile">新增附件</a-button>
+        <a-button type="primary" @click="handleOrder">{{ editOrder ? '保存目录顺序' : '编辑目录顺序' }}</a-button>
       </div>
-      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="false" show-icon  default-expand-all>
+      <a-directory-tree 
+        v-if="ssoFileList && ssoFileList.length > 0" 
+        :tree-data="ssoFileList" 
+        :selectable="false" 
+        show-icon  
+        default-expand-all
+        @dragenter="onDragEnter"
+        @dragstart="onDragStart"
+        @drop="onDrop"
+        :draggable="isManage && editOrder"
+      >
         <template #icon="">
         </template>
         <template #title="{ dataRef }">
@@ -132,6 +143,8 @@ let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
 let previewData: any = ref('')
 let fileList: any = ref([])
+let editableData: any = ref([])
+let editOrder: any = ref(false)
 
 const urlList = {
   queryAll: '/api/zrzy-bdc/bdcdj/upfiles/file/queryMaterialTreeList', // 所有附件目录树和附件
@@ -145,7 +158,8 @@ const urlList = {
   deleteCatalogOrFile: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/deleteMaterialAndUpfiles', // 删除附件目录或文件
   getCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/addSelectMaterialList', // 提取附件目录
   updateCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updatePart', // 更新部分字段
-  uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch' // 批量上传文件
+  uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch', // 批量上传文件
+  updateOrder: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updateOrder' //更新排序
 }
 
 const baseApi = ref(import.meta.env.VITE_GLOB_API_URL)
@@ -161,7 +175,6 @@ const props = defineProps({
   }
 })
 
-const editableData:any = ref([])
 
 onMounted(() => {
   loadFileList()
@@ -383,6 +396,100 @@ function downLoadFile() {
     }).catch((err:any) => {
       console.log("附件报错", err);
     });
+}
+
+function onDragEnter(info:any){
+  console.log(info);
+  // expandedKeys 需要展开时
+  // expandedKeys.value = info.expandedKeys;
+};
+
+function onDrop (info: any){
+  console.log(info);
+  if(info.dragNode.parentId != '0') {
+    message.warning('只可对目录顺序进行编辑')
+    return false
+  }
+
+  // 目标节点
+  const dropKey = info.node.key;
+  // 拖动节点
+  const dragKey = info.dragNode.key;
+  const dropPos = info.node.pos.split('-');
+  const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+  const loop = (data: any, key: string | number, callback: any) => {
+    data.forEach((item:any, index:any) => {
+      if (item.key === key) {
+        return callback(item, index, data);
+      }
+      if (item.children) {
+        return loop(item.children, key, callback);
+      }
+    });
+  };
+  const data = [...ssoFileList.value];
+
+  // 拖动节点对象
+  let dragObj: any;
+
+  loop(data, dragKey, (item: any, index: number, arr: any) => {
+    arr.splice(index, 1);
+    dragObj = item;
+  });
+
+  if (!info.dropToGap) {
+    // loop(data, dropKey, (item: any) => {
+    //   item.children = item.children || [];
+    //   /// where to insert 示例添加到头部，可以是随意位置
+    //   item.children.unshift(dragObj);
+    // });
+    return false
+  } else if (
+    (info.node.children || []).length > 0 && // Has children
+    info.node.expanded && // Is expanded
+    dropPosition === 1 // On the bottom gap
+  ) {
+    // loop(data, dropKey, (item: any) => {
+    //   item.children = item.children || [];
+    //   // where to insert 示例添加到头部，可以是随意位置
+    //   item.children.unshift(dragObj);
+    // });
+    return false
+  } else {
+    let ar: any = [];
+    let i = 0;
+    loop(data, dropKey, (_item: any, index: number, arr: any) => {
+      ar = arr;
+      i = index;
+    });
+    if (dropPosition === -1) {
+      ar.splice(i, 0, dragObj);
+    } else {
+      ar.splice(i + 1, 0, dragObj);
+    }
+  }
+  ssoFileList.value = data;
+};
+
+function handleOrder() {
+  editOrder.value = !editOrder.value
+
+  if(!editOrder.value) {
+    // 保存排序
+    defHttp
+      .put(
+          {
+            url: urlList.updateOrder,
+            data: ssoFileList.value,
+          },
+          { withToken: true }
+      ).then((res: any) => {
+        if(res && res.success) {
+          message.success('顺序编辑成功！')
+          // loadFileList()
+        }
+      })
+  }
 }
 
 </script>
