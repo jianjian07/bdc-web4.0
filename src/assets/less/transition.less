@@ -1,0 +1,152 @@
+/************动画通用样式**************/
+
+/************1、从上往下进入   开始**************/
+/* 入场起始样式 */
+.fade-enter-from {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* 入场过渡效果 */
+.fade-enter-active {
+    transition: 1s all ease;
+}
+
+/* 入场结束样式 */
+.fade-enter-to {
+    opacity: 1;
+}
+
+/* 出场起始样式 */
+.fade-leave-from {
+    opacity: 1;
+}
+
+/* 出场过渡效果 */
+.fade-leave-active {
+    transition: 1s all ease;
+    position: absolute;
+}
+
+/* 出场结束样式 */
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.fade-move {
+    transition: 0.8s all ease;
+}
+
+/************从上往下进入   结束**************/
+/************从左往右进入   开始**************/
+.slideFade-enter {
+    animation: slideFade-dialog-fade-in 0.5s ease;
+}
+
+.slideFade-leave {
+    animation: slideFade-dialog-fade-out 0.5s ease forwards;
+}
+
+.slideFade-enter-active {
+    animation: slideFade-dialog-fade-in 0.5s ease;
+}
+
+.slideFade-leave-active {
+    animation: slideFade-dialog-fade-out 0.5s ease forwards;
+}
+
+.slideFade-left-enter {
+    animation: slideFade-left-fade-in 0.5s ease
+}
+
+.slideFade-left-leave {
+    animation: slideFade-left-fade-out 0.5s ease forwards;
+}
+
+.slideFade-right-enter {
+    animation: slideFade-right-fade-in 0.5s ease
+}
+
+.slideFade-right-leave {
+    animation: slideFade-right-fade-out 0.5s ease forwards;
+}
+
+/************从左往右进入   开始**************/
+@keyframes slideFade-left-fade-in {
+    0% {
+        transform: translate3d(-100%, 0, 0); //修改这个可以控制，上下左右动画，例如：100%为从右到左
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+/************从右往左退出   开始**************/
+@keyframes slideFade-left-fade-out {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(-100%, 0, 0);
+        opacity: 0;
+    }
+}
+
+/************从右往左进入   开始**************/
+@keyframes slideFade-right-fade-in {
+    0% {
+        transform: translate3d(100%, 0, 0); //修改这个可以控制，上下左右动画，例如：100%为从右到左
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+/************从右往左退出   开始**************/
+@keyframes slideFade-right-fade-out {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(100%, 0, 0);
+        opacity: 0;
+    }
+}
+
+
+@keyframes slideFade-dialog-fade-in {
+    0% {
+        transform: translate3d(-100%, 0, 0); //修改这个可以控制，上下左右动画，例如：100%为从右到左
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideFade-dialog-fade-out {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(-100%, 0, 0);
+        opacity: 1;
+    }
+}
+
+/************从左往右进入   结束**************/

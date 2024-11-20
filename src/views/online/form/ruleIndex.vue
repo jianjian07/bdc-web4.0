@@ -383,7 +383,7 @@ function changePagination(page, pageSize) {
 
     .btnClass {
         color: #fff;
-        background-color: @primary-color;
+        //background-color: @primary-color;
     }
 }
 

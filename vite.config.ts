@@ -2,6 +2,7 @@ import { ConfigEnv, UserConfig, defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path, { resolve } from 'path';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import viteCompression from 'vite-plugin-compression';
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
@@ -47,6 +48,12 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         // svg所在文件夹位置
         iconDirs: [path.resolve(process.cwd(), 'src/assets/svg')],
         symbolId: 'icon-[name]',
+      }),
+      viteCompression({
+        algorithm: 'gzip',   // 使用 gzip 压缩
+        ext: '.gz',          // 压缩后的文件扩展名
+        threshold: 10240,    // 只有超过 10KB 的文件才会被压缩
+        deleteOriginFile: false, // 是否删除未压缩的文件（慎用）
       }),
       vue()],
   }

@@ -130,11 +130,6 @@ function forgetPassword() {
     margin-bottom: 2.5rem !important;
 }
 
-.login-img {
-    background-image: url('/@/assets/svg/logo-icon.svg');
-    height: 50px;
-}
-
 ::v-deep(.ant-input) {
     padding: 4px 11px !important;
 }
