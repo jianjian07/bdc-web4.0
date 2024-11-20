@@ -163,7 +163,7 @@ function editData(record: any) {
 function deleteData(record) {
     if (!record.id) return
     let url = '/api/zrzy-form/form/report/delete' // 删除
-    defHttp.post({ url: url, params: { id: record.id } }, { withToken: false }).then((res) => {
+    defHttp.post({ url: url, params: { id: record.id } }, { withToken: true }).then((res) => {
         if (!res.message) {
             message.success('删除成功')
             loadData()

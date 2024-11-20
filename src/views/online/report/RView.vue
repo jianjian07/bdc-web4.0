@@ -23,9 +23,13 @@ const props = defineProps({
     }
 })
 const route = useRoute();
-let code = props.id;
+let code: string = props.id;
 if (code == "-1") {
-    code = route?.params?.code.toString()
+    if (route.params.code == undefined) {
+        code = route.fullPath.split('/').pop() || '-1'
+    } else {
+        code = route?.params?.code.toString()
+    }
 }
 let dataSource = ref()
 let paginations = ref()
