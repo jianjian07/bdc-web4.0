@@ -8,6 +8,7 @@
       "DOM",
       "DOM.Iterable"
     ],
+    "types": ["vite/client","@vue/runtime-core"],
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -21,6 +22,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
       "/@/*": [
@@ -34,7 +36,8 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "types/**/*.d.ts"
   ],
   "references": [
     {
