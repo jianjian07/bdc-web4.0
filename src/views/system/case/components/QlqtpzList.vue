@@ -1,0 +1,254 @@
+<template>
+  <div class="QlqtpzList">
+    <div class="oprBtns">
+      <a-button type="primary" @click="onShowModal(null, 'new')">
+        <template #icon><PlusOutlined /></template>
+        新增
+      </a-button>
+    </div>
+    <a-table bordered :data-source="dataList" :columns="columns" :pagination="pagination" @change="handleTableChange" size="small">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'qllx'">
+          <a-input :value="getLabelByCode('qllx', record.qllx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+        </template>
+        <template v-if="column.dataIndex === 'sfybz'">
+          <a-input :value="getLabelByCode('yn', record.sfybz)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+        </template>
+        <template v-if="column.dataIndex === 'sfpl'">
+          <a-input :value="getLabelByCode('ispl', record.sfpl)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+        </template>
+        <template v-if="column.dataIndex === 'jzlx'">
+          <a-input :value="getLabelByCode('jzlx', record.jzlx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+        </template>
+        <template v-if="column.dataIndex === 'operation'">
+          <a-button type="link" size="small" @click="onShowModal(record, 'view')">详情</a-button>
+          <a-button type="link" size="small" @click="onShowModal(record, 'edit')">编辑</a-button>
+          <a-popconfirm
+            title="确定删除？"
+            ok-text="确定"
+            cancel-text="取消"
+            @confirm="onDelete(record.id)"
+          >
+          <a-button type="link" size="small">删除</a-button>
+          </a-popconfirm>
+        </template>
+      </template>
+    </a-table>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { PlusOutlined } from '@ant-design/icons-vue';
+import { ref, defineProps, watch } from 'vue';
+import { defHttp } from '/@/utils/http/axios';
+import { message } from 'ant-design-vue';
+import { cModal } from "/@/components/cModal/index"
+import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+
+let dataList: any = ref([])
+let djlxOptions: any = ref([])
+let baseInfo: any = ref({})
+let djlx: any = ref([])
+const columns = [
+  {
+    title: '登记类型',
+    dataIndex: 'djlx',
+    align: 'center',
+    width: 150
+  },
+  {
+    title: '权利类型',
+    dataIndex: 'qllx',
+    align: 'center',
+    width: 400
+  },
+  {
+    title: '一本证',
+    dataIndex: 'sfybz',
+    align: 'center',
+    width: 150
+  },
+  {
+    title: '批量',
+    dataIndex: 'sfpl',
+    align: 'center',
+    width: 200
+  },
+  {
+    title: '介质类型',
+    dataIndex: 'jzlx',
+    align: 'center',
+    width: 200
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    align: 'center',
+    width: 200
+  },
+]
+// 分页
+const pagination = ref<any>({ 
+  total: 0,
+  current: 1,
+  pageSize: 10,
+  showSizeChanger: false, 
+  showTotal: (total: Number) => `共 ${total} 条数据` 
+})
+
+const urlList = {
+  queryList: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/list', // 分页列表查询
+  delete: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/delete', //通过id删除
+  queryByLcidUrl: "/api/zrzy-bdc/flow/flowConfig/queryByLcid",
+}
+
+const props = defineProps({
+  lcid: {
+    type: String,
+    default: ''
+  }
+})
+
+watch(() => props.lcid, (val:any) => {
+  djlx.value = []
+  if(val) {
+    pagination.value.current = 1
+    baseInfo.value.lcid = props.lcid;
+    getFlowInfo(props.lcid)
+    loadData()
+  }
+}, {
+  immediate: true
+})
+
+
+function getFlowInfo(lcid: string) {
+  defHttp.get({ url: urlList.queryByLcidUrl, params: { lcid: lcid } }, { withToken: true }).then((res) => {
+    if (res.success) {
+      baseInfo.value = res.result
+    } else {
+      baseInfo.value = { lcid: baseInfo.value.lcid }
+    }
+    getDjlx()
+  })
+}
+
+function loadData() {
+  // 获取权利其他配置列表
+  defHttp.get(
+    {
+      url: urlList.queryList,
+      params: {
+        pageNo: pagination.value.current,
+        pageSize: pagination.value.pageSize,
+        lcid: props.lcid
+      }
+    },
+    { withToken: true }
+  ).then((res: any) => {
+    if(res?.success) {
+      dataList.value = res.result.records
+      pagination.value.total = res.result.total
+    } else {
+      message.warning(res?.message)
+    }
+  })
+}
+
+function onShowModal(data: any = null, type: String = 'new') {
+  //新增 编辑 查看
+  let title = type == 'new' ? '新增' : type == 'edit' ? '编辑' : '查看'
+  let modal = cModal({
+    title: `${title}业务权利其他配置`,
+    width: 1000,
+    filePath: 'views/system/case/components/QlqtpzModal',
+    footerStyle: {'text-align': 'center'},
+    footer: type == 'view' ? false : true,
+    formData: {
+      type: type,
+      lcid: props.lcid,
+      itemData: data,
+      djlx: djlx.value
+    },
+    onOk: async (res: any) => {
+      if(type == 'view') {
+        modal.destroy()
+      } else {
+        modal.setConfirmLoading(true)
+        // res为弹窗内组件的dom
+        let validator = await res.onSubmit()
+        if (validator) {
+          modal.destroy()
+          loadData()
+        }
+        modal.setConfirmLoading(false)
+      }
+      
+    },
+    onCancel: () => {
+      modal.close()
+    }
+  })
+}
+
+function onDelete(id: any) {
+  defHttp.delete(
+    {
+      url: urlList.delete,
+      params: { id: id }
+    },
+    { withToken: true }
+  ).then((res: any) => {
+    if(res?.success) {
+      message.success('删除成功！')
+      loadData()
+    } else {
+      message.warning(res?.message)
+    }
+  })
+}
+
+function handleTableChange(pag:any) {
+  pagination.value.current = pag.current
+  pagination.value.pageSize = pag.pageSize
+}
+
+function getLabelByCode(dict: any, value: any) {
+  return getDictItemsByCode(dict).filter((_v: any) => _v.dictCode == value)[0].dictName
+}
+
+function getDjlx() {
+  if (baseInfo.value.regType) {
+    djlx.value = baseInfo.value.regType.split(',')
+  }
+}
+
+// 转换成下拉选项
+function transformOptions(data: any) {
+  let options:any = []
+  for (let i = 0; i < data.length; i++) {
+    var children:any = []
+    for (let j = 0; j < data[i].children.length; j++) {
+      var child = {
+        value: data[i].children[j].value,
+        label: data[i].children[j].title,
+        regtype: data[i].children[j].type
+      }
+      children.push(child)
+    }
+  }
+  djlxOptions.value = options
+}
+</script>
+
+<style scoped lang="less">
+@import url('/@/assets/less/style_lb.less');
+
+.QlqtpzList {
+  padding: 0 10px;
+  .oprBtns {
+    padding-bottom: 10px;
+    text-align: right;
+  }
+}
+</style>

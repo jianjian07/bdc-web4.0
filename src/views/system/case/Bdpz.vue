@@ -21,10 +21,13 @@
         <div style="width: 100%;background-color: #fff;margin-left:8px;">
             <a-tabs v-model:activeKey="activeKey" style="padding: 5px;">
                 <a-tab-pane key="1" tab="基础配置">
-                    <FlowModal :lcid="processInfo.key" />
+                    <FlowModal :lcid="processInfo.key"/>
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="表单配置" force-render>
                     <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" />
+                </a-tab-pane>
+                <a-tab-pane key="3" tab="业务权利其他配置" force-render>
+                    <QlqtpzList v-if="activeKey == '3'" :lcid="processInfo.key"/>
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -37,6 +40,7 @@ import { ref, defineAsyncComponent } from "vue";
 import CLCLB from "/@/views/components/LCLB.vue"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
+const QlqtpzList = defineAsyncComponent(() => import("/@/views/system/case/components/QlqtpzList.vue"))
 const activeKey = ref('1');
 let processInfo: any = ref('')
 /**
@@ -44,7 +48,7 @@ let processInfo: any = ref('')
  * @param process 选中的流程
  */
 function onSelect(process: any) {
-    processInfo.value = process
+  processInfo.value = process
 }
 </script>
 

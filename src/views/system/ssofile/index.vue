@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import fileTree from './fileTree.vue';
+import fileTree from './components/fileTree.vue';
 
 let formData = {
   procInstId: 'ceshi001', // 受理编号

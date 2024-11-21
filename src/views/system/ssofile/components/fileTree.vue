@@ -134,6 +134,7 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
+import { Base64 } from 'js-base64';
 import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
 
 
@@ -198,31 +199,11 @@ function loadFileList() {
   })
 }
 
-function showTable() {
-  let modal = cModal({
-    title: '材料信息',
-    width: 1000,
-    filePath: 'views/system/ssofile/fileTable',
-    formData: {
-      procInstId: props.formData.procInstId, // 案卷ID，在案卷中创建的目录仅当前案卷生效
-      processId: props.formData.processId, // 流程ID
-      nodeId: props.formData.nodeId, // 节点ID
-      type: 'catalog'
-    },
-    onOk: () => {
-      modal.destroy()
-    },
-    onCancel: () => {
-      modal.close()
-    }
-  })
-}
-
 function addCatalog() {
   let modal = cModal({
     title: '新增附件目录',
     width: 600,
-    filePath: 'views/system/ssofile/addNew',
+    filePath: 'views/system/ssofile/components/addNew',
     footerStyle: {'text-align': 'center'},
     okText: '新增',
     formData: {
@@ -277,7 +258,7 @@ function addFile(data:any = null, way:String = 'cata') {
   let modal = cModal({
     title: '新增附件',
     width: 600,
-    filePath: 'views/system/ssofile/addNew',
+    filePath: 'views/system/ssofile/components/addNew',
     footerStyle: {'text-align': 'center'},
     okText: '新增',
     formData: {
