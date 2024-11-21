@@ -139,6 +139,23 @@ function getFormConfig() {
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
       
+//       formList.value.push({
+//   "id0": "1858706845814951938",
+//   "lcid": "1780060462306840577",
+//   "qllx": "3",
+//   "jdid": "task1713512395959",
+//   "jdmc": null,
+//   "vfdtitle": "缴费",
+//   "vfd": "HF",
+//   "formId": "48",
+//   "orderNum": 3,
+//   "ispl": "1",
+//   "iszd": "0",
+//   "qlrlb": "",
+//   "qlrlbmc": "",
+//   "bdlb": "0"
+// })
+      
       jdmc.value = formConfig.value.jdmc || '收件'
       qlr.value = formConfig.value.qlrlb || '权利人;义务人'
     }

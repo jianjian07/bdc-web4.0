@@ -7,7 +7,7 @@ import { getValidateRuleByCode } from "/@/utils/form/commonUtils"
  */
 export function validateRequired(value: any) {
   let msg = '不能为空'
-  if (value !== undefined) {
+  if (value !== undefined && value !== null) {
     if (typeof value == 'string') {
       if (value.match(/^\s*$/)) {
         return msg

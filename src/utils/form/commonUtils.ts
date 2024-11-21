@@ -2,6 +2,7 @@ import { useUserStore } from '/@/store/modules/user';
 // import { casDicts } from "/@/mock/casDict"
 // import { tableDicts } from "/@/mock/tableDict"
 import { defineComponent } from "vue"
+import { validateRequired } from "/@/utils/form/validateUtil"
 
 export const getDictItemsByCode = (dictCode: string) => {
     const userStore = useUserStore();
@@ -117,4 +118,46 @@ export function isJsonData(str) {
     } else {
         return false
     }
+}
+
+/**
+ * 校验规则(表格)
+ * @param key
+ * @param value
+ */
+export function validateRules(rules, value) {
+  let msg = ''
+  let findRequired = rules.find(rule => rule.required)
+  if (findRequired) {
+    if (validateRequired(value)) {
+      msg = findRequired.message
+      return msg
+    } 
+  }
+  
+  if (value) {
+    for (let i = 0; i < rules.length; i++) {
+      let pattern = rules[i].pattern
+      if (pattern) {
+        if (!pattern.test(value)) {
+          msg = rules[i].message
+          break;
+        }
+      }
+    }
+  }
+  return msg
+}
+
+/**
+ * 设置input的status
+ * @param column
+ * @param record
+ */
+export function setInputStatus(column, record) {
+  if (validateRules(column.rules, record[column.key])){
+    record[column.key + 'status'] = 'error'
+  } else {
+    record[column.key + 'status'] = ''
+  }
 }
