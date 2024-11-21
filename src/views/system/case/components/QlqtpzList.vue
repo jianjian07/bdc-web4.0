@@ -21,15 +21,17 @@
           <a-input :value="getLabelByCode('jzlx', record.jzlx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
         </template>
         <template v-if="column.dataIndex === 'operation'">
-          <a-button type="link" size="small" @click="onShowModal(record, 'view')">详情</a-button>
-          <a-button type="link" size="small" @click="onShowModal(record, 'edit')">编辑</a-button>
+          <a @click="onShowModal(record, 'view')">详情</a>
+          <a-divider type="vertical" />
+          <a @click="onShowModal(record, 'edit')">编辑</a>
+          <a-divider type="vertical" />
           <a-popconfirm
             title="确定删除？"
             ok-text="确定"
             cancel-text="取消"
             @confirm="onDelete(record.id)"
           >
-          <a-button type="link" size="small">删除</a-button>
+          <a style="color:#ff4d4f">删除</a>
           </a-popconfirm>
         </template>
       </template>
