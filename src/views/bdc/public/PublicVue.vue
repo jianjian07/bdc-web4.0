@@ -215,8 +215,12 @@ async function handleClick(btn) {
   if (btn.funName) {
     checkDemoRefs()
     console.log('demoRefs', demoRefs)
-    let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
-    let _params = `(demoRefs,spinning${params ? (',' + params) : params})`
+    // 修正非 JSON 格式字符串
+    let correctedBz = btn.bz
+    .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
+    .replace(/'/g, '"'); // 单引号变双引号
+    let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
+    let _params = `(demoRefs,spinning${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`${btn.funName}` + _params)
   }
 }
