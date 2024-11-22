@@ -161,7 +161,7 @@ let formState = ref<any>({
 let treeData = ref<any>([])
 // 用户数copy
 let treeDataCopy = ref<any>([])
-// todo 这个属性目前还不知道是什么
+// 角色数量
 let roleNum = ref<number>(0)
 // 树加载状态
 let treeSpinning = ref<boolean>(false)
