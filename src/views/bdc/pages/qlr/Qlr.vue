@@ -113,11 +113,16 @@ function handleAdd() {
     width: '70vw',
     filePath: 'views/bdc/public/GenPublic',
     formData: {
-      formId: 55
+      formId: 55,
+      qlrList: tableData.value
     },
     onOk: async (res) => {
       if (res && res.saveData) {
-        let _result = await res.saveData()
+        let _result = await res.saveData({
+          params: {
+            formId: 55
+          }
+        })
         if (_result) {
             modal.destroy()
             initData()
@@ -156,11 +161,17 @@ function handleEdit(record) {
     filePath: 'views/bdc/public/GenPublic',
     formData: {
       formId: 55,
-      qlrid: record.qlrid
+      qlrid: record.qlrid,
+      qlrList: tableData.value
     },
     onOk: async (res) => {
       if (res && res.saveData) {
-        let _result = await res.saveData()
+        let _result = await res.saveData({
+          params: {
+            formId: 55,
+            qlrid: record.qlrid,
+          }
+        })
         if (_result) {
           modal.destroy()
           initData()
