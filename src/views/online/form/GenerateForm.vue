@@ -88,6 +88,9 @@ let editableData: any = reactive({});
 formInfo.formId = Number.parseInt(code.value)
 let formId = Number.parseInt(code.value)
 let formDisabled = ref(false)
+let isSubmit = ref(true)
+// 所有校验是否通过
+let validateFlag = true
 // 如果有传值优先读取父组件传值
 if (disabled != undefined && typeof disabled == 'boolean') {
     formDisabled.value = disabled
@@ -232,13 +235,13 @@ const generateVue3 = defineComponent({
         /**
          * 保存
          */
-        function onSubmit() {
-            return onSubmitForm(formRef.value, onBeforeValidate)
+        async function onSubmit() {
+            return isSubmit.value ? await onSubmitForm(formRef.value,onBeforeValidate) : null
         }
 
-        function onBeforeValidate() {
+        async function onBeforeValidate() {
             if (events['onBeforeValidate']) {
-                events['onBeforeValidate']()
+                await events['onBeforeValidate']()
             }
         }
 
@@ -257,6 +260,8 @@ const generateVue3 = defineComponent({
         }
       
           return {
+            isSubmit,
+            validateFlag,
             formDisabled,
             formRef,
             basicInfo,
@@ -320,7 +325,7 @@ const generateVue3 = defineComponent({
         * 自动生成脚本
         */
 function generateTs() {
-    const _eventScript = eventScript.filter(t => (t.type == "Function" || t.type == "Mounted" || t.type == "Watch" || t.type == "Computed"));
+    const _eventScript = eventScript.filter(t => (t.type == "Function" || t.type == "Mounted" || t.type == "Watch" || t.type == "Computed" || t.type == "BeforeValidate"));
     for (let i = 0; i < _eventScript.length; i++) {
         const _data = _eventScript[i];
         if (_data.type == "Computed") {
