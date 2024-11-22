@@ -26,7 +26,7 @@
         <a-select v-model:value="formState.jzlx" :options="getDictItemsByCode('jzlx')" placeholder="请选择介质类型" />
       </a-form-item>
       <a-form-item ref="sjbm" label="编码" name="sjbm">
-        <a-input @mousedown="onmousedown" v-model:value="formState.sjbm" placeholder="请输入编码" />
+        <a-input v-model:value="formState.sjbm" placeholder="请输入编码" />
       </a-form-item>
       <a-form-item ref="zt" label="状态" name="zt">
         <a-select v-model:value="formState.zt" :options="getDictItemsByCode('sfys')" placeholder="请选择状态" />
@@ -106,7 +106,7 @@ function getCodeValue(val) {
   formState.value.sjnr = val
 }
 
-function onmousedown() {
+function getQlqtqkBySLBH() {
   if(!formState.value.sjbm) {
     defHttp.post({
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
