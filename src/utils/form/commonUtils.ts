@@ -3,6 +3,7 @@ import { useUserStore } from '/@/store/modules/user';
 // import { tableDicts } from "/@/mock/tableDict"
 import { defineComponent } from "vue"
 import { validateRequired } from "/@/utils/form/validateUtil"
+import { defHttp } from '/@/utils/http/axios';
 
 export const getDictItemsByCode = (dictCode: string) => {
     const userStore = useUserStore();
@@ -160,4 +161,88 @@ export function setInputStatus(column, record) {
   } else {
     record[column.key + 'status'] = ''
   }
+}
+
+/**
+ * 根据受理编号获取权利其他配置
+ * @param slbh
+ */
+export function getQlqtqkBySLBH(slbh: any, viewData: any) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
+      params: { slbh: slbh },
+      data: {}
+    },{ withToken: true }
+    ).then((res: any) => {
+      if(res && res.success) {
+        let result = manageQLQT(res.result, viewData)
+        resolve(result)
+      } else {
+        reject()
+      }
+    }).catch((error: any) => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
+/**
+ * 根据业务号获取权利其他配置
+ * @param slbh
+ * @param ywh
+ */
+export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any) {
+  const quickParam = { ywh: ywh, slbh: slbh }
+  const xmlParam = { ywh: ywh, slbh: slbh }
+  const param = { quickParam: quickParam, xmlParam: xmlParam }
+  return new Promise((resolve, reject) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtByMap',
+      data: param
+    },{
+      withToken: true
+    }).then((res: any) => {
+      if(res && res.success) {
+        let result = manageQLQT(res.result, viewData)
+        resolve(result)
+      } else {
+        reject()
+      }
+    }).catch(err => {
+      console.log(err)
+      reject()
+    })
+  })
+}
+
+/**
+ * 替换获取到的权利其他配置值中的占位符为实际值
+ * 规则为获取所有匹配 viewData.value. 形式的占位符并替换成实际值
+ * @param qlqtConfig
+ * @param viewData
+ */
+function manageQLQT(qlqtConfig: any, viewData: any) {
+  // 获取未赋值的占位符，从表单数据中赋值
+  let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/gm //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
+  // let reg = /(?<=\[)\S+(?=\])/gm //匹配中括号，返回结果不包括中括号
+  let qlqtmatch = qlqtConfig.match(reg)
+  debugger
+  if (qlqtmatch) {
+    qlqtConfig = qlqtConfig.replace('[', '')
+    qlqtConfig = qlqtConfig.replace(']', '')
+    qlqtmatch.forEach((value) => {
+      // 获取表名及字段名
+      let arr = value.split('.')
+      if (arr && arr.length == 4) {
+        let realValue = viewData.value[arr[2]][arr[3]]
+        qlqtConfig = qlqtConfig.replace(value, realValue)
+      } else {
+        console.log('占位符格式不正确！应为viewData.value.[表名].[字段名]')
+      }
+      
+    })
+  }
+  return qlqtConfig
 }

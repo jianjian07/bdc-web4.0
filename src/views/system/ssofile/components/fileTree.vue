@@ -86,7 +86,7 @@
                       v-model:file-list="fileList"
                       name="fiels"
                       :customRequest="customRequest"
-                      :data="{materialId: dataRef.materialId, materialName: dataRef.materialName, procInstId: formData.procInstId}"
+                      :data="{materialId: dataRef.materialId, materialName: dataRef.materialName, slbh: formData.slbh}"
                       @click.stop=""
                     >
                       <a-button style="margin-right: 5px" size="small" :icon="h(UploadOutlined)" />
@@ -186,7 +186,7 @@ function loadFileList() {
   defHttp.get(
     {
       url: urlList.queryAll,
-      params: { procInstId: props.formData.procInstId } // 查询参数：受理编号 流程实例ID
+      params: { slbh: props.formData.slbh } // 查询参数：受理编号 流程实例ID
     },
     { withToken: true }
   ).then((res: any) => {
@@ -207,7 +207,7 @@ function addCatalog() {
     footerStyle: {'text-align': 'center'},
     okText: '新增',
     formData: {
-      procInstId: props.formData.procInstId, // 案卷ID，在案卷中创建的目录仅当前案卷生效
+      slbh: props.formData.slbh, // 案卷ID，在案卷中创建的目录仅当前案卷生效
       processId: props.formData.processId, // 流程ID
       nodeId: props.formData.nodeId, // 节点ID
       type: 'catalog'
@@ -262,7 +262,7 @@ function addFile(data:any = null, way:String = 'cata') {
     footerStyle: {'text-align': 'center'},
     okText: '新增',
     formData: {
-      procInstId: props.formData.procInstId, // 案卷ID，在案卷中创建的目录仅当前案卷生效
+      slbh: props.formData.slbh, // 案卷ID，在案卷中创建的目录仅当前案卷生效
       processId: props.formData.processId, // 流程ID
       nodeId: props.formData.nodeId, // 节点ID
       catalogData: data, // 目录信息， 新增文件时如果有目录信息，会选择默认的目录
@@ -290,7 +290,7 @@ function customRequest(data: any) {
   const params = {
     materialId: data.data.materialId, // 附件目录主键
     materialName: data.data.materialName, // 附件目录名称
-    procInstId: data.data.procInstId // 流程实例ID
+    slbh: data.data.slbh // 流程实例ID
   }
 
   formData.append(`files`, data.file);

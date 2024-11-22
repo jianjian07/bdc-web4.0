@@ -17,7 +17,7 @@ import { ref } from 'vue';
 import fileTree from './components/fileTree.vue';
 
 let formData = {
-  procInstId: 'ceshi001', // 受理编号
+  slbh: 'ceshi001', // 受理编号
   processId: '', // 流程ID 不动产首次登记
   nodeId: '' // 节点为收件
 }

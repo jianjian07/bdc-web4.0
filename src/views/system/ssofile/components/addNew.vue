@@ -175,7 +175,7 @@ function getCatalogList() {
   defHttp.get(
     {
       url: urlList.getCatalog,
-      params: { procInstId: props.formData.procInstId } // 实例ID
+      params: { slbh: props.formData.slbh } // 实例ID
     },
     { withToken: true }
   ).then((res: any) => {
@@ -207,7 +207,7 @@ const addCatalog = () => {
       .validate()
       .then(() => {
         let params = {
-              procInstId: props.formData.procInstId,
+              slbh: props.formData.slbh,
               processId: props.formData.processId,
               nodeId: props.formData.nodeId,
               materialId: props.formData?.materialId || '',
@@ -255,7 +255,7 @@ const uploadFile = () => {
     const params = {
       materialId: fileState.value.materialId, // 附件目录ID
       materialName: fileState.value.materialName, // 附件目录名称
-      procInstId: props.formData.procInstId //流程实例ID
+      slbh: props.formData.slbh //流程实例ID
     }
     fileList.value.forEach((ele:any) => {
       formData.append(`files`, ele.originFileObj);
