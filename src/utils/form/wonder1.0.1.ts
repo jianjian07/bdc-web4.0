@@ -2,7 +2,7 @@
  * 加载表单数据
  */
 import { validateReg, validateRequired } from "/@/utils/form/validateUtil"
-import { reactive, ref, watch } from "vue"
+import { nextTick, reactive, ref, watch } from "vue"
 import { message, Modal } from "ant-design-vue"
 import { defHttp } from "../http/axios"
 import { router } from "/@/router"
@@ -346,7 +346,7 @@ function updateFormDatas(formRes, params?: any) {
 /**
  * 单文件表单保存
  */
-export function onSubmitForm(dom: any, callback?: any) {
+export async function onSubmitForm(dom: any, callback?: any) {
 
     let success
     let formDom = dom.querySelectorAll('[write-field]')
@@ -355,11 +355,16 @@ export function onSubmitForm(dom: any, callback?: any) {
         validateFun(formDom[i])
     }
 
+    let callbackRes = true
     if (callback) {
-        callback()
+        callbackRes = await callback()
     }
-
-    success = isValidateSuccess()
+    // console.log('callbackRes', callbackRes)
+    // console.log('validateInfos', validateInfos)
+    success = isValidateSuccess() && callbackRes
+    // console.log('validateInfos', validateInfos)
+    // console.log('callbackRessuccess', success)
+    console.log('sosososso',success)
     return {
         validate: success,
         updateData: getUpdateData(formDom)
@@ -407,6 +412,18 @@ function getDomValue(event: any, eventType?: string, _value?: any) {
     if (_value) {
         value = _value
     } else {
+        if (eventType && event.target) {
+            // 表下拉
+            let tableSelect = event.target?.parentNode?.parentNode?.parentNode?.classList
+            let mulTableSelect = event.target?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode?.classList
+            if (tableSelect && tableSelect.contains('table-select-selected')) {
+                eventType = undefined
+                event = event.target.parentNode.parentNode.parentNode
+            } else if (mulTableSelect && mulTableSelect.contains('table-select-selected')) {
+                eventType = undefined
+                event = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            }
+        }
         if (eventType) {
             // 控件本身校验
             value = event.target.value
@@ -420,7 +437,9 @@ function getDomValue(event: any, eventType?: string, _value?: any) {
                 // let _arr = isJsonData(_dataSet) ? JSON.parse(_dataSet) : _dataSet
                 let _punctuation = event.getAttribute('punctuation')
                 if (Array.isArray(_arr)) {
-                    _arr = _arr.map((v) => { return v.value ? v.value : v }).filter(v => v)
+                    _arr = _arr.map((v) => {
+                        return v.value ? v.value : v
+                    }).filter(v => v)
                     value = _arr.length ? _arr.join(_punctuation || ',') : ''
                 } else {
                     value = _arr
@@ -460,21 +479,25 @@ function getDomAttribute(event: any, attributeKey: string, eventType?: string) {
     let _attr
     if (eventType) {
         // 组件自身 (单选和多选目前自身没法触发blur获取值)
-        let domClassList = event.target.classList
-        let domParentNodeClassList = event.target.parentNode.classList
+        let target = event.target.classList ? event.target : event.nativeEvent.target
+        let domClassList = target.classList
+        let domParentNodeClassList = target.parentNode.classList
         if (domClassList.contains('ant-select-selection-search-input') || domParentNodeClassList.contains('ant-picker-input')) {
             // select 控件 || 日期及范围
-            let _pNode = event.target.parentNode.parentNode.parentNode
-            if (event.target.parentNode.parentNode.classList.contains('ant-select-selection-overflow-item')) {
-                _pNode = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            let _pNode = target.parentNode.parentNode.parentNode
+            if (target.parentNode.parentNode.classList.contains('ant-select-selection-overflow-item')) {
+                _pNode = target.parentNode.parentNode.parentNode.parentNode.parentNode
             }
+            _attr = _pNode.getAttribute(attributeKey)
+        } else if (domClassList.contains('ant-radio-input')) {
+            let _pNode = target.parentNode.parentNode.parentNode
             _attr = _pNode.getAttribute(attributeKey)
         } else {
             // 测试读取props方式获取不到 最新绑定里动态参数的rule里的值
             // 打包后无法读取__vnode属性 且attribute需要是字符串
             // _ctx = event.target.__vnode.ctx.attrs[attributeKey]
             // _props = event.target.__vnode.props[attributeKey]
-            _attr = event.target.getAttribute(attributeKey)
+            _attr = target.getAttribute(attributeKey)
         }
     } else {
         // 外部通过指定属性找到的dom
@@ -497,11 +520,18 @@ function getDomAttribute(event: any, attributeKey: string, eventType?: string) {
  * 不传值默认是点击保存按钮统一对控件进行校验)
  */
 export function validateFun(event: any, eventType?: string, _value?: any, callback?: any) {
+    if (typeof event == 'string') {
+        event = document.querySelectorAll(`[write-field="${event}"]`)?.[0]
+    }
     let value = getDomValue(event, eventType, _value)
     let rules = getDomAttribute(event, 'rules', eventType)
     let key = getDomAttribute(event, 'write-field', eventType)
     let msg = ''
-    if (rules && key) {
+    // let hidden = getDomIsHidden(event,eventType)
+    // 隐藏的dom不参与校验
+    // 241020更新 因存在Tab页 dom被隐藏导致没有进入校验 隐藏dom仍参与校验,并检查表单绑定
+    let hidden = false
+    if (!hidden && rules && key) {
         // 必填优先校验
         let findRequired = rules.find(rule => rule.type == 'required')
         if (findRequired) {
@@ -515,14 +545,23 @@ export function validateFun(event: any, eventType?: string, _value?: any, callba
         }
 
         if (!validateInfos[key]) {
-            validateInfos[key] = {}
+            validateInfos[key] = reactive({})
         }
+
         if (msg.length > 0) {
-            validateInfos[key]['validateStatus'] = 'error'
-            validateInfos[key]['help'] = msg
+            let errorObj = reactive({
+                validateStatus: 'error',
+                help: msg
+            })
+            validateInfos[key]['validateStatus'] = errorObj.validateStatus
+            validateInfos[key]['help'] = errorObj.help
         } else {
-            validateInfos[key]['validateStatus'] = 'validating'
-            validateInfos[key]['help'] = ''
+            let valObj = reactive({
+                validateStatus: 'validating',
+                help: ''
+            })
+            validateInfos[key]['validateStatus'] = valObj.validateStatus
+            validateInfos[key]['help'] = valObj.help
         }
         validateInfos[key]['type'] = 'default'
     }
@@ -537,7 +576,7 @@ export function validateFun(event: any, eventType?: string, _value?: any, callba
 function isValidateSuccess() {
     let success = true
     for (const key in validateInfos) {
-        if (validateInfos[key]['validateStatus'] == 'error') {
+        if (validateInfos[key] && validateInfos[key]['validateStatus'] == 'error') {
             success = false
             break
         }
@@ -558,8 +597,14 @@ export function initValidateInfos() {
  */
 export function resetValidateInfos() {
     for (const key in validateInfos) {
-        validateInfos[key]['validateStatus'] = 'validating'
-        validateInfos[key]['help'] = ''
+        if (validateInfos[key]) {
+            let obj = reactive({
+                validateStatus: 'validating',
+                help: ''
+            })
+            validateInfos[key]['validateStatus'] = obj.validateStatus
+            validateInfos[key]['help'] = obj.help
+        }
     }
     return validateInfos
 }
@@ -570,20 +615,34 @@ export function resetValidateInfos() {
  * @param curr 当前绑定
  * @param syn 同步绑定
  */
-export const syncChange = (value: any, object: { value: object }, punctuation: string, curr: string, syn?: string, callback?: any) => {
+export const syncChange = (value: any, object: {
+    value: object
+}, punctuation: string, curr: string, syn?: string, callback?: any) => {
     punctuation = punctuation ? punctuation : ','
     // 绑定code 同步更新label
-    let currarr = curr.split(".")
-    let values = Array.isArray(value) ? value.map(v => v.value) : [value.value]
-    object[currarr[0]][currarr[1]] = values ? values.join(punctuation) : undefined
+    if (curr && curr != 'undefined') {
+        let currarr = curr.includes('.') ? curr.split(".") : curr
+        let values = Array.isArray(value) ? value.map(v => v.value || v) : [value?.value || value]
+        if (curr.includes('.')) {
+            object[currarr[0]][currarr[1]] = values ? values.join(punctuation) : undefined
+        } else {
+            object[currarr] = values ? values.join(punctuation) : undefined
+        }
+    }
     if (syn) {
-        let synarr = syn.split(".")
-        let labels = Array.isArray(value) ? value.map(v => v.label) : [value.label]
-        object[synarr[0]][synarr[1]] = labels ? labels.join(punctuation) : undefined
+        let synarr = syn.includes('.') ? syn.split(".") : syn
+        let labels = Array.isArray(value) ? value.map(v => v.label || v) : [value?.label || value]
+        if (syn.includes('.')) {
+            object[synarr[0]][synarr[1]] = labels ? labels.join(punctuation) : undefined
+        } else {
+            object[synarr] = labels ? labels.join(punctuation) : undefined
+        }
     }
-    if (callback) {
-        callback(value)
-    }
+    nextTick(() => {
+        if (callback) {
+            callback(value)
+        }
+    })
 };
 
 /**
@@ -600,6 +659,27 @@ export function onTableSelectClear(object: { value: object }, curr: string, call
 }
 
 /**
+ * 表下拉多选时清除单项
+ * @param value
+ * @param option
+ * @param object
+ * @param curr
+ * @param callback
+ */
+export function onTableSelectChange(value, option, object: { value: object }, curr: string, callback?: any) {
+    let currarr = curr.split(".")
+    if (currarr.length > 1) {
+        object[currarr[0]][currarr[1]] = value ? value.join(',') : undefined
+    } else {
+        object[currarr[0]] = value ? value.join(',') : undefined
+    }
+
+    if (callback) {
+        callback()
+    }
+}
+
+/**
  * 表下拉双向绑定更新等
  * @param row 行数据
  * @param object viewData
@@ -608,15 +688,26 @@ export function onTableSelectClear(object: { value: object }, curr: string, call
  * @param syn  同步更新值
  * @param labelName 显示字段
  */
-export function onTableSelectRowChange(row: any, object: { value: object }, curr: string, keyName: string, syn?: string, labelName?: string, callback?: Function) {
+export function onTableSelectRowChange(row: any, object: {
+    value: object
+}, curr: string, keyName: string, syn?: string, labelName?: string, callback?: Function) {
     // 绑定code 同步更新 label
     let currarr = curr.split(".")
     let selectValue = row.map(r => r[keyName])
-    object[currarr[0]][currarr[1]] = selectValue ? selectValue.join(',') : undefined
-    if (syn && labelName) {
-        let synarr = syn.split(".")
-        let selectLabel = row.map(r => r[labelName])
-        object[synarr[0]][synarr[1]] = selectLabel ? selectLabel.join(',') : undefined
+    if (currarr.length > 1) {
+        object[currarr[0]][currarr[1]] = selectValue ? selectValue.join(',') : undefined
+        if (syn && labelName) {
+            let synarr = syn.split(".")
+            let selectLabel = row.map(r => r[labelName])
+            object[synarr[0]][synarr[1]] = selectLabel ? selectLabel.join(',') : undefined
+        }
+    } else {
+        object[currarr[0]] = selectValue ? selectValue.join(',') : undefined
+        if (syn && labelName) {
+            let synarr = syn.split(".")
+            let selectLabel = row.map(r => r[labelName])
+            object[synarr[0]] = selectLabel ? selectLabel.join(',') : undefined
+        }
     }
     if (callback) {
         callback(row)
@@ -634,10 +725,14 @@ export const getSelectAllCheck = (value, options) => {
 // 设置select全选
 export const setSelectAllCheck = (e, viewData, value, options) => {
     let check = e.target.checked
-    let obj = value ? value.split('.') : null
+    let obj = value ? (value.includes('.') ? value.split('.') : value) : null
     if (obj) {
         let values = options ? options.map(option => option.value) : []
-        viewData[obj[0]][obj[1]] = check ? values.join(',') : null
+        if (value.includes('.')) {
+            viewData[obj[0]][obj[1]] = check ? values.join(',') : null
+        } else {
+            viewData[obj] = check ? values.join(',') : null
+        }
     }
 }
 
@@ -774,4 +869,29 @@ export function hideField(formSetting: any, viewData: any, index: number) {
         // }
     }
     return _result
+}
+
+/**
+ * 下拉json数据获取
+ * @param selectJsonSetting
+ */
+export async function getSelectJsonSetting(selectJsonSetting: any) {
+    for (const key in selectJsonSetting.value) {
+        if (selectJsonSetting.value[key].options.length == 0) {
+            let url = new URL(`/public/json/${key}.json`, import.meta.url).href
+            await defHttp.get({ url: url }, { withToken: true }).then((_res) => {
+                if (_res) {
+                    if (selectJsonSetting.value[key].remoteLabel == 'label' && selectJsonSetting.value[key].remoteValue == 'value') {
+                        selectJsonSetting.value[key].options = _res
+                    } else {
+                        selectJsonSetting.value[key].options = _res.map((item) => {
+                            item.label = item[selectJsonSetting.value[key].remoteLabel]
+                            item.value = item[selectJsonSetting.value[key].remoteValue]
+                            return item
+                        })
+                    }
+                }
+            })
+        }
+    }
 }
