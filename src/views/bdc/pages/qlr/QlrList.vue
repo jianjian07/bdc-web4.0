@@ -32,6 +32,7 @@ let props = defineProps({
 let showQlr = ref<boolean>(true)
 
 onMounted(() => {
+  eventBus.on('onChangeQlr', onChangeQlrShow)
   let qlrmc = props.qlr
   let qlrxx = qlrmc.split(';')
   qlrList.value = qlrxx.map((qlr, index) => {
