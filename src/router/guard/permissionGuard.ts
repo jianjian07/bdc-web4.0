@@ -15,6 +15,7 @@ export function createPermissionGuard(router: Router) {
   const permissionStore = usePermissionStoreWithOut();
 
   router.beforeEach(async (to, from, next) => {
+    console.log('ttoto',to)
     /***************上架开始****************/
     // 非上架环境屏蔽该部分代码
     // const licence = userStore.getLicence
@@ -33,6 +34,10 @@ export function createPermissionGuard(router: Router) {
     //   return;
     // }
     /***************上架结束****************/
+    // 首页特殊处理
+    let tabTitle = to.meta.title || to.name
+    document.title = tabTitle ? tabTitle + ' · ' + '不动产统一登记平台' : '不动产统一登记平台'
+    
     if (from.path === '/' && to.path === PageEnum.BASE_HOME && userStore.getUserInfo.homePath && userStore.getUserInfo.homePath !== PageEnum.BASE_HOME) {
       next(userStore.getUserInfo.homePath);
       return;
