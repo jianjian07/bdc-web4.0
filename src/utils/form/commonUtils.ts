@@ -157,9 +157,9 @@ export function validateRules(rules, value) {
  */
 export function setInputStatus(column, record) {
   if (validateRules(column.rules, record[column.key])){
-    record[column.key + 'status'] = 'error'
+    record[column.key + 'Status'] = 'error'
   } else {
-    record[column.key + 'status'] = ''
+    record[column.key + 'Status'] = ''
   }
 }
 

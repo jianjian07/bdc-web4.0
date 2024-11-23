@@ -2,7 +2,13 @@
   <div class="jf-detail">
     <a-button style="margin-bottom: 10px" @click="handelAdd">新增</a-button>
     <a-table :columns="columns" :data-source="jfxx" size="small" :loading="loading">
-      <template #bodyCell="{ column, record }">
+      <template #headerCell="{ title, column }">
+        <template v-if="column.rules?.find(r => r.required)">
+          <span class="required-text">{{ title }}</span>
+        </template>
+        <span v-else>{{ title }}</span>
+      </template>
+      <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'action'">
           <a-popconfirm :disabled="column.disabled" cancel-text="取消" ok-text="确定" title="是否确定删除该项？"
                         @confirm="handleDel(record, index)">
@@ -17,7 +23,7 @@
             <template v-if="validateRules(column.rules, record[column.key])" #title>
               <span>{{ validateRules(column.rules, record[column.key]) }}</span>
             </template>
-            <a-input-number :status="record[column.key + 'status']" style="width: 100%;" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
+            <a-input-number :status="record[column.key + 'Status']" style="width: 100%;" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
                             @focus="setInputStatus(column, record)" @change="(value) => handleChangeValue(value, column, record)"/>
           </a-tooltip>
         </template>
@@ -157,5 +163,5 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
-
+@import url('/@/assets/less/form.less');
 </style>

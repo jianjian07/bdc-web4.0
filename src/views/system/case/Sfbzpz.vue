@@ -5,8 +5,8 @@
         <a-alert type="info" :show-icon="true" style="margin-bottom: 10px">
           <template #message>
             当前选择：<span>{{ selectedNode.title }}</span> 
-            <a v-if="selectedNode.title" style="margin-left: 10px">取消选择</a>
-            <a> 刷新</a>
+            <a v-if="selectedNode.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
+            <a @click="reloadData"> 刷新</a>
           </template>
         </a-alert>
         <a-spin class="sfbzpz-tree-spin" :spinning="spinning">
@@ -34,7 +34,7 @@
             <span>详细信息</span>
           </div>
           <a-spin :spinning="formSpinning" class="sfbzpz-form-spin">
-            <a-form :model="formState" :rules="rules">
+            <a-form ref="formRef" :model="formState" :rules="rules">
               <a-row>
                 <a-col :md="12" :sm="24">
                    <a-form-item label="收费条目名称" name="sfxmc" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
@@ -66,7 +66,10 @@
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费相关域" name="sfxgy" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select v-model:value="formState.sfxgy" :options="getDictItemsByCode('sfxgy')" placeholder="请选择收费相关域">
+                    <a-select v-model:value="formState.sfxgy" placeholder="请选择收费相关域">
+                      <a-select-option v-for="(item, index) in getDictItemsByCode('sfxgy')" :label="item.label" :value="item.bz">
+                        {{ item.label }}
+                      </a-select-option>
                     </a-select>
                    </a-form-item>
                 </a-col>
@@ -102,13 +105,13 @@
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="是否减免" name="sfjm" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select v-model:value="formState.sfjm" :options="getDictItemsByCode('sfjm')" placeholder="请选择是否减免">
+                    <a-select v-model:value="formState.sfjm" :options="getDictItemsByCode('sfjm')" placeholder="请选择是否减免" @change="onChangeSfjm">
                     </a-select>
                   </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="减免方式" name="jmfs" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select v-model:value="formState.jmfs" :options="getDictItemsByCode('jmfs')" placeholder="请选择是否减免">
+                    <a-select :disabled="formState.sfjm == '0'" v-model:value="formState.jmfs" :options="getDictItemsByCode('jmfs')" allow-clear placeholder="请选择是否减免">
                     </a-select>
                   </a-form-item>
                 </a-col>
@@ -128,19 +131,59 @@
               <a-row>
                 <a-col :md="24">
                   <a-form-item label="筛选条件" name="sxtj" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
-                    // todo 
+                    <a-button @click="handleAddSxtj" style="margin-bottom: 10px">新增</a-button>
+                    <a-table :columns="columns" :data-source="sxtjxx" size="small" :loading="tableLoading">
+                      <template #headerCell="{ title, column }">
+                        <template v-if="column.rules?.find(r => r.required)">
+                          <span class="required-text">{{ title }}</span>
+                        </template>
+                        <span v-else>{{ title }}</span>
+                      </template>
+                      <template #bodyCell="{ column, record, index }">
+                        <template v-if="column.key === 'xh'">
+                          {{ index + 1 }}
+                        </template>
+                        <template v-if="column.key === 'action'">
+                          <a-popconfirm :disabled="column.disabled" cancel-text="取消" ok-text="确定" title="是否确定删除该项？"
+                                        @confirm="handleDelSxtj(record, index)">
+                            <a-button type="link">删除</a-button>
+                          </a-popconfirm>
+                        </template>
+                        <template v-else-if="['sxy','sxfs','sxtj'].includes(column?.key)">
+                          <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
+                            <template v-if="validateRules(column.rules, record[column.key])" #title>
+                              <span>{{ validateRules(column.rules, record[column.key]) }}</span>
+                            </template>
+                            <a-select v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" 
+                                      :placeholder="column.placeholder" @focus="setInputStatus(column, record)" @change="(value, option) => handleChangeValue(value, option, column, record)">
+                              <a-select-option v-for="(item,index) in getDictItemsByCode(column.dict)" :label="item.label" :value="column.bz ? item.description : item.value">
+                                {{ item.label }}
+                              </a-select-option>
+                            </a-select>
+                          </a-tooltip>
+                        </template>
+                      </template>
+                    </a-table>
                   </a-form-item>
                 </a-col>
               </a-row>
               
               
-<!--              <a-row>-->
-<!--                <a-col :md="24">-->
-<!--                  <a-form-item label="收费登记类型" name="sxtj" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">-->
-<!--                    // todo -->
-<!--                  </a-form-item>-->
-<!--                </a-col>-->
-<!--              </a-row>-->
+              <a-row>
+                <a-col :md="24">
+                  <a-form-item label="收费登记类型" name="djlx" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
+                    <a-checkbox-group v-model:value="formState.djlx">
+                      <a-row>
+                        <a-col :span="8" v-for="(item, index) in sfdjlx">
+                          <a-checkbox :value="item.value" class="cbx-css">
+                            <span :title="item.label">{{ item.label }}</span>
+                          </a-checkbox>
+                        </a-col>
+                      </a-row>
+                    </a-checkbox-group>
+                  </a-form-item>
+                </a-col>
+              </a-row>
               
               <div style="text-align: center;margin-top: 10px">
                 <a-space>
@@ -169,7 +212,8 @@
 import { onMounted, ref } from "vue"
 import { AuditOutlined,BookOutlined,FileOutlined } from '@ant-design/icons-vue';
 import { cModal } from "/@/components/cModal/index"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode,validateRules, setInputStatus } from '/@/utils/form/commonUtils';
+import { message } from "ant-design-vue"
 
 // loading
 let spinning = ref<boolean>(false)
@@ -181,6 +225,8 @@ let treeData = ref<any>([])
 let selectedNode = ref<any>({})
 // 选中的keys
 let selectedKeys = ref<any>([])
+// 表单实例
+let formRef = ref();
 // 详细信息
 let formState = ref<any>({
   sftmmc: ''
@@ -190,8 +236,71 @@ let rules = ref<any>({
   sfxmc: [{ required: true, message: '请输入收费条目名称' }],
   sffy: [{ pattern: /^(0|([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '必须是金额' }],
   sfsx: [{ pattern: /^(0|([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '必须是金额' }],
-  // sfdjlx: [{ required: true, message: '请选择收费登记类型!' }]
+  djlx: [{ required: true, message: '请选择收费登记类型!' }]
 })
+
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'xh',
+    key: 'xh'
+  },
+  {
+    title: '筛选域',
+    dataIndex: 'sxy',
+    key: 'sxy',
+    dict: 'sxy',
+    bz: 1,
+    placeholder: '请选择筛选域',
+    rules: [{ required: true, message: '请选择筛选域' }]
+  },
+  {
+    title: '筛选方式',
+    dataIndex: 'sxfs',
+    key: 'sxfs',
+    dict: 'sxfs',
+    bz: 1,
+    placeholder: '请选择筛选方式',
+    rules: [{ required: true, message: '请选择筛选方式' }]
+  },
+  {
+    title: '筛选条件',
+    dataIndex: 'sxtj',
+    key: 'sxtj',
+    dict: 'sxtj',
+    bz: 0,
+    placeholder: '请选择筛选条件',
+    rules: [{ required: true, message: '请选择筛选方式' }]
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    key: 'action'
+  }
+]
+// 筛选条件信息
+let sxtjxx = ref<any>([])
+// 表格加载loading
+let tableLoading = ref<boolean>(false)
+// 测试字典
+const sfdjlx = [
+  {
+    label: '不动产首次登记',
+    value: '0101'
+  }, {
+    label: '不动产转移登记',
+    value: '0102'
+  }, {
+    label: '不动产变更登记',
+    value: '0103'
+  }, {
+    label: '不动产注销登记',
+    value: '0104'
+  }, {
+    label: '不动产更正登记',
+    value: '0105'
+  }
+] 
 
 onMounted(() => {
   initData()
@@ -263,6 +372,26 @@ function initData() {
 }
 
 /**
+ * 刷新
+ */
+function reloadData() {
+  onClearSelected()
+  initData()
+}
+
+/**
+ * 取消选择
+ */
+function onClearSelected() {
+  selectedNode.value = {}
+  selectedKeys.value = []
+  if (formRef.value) {
+    formRef.value.resetFields()
+    sxtjxx.value = []
+  }
+}
+
+/**
  * 添加图标
  * @param data
  * @param level
@@ -297,7 +426,6 @@ function onSelectTreeNode(keys, e) {
   // console.log('rere',record)
   let firstLevel = treeData.value[0].key
   if (record.key !== firstLevel && record.children) {
-    console.log('11')
     let modal = cModal({
       title: '添加收费条目',
       width: 600,
@@ -320,17 +448,87 @@ function onSelectTreeNode(keys, e) {
   }
 }
 
-function handleSubmit() {
-  
+/**
+ * 数据变化
+ * @param value
+ * @param option
+ * @param column
+ * @param record
+ */
+function handleChangeValue(value, option, column, record) {
+  setInputStatus(column, record)
 }
 
+/**
+ * 是否减免
+ * @param value
+ */
+function onChangeSfjm(value) {
+  formState.value.jmfs = value == '1' ? formState.value.jmfs : null
+}
+
+/**
+ * 添加筛选条件
+ */
+function handleAddSxtj() {
+  sxtjxx.value.push({})
+}
+
+/**
+ * 保存
+ */
+function handleSubmit() {
+  return new Promise((resolve, reject) => {
+    formRef.value
+    .validate()
+    .then(() => {
+      if (validateTable()) {
+        console.log('formState',formState.value)
+      }
+    })
+  })
+}
+
+function validateTable() {
+  for (let i = 0; i < sxtjxx.value.length; i++) {
+    let record = sxtjxx.value[i]
+    let ruleColumn = columns.filter((column: any) => column.rules)
+    for (let j = 0; j < ruleColumn.length; j++) {
+      setInputStatus(ruleColumn[j], record)
+      if (record[ruleColumn[i].key+ 'Status'] == 'error') {
+        message.warning('请检查筛选条件填写')
+        return false
+      }
+    }
+  }
+  return true
+}
+
+/**
+ * 删除
+ */
 function handleDel() {
-  
+  let id = selectedNode.value.id
+  // todo 
+}
+
+/**
+ * 删除筛选条件
+ * @param record
+ * @param index
+ */
+function handleDelSxtj(record, index) {
+  if (record.id) {
+    // todo
+  } else {
+    sxtjxx.value.splice(index, 1)
+  }
 }
 
 </script>
 
 <style lang="less" scoped>
+@import url('/@/assets/less/form.less');
 .sfbzpz {
   height: 100%;
   
@@ -363,6 +561,14 @@ function handleDel() {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.cbx-css {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 </style>
