@@ -79,7 +79,6 @@ watch(() => props.formData, (val: any) => {
       // 新增督办，获取流程实例ID值
       formState.value.processInstId = val.record.processInstanceId
       formState.value.processId = val.record.processDefinitionId
-      formState.value.superviseReason = val.record.urgentReason
     }
   }
 }, {
@@ -97,6 +96,15 @@ function queryInfo(record: any) {
   })
 }
 
+function getNowDate() {
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
+  const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+
+  return year + '-' + month + '-' + day
+}
+
 function onSubmit() {
   return new Promise((resolve, reject) => {
     formRef.value
@@ -106,8 +114,9 @@ function onSubmit() {
         let url = edit.value ? api.edit : api.add
 
         formState.value.superviseMan = userInfo?.userId
-        formState.value.operateDate = new Date()
+        formState.value.operateDate = getNowDate()
         formState.value.superviseStatus = '1' //表示加急
+        formState.value.isSupervise= '1' //督办
 
         // 根据edit值判断是新增还是编辑
         defHttp[method](

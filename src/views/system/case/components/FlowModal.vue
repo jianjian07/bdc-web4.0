@@ -51,6 +51,8 @@ let flowInfo: any = ref({
     remember: true
 });
 
+const emit = defineEmits(['setBaseInfo'])
+
 flowInfo.value.lcid = props.lcid;
 getFlowInfo(props.lcid)
 function getFlowInfo(lcid: string) {
@@ -60,12 +62,14 @@ function getFlowInfo(lcid: string) {
         } else {
             flowInfo.value = { lcid: flowInfo.value.lcid }
         }
+        emit('setBaseInfo', flowInfo.value)
     })
 }
 function handleAdd() {
     defHttp.post({ url: api.saveUrl, data: flowInfo.value }, { withToken: true }).then((res) => {
         if (res.success) {
             message.success("保存成功")
+            emit('setBaseInfo', flowInfo.value)
         } else {
             message.error("保存失败")
         }

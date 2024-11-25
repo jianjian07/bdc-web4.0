@@ -194,7 +194,7 @@ function loadFileList() {
     if (res?.success) {
       ssoFileList.value = res?.result
     } else {
-      message.warning(res?.message)
+      message.warning(res?.message || '未查询到数据！')
     }
   })
 }

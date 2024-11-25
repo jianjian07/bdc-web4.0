@@ -6,7 +6,7 @@
         新增
       </a-button>
     </div>
-    <a-table bordered :data-source="dataList" :columns="columns" :pagination="pagination" @change="handleTableChange" size="small">
+    <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination" @change="handleTableChange" size="small">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'qllx'">
           <a-input :value="getLabelByCode('qllx', record.qllx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
@@ -213,6 +213,7 @@ function onDelete(id: any) {
 function handleTableChange(pag:any) {
   pagination.value.current = pag.current
   pagination.value.pageSize = pag.pageSize
+  loadData()
 }
 
 function getLabelByCode(dict: any, value: any) {

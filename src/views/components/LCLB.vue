@@ -23,6 +23,7 @@ onMounted(() => {
 function loadTreeData() {
     defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
         treeData.value = res.result
+        emit('setTreeData', treeData.value)
         if (res.result.length > 0) {
             const firstProcess = res.result[0].children[0]
             selectedKeys.value.push(firstProcess.key)
@@ -30,7 +31,7 @@ function loadTreeData() {
         }
     })
 }
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'setTreeData'])
 /**
  * 选中工作流
  * @param _selectedKeys 

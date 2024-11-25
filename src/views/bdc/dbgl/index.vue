@@ -42,13 +42,16 @@
                         <a-popconfirm
                           v-if="record.isSupervise!=''&& record.isSupervise==='1'"
                           title="确定取消督办吗?"
-                          @confirm="() => handleRestart(record.id)"
+                          @confirm="() => queryInfo(record)"
                         >
                           <a>取消</a>
                         </a-popconfirm>
                         <a v-if="record.isSupervise!=''&& record.isSupervise==='0'"
                           @click="handleOper(record)">督办</a>
                       </a-space>
+                  </template>
+                  <template v-if="column.dataIndex === 'isSupervise'">
+                    {{ record.isSupervise === '1' ? '已督办' : '未督办' }}
                   </template>
               </template>
           </a-table>
@@ -64,10 +67,15 @@ import { router } from "/@/router";
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
 import { getQlqtqkBySLBH, getQlqtqkByMap } from "/@/utils/form/commonUtils"
+import { useUserStore } from '/@/store/modules/user';
+
+const userStore = useUserStore();
+const userInfo = userStore.getUserInfo
 
 enum api {
   tasklist = '/api/zrzy-bdc/act/processInstance/susperviselist',
-  restart = '/api/'
+  edit = '/api/zrzy-bdc/process/extActSupervise/edit', // 编辑
+  queryByInstId = '/api/zrzy-bdc/process/extActSupervise/queryByInstId', //通过实例id查询
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -107,14 +115,7 @@ const columns = [
     title: '状态',
     align: 'center',
     dataIndex: 'isSupervise',
-    width: 100,
-    customRender: function(t) {
-      if (t === '1') {
-        return '已督办'
-      } else {
-        return '未督办'
-      }
-    }
+    width: 100
   },
   {
     title: '操作',
@@ -173,21 +174,44 @@ function clear() {
 * 取消督办
 * @param id 
 */
-function handleRestart(id) {
-  let params = {
-    processInstanceId: id
-  }
-  defHttp.get({
-    url: api.restart,
-    params: params
+function handleRestart(record) {
+  let params = { ...record }
+  params.isSupervise = '0'
+  params.superviseMan = userInfo?.userId
+  params.operateDate = getNowDate()
+  params.superviseStatus = '0'
+
+  defHttp.put({
+    url: api.edit,
+    data: params
   },{ withToken: true }).then((res: any) => {
-      if (res.success) {
+      if (res?.success) {
         message.success(res.message)
         loadData()
     } else {
-        message.warn(res.message)
+        message.warn(res?.message || '操作失败！')
     }
   })
+}
+
+function queryInfo(record: any) {
+  defHttp.get({
+    url: api.queryByInstId,
+    params: { id: record.processInstanceId }
+  }, { withToken: true }).then((res: any) => {
+    if(res && res.success) {
+      handleRestart(res.result)
+    }
+  })
+}
+
+function getNowDate() {
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
+  const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+
+  return year + '-' + month + '-' + day
 }
 
 /**
