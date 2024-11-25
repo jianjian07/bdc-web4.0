@@ -2,6 +2,10 @@ import { useUserStore } from "/@/store/modules/user"
 import { saveFormData, saveHandleData, validateInfos } from "/@/utils/form/wonder1.0.1"
 import { message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
+import { computed } from "vue"
+import { useTabsStore } from "/@/store/modules/tabs"
+import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
+import { router } from "/@/router"
 
 const userStore = useUserStore()
 
@@ -15,6 +19,31 @@ enum api {
  */
 export function getTarget() {
   return document.getElementById('public-vue')
+}
+
+/**
+ * 获取多级ref
+ * @param list
+ * @param arr
+ */
+export function getMultipleRef(list: any[], arr: any[]) {
+  list.forEach((item: any) => {
+    if (Array.isArray(item)) {
+      let _list = getMultipleRef(item, [])
+      arr = [...arr, ..._list]
+    } else {
+      arr.push(item)
+      if ((item && item.multipleRef && item.multipleRef())) {
+        return getMultipleRef(item.multipleRef(), arr)
+      } else if (item && item.$ && item.$.exposed && item.$.exposed.multipleRef && item.$.exposed.multipleRef()) {
+        return getMultipleRef(item.$.exposed.multipleRef(), arr)
+      } else if (item && item._ && item._.exposed && item._.exposed.multipleRef && item._.exposed.multipleRef()) {
+        return getMultipleRef(item._.exposed.multipleRef(), arr)
+      }
+    }
+  })
+  console.log('arr', arr)
+  return arr
 }
 
 /**
@@ -38,7 +67,7 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
       console.log('beforeRes', beforeRes)
     }
     if (beforeRes) {
-      commonSaveRes = await saveFormData(demoRefs, params.params)
+      commonSaveRes = await saveFormData(demoRefs, params?.params)
       console.log('commonSaveRes', commonSaveRes)
       if (commonSaveRes && params && params.afterFun) {
         afterRes = await eval(params.afterFun)
@@ -97,9 +126,7 @@ export async function baseSave(demoRefs: any, loading: any, params: any) {
 }
 
 export async function handOver(demoRefs: any, loading: any, params: any) {
-  // let res = await sendSaveFun('handOver', demoRefs, loading, params)
-  // 测试弹窗默认true
-  let res = true
+  let res = await sendSaveFun('handOver', demoRefs, loading, params)
   if (res) {
     let modal = cModal({
       title: '移交',
@@ -110,6 +137,15 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
           let _result = await res.handleOk()
           if (_result) {
             modal.destroy()
+            // 关闭当前标签页
+            const tabStore = useTabsStore()
+            const { getTabsShow } = useTabsSetting()
+            if (getTabsShow) {
+              const currentTab = computed(() => tabStore.getCurrentTab)
+              tabStore.removeTab(currentTab.value)
+            } else {
+              router.push('/analysis')
+            }
           }
         }
       }

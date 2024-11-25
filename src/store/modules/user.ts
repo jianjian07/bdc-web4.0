@@ -386,7 +386,7 @@ export const useUserStore = defineStore({
       // // 分类字典
       // getCategoryDict()
       // 规则
-      // getRuleList()
+      getRuleList()
       // if (szUserInfo) {
       //   if (userToken.iszsEnv != '0') {
       //     this.setToken(szUserInfo.token.access_token);
