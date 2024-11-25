@@ -76,6 +76,7 @@ reportInfo.searchInfo = generateData.searchData
 paginations.value = generateData.paginations;
 viewData.value = {}
 let events: any = {}
+let event1: any = ref({})
 // 20240130验证：变量定义 名称固定formProps
 let basicInfo = ref<any>({})
 if (cBasicInfo) {
@@ -86,6 +87,7 @@ if (cBasicInfo) {
         basicInfo.value[name] = transformValueByType(value, type)
     }
 }
+
 function transformValueByType(value: any, type: string): any {
     switch (type) {
         case 'string':
@@ -105,6 +107,12 @@ function transformValueByType(value: any, type: string): any {
         default:
             return value;
     }
+}
+const exposeds = eventScript.filter(t => t.type == "Exposed")
+let arrExposed = [];
+if (exposeds.length > 0) {
+    debugger
+    arrExposed = exposeds[0].name.split(',')
 }
 const emit = defineEmits(['ok', 'rowChange'])
 const generateVue3 = defineComponent({
@@ -146,7 +154,8 @@ const generateVue3 = defineComponent({
             onExportExcel,
             onExportExcelApi,
             onCExport,
-            formatMultipleSelectValue
+            formatMultipleSelectValue,
+            onSelectChange
         }
         function search() {
             paginations.value.current = 1
@@ -186,7 +195,9 @@ const generateVue3 = defineComponent({
             paginations.value.current = pagination.current
             initTableV2(options);
         }
-
+        function onSelectChange(selectedRowKeys, selectedRows) {
+            basicInfo.value.state.selectedRowKeys = selectedRowKeys;
+        }
         /**
          * 自动生成脚本
          */
@@ -194,6 +205,9 @@ const generateVue3 = defineComponent({
             for (let i = 0; i < eventScript.length; i++) {
                 const _data = eventScript[i];
                 events[_data.name] = newFunction(_data)
+                if (arrExposed.includes(_data.name)) {
+                    event1.value[_data.name] = newFunction(_data)
+                }
             }
         }
         /**
@@ -225,6 +239,17 @@ function execInitFun() {
         initApiTable(viewData, dataSource, reportApiSource, paginations, loading)
     }
 }
+function createCase() {
+    if (basicInfo.value.state.selectedRowKeys.length == 0) {
+        message.warning('请选择要提取的数据')
+    } else {
+        emit('ok', { reload: true, data: basicInfo.value.state.selectedRowKeys })
+    }
+}
+defineExpose({
+    createCase,
+    event1
+})
 </script>
 <style lang="less">
 @import url('/@/assets/less/form.less');

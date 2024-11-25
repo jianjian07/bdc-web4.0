@@ -4,34 +4,42 @@
       <div style="flex: 1"></div>
       <div class="legend-icon">
         <a-space>
-            <span style="white-space: nowrap">图例版：</span>
-            <span class="zt" style="background-color: #FE9E38"></span><span style="white-space: nowrap">合同备案</span>
-            <span class="zt" style="background-color: #75FBD4"></span><span style="white-space: nowrap"> 拆迁限制</span>
-            <span class="zt" style="background-color: #50A68D"></span><span style="white-space: nowrap"> 地役权</span>
-            <span class="zt" style="background-color: #0000FF"></span><span style="white-space: nowrap"> 抵押权</span>
-            <span class="zt" style="background-color: #805B23"></span><span style="white-space: nowrap"> 公共部位</span>
-            <span class="zt" style="background-color: #A5D147"></span><span style="white-space: nowrap"> 居住权</span>
-            <span class="zt" style="background-color: #FCFC60"></span><span style="white-space: nowrap"> 合同签约</span>
-            <span class="zt" style="background-color: #FF0000"></span><span style="white-space: nowrap"> 不动产权</span>
-            <span class="zt" style="background-color: #BF6B97"></span><span style="white-space: nowrap"> 限制登记</span>
-            <span class="zt" style="background-color: #C0C0C0"></span><span style="white-space: nowrap"> 查封(其他限制)</span>
-            <span class="zt" style="background-color: #9900FF"></span><span style="white-space: nowrap"> 预告</span>
-            <span class="zt" style="background-color: #9A992F"></span><span style="white-space: nowrap"> 异议</span>
+          <span style="white-space: nowrap">图例版：</span>
+          <span class="zt" style="background-color: #FE9E38"></span><span style="white-space: nowrap">合同备案</span>
+          <span class="zt" style="background-color: #75FBD4"></span><span style="white-space: nowrap"> 拆迁限制</span>
+          <span class="zt" style="background-color: #50A68D"></span><span style="white-space: nowrap"> 地役权</span>
+          <span class="zt" style="background-color: #0000FF"></span><span style="white-space: nowrap"> 抵押权</span>
+          <span class="zt" style="background-color: #805B23"></span><span style="white-space: nowrap"> 公共部位</span>
+          <span class="zt" style="background-color: #A5D147"></span><span style="white-space: nowrap"> 居住权</span>
+          <span class="zt" style="background-color: #FCFC60"></span><span style="white-space: nowrap"> 合同签约</span>
+          <span class="zt" style="background-color: #FF0000"></span><span style="white-space: nowrap"> 不动产权</span>
+          <span class="zt" style="background-color: #BF6B97"></span><span style="white-space: nowrap"> 限制登记</span>
+          <span class="zt" style="background-color: #C0C0C0"></span><span style="white-space: nowrap"> 查封(其他限制)</span>
+          <span class="zt" style="background-color: #9900FF"></span><span style="white-space: nowrap"> 预告</span>
+          <span class="zt" style="background-color: #9A992F"></span><span style="white-space: nowrap"> 异议</span>
         </a-space>
       </div>
       <div class="legend-btn">
         <a-space>
           <a-button size="small" type="primary" @click="checkAll">
-            <template #icon><CheckSquareOutlined /></template>全选
+            <template #icon>
+              <CheckSquareOutlined />
+            </template>全选
           </a-button>
           <a-button size="small" type="primary" @click="checkReverse">
-            <template #icon><CheckSquareOutlined /></template>反选
+            <template #icon>
+              <CheckSquareOutlined />
+            </template>反选
           </a-button>
           <a-button size="small" type="primary" @click="checkRow">
-            <template #icon><UnorderedListOutlined /></template>选行
+            <template #icon>
+              <UnorderedListOutlined />
+            </template>选行
           </a-button>
-           <a-button size="small" type="primary" @click="checkCol">
-            <template #icon><PauseOutlined /></template>选列
+          <a-button size="small" type="primary" @click="checkCol">
+            <template #icon>
+              <PauseOutlined />
+            </template>选列
           </a-button>
         </a-space>
       </div>
@@ -60,23 +68,18 @@
             </a-form-item>
             <div style="display: flex; justify-content: end">
               <a-button type="primary" @click="loadList">
-                <template #icon><SearchOutlined /></template>查询
+                <template #icon>
+                  <SearchOutlined />
+                </template>查询
               </a-button>
             </div>
           </a-form>
         </div>
         <div class="search-result">
-          <a-table 
-              class="zrz-table ant-table-striped"
-              :columns="zrzColumns"
-              :data-source="zrzTableData"
-              :pagination="pagination"
-              :loading="tableLoading"
-              :scroll="{ y: 300 }"
-              :custom-row="customRow"
-              :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : null "
-              @change="handleTableChange"
-              size="small">
+          <a-table class="zrz-table ant-table-striped" :columns="zrzColumns" :data-source="zrzTableData"
+            :pagination="pagination" :loading="tableLoading" :scroll="{ y: 300 }" :custom-row="customRow"
+            :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : null"
+            @change="handleTableChange" size="small">
           </a-table>
         </div>
       </div>
@@ -84,7 +87,8 @@
         <div v-if="cxxData.length" class="lpb-content-search-tool">
           <div style="width: 30%">
             <a-form-item label="层">
-              <a-select style="width: 100%" allow-clear v-model:value="filterLpb.cData" :options="cxxOptions" :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
+              <a-select style="width: 100%" allow-clear v-model:value="filterLpb.cData" :options="cxxOptions"
+                :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
             </a-form-item>
           </div>
           <div style="width: 32%; margin: 0 10px">
@@ -97,74 +101,72 @@
         <template v-if="cxxData.length">
           <table style="margin: auto;">
             <thead>
-                <tr class="title">
-                    <td style="border: 0;background-color: #fff;"> </td>
-                    <td style="border: 0;background-color: #fff;"> </td>
-                    <td colspan="6" id="divtitle"
-                        style="border: 0;background-color: #39bd8a;border-radius: 26px 26px 0px 0px; /* 去掉右下角的圆角 */">
-                        {{ currentZrzInfo.zl }}
-                    </td>
-                </tr>
-                <tr class="title">
-                    <td>物理层</td>
-                    <td>名义层</td>
-                    <td v-for="(item, index) in dyxx" :key="'dy' + index" :colspan="maxHs">{{ item.dyh }}单元</td>
-                </tr>
+              <tr class="title">
+                <td style="border: 0;background-color: #fff;"> </td>
+                <td style="border: 0;background-color: #fff;"> </td>
+                <td colspan="6" id="divtitle"
+                  style="border: 0;background-color: #39bd8a;border-radius: 26px 26px 0px 0px; /* 去掉右下角的圆角 */">
+                  {{ currentZrzInfo.zl }}
+                </td>
+              </tr>
+              <tr class="title">
+                <td>物理层</td>
+                <td>名义层</td>
+                <td v-for="(item, index) in dyxx" :key="'dy' + index" :colspan="maxHs">{{ item.dyh }}单元</td>
+              </tr>
             </thead>
             <tbody class="ant-table-tbody">
               <tr v-for="(cInfo, cIndex) in cxx" :key="cInfo.wlc">
                 <td class="title">{{ cInfo.wlc }}</td>
                 <td class="title">{{ cInfo.myc }}层</td>
                 <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
-                    <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
-                        :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwIndex"
-                        :class="checkFw.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
-                       
-                        <div class="fw-td">
-                            <span v-if="fwInfo.zbhtbazt == 1" class="zbzt" style="background-color: #FE9E38"></span>
-                            <span v-if="fwInfo.zbcqxzzt == 1" class="zbzt" style="background-color: #75FBD4"></span>
-                            <span v-if="fwInfo.zbdyqzt == 1" class="zbzt" style="background-color: #50A68D"></span>
-                            <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF"></span>
-                            <span v-if="fwInfo.zbggbwzt == 1" class="zbzt" style="background-color: #805B23"></span>
-                            <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
-                            <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
-                            <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
-                            <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>
-                            <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0"></span>
-                            <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF"></span>
-                            <span v-if="fwInfo.zbyyzt == 1" class="zbzt" style="background-color: #9A992F"></span>
-                        </div>
-                       <a-checkbox
-                          v-if="getClass(fwInfo) || checkShow(fwInfo)"
-                          :class="{ caseCheck: getClass(fwInfo)}"
-                          :checked="fwInfo.checked"
-                          :col="fwIndex"
-                          :row="cIndex"
-                          :dy="dyIndex"
-                          @change="onChangeCheckedBox(fwIndex, cIndex, dyIndex, fwInfo)">
-                        </a-checkbox>
-                       <span style="cursor: pointer" :class="[(getClass(fwInfo) || checkShow(fwInfo)) ? 'checked-shbw' :'unchecked-shbw']">{{ fwInfo.shbw }}</span>
-                      <div class="fw-td">
-                        <span v-if="fwInfo.htbazt == 1" class="zt" style="background-color: #FE9E38"></span>
-                        <span v-if="fwInfo.cqxzzt == 1" class="zt" style="background-color: #75FBD4"></span>
-                        <span v-if="fwInfo.dyqzt == 1" class="zt" style="background-color: #50A68D"></span>
-                        <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF"></span>
-                        <span v-if="fwInfo.ggbwzt == 1" class="zt" style="background-color: #805B23"></span>
-                        <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
-                        <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
-                        <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
-                        <span v-if="fwInfo.xzdjzt == 1" class="zt" style="background-color: #BF6B97"></span>
-                        <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0"></span>
-                        <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF"></span>
-                        <span v-if="fwInfo.yyzt == 1" class="zt" style="background-color: #9A992F"></span>
-                      </div>
-                      
-                        <!-- {{ fwInfo.shbw + '|' + fwInfo.colspan }} -->
-                    </td>
-                    <template v-for="blanc in (dy.maxHs - fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh).length)">
-                      <td></td>
-                    </template>
-                    <!-- <td v-for="(item) in cInfo.hh" :key="cInfo.wlc.toString() + item" class="dy-css"
+                  <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
+                    :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwIndex"
+                    :class="checkFw.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
+
+                    <div class="fw-td">
+                      <span v-if="fwInfo.zbhtbazt == 1" class="zbzt" style="background-color: #FE9E38"></span>
+                      <span v-if="fwInfo.zbcqxzzt == 1" class="zbzt" style="background-color: #75FBD4"></span>
+                      <span v-if="fwInfo.zbdyqzt == 1" class="zbzt" style="background-color: #50A68D"></span>
+                      <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF"></span>
+                      <span v-if="fwInfo.zbggbwzt == 1" class="zbzt" style="background-color: #805B23"></span>
+                      <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
+                      <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
+                      <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
+                      <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>
+                      <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0"></span>
+                      <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF"></span>
+                      <span v-if="fwInfo.zbyyzt == 1" class="zbzt" style="background-color: #9A992F"></span>
+                    </div>
+                    <a-checkbox v-if="getClass(fwInfo) || checkShow(fwInfo)" :class="{ caseCheck: getClass(fwInfo) }"
+                      :checked="fwInfo.checked" :col="fwIndex" :row="cIndex" :dy="dyIndex"
+                      @change="onChangeCheckedBox(fwIndex, cIndex, dyIndex, fwInfo)">
+                    </a-checkbox>
+                    <span style="cursor: pointer"
+                      :class="[(getClass(fwInfo) || checkShow(fwInfo)) ? 'checked-shbw' : 'unchecked-shbw']">{{
+            fwInfo.shbw }}</span>
+                    <div class="fw-td">
+                      <span v-if="fwInfo.htbazt == 1" class="zt" style="background-color: #FE9E38"></span>
+                      <span v-if="fwInfo.cqxzzt == 1" class="zt" style="background-color: #75FBD4"></span>
+                      <span v-if="fwInfo.dyqzt == 1" class="zt" style="background-color: #50A68D"></span>
+                      <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF"></span>
+                      <span v-if="fwInfo.ggbwzt == 1" class="zt" style="background-color: #805B23"></span>
+                      <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
+                      <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
+                      <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
+                      <span v-if="fwInfo.xzdjzt == 1" class="zt" style="background-color: #BF6B97"></span>
+                      <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0"></span>
+                      <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF"></span>
+                      <span v-if="fwInfo.yyzt == 1" class="zt" style="background-color: #9A992F"></span>
+                    </div>
+
+                    <!-- {{ fwInfo.shbw + '|' + fwInfo.colspan }} -->
+                  </td>
+                  <template
+                    v-for="blanc in (dy.maxHs - fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh).length)">
+                    <td></td>
+                  </template>
+                  <!-- <td v-for="(item) in cInfo.hh" :key="cInfo.wlc.toString() + item" class="dy-css"
                         :rowspan="getShbw(cInfo.wlc, dy.dyh, item)?.conspan">
                         <div v-if="getShbw(cInfo.wlc, dy.dyh, item)">
                             {{ getShbw(cInfo.wlc, dy.dyh, item).shbw }}
@@ -173,9 +175,9 @@
                         <div v-else></div>
                     </td> -->
                 </template>
-            </tr>
+              </tr>
             </tbody>
-            
+
             <!-- <tr v-for="(cInfo) in cxx2" :key="cInfo.wlc">
                 <td>{{ cInfo.wlc }}</td>
                 <td>{{ cInfo.myc }}层</td>
@@ -188,15 +190,15 @@
                     </td>
                 </template>
             </tr> -->
-        </table>
-          <div v-if="showAll && cxxData.length > 5" style="text-align: center;padding: 10px;">
-          当前只显示<span style="color: #1677ff;">5</span>层，点击 <a-button type="link" @click="onShowAll">加载全部</a-button>
-          </div> 
+          </table>
+          <!-- <div v-if="showAll && cxxData.length > 5" style="text-align: center;padding: 10px;">
+            当前只显示<span style="color: #1677ff;">5</span>层，点击 <a-button type="link" @click="onShowAll">加载全部</a-button>
+          </div> -->
         </template>
         <template v-else>
-          <a-empty/>
+          <a-empty />
         </template>
-        
+
       </div>
       <div v-show="checkFw && checkFw.shbw" class="lpb-info">
         <div class="lpb-info-header">
@@ -225,14 +227,16 @@
       </div>
     </div>
   </div>
+  <a-button @click="handleOk" style="display: none">ddd</a-button>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
-import { CheckSquareOutlined,UnorderedListOutlined,PauseOutlined,SearchOutlined } from '@ant-design/icons-vue';
+import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue"
 import { checkShowForSingle, checkShowForZh } from "/@/views/bdc/lpb/lpb"
+import { extractDataLpb } from '/@/utils/bdc/bdc';
 
 // 查询条件
 let zrzData = ref<any>({
@@ -246,17 +250,13 @@ let zrzData = ref<any>({
 // 查询数据
 let zrzTableData = ref<any>([])
 // 表格列名
-let zrzColumns = ref<any>([{
-    title: '宗地代码',
-    dataIndex: 'zddm',
-    key: 'zddm',
-    width: 150
-  },{
+let zrzColumns = ref<any>([
+  {
     title: '栋号',
     dataIndex: 'dh',
     key: 'dh',
     width: 60
-  },{
+  }, {
     title: '楼幢坐落',
     dataIndex: 'zl',
     key: 'zl',
@@ -266,12 +266,12 @@ let zrzColumns = ref<any>([{
 // 表格查询loading
 let tableLoading = ref<boolean>(false)
 // 分页
-const pagination = ref<any>({ 
+const pagination = ref<any>({
   total: 0,
   current: 1,
   pageSize: 10,
-  showSizeChanger: true, 
-  showTotal: (total) => `共 ${total} 条数据` 
+  showSizeChanger: true,
+  showTotal: (total) => `共 ${total} 条数据`
 })
 // 最大户数
 let maxHs = ref<number>(0)
@@ -319,7 +319,7 @@ let cxxOptions = ref<any>([])
 //     const match = fwxx.find((t: any) => t.wlc === wlc && t.dyh === dyh && t.hbh === hbh);
 //     return match ? match : null;
 // }
-let zl = '园林办事处（城南）第二十五街坊潜江市红梅东路3号名筑仕嘉16栋'
+// let zl = '园林办事处（城南）第二十五街坊潜江市红梅东路3号名筑仕嘉16栋'
 let showAll = ref(false)
 const date1 = new Date().getTime()
 console.log('date1:' + date1)
@@ -357,44 +357,39 @@ onMounted(() => {
  * 获取当前案卷的不动产单元号数组
  */
 function initCurrentCase() {
-  
-}
 
+}
+loadList()
 /**
  * 加载幢列表
  */
 function loadList() {
   // todo 接口查询列表
   zrzTableData.value = [
-  { id: '1', zddm: '429005021004GB00003', dh: '25', zl: '园艺村紫月东路33号生态龙虾城25栋', zbm: '05048025GB00202000216' },  
-  { id: '2', zddm: '429005021004GB00003', dh: '30', zl: '园艺村紫月东路33号生态龙虾城30栋', zbm: '05048025GB00202000211' },   
-  { id: '3', zddm: '429005021004GB00003', dh: '29', zl: '园艺村紫月东路33号生态龙虾城29栋', zbm: '05048025GB00202000212' },
-  { id: '4', zddm: '429005021004GB00003', dh: '24', zl: '园艺村紫月东路33号生态龙虾城24栋', zbm: '05048025GB00202000213' },
-  { id: '5', zddm: '429005021004GB00003', dh: '18', zl: '园艺村紫月东路33号生态龙虾城18栋', zbm: '05048025GB00202000214' },
-  { id: '6', zddm: '429005021004GB00003', dh: '16', zl: '园艺村紫月东路33号生态龙虾城16栋', zbm: '05048025GB00202000215' },  
-  { id: '7', zddm: '429005021004GB00003', dh: '17', zl: '园艺村紫月东路33号生态龙虾城17栋', zbm: '05048025GB00202000217' },  
-  { id: '8', zddm: '429005021004GB00003', dh: '18', zl: '园艺村紫月东路33号生态龙虾城18栋', zbm: '05048025GB00202000218' },   
-  { id: '9', zddm: '429005021004GB00003', dh: '19', zl: '园艺村紫月东路33号生态龙虾城19栋', zbm: '05048025GB00202000219' },
-  { id: '10', zddm: '429005021004GB00003', dh: '20', zl: '园艺村紫月东路33号生态龙虾城20栋', zbm: '05048025GB00202000220' },
-  { id: '11', zddm: '429005021004GB00003', dh: '21', zl: '园艺村紫月东路33号生态龙虾城21栋', zbm: '05048025GB00202000221' }]
+    { id: '2', zddm: '429005048032GB31004', dh: '30', zl: '测试数据2', zbm: '05048032GB31004000210' },
+    { id: '1', zddm: '429005048025GB00202', dh: '25', zl: '测试数据', zbm: '05048025GB00202000216' }
+  ]
+  currentZrzInfo.value = zrzTableData.value[0]
+  loadFwxx()
 }
 
 async function loadFwxx(isFilter = false) {
-    if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
-      const res = await defHttp.get({ url: '/api/zrzy-bdc/bdc/lpb/lpb', params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
-      if (res && res.result) {
-        dyxx.value = res.result.dyhList
-        cxxData.value = res.result.cxxList
-        showAll.value = cxxData.value.length > 5
-        cxx.value = cxxData.value.slice(cxxData.value.length - 5, cxxData.value.length)
-        fwxx.value = res.result.fwList
-        setMaxHs()
-        if (!isFilter) {
-           cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
-        }
+  if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
+    const res = await defHttp.get({ url: '/api/zrzy-bdc/bdc/lpb/lpb', params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
+    if (res && res.result) {
+      dyxx.value = res.result.dyhList
+      cxxData.value = res.result.cxxList
+      // showAll.value = cxxData.value.length > 5
+      // cxx.value = cxxData.value.slice(cxxData.value.length - 5, cxxData.value.length)
+      cxx.value = cxxData.value
+      fwxx.value = res.result.fwList
+      setMaxHs()
+      if (!isFilter) {
+        cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
       }
     }
-  
+  }
+
 }
 
 function onCheck(item: any) {
@@ -407,7 +402,7 @@ function onCheck(item: any) {
  * 设置最大户数
  */
 function setMaxHs() {
-   dyxx.value.forEach((dy) => {
+  dyxx.value.forEach((dy) => {
     let dyMaxhs = 0
     cxx.value.forEach((cInfo) => {
       let fwList = fwxx.value.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)
@@ -453,7 +448,7 @@ function initFwxxChecked(isChecked, reverse = false, currentCase = []) {
         _fwxx[i].checked = reverse ? !_fwxx[i].checked : isChecked
         // 初始化已选中
         if (currentCase && currentCase.length) {
-          for (let j = 0; j < currentCase.length ; j++) {
+          for (let j = 0; j < currentCase.length; j++) {
             let caseItem = currentCase[j]
             if (caseItem.bdcdyh == _fwxx[i].bdcdyh) {
               _fwxx[i].checked = true
@@ -487,7 +482,7 @@ function onChangeCheckedBox(colIndex, rowIndex, dyIndex, fwInfo) {
 function setCheckRowOrCol(type) {
   let _cxx = cxx.value || []
   let _dyxx = dyxx.value || []
-  _cxx.forEach((_cxxItem,_cxxIndex) => {
+  _cxx.forEach((_cxxItem, _cxxIndex) => {
     _dyxx.forEach((_dyxxItem, _dyxxIndex) => {
       let _fwxx = fwxx.value.filter((t: any) => t.wlc === _cxxItem.wlc && t.dyh === _dyxxItem.dyh)
       for (let i = 0; i < _fwxx.length; i++) {
@@ -562,246 +557,30 @@ function checkShow(fwInfo) {
     return false
   }
 }
-
+defineExpose({
+  handleOk
+})
 /**
  * 筛选楼盘表
  */
 function handleFilterLpb() {
-  
-}
 
+}
+/**
+ * 提取数据
+ */
+function handleOk() {
+  const data = fwxx.value.filter(t => t.checked == true)
+  if (data.length == 0) {
+    message.error("请选择要提取的房源")
+  } else {
+    extractDataLpb({
+      data: data
+    })
+  }
+}
 </script>
 
 <style scoped lang="less">
-td {
-    border: 1px solid #39bd8a;
-    width: 100px;
-    height: 30px;
-}
-
-.title {
-
-    background-color: #f2f2f2;
-}
-
-.zt {
-
-    width: 8px;
-    height: 8px;
-    float: left;
-    margin-left: 8px;
-    border-radius: 50%;
-  
-  &:nth-of-type(1) {
-    margin-left: 0px;
-  }
-}
-
-.zbzt {
-  width: 8px;
-  height: 8px;
-  float: left;
-  margin-left: 8px;
-  
-  &:nth-of-type(1) {
-    margin-left: 0px;
-  }
-  //border-radius: 3px;
-}
-
-.dy-css-base {
-    cursor: pointer;
-}
-
-.dy-css {
-    right: 0;
-    bottom: 0;
-    cursor: pointer;
-    position: relative;
-
-    &:before {
-        content: "";
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        border: 12px solid rgba(255, 153, 0, 0.8);
-        border-top-color: transparent;
-        border-left-color: transparent;
-    }
-
-    &:after {
-        content: "";
-        width: 5px;
-        height: 10px;
-        position: absolute;
-        right: 4px;
-        bottom: 5px;
-        border: 1px solid #fff;
-        border-top-color: transparent;
-        border-left-color: transparent;
-        transform: rotate(45deg);
-    }
-}
-
-.legend-tool-bar {
-  height: 50px;
-  border-bottom: 1px solid rgba(5, 5, 5, 0.06);
-  display: flex;
-  align-items: center;
-  
-  .legend-icon {
-    flex: 3;
-    padding: 0 10px;
-  }
-  
-  .legend-btn {
-    flex: 1;
-    display: flex;
-    justify-content: end;
-    padding-right: 15px;
-  }
-}
-
-.lpb-main {
-  height: calc(100% - 50px);
-  display: flex;
-  
-  .lpb-search-bar {
-    width: 350px;
-    height: 100%;
-    border-right: 1px solid rgba(5, 5, 5, 0.06);
-    
-    .search-tool {
-      padding: 15px;
-      border-bottom: 1px solid rgba(5, 5, 5, 0.06);
-      
-      :deep(.ant-form-item) {
-        margin-bottom: 10px;
-      }
-    }
-    
-    .search-result {
-      height: calc(100% - 315px);
-      overflow: auto;
-      
-      :deep(td) {
-        cursor: pointer;
-      }
-      .ant-table-striped :deep(.table-striped) td {
-        background-color: #fafafa;
-      }
-      
-      .ant-table-striped :deep(.active-table-row) td {
-        background-color: rgba(80, 148, 249, 0.1);
-      }
-      
-      :deep(.ant-table-body) {
-        overflow-y: scroll;
-        max-height: calc(100% - 42px) !important;
-      }
-
-      :deep(.ant-table-wrapper) {
-        height: 100%;
-      }
-
-      :deep(.ant-table) {
-        height: calc(100% - 56px);
-      }
-
-      :deep(.ant-table-container) {
-        height: 100%;
-      }
-
-      :deep(.ant-spin-container) {
-        height: 100%;
-      }
-
-      :deep(.ant-spin-nested-loading) {
-        height: 100%;
-      }
-      
-      :deep(.ant-pagination) {
-        margin-right: 10px;
-      }
-    }
-    
-  }
-  
-  .lpb-content {
-    //flex: auto;
-    padding: 15px;
-    height: 100%;
-    overflow: auto;
-    width: calc(100% - 650px);
-    
-    .lpb-content-search-tool {
-      display: flex;
-    }
-    
-    .fw-td {
-      text-align: center;
-      align:center;
-      display:flex;
-      flex-wrap: nowrap;
-      flex-direction:row;
-      justify-content:center;
-      //padding-left: 8px;
-      padding-top: 2px;
-      padding-bottom: 2px;
-    }
-    
-    .checked-shbw {
-      padding-left: 8px;
-      padding-top: 2px;
-      padding-bottom: 2px;
-    }
-    
-    .unchecked-shbw {
-      padding-left: 0px;
-      padding-top: 2px;
-      padding-bottom: 2px;
-    }
-  }
-  
-  .lpb-info {
-    width: 300px;
-    height: 100%;
-    border-left: 1px solid rgba(5, 5, 5, 0.06);
-    
-    .lpb-info-header {
-      height: 30px;
-      padding: 0 15px;
-      display: flex;
-      align-items: center;
-      text-align: left;
-      border-bottom: 1px solid rgba(5, 5, 5, 0.06);
-    }
-    
-    .lpb-info-content {
-      display: flex;
-      flex-direction: column;
-      height: calc(100% - 30px);
-      overflow: auto;
-      
-      .lpb-info-row {
-        padding: 10px 15px;
-        border-bottom: 1px solid rgba(5, 5, 5, 0.06);
-      }
-      
-      .lpb-info-title {
-        color: #4678b2;
-        font-weight: bold;
-      }
-      
-      :deep(.ant-form-item-row) {
-        padding: 7px 15px;
-        border-bottom: 1px solid rgba(5, 5, 5, 0.06);
-      }
-      
-      :deep(.ant-form-item) {
-        margin-bottom: 0;
-      }
-    }
-  }
-}
+@import url('/@/views/bdc/lpb/lpb.less');
 </style>

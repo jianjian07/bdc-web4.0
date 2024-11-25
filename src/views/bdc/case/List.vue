@@ -72,7 +72,7 @@ import { ref } from 'vue';
 import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 enum api {
-    list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
+    // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
     tasklist = '/api/zrzy-bdc/act/task/list'
 }
 let datalist = ref([]);

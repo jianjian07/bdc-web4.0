@@ -14,9 +14,13 @@
               </template>
             </a-space-compact>
             <a-drawer v-if="open" v-model:open="open" :footer-style="{ textAlign: 'right' }"
-              :style="{ position: 'absolute' }" title="不动产首次登记列表" width="1000" @close="onClose">
-              <!-- <CRView id="1" @ok="onReload"></CRView> -->
-              <CqList @ok="onReload"></CqList>
+              :style="{ position: 'absolute' }" title="数据提取" width="1000" @close="onClose">
+              <template #extra>
+                <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
+                <a-button type="primary" @click="handleOk">确定</a-button>
+              </template>
+              <LookLpb v-if="eType == 'lpb'" ref="dataForm"></LookLpb>
+              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>
             </a-drawer>
           </div>
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
@@ -43,24 +47,18 @@
 
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
-import { TableOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
-import { guid } from '/@/utils'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
-import TdxxList from "/@/views/bdc/pages/public/TdxxList.vue"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { message } from "ant-design-vue"
 const modules = import.meta.glob('/src/**/*.vue')
-let activeKey = ref('1')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
-const CqList = defineAsyncComponent(() => import("/@/views/bdc/public/components/CqList.vue"))
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
 })
-
+const LookLpb = defineAsyncComponent(() => import("/@/views/bdc/lpb/index.vue"))
 const route = useRoute();
 let open = ref(false)
 // 表单配置
@@ -135,93 +133,12 @@ function getFormConfig() {
       Object.keys(btnList.value).forEach((key) => {
         btnList.value[key] = formConfig.value?.btnList.filter(btn => btn.anwz == key) || []
       })
-
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
-      
-//       formList.value.push({
-//   "id0": "1858706845814951938",
-//   "lcid": "1780060462306840577",
-//   "qllx": "3",
-//   "jdid": "task1713512395959",
-//   "jdmc": null,
-//   "vfdtitle": "缴费",
-//   "vfd": "HF",
-//   "formId": "48",
-//   "orderNum": 3,
-//   "ispl": "1",
-//   "iszd": "0",
-//   "qlrlb": "",
-//   "qlrlbmc": "",
-//   "bdlb": "0"
-// })
-      
       jdmc.value = formConfig.value.jdmc || '收件'
       qlr.value = formConfig.value.qlrlb || '权利人;义务人'
     }
   })
-
-  // formConfig.value = {
-  //   title: '不动产首次登记(张三,李四)',
-  //   btnConfig: {
-  //     list1: [{
-  //       name: '保存',
-  //       func: 'baseSave',
-  //       // 保存方法如果传参不打引号会立刻执行
-  //       // params: `{
-  //       //     beforeFun: bdc.aa('1'),
-  //       //     afterFun: bdc.aa(1),
-  //       //     params: { a:1 }
-  //       //   }
-  //       // `,
-  //       params: `{
-  //           beforeFun: "aa(demoRefs,1)",
-  //           afterFun: "aa(1)",
-  //           params: { a:1 }
-  //         }
-  //       `,
-  //     }, { name: '移交', func: 'handOver', params: '', },
-  //     { name: '回退', func: 'handBack', params: '1,"2"' }],
-  //     list2: [{ name: '打印询问笔录', func: 'lookFile' },
-  //     { name: '打印受理通知书', func: 'lookFile' },
-  //     { name: '打印缴费通知单', func: 'lookFile' },
-  //     { name: '跳转附件', func: 'lookFile' },
-  //     { name: '打印测试5', func: 'lookFile' },
-  //     { name: '打印测试6', func: 'lookFile' }],
-  //     list3: [{ name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-  //     { name: '楼盘表', func: 'lookLpb' },
-  //     { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-  //     { name: '图形', func: 'lookLpb' },
-  //     { name: '楼盘表', func: 'lookLpb' },
-  //     { name: '查看附件', func: 'lookFile', params: `{ a: 1, b: '1' } ` },
-  //     { name: '图形', func: 'lookLpb' }],
-  //     list4: [{ name: '土地', func: 'openList' },
-  //     { name: '楼盘表', func: 'lookTd' },
-  //     { name: '林权', func: 'lookTd' }
-  //     ]
-  //   },
-  //   formList: [
-  //     {
-  //       formCode: 'SJXX_PL',
-  //       formId: '36',
-  //       readOnly: false,
-  //       isPl: false
-  //     },
-  //     // {
-  //     //   formCode: 'FWYF',
-  //     //   formId: '28',
-  //     //   readOnly: true,
-  //     //   isPl: true
-  //     // },
-  //     {
-  //       formCode: 'FWYF',
-  //       formId: '34',
-  //       readOnly: true,
-  //       isPl: true
-  //     }
-  //   ]
-  // }
-
 }
 
 /**
@@ -231,32 +148,52 @@ function getFormConfig() {
 async function handleClick(btn) {
   if (btn.funName) {
     checkDemoRefs()
-    console.log('demoRefs', demoRefs)
     // 修正非 JSON 格式字符串
     let correctedBz = btn.bz
-    .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
-    .replace(/'/g, '"'); // 单引号变双引号
+      .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
+      .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
     let _params = `(demoRefs,spinning${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`${btn.funName}` + _params)
   }
 }
 
-function openList() {
+/**数据提取 start */
+let eType = ref('')
+let formId = ref('0')
+/**
+ * 数据提取通用弹框接口
+ * @param demoRefs 
+ * @param spinning 
+ * @param params 
+ */
+function openList(demoRefs, spinning, params?: any) {
+  const { vtype, reportId } = params
+  eType.value = vtype != undefined ? vtype : ''
+  formId.value = reportId != undefined ? reportId : ''
   open.value = true
 }
-
+// ref实例
+let dataForm = ref()
+/**
+ * 数据提取的保存方法
+ */
+function handleOk() {
+  if (dataForm.value) {
+    if (dataForm.value.handleOk != undefined) {
+      dataForm.value.handleOk()
+    } else {
+      dataForm.value.$.exposed.createCase()
+    }
+  }
+}
 /**
  * 关闭弹窗
  */
 function onClose() {
   open.value = false
 }
-
-// const route = useRoute()
-// const slbh = route.query.slbh?.toString()
 let reload = ref("")
-
 /**
  * 刷新
  */
@@ -265,19 +202,7 @@ function onReload(obj: any) {
   obj.reload = reload
   extractData(obj)
 }
-
-// function savaVue() {
-//     checkDemoRefs()
-//     sendSaveFun('baseSave', demoRefs)
-// }
-// let isMounted = false
-// const setRef = (el: any) => {
-//     if (el && isMounted) {
-//         demoRefs.push(el)
-//         demoRefs = Array.from(new Set(demoRefs))
-//     }
-// }
-
+/**数据提取 end */
 /**
  * 获取dom
  */
@@ -288,7 +213,6 @@ function checkDemoRefs() {
       let mulArr = getMultipleRef([el], [])
       demoRefs = mulArr
       demoRefs = Array.from(new Set(demoRefs))
-      // console.log('msarr', mulArr)
     }
   }
 }
@@ -309,7 +233,6 @@ function getMultipleRef(list: any[], arr: any[]) {
       }
     }
   })
-  console.log('arr', arr)
   return arr
 }
 
