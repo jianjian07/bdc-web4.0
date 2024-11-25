@@ -1,7 +1,7 @@
 <template>
-    <div class="qlr-list" v-show="showQlr">
+    <div class="qlr-list">
       <template v-for="(item, index) in qlrList">
-        <qlr :qlrxx="item" :jdmc="jdmc"></qlr>
+        <qlr :qlrxx="item" :jdmc="jdmc" :ywh="ywh"></qlr>
       </template>
     </div>
 </template>
@@ -22,43 +22,15 @@ let props = defineProps({
     type: String,
     default: ''
   },
-  // 可用来区分表单还是弹窗权利人
-  type: {
+  ywh: {
     type: String,
-    default: 'form'
+    default: ''
   }
 })
-// 是否显示权利人列表
-let showQlr = ref<boolean>(true)
 
 onMounted(() => {
-  eventBus.on('onChangeQlr', onChangeQlrShow)
-  let qlrmc = props.qlr
-  let qlrxx = qlrmc.split(';')
-  qlrList.value = qlrxx.map((qlr, index) => {
-    return {
-      qlrlb: qlr,
-      djsxh: index
-    }
-  })
+  qlrList.value = props.qlr
 })
-
-onBeforeUnmount(() => {
-  eventBus.off('onChangeQlr', onChangeQlrShow)
-})
-
-/**
- * 监听权利人列表是否显示
- * @param value
- */
-function onChangeQlrShow(value) {
-  if (value) {
-    value.type = value.type || 'form'
-    if (value.type == props.type) {
-       showQlr.value = value.show
-    }
-  }
-}
 
 </script>
 

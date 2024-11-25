@@ -29,7 +29,9 @@
                 :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">
               </component>
             </template>
-            <qlr-list v-if="qlr" :qlr="qlr" :jdmc="jdmc"></qlr-list>
+            <template v-if="qlr">
+               <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc"></qlr-list>
+            </template>
             <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
@@ -52,6 +54,9 @@ import { useRoute } from 'vue-router'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
+import { getMultipleRef} from "/@/views/bdc/public/bdc"
+import { cModal } from "/@/components/cModal/index"
+import eventBus from "/@/views/bdc/djlc/eventBus"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
@@ -84,6 +89,8 @@ let rightWidth = ref<any>(300)
 let qlr = ref<any>('')
 // 节点名称
 let jdmc = ref<any>('')
+// 是否显示权利人
+let showQlr = ref<boolean>(true)
 let startX = 0
 // 通用表单组件实例
 let demoRefs: any = []
@@ -110,11 +117,21 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
   handleResize()
   getFormConfig()
+  initBusEvent()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
+  removeBusEvent()
 })
+
+function initBusEvent() {
+  eventBus.on('onChangeQlr', onChangeQlrShow)
+}
+
+function removeBusEvent() {
+  eventBus.off('onChangeQlr', onChangeQlrShow)
+}
 
 function handleResize() {
   containerWidth = formContent.value?.offsetWidth;
@@ -136,7 +153,8 @@ function getFormConfig() {
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
       jdmc.value = formConfig.value.jdmc || '收件'
-      qlr.value = formConfig.value.qlrlb || '权利人;义务人'
+      let qlrxx = Array.isArray(formConfig.value.qlrxx) ? formConfig.value.qlrxx : [formConfig.value.qlrxx]
+      qlr.value = formConfig.value.qlrxx ? qlrxx : []
     }
   })
 }
@@ -217,25 +235,6 @@ function checkDemoRefs() {
   }
 }
 
-function getMultipleRef(list: any[], arr: any[]) {
-  list.forEach((item: any) => {
-    if (Array.isArray(item)) {
-      let _list = getMultipleRef(item, [])
-      arr = [...arr, ..._list]
-    } else {
-      arr.push(item)
-      if ((item && item.multipleRef && item.multipleRef())) {
-        return getMultipleRef(item.multipleRef(), arr)
-      } else if (item && item.$ && item.$.exposed && item.$.exposed.multipleRef && item.$.exposed.multipleRef()) {
-        return getMultipleRef(item.$.exposed.multipleRef(), arr)
-      } else if (item && item._ && item._.exposed && item._.exposed.multipleRef && item._.exposed.multipleRef()) {
-        return getMultipleRef(item._.exposed.multipleRef(), arr)
-      }
-    }
-  })
-  return arr
-}
-
 /**
  * 开始拖拽
  * @param event
@@ -277,6 +276,14 @@ function onDragging(event) {
 function onDragEnd() {
   document.removeEventListener("mousemove", onDragging)
   document.removeEventListener("mouseup", onDragEnd)
+}
+
+/**
+ * 表单权利人是否显示
+ * @param value
+ */
+function onChangeQlrShow(value) {
+  showQlr.value = value.show
 }
 
 </script>

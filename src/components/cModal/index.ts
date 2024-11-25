@@ -1,6 +1,7 @@
 import CommonModal from '/@/components/cModal/index.vue'
 import { createApp } from "vue"
 import { registerGlobComp } from "/@/components/registerGlobComp"
+import formImagining from 'form-imagining'
 import { cModalModel } from "/@/components/cModal/model"
 import { router } from "/@/router";
 
@@ -28,6 +29,7 @@ export function cModal (options?: cModalModel) {
   app = createApp(CommonModal, { ...options });
   registerGlobComp(app)
   app.use(router)
+  app.use(formImagining)
   instance = app.mount(div);
 
   // 设置弹窗loading

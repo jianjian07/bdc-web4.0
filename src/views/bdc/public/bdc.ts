@@ -1,17 +1,20 @@
 import { useUserStore } from "/@/store/modules/user"
-import { saveFormData, saveHandleData, validateInfos } from "/@/utils/form/wonder1.0.1"
+import { getFormInfo, saveFormData, saveHandleData, validateInfos } from "/@/utils/form/wonder1.0.1"
 import { message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
+import { defHttp } from "/@/utils/http/axios"
 
 const userStore = useUserStore()
 
 enum api {
   configList = '/api/zrzy-dzzw/caseConfig/getCaseState',
   getSzUserInfo = '/api/zrzy-system/api/v1/auth/singleToken',
+  addQlr = '/api/zrzy-bdc/bdc/qlr/add',
+  editQlr = '/api/zrzy-bdc/bdc/qlr/update'
 }
 
 /**
@@ -173,3 +176,57 @@ export function handBack(demoRefs: any, loading: any, val1, val2) {
   console.log('val2', val2)
 }
 
+/**
+ * 权利人新增保存
+ * @param type
+ * @param demoRefs
+ * @param spinning
+ * @param params
+ */
+export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any, params?: any) {
+  spinning.value = true
+  let saveRes: any = false
+  let _result = await getFormInfo(demoRefs)
+  if (_result) {
+    let find = _result.filter(r => r.formId == 55)[0].data.filter(d => d.BDC_QLR)
+    if (find.length) {
+      let qlrData = find[0].BDC_QLR
+      const newQlrData = {};
+      let _param = {
+        ywh: params.ywh,
+        slbh: params.slbh,
+        qlrlb: params.qlrlb,
+        qlrid: params.qlrid
+      }
+      for (const key in qlrData) {
+        if (qlrData.hasOwnProperty(key)) {
+          newQlrData[key.toLowerCase()] = qlrData[key];
+        }
+      }
+      let merged = Object.assign({}, newQlrData, _param);
+      saveRes = await updateQlrData(type, merged)
+    }
+  }
+  spinning.value = false
+  return saveRes
+}
+
+/**
+ * 新增或编辑权利人
+ * @param type
+ * @param data
+ */
+function updateQlrData(type, data) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({
+        url: type == 'add' ? api.addQlr : api.editQlr,
+        data: data
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}

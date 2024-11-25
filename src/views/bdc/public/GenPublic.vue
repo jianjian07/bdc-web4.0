@@ -4,13 +4,17 @@
       <component v-bind:is="generateForm" :id="formData.formId"
                 :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
+      <template v-if="qlr">
+         <qlr-list v-show="showQlr" :qlr="qlr" :ywh="ywh" type="modal"></qlr-list>
+      </template>
     </a-spin>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onMounted, ref } from "vue"
-import { sendSaveFun } from "/@/views/bdc/public/bdc"
+import { sendSaveFun, getMultipleRef, sendQlrSaveFun } from "/@/views/bdc/public/bdc"
+import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
@@ -24,6 +28,12 @@ const setRef = (el: any) => {
     demoRefs.push(el)
   }
 }
+// 是否显示权利人
+let showQlr = ref<boolean>(true)
+// 权利人信息
+let qlr = ref<any>()
+// 业务号
+let ywh = ref<any>('')
 
 const props = defineProps({
   formData: {
@@ -32,10 +42,27 @@ const props = defineProps({
   }
 })
 
-
 onMounted(() => {
-  
+  // console.log('弹窗表单',props.formData)
+  showQlr.value = !! (props.formData.sfybz == '0')
+  initQlrXx()
 })
+
+function initQlrXx() {
+  // todo
+  qlr.value = [{
+  "lcid": "1780060462306840577",
+  "djlx": "0101",
+  "qllx": "3",
+  "qlrlx": "12",
+  "qlrlxmc": "权利人",
+  "qlrxsmc": "权利人",
+  "btnId": "3,1,2,4",
+  "sxh": 1
+}]
+  ywh.value = props.formData.ywh
+}
+
 
 /**
  * 获取dom
@@ -52,25 +79,6 @@ function checkDemoRefs() {
   }
 }
 
-function getMultipleRef(list: any[], arr: any[]) {
-  list.forEach((item: any) => {
-    if (Array.isArray(item)) {
-      let _list = getMultipleRef(item, [])
-      arr = [...arr, ..._list]
-    } else {
-      arr.push(item)
-      if ((item && item.multipleRef && item.multipleRef())) {
-        return getMultipleRef(item.multipleRef(), arr)
-      } else if (item && item.$ && item.$.exposed && item.$.exposed.multipleRef && item.$.exposed.multipleRef()) {
-        return getMultipleRef(item.$.exposed.multipleRef(), arr)
-      } else if (item && item._ && item._.exposed && item._.exposed.multipleRef && item._.exposed.multipleRef()) {
-        return getMultipleRef(item._.exposed.multipleRef(), arr)
-      }
-    }
-  })
-  console.log('arr', arr)
-  return arr
-}
 
 async function saveData(params?: any) {
   console.log('保存表单',demoRefs)
@@ -84,8 +92,20 @@ async function saveData(params?: any) {
   return await sendSaveFun('baseSave', demoRefs, spinning, params)
 }
 
+async function saveQlrData(type: any, params?: any) {
+  if (params) {
+    params = params?.params || props.formData
+  } else {
+    params = props.formData
+  }
+  
+  checkDemoRefs()
+  return await sendQlrSaveFun(type, demoRefs, spinning, params)
+}
+
 defineExpose({
-  saveData
+  saveData,
+  saveQlrData
 })
 </script>
 

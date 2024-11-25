@@ -91,7 +91,7 @@
                 :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
             </a-form-item>
           </div>
-          <div style="width: 32%; margin: 0 10px">
+          <div style="width: 33%; margin: 0 10px">
             <a-form-item label="户">
               <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>
             </a-form-item>
