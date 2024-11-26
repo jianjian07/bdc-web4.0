@@ -42,7 +42,7 @@ import { message } from 'ant-design-vue';
 
 const formRef = ref();
 let formState: any = ref({
-  id: 0,
+  id: "",
   yblcbm: "",
   yblczt: 1,
   yblcmc: "",
@@ -57,13 +57,12 @@ let fieldNames = { label: 'title', value: 'key', children: 'children' }
 let editZt: any = ref('')
 
 const rules: any = {
-  yblcbm: { requires: true, message: '请选择已发生的登记', trigger: 'blur'}
+  yblcbm: { required: true, message: '请选择已发生的登记', trigger: 'blur'}
 }
 
 const urlList = {
   add: '/api/zrzy-bdc/bdcdj/ywys/add', // 添加
   edit: '/api/zrzy-bdc/bdcdj/ywys/edit', // 编辑
-  processlist: '/api/zrzy-bdc/act/process/extActProcess/list'
 }
 
 const props = defineProps({
@@ -79,6 +78,8 @@ watch(() => props.formData, (val: any) => {
       formState.value[key] = val.itemData[key]
     })
     editZt.value = val.itemData.yblczt
+    // 获取已办流程编码名称
+    getLcKey(val.itemData.yblcbm, val.treeData)
   } else {
     //给限制流程编码及名称赋值
     formState.value.xzlcbm = val.xzlcbm
@@ -91,6 +92,17 @@ watch(() => props.formData, (val: any) => {
   deep: true
 })
 
+function getLcKey(regType, data) {
+  for (let i = 0; i < data.length; i++) {
+    let children = data[i].children
+    for(let j = 0; j < children.length; j++) {
+      if(children[j].regType === regType) {
+        lcKey.value = [data[i].key, children[j].key]
+        break;
+      }
+    }
+  }
+}
 
 function onChange(value, selectedOptions) {
   //给已办流程编码及名称赋值
@@ -103,6 +115,7 @@ function onChange(value, selectedOptions) {
 function isObtainTwoData(formdata, data) {
   for (let i = 0; i < data.length; i++) {
     if (data[i].xzlcbm == formdata.xzlcbm && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt) {
+      debugger
       return true
     }
   }
@@ -144,11 +157,11 @@ function onSubmit() {
         })
       } else if(props.formData.type == 'new'){
         // 判断
-        let edit = isObtainTwoData(formState.value, props.formData.dataSource)
-          if (edit) {
-            message.warning('已存在当前数据！')
-            return resolve(true)
-          }
+        let add = isObtainTwoData(formState.value, props.formData.dataSource)
+        if (add) {
+          message.warning('已存在当前数据！')
+          return resolve(true)
+        }
         defHttp.post(
           {
             url: url,

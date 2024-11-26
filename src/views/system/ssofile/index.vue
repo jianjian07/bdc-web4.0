@@ -1,10 +1,12 @@
 <template>
   <div class="ssoFileContent">
-    <div class="titleContent">
+    <div class="titleContent ">
       <span class="title">
         材料信息
       </span>
-      <a-button type="primary" size="middle" @click="isManage = !isManage">{{ isManage ? '返回' : '管理' }}</a-button>
+      <template v-if="props.manage == false">
+        <a-button type="primary" size="middle" @click="changeState">{{ isManage ? '返回' : '管理' }}</a-button>
+      </template>
     </div>
     <div class="ssoFileList">
       <file-tree :isManage="isManage" :formData="formData"></file-tree>
@@ -15,13 +17,27 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import fileTree from './components/fileTree.vue';
+import { useRoute } from 'vue-router'
+
+const route = useRoute();
+
+const props = defineProps({
+  manage: {
+    type: Boolean,
+    default: false
+  }
+})
 
 let formData = {
-  slbh: 'ceshi001', // 受理编号
+  slbh: route?.query?.slbh || 'ceshi001', // 受理编号
   processId: '', // 流程ID
-  nodeId: '' // 节点
+  nodeId: route?.query?.nodeId // 节点ID
 }
-let isManage: any = ref(false)
+let isManage: any = ref(props.manage)
+
+function changeState() {
+  isManage.value = props.manage ? props.manage : !isManage.value
+}
 
 </script>
 
@@ -36,6 +52,8 @@ let isManage: any = ref(false)
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 3px;
 
     .title {
       border-left: 4px #5094F9 solid;

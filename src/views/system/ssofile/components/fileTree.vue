@@ -14,6 +14,7 @@
         :default-expand-all="expandAll"
         @drop="onDrop"
         :draggable="isManage && editOrder"
+        style="width: 100%"
       >
         <template #icon="">
         </template>
@@ -96,7 +97,7 @@
                   <a-tooltip title="编辑目录名称">
                     <a-button style="margin-right: 5px" size="small" :icon="h(EditOutlined)" @click.stop="editCatalog(dataRef)" />
                   </a-tooltip>
-                  <a-tooltip title="删除目录及附件">
+                  <a-tooltip title="删除目录及附件" placement="topRight">
                     <a-popconfirm
                       title="确定删除该目录及该目录下的附件？"
                       ok-text="确定"
@@ -121,7 +122,7 @@
     <div v-if="filePreview" class="filePreview">
       <div class="oprBtns">
         <a @click="downLoadFile">下载</a>
-        <a @click="filePreview = false">关闭</a>
+        <a @click="closePreview">关闭</a>
       </div>
       <iframe :src="previewData.previewUrl" style="border: none" />
     </div>
@@ -136,7 +137,7 @@ import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
 import { Base64 } from 'js-base64';
 import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
-
+import eventBus from "/@/views/bdc/djlc/eventBus"
 
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
@@ -152,14 +153,15 @@ const urlList = {
   addFile: '/api/zrzy-bdc/bdcdj/upfiles/file/addFile', // 添加材料
   deleteFile: '/api/zrzy-bdc/bdcdj/upfiles/file/deleteFile', // 删除附件材料 接口缺失
   getFileList: '/api/zrzy-bdc/bdcdj/upfiles/file/queryFileList', // 附件列表
-  downLoadFile: '/api/zrzy-bdc/bdcdj/upfiles/file/download', //附件下载
+  downLoadFile: '/api/zrzy-bdc/bdcdj/upfiles/file/download', // 附件下载
   // 附件目录
   addCatalog: '/api//zrzy-bdc/bdcdj/upfiles/casematerial/add', // 新增附件目录
   deleteCatalogOrFile: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/deleteMaterialAndUpfiles', // 删除附件目录或文件
-  getCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/addSelectMaterialList', // 提取附件目录
   updateCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updatePart', // 更新部分字段
   uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch', // 批量上传文件
-  updateOrder: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updateOrder' //更新排序
+  updateOrder: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updateOrder', // 更新排序
+  defaultList: '/api/zrzy-bdc/casematerialConfig/list', // 获取默认的附件目录
+  addDefaultList: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/addSelectMaterialList' //提取附件目录
 }
 
 const baseApi = ref(import.meta.env.VITE_GLOB_API_URL)
@@ -190,9 +192,54 @@ function loadFileList() {
     },
     { withToken: true }
   ).then((res: any) => {
-
     if (res?.success) {
-      ssoFileList.value = res?.result
+      if(res.result.length == 0) {
+        // 获取默认的材料配置目录
+        loadDefaultList()
+      } else {
+        ssoFileList.value = res?.result
+      }
+      
+    } else {
+      message.warning(res?.message || '未查询到数据！')
+    }
+  })
+}
+
+function loadDefaultList() {
+  defHttp.get(
+    {
+      url: urlList.defaultList,
+      params: { 
+        pageNo: 1,
+        pageSize: 100,
+        nodeId: props.formData.nodeId // 节点ID
+        // subType: props.formData.subType //权利类型
+      }
+    },
+    { withToken: true }
+  ).then((res: any) => {
+    if (res?.success) {
+      if (res.result.records.length) {
+        let catalogList = res.result.records.map(ele => {
+          let item = Object.assign(ele, { parentId: '0', fileType: 'folder', key: ele.id, scopedSlot: {title: "custom"}, title: ele.materialName })
+          return item
+        })
+        defHttp.post({
+          url: urlList.addDefaultList,
+          data: {
+            slbh: props.formData.slbh,
+            nodeId: props.formData.nodeId,
+            materialList: catalogList
+          }
+        },{ withToken: true }).then(res => {
+          if (res?.success) {
+            loadFileList()
+          } else {
+            message.warning('提取目录失败！')
+          }
+        })
+      }
     } else {
       message.warning(res?.message || '未查询到数据！')
     }
@@ -346,10 +393,16 @@ function deleteCatalogOrFile(item: any, type: String = '') {
 
 function previewFile(data: any) {
   // 后端返回kkFile路径预览附件
+  eventBus.emit('previewFile', true)
   filePreview.value = true
   previewData.value = data
   let encodeUrl = encodeURIComponent(Base64.encode(`${baseApi.value}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
   previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
+}
+
+function closePreview() {
+  filePreview.value = false
+  eventBus.emit('previewFile', false)
 }
 
 function downLoadFile() {
@@ -463,8 +516,8 @@ function handleOrder() {
 
 <style scoped lang="less">
 .ssoFileTree {
-  flex: 1;
   display: flex;
+  width: 100%;
 
   .addNewBtn {
     padding-bottom: 10px;
@@ -474,7 +527,9 @@ function handleOrder() {
   }
 
   .treeList {
-    width: 400px;
+    width: 100%;
+    min-width: 300px;
+    max-width: 350px;
     .customTitle {
       font-size: 14px;
       height: 30px;
@@ -505,7 +560,7 @@ function handleOrder() {
     .oprBtns {
       position: absolute;
       right: 0px;
-      top: 10px;
+      top: 0px;
       a {
         padding-right: 8px;
       }
@@ -513,6 +568,7 @@ function handleOrder() {
     iframe {
       width: 100%;
       height: 100%;
+      margin-top: 20px;
     }
   }
 }

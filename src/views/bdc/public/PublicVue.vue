@@ -36,10 +36,9 @@
           </div>
         </div>
         <div class="split-line" id="drag-line" @mousedown="onDragStart"></div>
-        <div class="right-content" :style="{ width: rightWidth + 'px' }">
-          <div style="width: 100%">
-
-            附件 待开发
+        <div :class="['right-content', previewFile ? 'open-Content': 'close-Content']" :style="{ width: rightWidth + 'px', height: '100%' }" >
+          <div style="width: 100%; height: 100%">
+            <SsoFile />
           </div>
         </div>
       </div>
@@ -65,6 +64,7 @@ const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
 })
 const LookLpb = defineAsyncComponent(() => import("/@/views/bdc/lpb/index.vue"))
+const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/index.vue"))
 const route = useRoute();
 let open = ref(false)
 // 表单配置
@@ -85,13 +85,15 @@ let formContent = ref()
 // 容器的宽度
 let containerWidth = 0
 let leftWidth = ref<any>(500)
-let rightWidth = ref<any>(300)
+let rightWidth = ref<any>(350)
 // 权利人
 let qlr = ref<any>('')
 // 节点名称
 let jdmc = ref<any>('')
 // 是否显示权利人
 let showQlr = ref<boolean>(true)
+// 预览附件
+let previewFile = ref<boolean>(false)
 let startX = 0
 // 通用表单组件实例
 let demoRefs: any = []
@@ -129,6 +131,7 @@ onBeforeUnmount(() => {
 
 function initBusEvent() {
   eventBus.on('onChangeQlr', onChangeQlrShow)
+  eventBus.on('previewFile', onPreviewFile)
 }
 
 function removeBusEvent() {
@@ -242,6 +245,7 @@ function checkDemoRefs() {
  * @param event
  */
 function onDragStart(event) {
+  previewFile.value = false
   startX = event.clientX
   document.addEventListener("mousemove", onDragging);
   document.addEventListener("mouseup", onDragEnd);
@@ -286,6 +290,25 @@ function onDragEnd() {
  */
 function onChangeQlrShow(value) {
   showQlr.value = value.show
+}
+
+/**
+ * 预览附件，操作附件模块宽度自动增大
+ * @param value
+ */
+function onPreviewFile(value) {
+  if(value) {
+    previewFile.value = true
+    if(rightWidth.value < 900) {
+      rightWidth.value = 900
+      leftWidth.value = containerWidth - 910
+    }
+    
+  } else {
+    previewFile.value = false
+    rightWidth.value = 350
+    leftWidth.value = containerWidth - 360
+  }
 }
 
 </script>
@@ -338,6 +361,10 @@ function onChangeQlrShow(value) {
   background-color: #fff;
   padding: 5px;
   height: 100%;
+}
+
+.open-Content {
+  // transition: all 0.35s ease-in-out;
 }
 
 .split-line {

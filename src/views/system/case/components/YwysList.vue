@@ -75,7 +75,6 @@ const columns = [
       const obj:any = {
         rowSpan: 0
       }
-      // debugger
       obj.rowSpan = getRowSpanCount(record.yblcmc, dataList.value, 'yblcmc', index)
       return obj
     }
@@ -111,8 +110,8 @@ const pagination = ref<any>({
 
 const urlList = {
   queryList: '/api/zrzy-bdc/bdcdj/ywys/list', // 分页列表查询
-  delete: '/api/zrzy-bdc/bdcdj/ywys/delete', //通过id删除
-  deleteBatch: '/api/zrzy-bdc/bdcdj/ywys/deleteBatch'
+  delete: '/api/zrzy-bdc/bdcdj/ywys/delete', // 通过id删除
+  deleteBatch: '/api/zrzy-bdc/bdcdj/ywys/deleteBatch' // 批量删除
 }
 
 const props = defineProps({
@@ -193,13 +192,12 @@ function onShowModal(data: any = null, type: String = 'new') {
     footerStyle: {'text-align': 'center'},
     footer: type == 'view' ? false : true,
     formData: {
-      type: type,
-      lcid: props.lcid,
-      itemData: data,
-      xzlcbm: props.baseInfo?.regType, //限制流程编码，即当前流程 （是否应该用key，而不是regType关联？）
+      type: type, //新增/编辑
+      itemData: data, //当前操作的数据行
+      xzlcbm: props.baseInfo?.regType, //限制流程编码，即当前流程 （使用regType关联）
       xzlcmc: props.baseInfo?.title, //限制流程编码，即当前流程
-      treeData: props.treeData,
-      dataSource: dataList.value 
+      treeData: props.treeData, //左侧目录树
+      dataSource: dataList.value  //列表数据，用于新增/编辑时查找是否存在数据
     },
     onOk: async (res: any) => {
       if(type == 'view') {
@@ -250,6 +248,7 @@ function batchDelete() {
   }).then(res => {
     if (res && res.success) {
       message.warning('删除成功！')
+      state.selectedRowKeys = []
       loadData()
     } else {
       message.warning('删除失败！')

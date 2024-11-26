@@ -32,6 +32,9 @@
                 <a-tab-pane key="4" tab="业务约束配置" force-render>
                     <YwysList v-if="activeKey == '4'" :lcid="processInfo.key" :baseInfo="baseInfo" :treeData="treeData"/>
                 </a-tab-pane>
+                <a-tab-pane key="5" tab="材料目录配置" force-render>
+                    <ClmlList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="baseInfo"/>
+                </a-tab-pane>
             </a-tabs>
         </div>
 
@@ -45,6 +48,7 @@ const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/compon
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
 const QlqtpzList = defineAsyncComponent(() => import("/@/views/system/case/components/QlqtpzList.vue"))
 const YwysList = defineAsyncComponent(() => import("/@/views/system/case/components/YwysList.vue"))
+const ClmlList = defineAsyncComponent(() => import("/@/views/system/case/components/ClmlList.vue"))
 const activeKey = ref('1');
 let processInfo: any = ref('')
 let baseInfo: any = ref(null)

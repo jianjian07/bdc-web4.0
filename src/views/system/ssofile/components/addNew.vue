@@ -131,7 +131,6 @@ const fileRules: any = {
 }
 
 let isFileUpload = ref<string>(props.formData.way || 'cata')
-let folderList:any = ref([])
 let fileList: any = ref([])
 let catalogOptions : any = ref([])
 const urlList = {

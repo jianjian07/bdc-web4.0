@@ -63,7 +63,7 @@ let formState: any = ref({
 let djlx: any = ref([])
 
 const rules: any = {
-  lcid: { requires: true, message: '请选择流程类型', trigger: 'blur'}
+  lcid: { required: true, message: '请选择流程类型', trigger: 'blur'}
 }
 
 const urlList = {
