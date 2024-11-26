@@ -1,6 +1,6 @@
 <template>
   <div class="jf-detail">
-    <a-button style="margin-bottom: 10px" @click="handelAdd">新增</a-button>
+    <a-button style="margin-bottom: 10px; float: right" @click="handelAdd">新增</a-button>
     <a-table :columns="columns" :data-source="jfxx" size="small" :loading="loading">
       <template #headerCell="{ title, column }">
         <template v-if="column.rules?.find(r => r.required)">
@@ -16,9 +16,10 @@
           </a-popconfirm>
         </template>
         <template v-else-if="column.key === 'jfxm'">
-          <a-select style="width: 100%;" v-model:value="record.jfxbh" :options="jfxmOptions" :disabled="column.disabled" :placeholder="'请选择' + column.title"></a-select>
+          <a-select style="width: 100%;" v-model:value="record.sfxbh" :options="jfxmOptions" :disabled="column.disabled" :dropdownMatchSelectWidth="false"
+                    :placeholder="'请选择' + column.title" :field-names="{ label: 'sfxmc', value: 'sfxbh' }" @change="(value) => handleChangeSfxbh(value, column, record)"></a-select>
         </template>
-        <template v-else-if="['sl','sfbz','sfsx','jme','yse'].includes(column?.key)">
+        <template v-else-if="['sl','sfjs','sfsx','jme','yse'].includes(column?.key)">
           <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
             <template v-if="validateRules(column.rules, record[column.key])" #title>
               <span>{{ validateRules(column.rules, record[column.key]) }}</span>
@@ -38,6 +39,10 @@
 <script lang="ts" setup>
 import { defineExpose, onMounted, ref } from 'vue'
 import { validateRules, setInputStatus } from "/@/utils/form/commonUtils"
+import { useRoute } from "vue-router"
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
+const route = useRoute()
 const columns = [
   { 
     title: '缴费项目',
@@ -52,8 +57,8 @@ const columns = [
     rules: [{ required: true, message: '请输入数量' },{ pattern: /^([1-9]\d*|0)$/, message: '请输入数量' }]
   }, {
     title: '收费标准',
-    dataIndex: "sfbz",
-    key: 'sfbz',
+    dataIndex: "sfjs",
+    key: 'sfjs',
     width: 100,
     rules: [{ pattern: /^(0|([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '必须是金额' }]
   },{
@@ -99,18 +104,48 @@ let jfxmOptions = ref<any>([])
 // loading
 let loading = ref<any>(false)
 
+let props = defineProps({
+  viewData: {
+    type: Object,
+    default: {}
+  }
+})
+enum api {
+  getOptions = '/api/zrzy-bdc/bdc/sfconfig/queryAllList',
+  list = '/api/zrzy-bdc/bdc/sfx/list',
+  del = '/api/zrzy-bdc/bdc/sfx/delete',
+  save = '/api/zrzy-bdc/bdc/sfx/saveOrUpdate'
+}
+
+const emit = defineEmits(['getYjje'])
+
+onMounted(() => {
+  getJfxmOptions()
+  initData()
+})
+
 /**
  * 获取缴费项目配置
  */
 function getJfxmOptions() {
-  
+   defHttp.get({ url: api.getOptions }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      jfxmOptions.value = res.result
+    }
+  })
 }
 
 /**
  * 获取数据
  */
 function initData() {
-  
+  let slbh = route.query.slbh
+  defHttp.get({ url: api.list, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      jfxx.value = res.result
+      getYjje()
+    }
+  })
 }
 
 /**
@@ -121,6 +156,7 @@ function getYjje() {
   jfxx.value.forEach(item => {
     jfje += item.yse
   })
+  emit('getYjje',jfje)
   return jfje
 }
 
@@ -139,7 +175,14 @@ function handelAdd() {
  */
 function handleDel(record, index) {
   if (record.id) {
-    // todo
+    defHttp.get({ url: api.del, params: { id: record.id } }, { withToken: true }).then((res) => {
+      if (res) {
+        jfxx.value.splice(index, 1)
+        message.success('删除成功')
+      } else {
+        message.error('删除失败')
+      }
+    })
   } else {
     jfxx.value.splice(index, 1)
   }
@@ -151,14 +194,78 @@ function handleDel(record, index) {
  * @param callback
  */
 function handleChangeValue(value, column, record) {
-  if (column.key == 'sl' || column.key == 'jme' || column.key == 'sfbz') {
-    record.yse = (record.sl || 0) * (record.sfbz || 0) - (record.jme || 0)
+  if (column.key == 'sl' || column.key == 'jme' || column.key == 'sfjs') {
+    record.yse = (record.sl || 0) * (record.sfjs || 0) - (record.jme || 0)
   }
+  getYjje()
   setInputStatus(column, record)
 }
 
+/**
+ * 选择缴费项目
+ * @param value
+ * @param column
+ * @param record
+ */
+function handleChangeSfxbh(value, column, record) {
+  let find = jfxmOptions.value.find(item => item.sfxbh == value)
+  if (find) {
+    record.sfsx = find.sfsx
+    record.sfjs = find.sffy
+    record.sfxmc = find.sfxmc
+  }
+  getYjje()
+}
+
+function saveData() {
+  return new Promise((resolve, reject) => {
+     if (validateTable()) {
+      let params = jfxx.value.map((item) => {
+        let ruleColumn = columns.filter((column: any) => column.rules)
+        for (let i = 0; i < ruleColumn.length; i++) {
+          delete item[ruleColumn[i].key + 'Status']
+        }
+        item.slbh = route.query.slbh
+        // item.sse = props.viewData?.BDC_SF?.SFJE
+        item.sfsm = props.viewData?.BDC_SF?.BZ
+        return item
+      })
+       defHttp.post({
+          url: api.save,
+          data: params
+      }, { withToken: true }).then((res) => {
+          if (res && res.success) {
+            resolve(true)
+            initData()
+          } else {
+            resolve(false)
+          }
+       })
+    }
+  })
+}
+
+/**
+ * 列表校验
+ */
+function validateTable() {
+  for (let i = 0; i < jfxx.value.length; i++) {
+    let record = jfxx.value[i]
+    let ruleColumn = columns.filter((column: any) => column.rules)
+    for (let j = 0; j < ruleColumn.length; j++) {
+      setInputStatus(ruleColumn[j], record)
+      if (record[ruleColumn[i].key+ 'Status'] == 'error') {
+        message.warning('请检查筛选条件填写')
+        return false
+      }
+    }
+  }
+  return true
+}
+
 defineExpose({
-  getYjje
+  getYjje,
+  saveData
 })
 </script>
 
