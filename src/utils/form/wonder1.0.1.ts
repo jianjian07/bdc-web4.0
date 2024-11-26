@@ -537,10 +537,12 @@ export function validateFun(event: any, eventType?: string, _value?: any, callba
         if (findRequired) {
             msg += validateRequired(value)
         }
-        let defaultRules = rules.filter(rule => rule.type != 'required')
-        for (let i = 0; i < defaultRules.length; i++) {
-            if (msg.length == 0) {
-                msg += validateReg(defaultRules[i].type, value)
+        if (value) {
+            let defaultRules = rules.filter(rule => rule.type != 'required')
+            for (let i = 0; i < defaultRules.length; i++) {
+                if (msg.length == 0) {
+                    msg += validateReg(defaultRules[i].type, value)
+                }
             }
         }
 

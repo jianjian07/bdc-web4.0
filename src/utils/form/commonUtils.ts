@@ -246,3 +246,54 @@ function manageQLQT(qlqtConfig: any, viewData: any) {
   }
   return qlqtConfig
 }
+
+/**
+ * 获取证件种类字典值对应的规则code
+ * @param dictCode
+ */
+export function getZjzlRuleCode(dictCode) {
+  let rule 
+  switch (dictCode) {
+    case '1':
+      // 身份证
+      rule = 'idCard'
+      break;
+    case '2':
+      // 港澳台身份证
+      rule = 'HMTIdCard'
+      break;
+    case '3':
+      // 护照
+      rule = 'passport'
+      break;
+    case '4':
+      // 户口簿
+      rule = 'householdRegister'
+      break;
+    case '5':
+      // 军官证（士兵证）
+      rule = 'officerCertificate'
+      break;
+    case '6':
+      // 组织机构代码
+      rule = 'organizationCode'
+      break;
+    case '7':
+      // 营业执照
+      rule = 'businessLicense'
+      break;
+    case '8':
+      // 统一社会信用代码
+      rule = 'socialCode'
+      break;
+    case '9':
+      // 外国人永久居留证
+      rule = 'foreignerIdCard'
+      break;
+    case '99':
+      // 其他
+      rule = 'otherId'
+      break;
+  }
+  return rule
+}

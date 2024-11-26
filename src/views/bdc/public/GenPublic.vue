@@ -15,6 +15,7 @@
 import { computed, defineAsyncComponent, onMounted, ref } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
+import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
 
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
@@ -45,6 +46,7 @@ const props = defineProps({
 onMounted(() => {
   // console.log('弹窗表单',props.formData)
   showQlr.value = !! (props.formData.sfybz == '0')
+  resetValidateInfos()
   initQlrXx()
 })
 

@@ -57,6 +57,7 @@ import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef} from "/@/views/bdc/public/bdc"
 import { cModal } from "/@/components/cModal/index"
 import eventBus from "/@/views/bdc/djlc/eventBus"
+import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
@@ -118,6 +119,7 @@ onMounted(() => {
   handleResize()
   getFormConfig()
   initBusEvent()
+  resetValidateInfos()
 })
 
 onBeforeUnmount(() => {

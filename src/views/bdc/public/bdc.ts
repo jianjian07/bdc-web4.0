@@ -188,9 +188,9 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
   let saveRes: any = false
   let _result = await getFormInfo(demoRefs)
   if (_result) {
-    let find = _result.filter(r => r.formId == 55)[0].data.filter(d => d.BDC_QLR)
-    if (find.length) {
-      let qlrData = find[0].BDC_QLR
+    let find = _result.filter(r => r.formId == 55)[0]
+    if (find && find.validate) {
+      let qlrData = find.data[0].BDC_QLR
       const newQlrData = {};
       let _param = {
         ywh: params.ywh,
@@ -223,8 +223,10 @@ function updateQlrData(type, data) {
         data: data
     }, { withToken: true }).then((res) => {
       if (res && res.success) {
+        message.success('保存成功')
         resolve(true)
       } else {
+        message.error('保存失败')
         resolve(false)
       }
     })

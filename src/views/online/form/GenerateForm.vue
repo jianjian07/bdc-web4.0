@@ -9,7 +9,7 @@
 import { computed, defineComponent, onBeforeUpdate, reactive, ref, useAttrs, watch } from 'vue'
 import { generateFormHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes } from '/@/utils/form/commonUtils'
+import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes, getZjzlRuleCode } from '/@/utils/form/commonUtils'
 import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
 import { getForm } from '.';
 import { useRoute } from 'vue-router';
@@ -241,7 +241,7 @@ const generateVue3 = defineComponent({
 
         async function onBeforeValidate() {
             if (events['onBeforeValidate']) {
-                await events['onBeforeValidate']()
+               return await events['onBeforeValidate']()
             }
         }
 
@@ -294,6 +294,7 @@ const generateVue3 = defineComponent({
             getCasDictItemsByCode,
             formatMultipleSelectValue,
             formatMultipleTreeSelectValue,
+            getZjzlRuleCode,
             syncChange,
             onTableSelectClear,
             onTableSelectRowChange,
@@ -330,12 +331,12 @@ function generateTs() {
         const _data = _eventScript[i];
         if (_data.type == "Computed") {
             // 需要与方法分开
-            computedEvents[_data.name] = eval(`() => { ${_data.func} }`)
+            computedEvents[_data.name] = eval(`async () => { ${_data.func} }`)
         } else {
             if (_data.param != "") {
-                events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
             } else {
-                events[_data.name] = eval(`()=> { ${_data.func}}`)
+                events[_data.name] = eval(`async ()=> { ${_data.func}}`)
             }
             // events[_data.name] = newFunction(_data)
         }
@@ -394,8 +395,8 @@ function loadSourceData(formId: any) {
 /**
  * 保存
  */
-function onSubmit() {
-    return generateRef.value?.onSubmit()
+async function onSubmit() {
+    return await generateRef.value?.onSubmit()
 }
 
 /**

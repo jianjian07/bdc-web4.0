@@ -11,7 +11,12 @@
           <template v-if="column.key === 'action'">
             <div v-if="actionBtnList.length" class="qlr-btns">
               <template v-for="(item,index) in actionBtnList">
-                <a-button type="link" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
+                <template v-if="item.name == '删除'">
+                  <a-popconfirm title="是否确定删除该数据？" ok-text="确定" cancel-text="取消" @confirm="handleFun(item.funcName,record)">
+                    <a-button type="link">{{ item.name }}</a-button>
+                  </a-popconfirm>
+                </template>
+                <a-button v-else type="link" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
                 <a-divider v-if="index !== actionBtnList.length - 1" type="vertical"/>
               </template>
             </div>
