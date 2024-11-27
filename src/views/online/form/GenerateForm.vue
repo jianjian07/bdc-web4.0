@@ -94,6 +94,8 @@ let validateFlag = true
 // 如果有传值优先读取父组件传值
 if (disabled != undefined && typeof disabled == 'boolean') {
     formDisabled.value = disabled
+    // 默认只读时不保存表单
+    isSubmit.value = !formDisabled.value
 }
 let generateRef = ref()
 const info = await getForm({ id: formInfo.formId })
@@ -242,6 +244,8 @@ const generateVue3 = defineComponent({
         async function onBeforeValidate() {
             if (events['onBeforeValidate']) {
                return await events['onBeforeValidate']()
+            } else {
+               return true
             }
         }
 
@@ -333,12 +337,20 @@ function generateTs() {
         const _data = _eventScript[i];
         if (_data.type == "Computed") {
             // 需要与方法分开
-            computedEvents[_data.name] = eval(`async () => { ${_data.func} }`)
+            computedEvents[_data.name] = eval(`() => { ${_data.func} }`)
         } else {
             if (_data.param != "") {
-                events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                if (_data.isasync) {
+                  events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                } else {
+                  events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                }
             } else {
-                events[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                if (_data.isasync) {
+                  events[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                } else {
+                  events[_data.name] = eval(`()=> { ${_data.func}}`)
+                }
             }
             // events[_data.name] = newFunction(_data)
         }

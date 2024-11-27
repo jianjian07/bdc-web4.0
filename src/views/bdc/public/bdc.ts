@@ -101,10 +101,10 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
         const validate = !commonSaveRes.find(com => !com.validate)
         saveStatus = validate
         if (validate) {
-          msg = type === 'baseSave' ? "保存成功!" : "移交成功!"
+          msg = type === 'baseSave' ? "保存成功!" : "保存成功,可进行移交!"
         } else {
           // 表单暂存，校验不通过，也提示表单保存成功
-          msg = "暂存成功"
+          msg = "暂存成功!"
           message.success(msg)
           resolve(saveStatus)
           return
@@ -115,7 +115,7 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
       }
       // console.log('errorList', errorList)
     } else {
-      msg = type === 'baseSave' ? "保存成功!" : "移交成功!"
+      msg = type === 'baseSave' ? "保存成功!" : "保存成功,可进行移交!"
       saveStatus = true
     }
     if (msg) {
@@ -155,8 +155,6 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
         }
       }
     })
-  } else {
-    message.error('表单保存失败!')
   }
   return res
 }

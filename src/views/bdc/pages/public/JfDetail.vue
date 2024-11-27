@@ -241,7 +241,9 @@ function saveData() {
             resolve(false)
           }
        })
-    }
+    } else {
+        resolve(false)
+     }
   })
 }
 
@@ -255,7 +257,7 @@ function validateTable() {
     for (let j = 0; j < ruleColumn.length; j++) {
       setInputStatus(ruleColumn[j], record)
       if (record[ruleColumn[i].key+ 'Status'] == 'error') {
-        message.warning('请检查筛选条件填写')
+        message.warning('请检查缴费信息填写')
         return false
       }
     }

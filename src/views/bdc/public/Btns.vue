@@ -146,9 +146,13 @@ function getMaxMiddleBtnCount() {
  */
 async function handleClick(btn) {
   if (btn.funName && bdc[btn.funName]) {
+    checkDemoRefs()
     let _bdc: any = bdc //  定义 不然打包后eval获取不到
     let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
-    let _params = `(${params ? (params) : params})`
+    let _params = `(vueRefs,loading${params ? (',' + params) : params})`
+    if (btn.anwz == 'center') {
+      _params = `(${params ? (params) : params})`
+    }
     await eval(`_bdc[btn.funName]` + _params)
   }
 }

@@ -3,7 +3,7 @@
     <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc +'信息'" :showArrow="true" classname="title-css8"
                       collapseType="row" style='width:100%'>
       <div v-if="qlrxx?.btnId?.includes('1')" class="qlr-add">
-        <a-button @click="handleAdd">添加</a-button>
+        <a-button @click="handleAdd">新增</a-button>
       </div>
       <a-table :columns="columns" :data-source="tableData" :pagination="pagination" rowKey="qlrid"
                @change="onTableChange">
