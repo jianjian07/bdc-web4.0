@@ -24,12 +24,12 @@
             <template v-if="validateRules(column.rules, record[column.key])" #title>
               <span>{{ validateRules(column.rules, record[column.key]) }}</span>
             </template>
-            <a-input-number :status="record[column.key + 'Status']" style="width: 100%;" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
+            <a-input-number :status="record[column.key + 'Status']" style="width: 100%" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
                             @focus="setInputStatus(column, record)" @change="(value) => handleChangeValue(value, column, record)"/>
           </a-tooltip>
         </template>
         <template v-else>
-          <a-input style="width: 100%;" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title"></a-input>
+          <a-input style="width: 100%; min-width: 100px" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title"></a-input>
         </template>
       </template>
     </a-table>
@@ -77,12 +77,10 @@ const columns = [
     title: '减免原因',
     dataIndex: "jmyy",
     key: 'jmyy',
-    width: 150
   },{
     title: '备注',
     dataIndex: "bz",
     key: 'bz',
-    width: 100
   },{
     title: '应缴金额',
     dataIndex: "yse",
