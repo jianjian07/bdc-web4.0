@@ -58,7 +58,6 @@ import { computed, nextTick, onMounted, ref, watch } from "vue"
 import * as bdc from '/@/views/bdc/public/bdc'
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 import { isJsonData } from "/@/utils/form/commonUtils"
-import { describe } from "node:test"
 
 const props = defineProps({
   vueRefs: {

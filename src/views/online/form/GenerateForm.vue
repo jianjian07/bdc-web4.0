@@ -18,6 +18,7 @@ import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
 import eventBus from "/@/views/bdc/djlc/eventBus"
 import dayjs from 'dayjs';
+import * as bdc from '/@/views/bdc/public/bdc'
 import {
   getData,
   getDataByApi,
@@ -280,6 +281,7 @@ const generateVue3 = defineComponent({
             columns,
             selectJsonSetting,
             ...events,
+            ...bdc,
             eventBus,
             computed,
             defHttp,
