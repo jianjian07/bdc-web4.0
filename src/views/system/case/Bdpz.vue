@@ -1,6 +1,6 @@
 <template>
     <div class="cc-container">
-        <div>
+        <div style="display: flex; flex-direction: column">
             <div style="line-height: 3em; background-color: #fff;padding: 10px 0px;">
                 <div style="text-align: right;padding-right: 20px;">
                     当前选中流程
@@ -13,13 +13,13 @@
                         @click="handleAdd">创建流程</a-button>
                 </div> -->
             </div>
-            <div style="margin-top: 8px;line-height: 3em; background-color: #fff">
+            <div style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;">
                 <CLCLB @select="onSelect" @setTreeData="setTreeData"></CLCLB>
             </div>
         </div>
 
-        <div style="width: 100%;background-color: #fff;margin-left:8px;">
-            <a-tabs v-model:activeKey="activeKey" style="padding: 5px;">
+        <div class="userTabContent">
+            <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
                 <a-tab-pane key="1" tab="基础配置">
                     <FlowModal :lcid="processInfo.key" @setBaseInfo="setBaseInfo"/>
                 </a-tab-pane>
@@ -85,5 +85,13 @@ function setBaseInfo(data: any) {
     width: 1px;
     height: 650px;
     background: linear-gradient(244deg, rgba(255, 255, 255, 0) 0%, rgba(24, 144, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
+}
+.userTabContent {
+  width: 100%;
+  background-color: #fff;
+  margin-left:8px;
+  :deep(.ant-tabs-content) {
+    height: 100%;
+  }
 }
 </style>

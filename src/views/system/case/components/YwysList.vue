@@ -29,6 +29,8 @@
       :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
       :row-key="record => record.id"
       size="small"
+      class="userTable"
+      :scroll="{y: 'calc(100% - 10px)'}"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operation'">
@@ -285,11 +287,19 @@ function handleTableChange(pag:any) {
 @import url('/@/assets/less/style_lb.less');
 .YwysList {
   padding: 0 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   .oprBtns {
     display: flex;
     justify-content: flex-end;
     padding-bottom: 10px;
     text-align: right;
+  }
+
+  .userTable {
+    flex: 1;
+    overflow-y: hidden;
   }
 
   .icons-list :deep(.anticon) {
