@@ -180,7 +180,7 @@ const props = defineProps({
 
 
 onMounted(() => {
-  loadFileList()
+  loadFileList(true)
 })
 
 function loadFileList(getDefault: Boolean = true) {
@@ -262,7 +262,7 @@ function addCatalog() {
       // res为弹窗内组件的dom
       let validator = await res.addCatalog()
       if (validator) {
-        loadFileList()
+        loadFileList(false)
       }
       modal.setConfirmLoading(false)
     },
@@ -319,7 +319,7 @@ function addFile(data:any = null, way:String = 'cata') {
       // res为弹窗内组件的dom
       let validator = await res.uploadFile()
       if (validator) {
-        loadFileList()
+        loadFileList(false)
         modal.destroy()
       }
       modal.setConfirmLoading(false)
@@ -351,7 +351,7 @@ function customRequest(data: any) {
     ).then((res: any) => {
       if(res && res.success) {
         message.success('上传成功！')
-        loadFileList()
+        loadFileList(false)
       }
     })
 }
@@ -382,7 +382,7 @@ function deleteCatalogOrFile(item: any, type: String = '') {
   ).then((res: any) => {
     if (res?.success) {
       message.success(type == 'folder' ? '目录删除成功' : '文件删除成功')
-      loadFileList()
+      loadFileList(false)
     } else {
       message.warning(res?.message)
     }
