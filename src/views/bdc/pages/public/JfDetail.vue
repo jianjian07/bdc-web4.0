@@ -93,7 +93,8 @@ const columns = [
   },{
     title: '操作',
     dataIndex: "action",
-    key: 'action'
+    key: 'action',
+    width: 80
   }
 ]
 
