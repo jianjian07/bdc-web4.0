@@ -34,6 +34,10 @@
             <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
                 @change="onChange($event, loadData)">
                 <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'bpmBdcTitle'">
+                        <span>{{ record.bpmBdcTitle }}</span>
+                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseRemark }}】</span>
+                    </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>
                             <a-tag color="orange" v-if="record.taskTimeStatus == 1">
@@ -80,8 +84,8 @@ let formData: any = ref({})
 let spinning = ref<boolean>(true);
 const columns = [
     { title: "任务id", dataIndex: "taskId", align: "center" },
-    { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 200 },
-    { title: "案卷名称", dataIndex: "bpmBdcTitle", align: "center" },
+    { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 100 },
+    { title: "案卷名称", dataIndex: "bpmBdcTitle", align: "center", key: "bpmBdcTitle" },
     { title: "案卷编号", dataIndex: "slbh", align: "center" },
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },

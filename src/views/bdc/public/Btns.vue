@@ -36,7 +36,7 @@
         <a-popover placement="bottomRight" v-if="rightBtnList.length > 3">
           <template #content>
             <div class="right-other-list">
-              <template v-for="(btn, index) in rightBtnList.slice(3,rightBtnList.length)">
+              <template v-for="(btn, index) in rightBtnList.slice(3, rightBtnList.length)">
                 <a-button class="right-other-btn" size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName
                   }}</a-button>
               </template>
@@ -55,10 +55,10 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from "vue"
-import { sendSaveFun } from './bdc'
 import * as bdc from '/@/views/bdc/public/bdc'
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 import { isJsonData } from "/@/utils/form/commonUtils"
+import { describe } from "node:test"
 
 const props = defineProps({
   vueRefs: {
@@ -146,12 +146,9 @@ function getMaxMiddleBtnCount() {
  */
 async function handleClick(btn) {
   if (btn.funName && bdc[btn.funName]) {
-    checkDemoRefs()
     let _bdc: any = bdc //  定义 不然打包后eval获取不到
-    console.log('_bdc', _bdc)
-    console.log('vueRefs', vueRefs)
     let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : btn.bz) : ''
-    let _params = `(vueRefs,loading${params ? (',' + params) : params})`
+    let _params = `(${params ? (params) : params})`
     await eval(`_bdc[btn.funName]` + _params)
   }
 }

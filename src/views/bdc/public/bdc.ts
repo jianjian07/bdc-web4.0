@@ -221,8 +221,8 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
 function updateQlrData(type, data) {
   return new Promise((resolve, reject) => {
     defHttp.post({
-        url: type == 'add' ? api.addQlr : api.editQlr,
-        data: data
+      url: type == 'add' ? api.addQlr : api.editQlr,
+      data: data
     }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success('保存成功')
@@ -241,4 +241,13 @@ function updateQlrData(type, data) {
  */
 export async function showFile(demoRefs, spinning, params?: any) {
   eventBus.emit('showFile', params.manage)
+}
+/**
+ * 跳转至积木报表的 预览页面
+ * @param url
+ * @param id
+ * @param token
+ */
+export function print(params: { code: string }) {
+  window.open(`http://192.168.27.87:7004/zrzy-form/jmreport/view/${params.code}`)
 }
