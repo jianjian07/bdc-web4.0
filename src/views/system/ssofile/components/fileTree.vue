@@ -160,7 +160,7 @@ const urlList = {
   updateCatalog: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updatePart', // 更新部分字段
   uploadBatch: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatch', // 批量上传文件
   updateOrder: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/updateOrder', // 更新排序
-  defaultList: '/api/zrzy-bdc/casematerialConfig/list', // 获取默认的附件目录
+  defaultList: '/api/zrzy-bdc/casematerialConfig/listBySlbh', // 获取默认的附件目录
   addDefaultList: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/addSelectMaterialList' //提取附件目录
 }
 
@@ -183,7 +183,7 @@ onMounted(() => {
   loadFileList()
 })
 
-function loadFileList() {
+function loadFileList(getDefault: Boolean = true) {
   // 查询当前实例所有的附件目录树和附件
   defHttp.get(
     {
@@ -193,7 +193,7 @@ function loadFileList() {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
-      if(res.result.length == 0) {
+      if(res.result.length == 0 && getDefault) {
         // 获取默认的材料配置目录
         loadDefaultList()
       } else {
@@ -211,17 +211,15 @@ function loadDefaultList() {
     {
       url: urlList.defaultList,
       params: { 
-        pageNo: 1,
-        pageSize: 100,
-        nodeId: props.formData.nodeId // 节点ID
-        // subType: props.formData.subType //权利类型
+        nodeId: props.formData.nodeId, // 节点ID
+        slbh: props.formData.slbh
       }
     },
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
-      if (res.result.records.length) {
-        let catalogList = res.result.records.map(ele => {
+      if (res.result && res.result.length) {
+        let catalogList = res.result.map(ele => {
           let item = Object.assign(ele, { parentId: '0', fileType: 'folder', key: ele.id, scopedSlot: {title: "custom"}, title: ele.materialName })
           return item
         })
@@ -234,7 +232,7 @@ function loadDefaultList() {
           }
         },{ withToken: true }).then(res => {
           if (res?.success) {
-            loadFileList()
+            loadFileList(false)
           } else {
             message.warning('提取目录失败！')
           }

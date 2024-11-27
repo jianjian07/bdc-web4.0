@@ -7,6 +7,8 @@ import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
+import eventBus from "/@/views/bdc/djlc/eventBus"
+
 
 const userStore = useUserStore()
 
@@ -231,4 +233,12 @@ function updateQlrData(type, data) {
       }
     })
   })
+}
+
+/**
+ * 附件按钮
+ * @param manage 是否默认展示为管理状态
+ */
+export async function showFile(demoRefs, spinning, params?: any) {
+  eventBus.emit('showFile', params.manage)
 }

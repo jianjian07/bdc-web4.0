@@ -228,18 +228,17 @@ function manageQLQT(qlqtConfig: any, viewData: any) {
   let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/gm //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
   // let reg = /(?<=\[)\S+(?=\])/gm //匹配中括号，返回结果不包括中括号
   let qlqtmatch = qlqtConfig.match(reg)
-  debugger
   if (qlqtmatch) {
     qlqtConfig = qlqtConfig.replace('[', '')
     qlqtConfig = qlqtConfig.replace(']', '')
     qlqtmatch.forEach((value) => {
       // 获取表名及字段名
       let arr = value.split('.')
-      if (arr && arr.length == 4) {
-        let realValue = viewData.value[arr[2]][arr[3]]
+      if (arr && arr.length == 4 && viewData.value[arr[2]]) {
+        let realValue = viewData.value[arr[2]][arr[3]] ? viewData.value[arr[2]][arr[3]] : ''
         qlqtConfig = qlqtConfig.replace(value, realValue)
       } else {
-        console.log('占位符格式不正确！应为viewData.value.[表名].[字段名]')
+        console.log('占位符格式不正确！应为viewData.value.[表名].[字段名]，如有单位，中间请空格')
       }
       
     })

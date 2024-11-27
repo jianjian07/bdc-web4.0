@@ -35,10 +35,10 @@
             <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
-        <div class="split-line" id="drag-line" @mousedown="onDragStart"></div>
-        <div :class="['right-content', previewFile ? 'open-Content': 'close-Content']" :style="{ width: rightWidth + 'px', height: '100%' }" >
+        <div v-show="showFilePanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
+        <div v-show="showFilePanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }" >
           <div style="width: 100%; height: 100%">
-            <SsoFile />
+            <SsoFile :manage="isManage" />
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ let formContent = ref()
 // 容器的宽度
 let containerWidth = 0
 let leftWidth = ref<any>(500)
-let rightWidth = ref<any>(350)
+let rightWidth = ref<any>(0)
 // 权利人
 let qlr = ref<any>('')
 // 节点名称
@@ -94,6 +94,10 @@ let jdmc = ref<any>('')
 let showQlr = ref<boolean>(true)
 // 预览附件
 let previewFile = ref<boolean>(false)
+// 展示附件模块
+let showFilePanel = ref<boolean>(false)
+// 是否默认展示管理状态
+let isManage = ref<boolean>(false)
 let startX = 0
 // 通用表单组件实例
 let demoRefs: any = []
@@ -132,10 +136,13 @@ onBeforeUnmount(() => {
 function initBusEvent() {
   eventBus.on('onChangeQlr', onChangeQlrShow)
   eventBus.on('previewFile', onPreviewFile)
+  eventBus.on('showFile', onShowFile)
 }
 
 function removeBusEvent() {
   eventBus.off('onChangeQlr', onChangeQlrShow)
+  eventBus.off('previewFile', onPreviewFile)
+  eventBus.off('showFile', onShowFile)
 }
 
 function handleResize() {
@@ -309,6 +316,22 @@ function onPreviewFile(value) {
     rightWidth.value = 350
     leftWidth.value = containerWidth - 360
   }
+}
+
+/**
+ * 是否展示附件模块
+ * @param value
+ */
+function onShowFile(manage) {
+  if(!showFilePanel.value) {
+    rightWidth.value = 350
+    leftWidth.value = containerWidth - 360
+  } else {
+    rightWidth.value = 0
+    leftWidth.value = containerWidth - 10
+  }
+  showFilePanel.value = !showFilePanel.value
+  isManage = manage
 }
 
 </script>
