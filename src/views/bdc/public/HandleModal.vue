@@ -2,119 +2,66 @@
   <div class="handle-modal">
     <a-spin :spinning="spinning">
       <a-row style="display:flex; height: 100%; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8">
-<!--        <a-col :md="8" style="padding: 20px;height: 100%;overflow-y: auto">-->
-<!--          <h3 style="text-align: center">移交方向</h3>-->
-<!--          <div style="text-align: center">-->
-<!--            <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">-->
-<!--              <a-radio :value="1">向后</a-radio>-->
-<!--              <a-radio :value="2">平级</a-radio>-->
-<!--              <a-radio :value="3" v-if="formState?.taskData?.histListSize>0">驳回</a-radio>-->
-<!--            </a-radio-group>-->
-<!--          </div>-->
-<!--          <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">-->
-<!--                <a-form-item class="form-item" label="受理编号">-->
-<!--                  <span>&nbsp;{{ formState.slbh }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="业务名称">-->
-<!--                  <span>&nbsp;{{ formState.lcmc }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="业务类型">-->
-<!--                  <span>&nbsp;{{ formState.ywlx }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="当前节点">-->
-<!--                  <span>&nbsp;{{ formState.jdmc }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="承办时间">-->
-<!--                  <span>&nbsp;{{ formState.cbsj }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="剩余时限">-->
-<!--                  <span>&nbsp;{{ formState.sysx }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="承办人">-->
-<!--                  <span>&nbsp;{{ formState.cbr }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="收件人">-->
-<!--                  <span>&nbsp;{{ formState.cbr }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="初审人">-->
-<!--                  <span>&nbsp;{{ formState.csr }}</span>-->
-<!--                </a-form-item>-->
-<!--                <a-form-item class="form-item" label="备注">-->
-<!--                  <a-textarea-->
-<!--                    v-model="formState.bz"-->
-<!--                    placeholder="请输入备注"-->
-<!--                    :auto-size="{ minRows: 3, maxRows: 8 }"-->
-<!--                  />-->
-<!--                </a-form-item>-->
-<!--              </a-form>-->
-<!--        </a-col>-->
-        <a-col :md="12" class="mid-col" style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
-          <div>
-            <h3 style="text-align: center">移交方向</h3>
-            <div style="text-align: center; margin-bottom: 10px">
+        <a-col :md="12" class="mid-col"
+          style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
+          <a-row style="align-items: center;">
+            <a-col :span="8"><svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon> 移交方向：</a-col>
+            <a-col :span="16">
               <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
                 <a-radio :value="1">向后</a-radio>
                 <a-radio :value="2">平级</a-radio>
-                <a-radio :value="3" v-if="formState?.taskData?.histListSize>0">驳回</a-radio>
+                <a-radio :value="3" v-if="formState?.taskData?.histListSize > 0">驳回</a-radio>
               </a-radio-group>
-            </div>
-            
-            <h3 style="text-align: center">承办人员</h3>
-            <div style="text-align: center; margin-bottom: 10px">
+            </a-col>
+          </a-row>
+          <a-row style="padding: 10px 0;align-items: center;">
+            <a-col :span="8"><svg-icon name="people" width="20px" height="20px" color="#5094F9"></svg-icon>
+              承办人员：</a-col>
+            <a-col :span="16">
               <a-radio-group v-model:value="handleUserType" @change="onChangeUserType">
                 <a-radio :value="1">移交到人</a-radio>
                 <a-radio :value="2">移交到角色</a-radio>
               </a-radio-group>
-            </div>
-          </div>
-          
+            </a-col>
+          </a-row>
+          <a-divider orientation="left">承办人员</a-divider>
+
           <div v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
             <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange">
               <template v-for="(item, index) in formState.taskData.histListNode">
-                <a-select-option v-if="item.NAME_ != formState.taskData.taskName" :value="item.TASK_DEF_KEY_">{{ item.NAME_ }}</a-select-option>
+                <a-select-option v-if="item.NAME_ != formState.taskData.taskName" :value="item.TASK_DEF_KEY_">{{
+      item.NAME_ }}</a-select-option>
               </template>
             </a-select>
           </div>
-           <a-input-search  v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0"
-                          placeholder="请输入承办人员名称" enterButton @search="onSearch" style="margin-bottom: 10px">
-           </a-input-search>
+          <a-input-search v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0" placeholder="请输入承办人员名称"
+            enterButton @search="onSearch" style="margin-bottom: 10px">
+          </a-input-search>
           <a-spin class="tree-spin" :spinning="treeSpinning">
-            <a-tree 
-                v-if="!treeSpinning && treeData.length"
-                multiple 
-                :show-icon="true"
-                :block-node="true"
-                :selected-keys="selectedKeys"
-                :default-expand-all="true"
-                :auto-expand-parent="true"
-                :tree-data="treeData"
-                @select="onSelectTreeNode"
-            >
-               <template #icon="{ dataRef }">
-                 <TeamOutlined v-if="dataRef.iconName == 'team'" />
-                 <UserOutlined v-else-if="dataRef.iconName == 'user'"/>
-               </template>
+            <a-tree v-if="!treeSpinning && treeData.length" multiple :show-icon="true" :block-node="true"
+              :selected-keys="selectedKeys" :default-expand-all="true" :auto-expand-parent="true" :tree-data="treeData"
+              @select="onSelectTreeNode">
+              <template #icon="{ dataRef }">
+                <TeamOutlined v-if="dataRef.iconName == 'team'" />
+                <UserOutlined v-else-if="dataRef.iconName == 'user'" />
+              </template>
             </a-tree>
           </a-spin>
         </a-col>
         <a-col :md="12" style="padding: 20px;height: 100%;min-height: 500px;overflow-y: auto">
-          <h3 style="text-align: center">
-            移交对象
-            <a-popconfirm
-              title="确定要清空移交对象吗?"
-              @confirm="onClearNode"
-            >
-              <a-button type="link" >
-                <template #icon>
-                  <DeleteOutlined />
-                </template>
-              </a-button>
+          <h3 style="text-align: left;letter-spacing: 0.1em;font-size: 20px;">
+            <svg-icon name="people" width="35px" height="35px" color="#5094F9"></svg-icon> 移交对象
+            <a-popconfirm title="确定要清空移交对象吗?" @confirm="onClearNode">
+              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }" />
             </a-popconfirm>
           </h3>
+          <div style="color: #838E95 !important;">请选择需要移交的对象</div>
           <div v-if="selectedNodes.length" class="selected-nodes-content">
-            <div v-for="(item,index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index" @mouseleave="hoverNodeIndex = -1">
+            <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
+              @mouseleave="hoverNodeIndex = -1">
               <span :title="item.title">{{ item.title }}</span>
-              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 14px; color: red" @click="onClickNode(item.key)"/>
+              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 15px;"
+                @click="onClickNode(item.key)" />
             </div>
           </div>
         </a-col>
@@ -124,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { TeamOutlined,UserOutlined,DeleteOutlined,CloseCircleOutlined } from '@ant-design/icons-vue';
+import { TeamOutlined, UserOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import { onMounted, ref } from "vue"
 import { findNode } from "/@/utils/form/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
@@ -194,34 +141,34 @@ onMounted(() => {
  */
 function getTaskInfo() {
   let taskId = route.query.taskId
-   defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId } }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        let taskData = res.result
-        let slbh = route.query.slbh
-        // let lcmc = formConfig.value.ajmc
-        let cbsj, cbr
-        if (taskData.bpmLogList.length) {
-          cbsj = taskData.bpmLogList[0].opTime
-          cbr = taskData.bpmLogList[0].opUserName
-        } else {
-          cbsj = taskData.taskNameStartTime
-          cbr = taskData.taskAssigneeName
-        }
-        
-        formState.value = {
-          taskId: taskId,
-          slbh: slbh,
-          // lcmc: lcmc,
-          jdmc: taskData.nodeName,
-          cbr: cbr,
-          cbsj: cbsj,
-          taskData: taskData
-        }
-        setTransTree()
+  defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      let taskData = res.result
+      let slbh = route.query.slbh
+      // let lcmc = formConfig.value.ajmc
+      let cbsj, cbr
+      if (taskData.bpmLogList.length) {
+        cbsj = taskData.bpmLogList[0].opTime
+        cbr = taskData.bpmLogList[0].opUserName
       } else {
-        message.warning('获取流程数据失败:' + res.message)
+        cbsj = taskData.taskNameStartTime
+        cbr = taskData.taskAssigneeName
       }
-   })
+
+      formState.value = {
+        taskId: taskId,
+        slbh: slbh,
+        // lcmc: lcmc,
+        jdmc: taskData.nodeName,
+        cbr: cbr,
+        cbsj: cbsj,
+        taskData: taskData
+      }
+      setTransTree()
+    } else {
+      message.warning('获取流程数据失败:' + res.message)
+    }
+  })
 }
 
 /**
@@ -255,7 +202,7 @@ function setPjTransTree() {
  */
 function setRejectTransTree(rejectObj) {
   if (rejectObj) {
-    let transitionList = [{ nextnode: rejectObj.rejectNode, rejectNodeName: rejectObj.rejectNodeName ,rejectNode: rejectObj.rejectNode}]
+    let transitionList = [{ nextnode: rejectObj.rejectNode, rejectNodeName: rejectObj.rejectNodeName, rejectNode: rejectObj.rejectNode }]
     let stringList = transitionList.map(item => item.nextnode) || []
     getTaskUserInfo(stringList, transitionList, 3)
   }
@@ -276,14 +223,14 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
           let roleList = res.result
           let roleNumber = 0
           if (roleList && roleList.length) {
-            transitionList.forEach(function(trans) {
+            transitionList.forEach(function (trans) {
               let nextUserName = []
               for (let i = 0; i < roleList.length; i++) {
                 let keyNameList = Object.keys(roleList[i])
                 keyNameList.forEach(item => {
                   if (item == trans.nextnode) {
                     let roleFlag = false
-                    let obj:any = transUserList(roleList[i], item, roleFlag, roleNumber, nextUserName)
+                    let obj: any = transUserList(roleList[i], item, roleFlag, roleNumber, nextUserName)
                     roleList[i] = obj.roleListI
                     roleFlag = obj.roleFlag
                     roleNumber = obj.roleNumber
@@ -352,7 +299,7 @@ function transUserList(roleListI, value, roleFlag, roleNumber, nextUserName) {
     let role = roleListI[value][0]
     let userList = []
     if (role && role.userList) {
-      role.userList.forEach(function(userListItem) {
+      role.userList.forEach(function (userListItem) {
         if (role.roleId || role.roleName) {
           userList.push({
             title: userListItem.realname,
@@ -493,7 +440,7 @@ function handleProcessOver(obj) {
       nextnode: obj.nextnode,
       nextCodeCount: '',
       reason: '',
-      processModel: yjfx == 3 ? 3: 1,
+      processModel: yjfx == 3 ? 3 : 1,
       rejectModelNode: yjfx == 3 ? nextnode : '',
       nextUserName: obj.nextnodeUserNameList,
       nextUserId: obj.nextnodeUserIdList,
@@ -515,7 +462,7 @@ function handleProcessOver(obj) {
       message.error(err)
       resolve(false)
     })
-    
+
   })
 }
 
@@ -538,7 +485,7 @@ function onRejectModelChange(value) {
  * 移交方向改变
  */
 function onChangeDirection(e) {
-  let obj:any = {}
+  let obj: any = {}
   // 重新初始化用户树
   if (e.target.value == 3) {
     let nodeName
@@ -603,7 +550,7 @@ function onSearch(value) {
   if (value) {
     searchKeys = []
     likeSearch(treeData.value, value)
-    for (let i = 0; i < searchKeys.length ; i++) {
+    for (let i = 0; i < searchKeys.length; i++) {
       selectedKeys.value.push(searchKeys[i])
     }
     setSelectNode()
@@ -660,7 +607,7 @@ function onSelectTreeNode(keys, info) {
  */
 function getBroNodes(arr, key, addNodes) {
   let flag = false
-  let broNodes:any = []
+  let broNodes: any = []
   arr.forEach((item) => {
     broNodes.push(item.key)
     if (item.key == key) {
@@ -683,7 +630,7 @@ function getBroNodes(arr, key, addNodes) {
  * 设置移交对象
  */
 function setSelectNode() {
-  let nodes:any = []
+  let nodes: any = []
   selectedKeys.value.forEach(key => {
     let find = findNode(treeData.value, key, 'key')
     if (find) {
@@ -708,7 +655,7 @@ function getSelectedNodes(arr, key, newArr) {
       })
     } else {
       if (item.children) {
-        getSelectedNodes(arr, key , newArr)
+        getSelectedNodes(arr, key, newArr)
       }
     }
   })
@@ -737,13 +684,13 @@ defineExpose({
 .handle-modal {
   height: 100%;
   min-height: 500px;
-  
+
   :deep(.ant-spin-nested-loading) {
     height: 100%;
     width: 100%;
     border-top: 1px solid #e8e8e8;
     border-bottom: 1px solid #e8e8e8;
-    
+
     .ant-spin-container {
       height: 100%;
     }
@@ -757,11 +704,13 @@ defineExpose({
     padding-bottom: 0;
     margin: 0;
   }
+
   :deep(.ant-modal-content) {
     display: flex;
     flex-direction: column;
     height: calc(100vh);
   }
+
   :deep(.ant-modal-body) {
     flex: 1;
   }
@@ -785,19 +734,19 @@ defineExpose({
 }
 
 .selected-nodes-content {
-  display: flex; 
-  justify-content: center; 
+  display: flex;
+  justify-content: center;
   flex-direction: column;
-  align-items: center;
-  
+  // align-items: center;
+
   .selected-nodes-node {
     display: flex;
-    justify-content: center;
-    width: 200px; 
-    padding: 10px;
-    text-align: center;
+    // justify-content: center;
+    width: 200px;
+    padding: 5px;
+    text-align: left;
     position: relative;
-    
+
   }
 }
 
@@ -808,5 +757,4 @@ defineExpose({
   align-items: center;
   justify-content: center;
 }
-
 </style>

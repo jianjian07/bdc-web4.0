@@ -12,8 +12,9 @@
                 <a-input v-model:value="formData.name" />
             </a-form-item>
             <a-form-item label="数据库类型" name="dbType" :rules="[{ required: true, message: '请输入数据库类型' }]">
-                <a-select v-model:value="formData.dbType" allowClear @change="(value) => syncChange(value, 'dbTypeText')"
-                    label-in-value :options="getDictItemsByCode('database_type')" style="width: 100%;">
+                <a-select v-model:value="formData.dbType" allowClear
+                    @change="(value) => syncChange(value, 'dbTypeText')" label-in-value
+                    :options="getDictItemsByCode('database')" style="width: 100%;">
                 </a-select>
             </a-form-item>
             <a-form-item label="驱动类" name="dbDriver" :rules="[{ required: true, message: '请输入驱动类' }]">

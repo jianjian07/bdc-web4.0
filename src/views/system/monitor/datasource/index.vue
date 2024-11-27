@@ -9,8 +9,8 @@
                 </a-col>
                 <a-col :span="8" :offset="0">
                     <a-form-item label="数据库类型">
-                        <a-select v-model:value="formData.dbType" :options="getDictItemsByCode('database_type')"
-                            allowClear style="width: 100%;">
+                        <a-select v-model:value="formData.dbType" :options="getDictItemsByCode('database')" allowClear
+                            style="width: 100%;">
                         </a-select>
                     </a-form-item>
                 </a-col>

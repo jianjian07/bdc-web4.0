@@ -87,7 +87,7 @@ const emit = defineEmits(['ok'])
 function onOk() {
     let url = ''
     if (reportData.value.id) {
-        url = '/api/zrzy-form/form/report/edit' // 编辑
+        url = '/api/zrzy-form/form/report/updatePartFields' // 编辑
     } else {
         const _value =
         {
