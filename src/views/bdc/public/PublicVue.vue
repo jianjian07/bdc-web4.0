@@ -35,8 +35,8 @@
             <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
-        <div v-show="showFilePanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
-        <div v-show="showFilePanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }" >
+        <div v-if="showFilePanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
+        <div v-if="showFilePanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }" >
           <div style="width: 100%; height: 100%">
             <SsoFile :manage="isManage" />
           </div>

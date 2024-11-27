@@ -132,6 +132,17 @@ const props = defineProps({
 watch(() => props.lcid, (val:any) => {
   if(val) {
     pagination.value.current = 1
+  }
+}, {
+  immediate: true
+})
+
+watch(() => props.baseInfo, (val: any) => {
+  // 重置数据
+  dataList.value = []
+  pagination.value.total = 0 
+  if(val && val.regType) {
+    pagination.value.current = 1
     loadData()
   }
 }, {
