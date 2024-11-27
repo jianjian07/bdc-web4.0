@@ -66,7 +66,7 @@ import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined } from '@
 import { router } from "/@/router";
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
-import { getQlqtqkBySLBH, getQlqtqkByMap } from "/@/utils/form/commonUtils"
+import { getQlqtqkBySLBH, getQlqtqkByMap } from "/@/views/bdc/public/bdc"
 import { useUserStore } from '/@/store/modules/user';
 
 const userStore = useUserStore();
