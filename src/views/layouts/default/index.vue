@@ -1,12 +1,12 @@
 <template>
-  <Layout :class="prefixCls">
+  <Layout :class="prefixCls" style="height: 100vh">
     <!-- <LayoutFeatures /> -->
     <!-- 头 -->
     <LayoutHeader fixed v-show="!fullscreen" />
-    <Layout :class="[layoutClass]">
+    <Layout :class="[layoutClass]" style="min-height: calc(100% - 50px)">
       <!-- 左侧导航 -->
       <!-- 这里测试如果sider的放里面会导致莫名其妙渲染100多次-->
-      <a-layout-sider v-model:collapsed="getCollapsed" collapsible :trigger="null" v-show="!fullscreen">
+      <a-layout-sider class="menu-sider" v-model:collapsed="getCollapsed" collapsible :trigger="null" v-show="!fullscreen">
         <LayoutSideBar />
       </a-layout-sider>
 
@@ -76,5 +76,13 @@ const layoutClass = () => {
     width: 100%;
     margin-left: 1px;
   }
+}
+
+.menu-sider {
+  overflow: auto;
+}
+
+.menu-sider::-webkit-scrollbar {
+  display: none;
 }
 </style>

@@ -18,13 +18,13 @@
   <!--      {{ menu.name }}-->
   <!--    </a-menu-item>-->
   <!--  </a-menu>-->
-  <a-menu v-model:openKeys="openKeys" v-model:selectedKeys="selectedKeys" mode="inline" theme="dark"
-    @click="handleMenuItem">
+  <a-menu :openKeys="state.openKeys" v-model:selectedKeys="selectedKeys" mode="inline" theme="dark"
+    @click="handleMenuItem" @openChange="onOpenChange">
     <sub-menu :menu="menuList"></sub-menu>
   </a-menu>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { usePermissionStore } from '/@/store/modules/permission'
 import { useAppStore } from "/@/store/modules/app"
 const appStore = useAppStore()
@@ -35,6 +35,7 @@ import { useTabsStore } from "/@/store/modules/tabs"
 import SubMenu from "/@/views/layouts/default/sider/subMenu.vue"
 import { useRouter } from "vue-router"
 import { PageEnum } from "/@/enums/pageEnum"
+import { findNode } from "/@/utils/form/commonUtils"
 
 const permissionStore = usePermissionStore()
 const tabStore = useTabsStore()
@@ -46,11 +47,21 @@ const menuInfo = permissionStore.getMenuInfo
 const menuList = initMenuList(menuInfo)
 const menuFirst = menuList[0]
 const openKeys = [menuFirst.id]
+let state = reactive({
+  rootSubmenuKeys: [],
+  openKeys: []
+})
+state.rootSubmenuKeys = getRootMenuKeys()
+state.openKeys = [menuFirst.id]
 let selectedKeys = ref<string[] | number[]>([])
 
 
 watch(() => tabActiveKeys.value, (newVal, oldVal) => {
   selectedKeys.value = [newVal]
+  let find = findNode(menuList,newVal,'path')
+  if (find) {
+    state.openKeys = [find.pid]
+  }
 })
 
 onMounted(() => {
@@ -90,6 +101,10 @@ function initMenuList(newArr) {
   return newData
 }
 
+function getRootMenuKeys() {
+  return menuList.map(menu => menu.id)
+}
+
 /**
  * 点击菜单 切换路由
  * @param item
@@ -102,6 +117,19 @@ function handleMenuItem({ item, key, keyPath }) {
   //   appStore.setIframeSrc(menu.extra)
   // }
   router.replace({ path: menu.path })
+}
+
+/**
+ * 只展开当前父级
+ * @param openKeys
+ */
+function onOpenChange(openKeys) {
+  const latestOpenKey = openKeys.find(key => state.openKeys.indexOf(key) === -1);
+  if (state.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+    state.openKeys = openKeys;
+  } else {
+    state.openKeys = latestOpenKey ? [latestOpenKey] : [];
+  }
 }
 </script>
 <style lang="less" scoped></style>
