@@ -28,8 +28,8 @@ export const PAGE_NOT_FOUND_ROUTE: AppRouteRecordRaw = {
 export const REDIRECT_ROUTE: AppRouteRecordRaw = {
     path: '/redirect',
     name: 'RedirectTo',
-    redirect: '/redirect/index',
     component: LAYOUT,
+    redirect: '/redirect/index',
     meta: {
         title: REDIRECT_NAME,
     },
@@ -39,13 +39,11 @@ export const REDIRECT_ROUTE: AppRouteRecordRaw = {
             name: REDIRECT_NAME,
             component: () => import('/@/views/sys/redirect/index.vue'),
             meta: {
-                title: REDIRECT_NAME,
-                hideBreadcrumb: true,
+                title: REDIRECT_NAME
             },
         },
     ],
 };
-
 export const ERROR_LOG_ROUTE: AppRouteRecordRaw = {
     path: '/error-log',
     name: 'ErrorLog',
@@ -68,4 +66,13 @@ export const ERROR_LOG_ROUTE: AppRouteRecordRaw = {
             },
         },
     ],
+};
+
+export const REFRESH_ROUTE: AppRouteRecordRaw = {
+    path: '/refresh',
+    name: 'Refresh',
+    component: () => import('/@/views/sys/redirect/index.vue'),
+    meta: {
+        title: 'Refresh',
+    }
 };
