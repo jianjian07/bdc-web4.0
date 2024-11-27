@@ -239,7 +239,7 @@ function updateQlrData(type, data) {
  * 附件按钮
  * @param manage 是否默认展示为管理状态
  */
-export async function showFile(demoRefs, spinning, params?: any) {
+export async function showFile(params?: any) {
   eventBus.emit('showFile', params.manage)
 }
 /**
@@ -249,5 +249,11 @@ export async function showFile(demoRefs, spinning, params?: any) {
  * @param token
  */
 export function print(params: { code: string }) {
-  window.open(`http://192.168.27.87:7004/zrzy-form/jmreport/view/${params.code}`)
+  // let domain = window._CONFIG['domianURL']
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh?.toString()
+  let domain = 'http://192.168.27.87:7004/zrzy-form/'
+  let url = `${domain}jmreport/view/${params.code}`
+  url += `?slbh=${slbh}`
+  window.open(url, '_blank')
 }
