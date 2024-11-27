@@ -240,7 +240,7 @@ function updateQlrData(type, data) {
  * @param manage 是否默认展示为管理状态
  */
 export async function showFile(params?: any) {
-  eventBus.emit('showFile', params.manage)
+  eventBus.emit('showFile', params?.manage || false)
 }
 /**
  * 跳转至积木报表的 预览页面

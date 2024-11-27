@@ -331,7 +331,7 @@ function onShowFile(manage) {
     leftWidth.value = containerWidth - 10
   }
   showFilePanel.value = !showFilePanel.value
-  isManage = manage
+  isManage.value = manage
 }
 
 </script>

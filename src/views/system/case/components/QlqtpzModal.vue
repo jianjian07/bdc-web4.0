@@ -25,7 +25,7 @@
       <a-form-item ref="jzlx" label="介质类型" name="jzlx">
         <a-select v-model:value="formState.jzlx" :options="getDictItemsByCode('jzlx')" placeholder="请选择介质类型" />
       </a-form-item>
-      <a-form-item ref="sjbm" label="编码" name="sjbm">
+      <a-form-item v-show="false" ref="sjbm" label="编码" name="sjbm">
         <a-input v-model:value="formState.sjbm" placeholder="请输入编码" />
       </a-form-item>
       <a-form-item ref="zt" label="状态" name="zt">

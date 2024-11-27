@@ -15,11 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import fileTree from './components/fileTree.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute();
+let isManage: any = ref(false)
 
 const props = defineProps({
   manage: {
@@ -28,12 +29,17 @@ const props = defineProps({
   }
 })
 
+watch(() => props.manage, val => {
+  isManage.value = val
+}, {
+  immediate: true
+})
+
 let formData = {
   slbh: route?.query?.slbh || 'ceshi001', // 受理编号
   processId: '', // 流程ID
   nodeId: route?.query?.nodeId // 节点ID
 }
-let isManage: any = ref(props.manage)
 
 function changeState() {
   isManage.value = props.manage ? props.manage : !isManage.value
