@@ -255,3 +255,7 @@ export function print(params: { code: string }) {
   url += `?slbh=${slbh}`
   window.open(url, '_blank')
 }
+
+export function getQlqtqk(viewData: any, fields: any) {
+  
+}
