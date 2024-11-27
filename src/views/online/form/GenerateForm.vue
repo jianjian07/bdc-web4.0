@@ -36,6 +36,7 @@ import {
   initCTableV2, 
   initAllCTableV2
 } from "/@/utils/form/wonder1.0.1"
+import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props: any = defineProps({
     id: {
@@ -72,6 +73,9 @@ watch(() => props.reload, async (newVal) => {
 const { isSaved, caseCode, disabled } = useAttrs()
 const VNodes = useVNodes();
 const route = useRoute();
+const userStore = useUserStore();
+// const userInfo = computed(() => userStore.getUserInfo)
+const userInfo = userStore.getUserInfo
 const code = ref(props.id)
 // const code = ref(route.params?.code.toString());
 let dataSource = ref()
@@ -265,6 +269,7 @@ const generateVue3 = defineComponent({
         }
       
           return {
+            userInfo,
             isSubmit,
             validateFlag,
             formDisabled,
