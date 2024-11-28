@@ -156,7 +156,7 @@ async function handleClick(btn) {
     if (btn.anwz == 'center') {
       _params = `(${params ? JSON.stringify(params) : params})`
     }
-    await eval(`${btn.funName}` + _params)
+    await eval(`_bdc[btn.funName]` + _params)
   }
 }
 

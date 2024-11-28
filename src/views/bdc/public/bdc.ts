@@ -256,6 +256,26 @@ export function print(params: { code: string }) {
 }
 
 /**
+ * 记载登记簿
+ * @param params 
+ * @returns 
+ */
+export function register(demoRefs: any, loading: any, params: any) {
+
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh?.toString()
+  // loading.value = true
+  defHttp.post({
+    url: '/api/zrzy-bdc/bdc/register/saveRegister',
+    params: { slbh: slbh }
+  }, { withToken: true }
+  ).then((res: any) => {
+    message.success(res.message)
+  }).catch((error: any) => {
+    message.success("记载失败")
+  })
+}
+/**
  * 根据受理编号设置权利其他情况
  * @param viewData
  * @param fields
@@ -268,7 +288,7 @@ export async function setQlqtqkBySlbh(viewData: any, fields: any) {
       if (!viewData.value[key[0]][key[1]]) {
         let slbh = route.query.slbh
         let result = await getQlqtqkBySLBH(slbh, viewData)
-        viewData.value[key[0]][key[1]]= result
+        viewData.value[key[0]][key[1]] = result
       }
     } else {
       if (!viewData.value[fields]) {
@@ -290,9 +310,9 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any) {
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
       params: { slbh: slbh },
       data: {}
-    },{ withToken: true }
+    }, { withToken: true }
     ).then((res: any) => {
-      if(res && res.success) {
+      if (res && res.success) {
         let result = manageQLQT(res.result, viewData)
         resolve(result)
       } else {
@@ -319,10 +339,10 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any) {
     defHttp.post({
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtByMap',
       data: param
-    },{
+    }, {
       withToken: true
     }).then((res: any) => {
-      if(res && res.success) {
+      if (res && res.success) {
         let result = manageQLQT(res.result, viewData)
         resolve(result)
       } else {
@@ -358,7 +378,7 @@ function manageQLQT(qlqtConfig: any, viewData: any) {
       } else {
         console.log('占位符格式不正确！应为viewData.value.[表名].[字段名]，如有单位，中间请空格')
       }
-      
+
     })
   }
   return qlqtConfig
@@ -392,34 +412,34 @@ export function validateQlbl(validateKey, qlrList, value) {
   if (qlrList.length > 0 && qlrList[0].gyfs == '2') {
     // 校验权利比例
     if (!validateInfos[validateKey]) {
-        validateInfos[validateKey] = {
-            validateStatus: 'validating',
-            help: ''
-        }
+      validateInfos[validateKey] = {
+        validateStatus: 'validating',
+        help: ''
+      }
     }
     let validateStatus = validateInfos[validateKey]['validateStatus']
     let type = validateInfos[validateKey]['type']
-    if ((validateStatus == 'validating' && type == 'default')|| type != 'default') {
-        // 处理脚本
-        if (value && /^(100|[1-9]?\d(\.\d{1,2})?)%$/.test(value)) {
-          // 将输入值的百分比转换为数字
-          const qlblNum = parseFloat(value.slice(0, -1));
-          const sum = qlrList.reduce((acc, item) => {
-            // 累加有效的权利比例
-            const itemQlbl = item.qlbl ? parseFloat(item.qlbl.slice(0, -1)) : 0;
-            return acc + itemQlbl;
-          }, qlblNum);
-        
-          // 验证总和是否超过 100
-          if (sum > 100) {
-            setValidateInfos(validateKey, 'error', '权利比例总和不能超过100%');
-          } else {
-            setValidateInfos(validateKey, 'validating', '');
-          }
+    if ((validateStatus == 'validating' && type == 'default') || type != 'default') {
+      // 处理脚本
+      if (value && /^(100|[1-9]?\d(\.\d{1,2})?)%$/.test(value)) {
+        // 将输入值的百分比转换为数字
+        const qlblNum = parseFloat(value.slice(0, -1));
+        const sum = qlrList.reduce((acc, item) => {
+          // 累加有效的权利比例
+          const itemQlbl = item.qlbl ? parseFloat(item.qlbl.slice(0, -1)) : 0;
+          return acc + itemQlbl;
+        }, qlblNum);
+
+        // 验证总和是否超过 100
+        if (sum > 100) {
+          setValidateInfos(validateKey, 'error', '权利比例总和不能超过100%');
         } else {
-          // 输入值格式不正确
-          setValidateInfos(validateKey, 'error', '请输入正确的比例');
+          setValidateInfos(validateKey, 'validating', '');
         }
+      } else {
+        // 输入值格式不正确
+        setValidateInfos(validateKey, 'error', '请输入正确的比例');
+      }
     }
   } else {
     setValidateInfos(validateKey, 'validating', '');
