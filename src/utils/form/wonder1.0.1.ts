@@ -610,6 +610,14 @@ export function resetValidateInfos() {
     }
     return validateInfos
 }
+
+ export function setValidateInfos(key, validateStatus, help){
+  if (!validateInfos[key]) {
+    validateInfos[key] = {}
+  }
+  validateInfos[key]['validateStatus'] = validateStatus
+  validateInfos[key]['help'] = help
+}
 /**
  * 下拉框同步
  * @param value

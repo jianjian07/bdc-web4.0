@@ -1,5 +1,5 @@
 import { useUserStore } from "/@/store/modules/user"
-import { getFormInfo, saveFormData, saveHandleData, validateInfos } from "/@/utils/form/wonder1.0.1"
+import { getFormInfo, saveFormData, saveHandleData, setValidateInfos, validateInfos } from "/@/utils/form/wonder1.0.1"
 import { message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed } from "vue"
@@ -382,3 +382,46 @@ export function createCard() {
   })
 }
 
+/**
+ * 校验有效的权利比例
+ * @param validateKey
+ * @param qlrList
+ * @param value
+ */
+export function validateQlbl(validateKey, qlrList, value) {
+  if (qlrList.length > 0 && qlrList[0].gyfs == '2') {
+    // 校验权利比例
+    if (!validateInfos[validateKey]) {
+        validateInfos[validateKey] = {
+            validateStatus: 'validating',
+            help: ''
+        }
+    }
+    let validateStatus = validateInfos[validateKey]['validateStatus']
+    let type = validateInfos[validateKey]['type']
+    if ((validateStatus == 'validating' && type == 'default')|| type != 'default') {
+        // 处理脚本
+        if (value && /^(100|[1-9]?\d(\.\d{1,2})?)%$/.test(value)) {
+          // 将输入值的百分比转换为数字
+          const qlblNum = parseFloat(value.slice(0, -1));
+          const sum = qlrList.reduce((acc, item) => {
+            // 累加有效的权利比例
+            const itemQlbl = item.qlbl ? parseFloat(item.qlbl.slice(0, -1)) : 0;
+            return acc + itemQlbl;
+          }, qlblNum);
+        
+          // 验证总和是否超过 100
+          if (sum > 100) {
+            setValidateInfos(validateKey, 'error', '权利比例总和不能超过100%');
+          } else {
+            setValidateInfos(validateKey, 'validating', '');
+          }
+        } else {
+          // 输入值格式不正确
+          setValidateInfos(validateKey, 'error', '请输入正确的比例');
+        }
+    }
+  } else {
+    setValidateInfos(validateKey, 'validating', '');
+  }
+}

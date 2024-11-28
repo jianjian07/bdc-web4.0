@@ -21,6 +21,9 @@
               </template>
             </div>
           </template>
+          <template v-else-if="column.dict">
+            {{ getDictItemsByCode(column.dict).find(f => f.value == record[column.key]).label }}
+          </template>
         </template>
       </a-table>
     </c-collapse-panel>
@@ -33,6 +36,7 @@ import { cModal } from "/@/components/cModal/index"
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
+import { getDictItemsByCode } from "/@/utils/form/commonUtils";
 
 const route = useRoute()
 
@@ -65,7 +69,8 @@ let columns = ref<any>([
   {
     title: '证件种类',
     dataIndex: 'zjzl',
-    key: 'zjzl'
+    key: 'zjzl',
+    dict: 'zjzl'
   },
   {
     title: '联系电话',
@@ -169,28 +174,33 @@ function onTableChange(pag) {
  * 添加
  */
 function handleAdd() {
-   let query = route.query
-  let modal = cModal({
-    title: '新增',
-    width: '70vw',
-    filePath: 'views/bdc/public/GenPublic',
-    formData: {
-      formId: 55,
-      ywh: props.ywh,
-      slbh: query.slbh,
-      qlrlb: props.qlrxx.qlrlxmc,
-      qlrList: tableData.value
-    },
-    onOk: async (res) => {
-      if (res && res.saveQlrData) {
-        let _result = await res.saveQlrData('add')
-        if (_result) {
-          modal.destroy()
-          initData()
+  let query = route.query
+  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
+  if (tableData.value.length > 0 && tableData.value[0].gyfs == '0') {
+    message.warning('该权利人共有方式为单独所有,不允许再添加')
+  } else {
+    let modal = cModal({
+      title: '新增',
+      width: '70vw',
+      filePath: 'views/bdc/public/GenPublic',
+      formData: {
+        formId: formId,
+        ywh: props.ywh,
+        slbh: query.slbh,
+        qlrlb: props.qlrxx.qlrlxmc,
+        qlrList: tableData.value
+      },
+      onOk: async (res) => {
+        if (res && res.saveQlrData) {
+          let _result = await res.saveQlrData('add')
+          if (_result) {
+            modal.destroy()
+            initData()
+          }
         }
       }
-    }
-  })
+    })
+  }
 }
 
 /**
@@ -198,12 +208,13 @@ function handleAdd() {
  * @param record
  */
 function handleLook(record) {
+  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
   cModal({
     title: '查看',
     width: '70vw',
     filePath: 'views/bdc/public/GenPublic',
     formData: {
-      formId: 55,
+      formId: formId,
       iszd: '1',
       qlrid: record.qlrid,
       ywh: record.ywh
@@ -212,18 +223,19 @@ function handleLook(record) {
   })
 }
 
-/**
+/*
  * 编辑
  * @param record
  */
 function handleEdit(record) {
   let query = route.query
+  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
   let modal = cModal({
     title: '编辑',
     width: '70vw',
     filePath: 'views/bdc/public/GenPublic',
     formData: {
-      formId: 55,
+      formId: formId,
       qlrid: record.qlrid,
       slbh: query.slbh,
       ywh: record.ywh,
