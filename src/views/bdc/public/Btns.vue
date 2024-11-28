@@ -147,12 +147,16 @@ async function handleClick(btn) {
   if (btn.funName && bdc[btn.funName]) {
     checkDemoRefs()
     let _bdc: any = bdc //  定义 不然打包后eval获取不到
-    let params = btn.bz ? (isJsonData(btn.bz) ? JSON.parse(btn.bz) : `'${btn.bz}'`) : ''
-    let _params = `(vueRefs,loading${params ? (',' + params) : params})`
+    // 修正非 JSON 格式字符串
+    let correctedBz = btn.bz
+      .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
+      .replace(/'/g, '"'); // 单引号变双引号
+    let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
+    let _params = `(vueRefs,loading${params ? (',' + JSON.stringify(params)) : params})`
     if (btn.anwz == 'center') {
-      _params = `(${params ? (params) : params})`
+      _params = `(${params ? JSON.stringify(params) : params})`
     }
-    await eval(`_bdc[btn.funName]` + _params)
+    await eval(`${btn.funName}` + _params)
   }
 }
 
