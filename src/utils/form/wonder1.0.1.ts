@@ -21,7 +21,7 @@ export async function getData(object1: { value: object }, formId?: number, param
         url: url,
         data: {
             formId: formId ? formId : 14,
-            param: { slbh: query.slbh ? query.slbh : 'QG1-20221434', ...params }
+            param: { ...query, ...params }
         }
     },
         { withToken: true }).then((res) => {
