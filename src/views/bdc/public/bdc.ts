@@ -363,3 +363,22 @@ function manageQLQT(qlqtConfig: any, viewData: any) {
   }
   return qlqtConfig
 }
+
+/**
+ * 生成证号
+ */
+export function createCard() {
+  return new Promise((resolve, reject) => {
+    let route = router.currentRoute.value
+    let slbh = route.query.slbh
+    defHttp.post({ url: '/api/zrzy-bdc/bdc/card/getCard', params: { slbh: slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        message.warning(res.message)
+        resolve(false)
+      }
+    })
+  })
+}
+
