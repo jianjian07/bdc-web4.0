@@ -1,10 +1,10 @@
 <template>
   <div class="ssoFileContent">
-    <div class="titleContent ">
+    <div v-if="!look" class="titleContent ">
       <span class="title">
         材料信息
       </span>
-      <template v-if="props.manage == false">
+      <template v-if="manage == false">
         <a-button type="primary" size="middle" @click="changeState">{{ isManage ? '返回' : '管理' }}</a-button>
       </template>
     </div>
@@ -24,6 +24,10 @@ let isManage: any = ref(false)
 
 const props = defineProps({
   manage: {
+    type: Boolean,
+    default: false
+  },
+  look: {
     type: Boolean,
     default: false
   }

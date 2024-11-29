@@ -1,7 +1,7 @@
 <template>
     <div class="qlr-list">
       <template v-for="(item, index) in qlrList">
-        <qlr :qlrxx="item" :jdmc="jdmc" :ywh="ywh"></qlr>
+        <qlr :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :disabled="disabled"></qlr>
       </template>
     </div>
 </template>
@@ -15,8 +15,8 @@ let qlrList = ref<any>([])
 
 let props = defineProps({
   qlr: {
-    type: String,
-    default: ''
+    type: Array,
+    default: []
   },
   jdmc: {
     type: String,
@@ -25,6 +25,10 @@ let props = defineProps({
   ywh: {
     type: String,
     default: ''
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 

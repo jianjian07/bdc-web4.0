@@ -2,7 +2,7 @@
   <div class="qlr">
     <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc +'信息'" :showArrow="true" classname="title-css8"
                       collapseType="row" style='width:100%'>
-      <div v-if="qlrxx?.btnId?.includes('1')" class="qlr-add">
+      <div v-if="qlrxx?.btnId?.includes('1') && !disabled" class="qlr-add">
         <a-button @click="handleAdd">新增</a-button>
       </div>
       <a-table :columns="columns" :data-source="tableData" :pagination="pagination" rowKey="qlrid"
@@ -13,10 +13,10 @@
               <template v-for="(item,index) in actionBtnList">
                 <template v-if="item.name == '删除'">
                   <a-popconfirm title="是否确定删除该数据？" ok-text="确定" cancel-text="取消" @confirm="handleFun(item.funcName,record)">
-                    <a-button type="link">{{ item.name }}</a-button>
+                    <a-button type="link" :disabled="disabled">{{ item.name }}</a-button>
                   </a-popconfirm>
                 </template>
-                <a-button v-else type="link" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
+                <a-button v-else type="link" :disabled="disabled" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
                 <a-divider v-if="index !== actionBtnList.length - 1" type="vertical"/>
               </template>
             </div>
@@ -52,6 +52,10 @@ const props = defineProps({
   ywh: {
     type: String,
     default: ''
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 
