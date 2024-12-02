@@ -67,7 +67,7 @@
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费相关域" name="sfxgy" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
                     <a-select v-model:value="formState.sfxgy" placeholder="请选择收费相关域">
-                      <a-select-option v-for="(item, index) in getDictItemsByCode('sfxgy')" :label="item.label" :value="item.bz">
+                      <a-select-option v-for="(item, index) in getDictItemsByCode('sfxgy')" :label="item.label" :value="item.description">
                         {{ item.label }}
                       </a-select-option>
                     </a-select>
@@ -75,7 +75,7 @@
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="费用参数(元)" name="sffy" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input v-model:value="formState.sffy" placeholder="请输入费用参数(元)"></a-input>
+                   <a-input-number style="width: 100%" v-model:value="formState.sffy" placeholder="请输入费用参数(元)"></a-input-number>
                  </a-form-item>
                 </a-col>
               </a-row>
@@ -83,12 +83,12 @@
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费上限" name="sfsx" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input v-model:value="formState.sfsx" placeholder="请输入收费上限"></a-input>
+                   <a-input-number style="width: 100%" v-model:value="formState.sfsx" placeholder="请输入收费上限"></a-input-number>
                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="序号" name="sxh" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input v-model:value="formState.sxh" placeholder="请输入序号"></a-input>
+                   <a-input-number style="width: 100%" v-model:value="formState.sxh" placeholder="请输入序号"></a-input-number>
                  </a-form-item>
                 </a-col>
               </a-row>
@@ -130,9 +130,12 @@
               
               <a-row>
                 <a-col :md="24">
-                  <a-form-item label="筛选条件" name="sxtj" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
-                    <a-button @click="handleAddSxtj" style="margin-bottom: 10px">新增</a-button>
-                    <a-table :columns="columns" :data-source="sxtjxx" size="small" :loading="tableLoading">
+                  <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
+                    <template #label>
+                      <span class="required-text">筛选条件</span>
+                    </template>
+                    <a-button @click="handleAddSxtj" style="margin-bottom: 10px; float: right">新增</a-button>
+                    <a-table :columns="columns" sticky :data-source="sxtjxx" size="small" :loading="tableLoading">
                       <template #headerCell="{ title, column }">
                         <template v-if="column.rules?.find(r => r.required)">
                           <span class="required-text">{{ title }}</span>
@@ -155,7 +158,7 @@
                               <span>{{ validateRules(column.rules, record[column.key]) }}</span>
                             </template>
                             <a-select v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" 
-                                      :placeholder="column.placeholder" @focus="setInputStatus(column, record)" @change="(value, option) => handleChangeValue(value, option, column, record)">
+                                      :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item,index) in getDictItemsByCode(column.dict)" :label="item.label" :value="column.bz ? item.description : item.value">
                                 {{ item.label }}
                               </a-select-option>
@@ -174,7 +177,7 @@
                   <a-form-item label="收费登记类型" name="djlx" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
                     <a-checkbox-group v-model:value="formState.djlx">
                       <a-row>
-                        <a-col :span="8" v-for="(item, index) in sfdjlx">
+                        <a-col :span="8" v-for="(item, index) in getDictItemsByCode('sfdjlx')">
                           <a-checkbox :value="item.value" class="cbx-css">
                             <span :title="item.label">{{ item.label }}</span>
                           </a-checkbox>
@@ -214,6 +217,7 @@ import { AuditOutlined,BookOutlined,FileOutlined } from '@ant-design/icons-vue';
 import { cModal } from "/@/components/cModal/index"
 import { getDictItemsByCode,validateRules, setInputStatus } from '/@/utils/form/commonUtils';
 import { message } from "ant-design-vue"
+import { defHttp } from "/@/utils/http/axios"
 
 // loading
 let spinning = ref<boolean>(false)
@@ -243,7 +247,8 @@ const columns = [
   {
     title: '序号',
     dataIndex: 'xh',
-    key: 'xh'
+    key: 'xh',
+    width: 60
   },
   {
     title: '筛选域',
@@ -275,100 +280,41 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    key: 'action'
+    key: 'action',
+    width: 80,
+    align: 'center'
   }
 ]
 // 筛选条件信息
 let sxtjxx = ref<any>([])
 // 表格加载loading
 let tableLoading = ref<boolean>(false)
-// 测试字典
-const sfdjlx = [
-  {
-    label: '不动产首次登记',
-    value: '0101'
-  }, {
-    label: '不动产转移登记',
-    value: '0102'
-  }, {
-    label: '不动产变更登记',
-    value: '0103'
-  }, {
-    label: '不动产注销登记',
-    value: '0104'
-  }, {
-    label: '不动产更正登记',
-    value: '0105'
-  }
-] 
+
+enum api {
+  tree = '/api/zrzy-bdc/bdc/sfconfig/treeList',
+  queryBySfxbh = '/api/zrzy-bdc/bdc/sfconfig/queryBySfxbh',
+  delete = '/api/zrzy-bdc/bdc/sfconfig/delete',
+  update = '/api/zrzy-bdc/bdc/sfconfig/update',
+  delSxtj = '/api/zrzy-bdc/bdc/sfconfigsx/delete'
+}
 
 onMounted(() => {
   initData()
 })
 
+/**
+ * 树数据初始化
+ */
 function initData() {
   spinning.value = true
-  let res = [{
-    id: '1',
-    title: '收费标准',
-    children: [{
-      id: '1.1',
-      title: '登记费',
-      children: [{
-        id: '1.1.1',
-        title: '住宅、车位、仓库用房登记费'
-      },{
-        id: '1.1.2',
-        title: '非住宅登记费'
-      },{
-        id: '1.1.3',
-        title: '土地交易服务费(个人)'
-      },{
-        id: '1.1.4',
-        title: '土地交易服务费(单位)'
-      },{
-        id: '1.1.5',
-        title: '住宅抵押登记费'
-      },{
-        id: '1.1.6',
-        title: '经济适用房'
-      },{
-        id: '1.1.7',
-        title: '非住宅抵押登记费'
-      },{
-        id: '1.1.8',
-        title: '住宅登记费(减免)'
-      },{
-        id: '1.1.9',
-        title: '非住宅登记费(减免)'
-      },{
-        id: '1.1.10',
-        title: '住宅、车位、仓库用房登记费(小微企业减免)'
-      },{
-        id: '1.1.11',
-        title: '非住宅登记费(小微企业减免)'
-      }]
-    },{
-      id: '1.2',
-      title: '工本费',
-      children: [{
-        id: '1.2.1',
-        title: '档案利用服务费(私产)'
-      },{
-        id: '1.2.2',
-        title: '档案利用服务费(其他)'
-      },{
-        id: '1.2.3',
-        title: '证书费'
-      }]
-    }]
-  }]
-  
-  treeData.value = addIconName(res)
-  setTimeout(() => {
+  defHttp.get({ url: api.tree }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      treeData.value = addIconName(JSON.parse(JSON.stringify(res.result)) || [])
+    } else {
+      message.warning(res.message)
+    }
     spinning.value = false
-  },500)
-  
+  })
 }
 
 /**
@@ -423,9 +369,8 @@ function onSelectTreeNode(keys, e) {
   selectedKeys.value = []
   selectedNode.value = {}
   let record = e.node.dataRef
-  // console.log('rere',record)
   let firstLevel = treeData.value[0].key
-  if (record.key !== firstLevel && record.children) {
+  if (record.key !== firstLevel && record.parentId == firstLevel) {
     let modal = cModal({
       title: '添加收费条目',
       width: 600,
@@ -436,6 +381,7 @@ function onSelectTreeNode(keys, e) {
           let _result = await res.handleOk()
           if (_result) {
             modal.destroy()
+            initData()
           }
         }
       }
@@ -443,9 +389,37 @@ function onSelectTreeNode(keys, e) {
   } else if (record.key !== firstLevel && !record.children) {
     selectedKeys.value = [record.key]
     selectedNode.value = record
-    // todo 查询
-    
+    loadSfxxx(record.value)
   }
+}
+
+/**
+ * 加载详细信息
+ * @param sfxbh
+ */
+function loadSfxxx(sfxbh: string) {
+  return new Promise((resolve) => {
+    formSpinning.value = true
+    let url = api.queryBySfxbh
+    if (formRef.value) {
+      formRef.value.resetFields()
+    }
+    defHttp.get({ url: url, params: { sfxbh: sfxbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        let rec = JSON.parse(JSON.stringify(res.result.bdcSfConfig))
+        rec.sfjm = rec.sfjm ? rec.sfjm + '' : null
+        rec.jmfs = rec.jmfs ? rec.jmfs + '' : null
+        sxtjxx.value = res.result.bdcSfConfigsxList
+        if (rec.djlx) {
+          rec.djlx = rec.djlx.split('|')
+        }
+        formState.value = rec
+      } else {
+        message.warning(res.message)
+      }
+      formSpinning.value = false
+    })
+  })
 }
 
 /**
@@ -483,21 +457,47 @@ function handleSubmit() {
     .validate()
     .then(() => {
       if (validateTable()) {
-        console.log('formState',formState.value)
+        let _formState = JSON.parse(JSON.stringify(formState.value))
+        _formState.djlx = _formState.djlx.join('|')
+        _formState.sfxbh = selectedNode.value.value
+        let sfxgy = getDictItemsByCode('sfxgy')
+        _formState.sfxgyname = sfxgy.find(item => item.description == _formState.sfxgy)?.label
+        let _sxtjxx = sxtjxx.value.map((item) => {
+          item.sfxbh = selectedNode.value.value
+          return item
+        })
+        let params = {
+          bdcSfConfig: _formState,
+          bdcSfConfigsxList: _sxtjxx
+        }
+        defHttp.put({ url: api.update, data: params }, { withToken: true }).then((res) => {
+          if (res && res.success) {
+            message.success('保存成功')
+            initData()
+            loadSfxxx(selectedNode.value.value)
+          } else {
+            message.warning(res.message)
+          }
+        })
       }
     })
   })
 }
 
 function validateTable() {
-  for (let i = 0; i < sxtjxx.value.length; i++) {
-    let record = sxtjxx.value[i]
-    let ruleColumn = columns.filter((column: any) => column.rules)
-    for (let j = 0; j < ruleColumn.length; j++) {
-      setInputStatus(ruleColumn[j], record)
-      if (record[ruleColumn[i].key+ 'Status'] == 'error') {
-        message.warning('请检查筛选条件填写')
-        return false
+  if (sxtjxx.value.length == 0) {
+    message.warning('请添加筛选条件')
+    return false
+  } else {
+    for (let i = 0; i < sxtjxx.value.length; i++) {
+      let record = sxtjxx.value[i]
+      let ruleColumn = columns.filter((column: any) => column.rules)
+      for (let j = 0; j < ruleColumn.length; j++) {
+        setInputStatus(ruleColumn[j], record)
+        if (record[ruleColumn[j].key+ 'Status'] && record[ruleColumn[j].key+ 'Status'] == 'error') {
+          message.warning('请检查'+ ruleColumn[j].title + '填写')
+          return false
+        }
       }
     }
   }
@@ -509,7 +509,14 @@ function validateTable() {
  */
 function handleDel() {
   let id = selectedNode.value.id
-  // todo 
+  defHttp.delete({ url: api.delete, params: { id: id } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      message.success(res.message)
+      reloadData()
+    } else {
+      message.warning(res.message)
+    }
+  })
 }
 
 /**
@@ -519,9 +526,16 @@ function handleDel() {
  */
 function handleDelSxtj(record, index) {
   if (record.id) {
-    // todo
+    defHttp.delete({ url: api.delSxtj, params: { id: record.id } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        message.success(res.message)
+        sxtjxx.value.splice(index, 1)
+      } else {
+        message.warning(res.message)
+      }
+    })
   } else {
-    sxtjxx.value.splice(index, 1)
+     sxtjxx.value.splice(index, 1)
   }
 }
 

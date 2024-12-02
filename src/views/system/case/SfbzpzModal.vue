@@ -17,6 +17,8 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
 
 let spinning = ref<boolean>(false)
 //
@@ -42,8 +44,9 @@ watch(() => props.formData, (val: any) => {
   immediate: true,
   deep: true
 })
+
 enum api {
-  add = ''
+  add = '/api/zrzy-bdc/bdc/sfconfig/add'
 }
 
 function handleOk() {
@@ -51,7 +54,15 @@ function handleOk() {
     formRef.value
     .validate()
     .then(() => {
-      console.log('formState',formState.value)
+      defHttp.post({ url: api.add, data: formState.value }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          resolve(true)
+          message.success('添加成功')
+        } else {
+          resolve(false)
+          message.success('添加失败')
+        }
+      })
     })
   })
 }
