@@ -275,6 +275,45 @@ export function register(demoRefs: any, loading: any, params: any) {
     message.success("记载失败")
   })
 }
+
+/**
+ * 归档页保存
+ * @param params 
+ * @returns 
+ */
+export function savaGd(demoRefs: any, loading: any, params: any) {
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh?.toString()
+  return new Promise((resolve, reject) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdc/yw/addGd',
+      params: { slbh: slbh }
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}
+export function baseGd(demoRefs: any, loading: any, params: any) {
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh?.toString()
+  const taskId = route.query.taskId?.toString()
+  return new Promise((resolve, reject) => {
+    defHttp.get({
+      url: '/api/zrzy-bdc/bdc/process/complete',
+      params: { slbh: slbh, taskId: taskId }
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}
 /**
  * 根据受理编号设置权利其他情况
  * @param viewData

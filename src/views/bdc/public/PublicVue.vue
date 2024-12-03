@@ -30,13 +30,13 @@
               </component>
             </template>
             <template v-if="qlr">
-               <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc"></qlr-list>
+              <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc"></qlr-list>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
         <div v-if="showFilePanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
-        <div v-if="showFilePanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }" >
+        <div v-if="showFilePanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }">
           <div style="width: 100%; height: 100%">
             <SsoFile :manage="isManage" />
           </div>
@@ -53,7 +53,7 @@ import { useRoute } from 'vue-router'
 import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { getMultipleRef} from "/@/views/bdc/public/bdc"
+import { getMultipleRef } from "/@/views/bdc/public/bdc"
 import { cModal } from "/@/components/cModal/index"
 import eventBus from "/@/views/bdc/djlc/eventBus"
 import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
@@ -156,7 +156,8 @@ function handleResize() {
 function getFormConfig() {
   let slbh = route.query.slbh
   let jdid = route.query.nodeId
-  defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid } }, { withToken: true }).then((res) => {
+  let taskId = route.query.taskId
+  defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid, taskId: taskId } }, { withToken: true }).then((res) => {
     if (res && res.code == 200) {
       formConfig.value = res.result
       Object.keys(btnList.value).forEach((key) => {
@@ -304,13 +305,13 @@ function onChangeQlrShow(value) {
  * @param value
  */
 function onPreviewFile(value) {
-  if(value) {
+  if (value) {
     previewFile.value = true
-    if(rightWidth.value < 900) {
+    if (rightWidth.value < 900) {
       rightWidth.value = 900
       leftWidth.value = containerWidth - 910
     }
-    
+
   } else {
     previewFile.value = false
     rightWidth.value = 350
@@ -323,7 +324,7 @@ function onPreviewFile(value) {
  * @param value
  */
 function onShowFile(manage) {
-  if(!showFilePanel.value) {
+  if (!showFilePanel.value) {
     rightWidth.value = 350
     leftWidth.value = containerWidth - 360
   } else {
