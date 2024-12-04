@@ -10,7 +10,7 @@ enum api {
   // getTokenApi = '/api/auth/oauth/token',
   getTokenApiTyyw = '/tyyw/auth/oauth/token',
   getTokenApi = '/api/zrzy-system/api/v1/auth/authorization',
-  // getUserInfoApi = '/api/sys/zrzy-usermanager-biz/user/info',//旧，未使用
+  getUserInfoApi = '/api/zrzy-system/sys/v1/user/getUserInfo',//旧，未使用
   // licenseApi = '/onemap/zrzy-om-licence/licence',
   // getDictApi = '/magicapi/zrzy-om-sjsw/magic/wlgz/dic/list',//旧，未使用
 }
@@ -75,30 +75,21 @@ export function loginApi(params: LoginParams) {
  * @description: 得到用户信息
  */
 export function getUserInfo() {
-  // return new Promise((resolve) => {
-  //   defHttp.get({ url: api.getUserInfoApi, }, { withToken: true }).then((res) => {
-  //     resolve({
-  //       username: res.sysUser.username,
-  //       realname: res.sysUser.realName,
-  //       id: res.sysUser.id,
-  //     })
-  //   }).catch((err => {
-  //     resolve(null)
-  //   }))
-  // })
-
   return new Promise((resolve) => {
-    let data = {
-      username: 'admin',
-      userId: '1',
-      realname: '管理员'
-    };
-    resolve(data)
+     defHttp.get({ url: api.getUserInfoApi }, { withToken: true }).then((res) => {
+        if (res && res.code == 200) {
+            resolve({
+                username: res.result.username,
+                userId: res.result.id,
+                realname: res.result.realName
+            })
+        } else {
+            resolve(null)
+        }
+    }).catch((err => {
+        resolve(null)
+    }))
   })
-  // defHttp.post('/api/data/sys/login', { 'username': 'admin', 'password': '123456', 'checkKey': '', 'captcha': '' }).then((res) => {
-  // })
-
-
 }
 /**
  * 获取数据字典
