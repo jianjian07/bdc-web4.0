@@ -1,6 +1,6 @@
 import { useUserStore } from "/@/store/modules/user"
 import { getFormInfo, saveFormData, saveHandleData, setValidateInfos, validateInfos } from "/@/utils/form/wonder1.0.1"
-import { message } from "ant-design-vue"
+import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
@@ -256,23 +256,54 @@ export function print(params: { code: string }) {
 }
 
 /**
- * 记载登记簿
+ * 记载登记簿 支持重复记载
  * @param params 
  * @returns 
  */
 export function register(demoRefs: any, loading: any, params: any) {
-
   const route = router.currentRoute.value;
-  const slbh = route.query.slbh?.toString()
+  const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
+  const cType = params.cType == null ? '1' : params.cType
   // loading.value = true
+  defHttp.get({
+    url: '/api/zrzy-bdc/bdc/register/isRegister',
+    params: { slbh: slbh }
+  }, { withToken: true }
+  ).then((res: any) => {
+    if (res.success) {
+      djb(slbh, cType);
+    } else {
+      if (res.result == '-1') {
+        message.error(res.message)
+      } else {
+        Modal.confirm({
+          title: res.message + ",确定要重复记载吗？",
+          content: '受理编号：' + slbh,
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            djb(slbh, "0");
+          },
+          onCancel() {
+          },
+        });
+      }
+    }
+  }).catch((error: any) => {
+    message.success("记载失败" + error)
+  })
+}
+//登记簿逻辑
+function djb(slbh: string, cType: string) {
   defHttp.post({
     url: '/api/zrzy-bdc/bdc/register/saveRegister',
-    params: { slbh: slbh }
+    params: { slbh: slbh, cType: cType }
   }, { withToken: true }
   ).then((res: any) => {
     message.success(res.message)
   }).catch((error: any) => {
-    message.success("记载失败")
+    message.success("记载失败" + error)
   })
 }
 

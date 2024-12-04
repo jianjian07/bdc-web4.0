@@ -8,7 +8,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="8" :offset="0">
-                    <a-form-item label="案卷编号">
+                    <a-form-item label="受理编号">
                         <a-input v-model:value="formData.id" />
                     </a-form-item>
                 </a-col>
@@ -61,7 +61,9 @@
                                 <a-divider type="vertical" />
                             </template>
                             <a @click="handleCase(record)">办理</a>
-                            <a>移交</a>
+
+                            <a v-if="record.taskName == '收件'"
+                                @click="handleDelete(record.slbh, record.bpmBdcTitle)">删除</a>
                         </a-space>
                     </template>
                 </template>
@@ -72,12 +74,14 @@
 
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
-import { ref } from 'vue';
-import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined } from '@ant-design/icons-vue';
+import { ref, createVNode } from 'vue';
+import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
+import { Modal, message } from "ant-design-vue";
 enum api {
     // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
-    tasklist = '/api/zrzy-bdc/act/task/list'
+    tasklist = '/api/zrzy-bdc/act/task/list',
+    delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData"
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -86,7 +90,7 @@ const columns = [
     { title: "任务id", dataIndex: "taskId", align: "center" },
     { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 100 },
     { title: "案卷名称", dataIndex: "bpmBdcTitle", align: "center", key: "bpmBdcTitle" },
-    { title: "案卷编号", dataIndex: "slbh", align: "center" },
+    { title: "受理编号", dataIndex: "slbh", align: "center" },
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },
     { title: "时长", dataIndex: "durationStr", align: "center" },
@@ -145,7 +149,36 @@ function clear() {
  */
 function handleCase(record: any) {
     router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
-    // router.push("/bdc/casedoing" + '/' + record.id)
+}
+/**
+ * 删除
+ * @param slbh 
+ */
+function handleDelete(slbh: string, ajmc: string) {
+    Modal.confirm({
+        title: '确定要删除该案卷吗?',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '案卷名称：' + ajmc,
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+            defHttp.delete(
+                { url: api.delUrl, params: { slbh: slbh } }, { withToken: true }
+            ).then((res: any) => {
+                if (res?.success) {
+                    message.success('删除成功！')
+                    loadData()
+                } else {
+                    message.warning(res?.message)
+                }
+            })
+        },
+        onCancel() {
+        },
+    });
+
+
 }
 </script>
 

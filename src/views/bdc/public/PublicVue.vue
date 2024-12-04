@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;">
-    <div class="title">{{ formConfig.ajmc }}</div>
+    <div class="title">{{ formConfig.ajmc }}（{{ jdmc }}）</div>
     <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
@@ -345,7 +345,8 @@ function onShowFile(manage) {
   padding-left: 10px;
   letter-spacing: 0.1em;
   color: #fff;
-  font-weight: 600;
+  // font-weight: 600;
+  font-size: 16px;
 }
 
 .form-content-spin {
