@@ -49,19 +49,19 @@ const columns = [
     },
     {
         title: '案卷名称',
-        dataIndex: 'SLMC',
-        key: 'SLMC',
+        dataIndex: 'ajmc',
+        key: 'ajmc',
     },
     {
         title: '创建时间',
         dataIndex: 'slsj',
         key: 'slsj',
     },
-    {
-        title: '当前环节',
-        dataIndex: 'SLRQ',
-        key: 'SLRQ',
-    },
+    // {
+    //     title: '当前环节',
+    //     dataIndex: 'SLRQ',
+    //     key: 'SLRQ',
+    // },
     {
         title: '操作',
         key: 'action'
