@@ -43,7 +43,6 @@ import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 const CNotice = defineAsyncComponent(() => import("/@/views/layouts/default/header/Notice.vue"));
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
-debugger
 const { toggleShowTabs } = useTabsSetting()
 /**
  * 退出

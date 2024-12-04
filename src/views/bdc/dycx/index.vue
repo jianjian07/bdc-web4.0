@@ -1,6 +1,6 @@
 <template>
   <div class="bdc-dycx">
-    <div class="bdc-dycx-search">
+    <div class="bdc-dycx-search" v-if="isShowSearch">
       <a-form layout="inline">
         <a-form-item :model="formState" label="不动产单元号">
           <a-input v-model:value="formState.bdcdyh" placeholder="请输入不动产单元号"></a-input>
@@ -10,25 +10,27 @@
         </a-form-item>
       </a-form>
     </div>
-    <div class="bdc-dycx-main">
+    <div :class="isShowSearch ? 'bdc-dycx-main' : 'bdc-dycx-main-no-search'">
       <h2 style="text-align: center;margin-bottom: 20px">不动产单元查询</h2>
       <a-spin :spinning="spinning">
-        <a-timeline class="time-line" mode="alternate">
+        <a-timeline class="time-line" mode="left" style="margin-left: 50%">
           <a-timeline-item class="time-line-start" position="right">
             <template #dot>
               <div class="slot-dot-start">登记情况</div>
             </template>
-            <span style="font-weight: bold">{{ bdcdyh }}</span>
+            <span style="font-weight: bold;position: absolute;left: -310px;">{{ bdcdyh }}</span>
           </a-timeline-item>
-          <a-timeline-item style="height: 40px">
-            <template #dot>至今</template>
+          <a-timeline-item style="height: 50px">
+            <template #dot><span style="font-weight: bold">至今</span></template>
           </a-timeline-item>
-          <a-timeline-item v-for="(item,index) in hisData" :color="index==0 ?'green' : 'blue'">
-            <span :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', textDecoration: 'underline'}">{{ item.djlb }}</span>
-            <span style="margin-left: 10px">{{ item.djsj }}</span>
-            <br/>
-            <span>证号：{{ item.ybdcqzh }}</span>
-            <span style="margin-left: 10px">业务号：{{ item.ywh }}</span>
+          <a-timeline-item v-for="(item,index) in hisData" :color="index == 0 ?'green' : 'blue'">
+            <span style="position: absolute;left: -165px;">{{ item.djsj }}</span>
+            <div style="padding-bottom: 10px">
+              <span :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px',textDecoration: 'underline'}">{{ item.djlb }}</span>
+               <br/>
+              <span>证号：{{ item.ybdcqzh }}</span><span style="margin-left: 10px">业务号：{{ item.ywh }}</span>
+            </div>
+           
           </a-timeline-item>
         </a-timeline>
       </a-spin>
@@ -126,6 +128,15 @@ function sortByTime(arr, key) {
     }
   }
   
+  .bdc-dycx-main-no-search {
+    height: 100%;
+    overflow: auto;
+    
+    :deep(.ant-spin-nested-loading) {
+      height: calc(100% - 50px);
+    }
+  }
+  
   .time-line-start {
     height: 70px;
     padding-right: 60px;
@@ -133,11 +144,13 @@ function sortByTime(arr, key) {
   }
   
   .slot-dot-start {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     border: 2px solid #e8e8e8;
     border-radius: 50%;
-    line-height: 66px;
+    line-height: 76px;
+    font-weight: bold;
+    font-size: 16px;
   }
 }
 </style>
