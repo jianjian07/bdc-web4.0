@@ -146,7 +146,8 @@ function getMaxMiddleBtnCount() {
 async function handleClick(btn) {
   if (btn.funName && bdc[btn.funName]) {
     checkDemoRefs()
-    let _bdc: any = bdc //  定义 不然打包后eval获取不到
+    let _bdc: any = bdc //  定义 
+    console.log('_bdc',_bdc) // 需要输出被用到一次 不然打包后eval获取不到
     // 修正非 JSON 格式字符串
     let correctedBz = btn.bz
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号

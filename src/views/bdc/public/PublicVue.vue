@@ -116,6 +116,12 @@ const component = (path: string) => {
     return null
   }
 }
+
+// 配置按钮调用的方法 
+const publicVueFun = {
+  openList
+}
+
 enum api {
   getFlowConfig = '/api/zrzy-bdc/flow/vue/getFlowConfig',
 }
@@ -180,12 +186,14 @@ async function handleClick(btn) {
   if (btn.funName) {
     checkDemoRefs()
     // 修正非 JSON 格式字符串
+    let _publicFun = publicVueFun // 定义打包识别方法
+    console.log('_publicFun',_publicFun) // 需要输出被用到一次 不然打包后eval获取不到
     let correctedBz = btn.bz
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
     let _params = `(demoRefs,spinning${params ? (',' + JSON.stringify(params)) : params})`
-    await eval(`${btn.funName}` + _params)
+    await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }
 
