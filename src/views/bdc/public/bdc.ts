@@ -433,12 +433,12 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any) {
  */
 function manageQLQT(qlqtConfig: any, viewData: any) {
   // 获取未赋值的占位符，从表单数据中赋值
-  let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/gm //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
+  // let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/gm //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
   // let reg = /(?<=\[)\S+(?=\])/gm //匹配中括号，返回结果不包括中括号
+  let reg = /(?<=\$)\S+(?=\$)/gm //匹配$***$，返回结果不包括$
   let qlqtmatch = qlqtConfig.match(reg)
   if (qlqtmatch) {
-    qlqtConfig = qlqtConfig.replace('[', '')
-    qlqtConfig = qlqtConfig.replace(']', '')
+    qlqtConfig = qlqtConfig.replaceAll('$', '')
     qlqtmatch.forEach((value) => {
       // 获取表名及字段名
       let arr = value.split('.')
@@ -446,7 +446,7 @@ function manageQLQT(qlqtConfig: any, viewData: any) {
         let realValue = viewData.value[arr[2]][arr[3]] ? viewData.value[arr[2]][arr[3]] : ''
         qlqtConfig = qlqtConfig.replace(value, realValue)
       } else {
-        console.log('占位符格式不正确！应为viewData.value.[表名].[字段名]，如有单位，中间请空格')
+        console.log('占位符格式不正确！应为 $viewData.value.[表名].[字段名]$')
       }
 
     })

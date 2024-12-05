@@ -30,7 +30,6 @@
       :row-key="record => record.id"
       size="small"
       class="userTable"
-      :scroll="{y: 'calc(100% - 10px)'}"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operation'">
@@ -70,9 +69,7 @@ const columns = [
     title: '已发生的登记',
     align: 'center',
     dataIndex: 'yblcmc',
-    sorter: {
-      compare: (a, b) => a.yblcmc - b.yblcmc,
-    },
+    sorter: true,
     customCell: (record, index) => {
       const obj:any = {
         rowSpan: 0
@@ -275,10 +272,16 @@ function onSelectChange(selectedRowKeys: any) {
 
 };
 
-function handleTableChange(pag:any) {
-  pagination.value.current = pag.current
-  pagination.value.pageSize = pag.pageSize
-  loadData()
+function handleTableChange(pagination, filters, sorter) {
+  if (sorter.order) {
+    dataList.value = dataList.value.sort((a, b) => {
+      if (sorter.order === 'ascend') {
+        return a.yblcmc.localeCompare(b.yblcmc)
+      } else {
+        return b.yblcmc.localeCompare(a.yblcmc)
+      }
+    });
+  }
 }
 
 </script>

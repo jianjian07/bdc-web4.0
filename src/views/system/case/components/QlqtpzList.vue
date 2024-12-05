@@ -6,7 +6,7 @@
         新增
       </a-button>
     </div>
-    <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination" @change="handleTableChange" size="small">
+    <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination" @change="handleTableChange" size="small" class="userTable">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'qllx'">
           <a-input :value="getLabelByCode('qllx', record.qllx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
@@ -62,7 +62,10 @@ const columns = [
     title: '权利类型',
     dataIndex: 'qllx',
     align: 'center',
-    width: 400
+    width: 400,
+    sorter: {
+      compare: (a, b) => a.qllx - b.qllx,
+    },
   },
   {
     title: '一本证',
@@ -93,7 +96,7 @@ const columns = [
 const pagination = ref<any>({ 
   total: 0,
   current: 1,
-  pageSize: 10,
+  pageSize: 100,
   showSizeChanger: false, 
   showTotal: (total: Number) => `共 ${total} 条数据` 
 })
@@ -249,9 +252,19 @@ function transformOptions(data: any) {
 
 .QlqtpzList {
   padding: 0 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   .oprBtns {
+    display: flex;
+    justify-content: flex-end;
     padding-bottom: 10px;
     text-align: right;
+  }
+
+  .userTable {
+    flex: 1;
+    overflow-y: hidden;
   }
 }
 </style>
