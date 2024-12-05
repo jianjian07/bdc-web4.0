@@ -115,6 +115,7 @@ let cmOptions = ref({
     lineWiseCopyCut: true,
     gutters: ["CodeMirror-lint-markers"],
     lint: false,
+    autoRefresh: true,
   })
 
 const cmRef = ref<CmComponentRef>();
@@ -154,7 +155,7 @@ onMounted(() => {
   }, 10)
 })
 
-const onChange = (val: string, cm: Editor) => {
+const onChange = (val: string) => {
   if(val) {
     cmOptions.value.lint = true
   } else {
@@ -218,11 +219,11 @@ const onChange = (val: string, cm: Editor) => {
     color: black;
     width: 20px;
     height: 20px;
-    line-height: 24px;
+    line-height: 20px;
     background-color: white;
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: 1px;
+    right: 1px;
     z-index: 9;
     cursor: pointer;
     transition: opacity 0.3s;
@@ -250,8 +251,8 @@ const onChange = (val: string, cm: Editor) => {
     z-index: 1000;
 
     .full-screen-icon {
-      top: 12px;
-      right: 12px;
+      top: 11px;
+      right: 11px;
       text-align: center;
     }
 
