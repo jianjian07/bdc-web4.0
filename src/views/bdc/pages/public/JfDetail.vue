@@ -153,7 +153,7 @@ function initData() {
 function getYjje() {
   let jfje = 0
   jfxx.value.forEach(item => {
-    jfje += item.yse
+    jfje += item.yse || 0
   })
   emit('getYjje',jfje)
   return jfje
@@ -177,6 +177,7 @@ function handleDel(record, index) {
     defHttp.get({ url: api.del, params: { id: record.id } }, { withToken: true }).then((res) => {
       if (res) {
         jfxx.value.splice(index, 1)
+        getYjje()
         message.success('删除成功')
       } else {
         message.error('删除失败')
@@ -184,6 +185,7 @@ function handleDel(record, index) {
     })
   } else {
     jfxx.value.splice(index, 1)
+    getYjje()
   }
 }
 
