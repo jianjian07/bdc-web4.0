@@ -22,7 +22,7 @@
             </div>
           </template>
           <template v-else-if="column.dict">
-            {{ getDictItemsByCode(column.dict).find(f => f.value == record[column.key]).label }}
+            {{ getDictItemsByCode(column.dict).find(f => f.value == record[column.key])?.label }}
           </template>
         </template>
       </a-table>
@@ -104,6 +104,13 @@ enum api {
 // 操作栏按钮
 let actionBtnList = ref<any>([])
 
+const fun = {
+  handleJtcy,
+  handleDel,
+  handleLook,
+  handleEdit
+}
+
 onMounted(() => {
   initData()
   initBtnList()
@@ -162,7 +169,8 @@ function initData() {
  * @param record
  */
 function handleFun(name, record) {
-  eval(`${name}(record)`)
+  console.log('fun',fun) // 防止打包被移除
+  eval(`fun['${name}'](record)`)
 }
 
 /**
@@ -256,6 +264,10 @@ function handleEdit(record) {
       }
     }
   })
+}
+
+function handleJtcy() {
+  
 }
 
 /**
