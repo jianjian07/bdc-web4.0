@@ -313,12 +313,16 @@ function updateFormDatas(formRes, params?: any) {
     return new Promise((resolve) => {
         const url = "/api/zrzy-form/generate/update"
         const query = router.currentRoute.value.query
+        let param = { ...query, ...params }
+        if (param.ywh && param.slbh) {
+            param.slbh = param.ywh
+        } 
         // code: 'demo1'
         defHttp.post({
             url: url,
             data: {
                 formId: formRes.formId ? formRes.formId : 14,
-                param: { ...query, ...params },
+                param: param,
                 // param: { slbh: query.slbh ? query.slbh : 'QG1-20221434' },
                 formData: formRes.data,
             }
