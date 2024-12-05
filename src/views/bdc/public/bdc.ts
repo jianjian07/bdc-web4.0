@@ -515,3 +515,93 @@ export function validateQlbl(validateKey, qlrList, value) {
     setValidateInfos(validateKey, 'validating', '');
   }
 }
+
+/**
+ * 通过业务号删除数据
+ * @param ywh
+ */
+export function delDataByYwh(ywh) {
+  return new Promise((resolve) => {
+    defHttp.delete({ 
+      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      params: { type: 2 }, 
+      data: { ywh: ywh }
+    }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          message.success('删除成功')
+          resolve(true)
+        } else {
+          message.error('删除失败')
+          resolve(false)
+        }
+    })
+  })
+}
+
+/**
+ * 通过受理编号删除数据
+ * @param slbh
+ */
+export function delDataBySlbh(slbh) {
+  return new Promise((resolve) => {
+    defHttp.delete({ 
+      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      params: { type: 1 }, 
+      data: { slbh: slbh }
+    }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          message.success('删除成功')
+          resolve(true)
+        } else {
+          message.error('删除失败')
+          resolve(false)
+        }
+    })
+  })
+}
+
+/**
+ * 通过受理编号和幢编码删除数据
+ * @param slbh
+ * @param zbm
+ */
+export function delDataBySlbhZbm(slbh, zbm) {
+  return new Promise((resolve) => {
+    defHttp.delete({ 
+      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      params: { type: 3 }, 
+      data: { slbh: slbh, zbm: zbm }
+    }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          message.success('删除成功')
+          resolve(true)
+        } else {
+          message.error('删除失败')
+          resolve(false)
+        }
+    })
+  })
+}
+
+/**
+ * 通过受理编号和不动产单元号删除数据
+ * @param slbh
+ * @param bdcdyh
+ */
+export function delDataBySlbhBdcdyh(slbh, bdcdyh) {
+  return new Promise((resolve) => {
+    defHttp.delete({ 
+      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      params: { type: 4 }, 
+      data: { slbh: slbh, bdcdyh: bdcdyh }
+    }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          message.success('删除成功')
+          resolve(true)
+        } else {
+          message.error('删除失败')
+          resolve(false)
+        }
+    })
+  })
+}
