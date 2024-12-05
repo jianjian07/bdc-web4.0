@@ -249,7 +249,7 @@ export function print(params: { code: string }) {
   // let domain = window._CONFIG['domianURL']
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
-  let domain = 'http://192.168.27.87:7004/zrzy-form/'
+  let domain = `${window.settingConfig.printDomain}/zrzy-form/`
   let url = `${domain}jmreport/view/${params.code}`
   url += `?slbh=${slbh}`
   window.open(url, '_blank')

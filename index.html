@@ -11,6 +11,22 @@
 <body>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
+  <script>
+    let xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.open("GET", "/static/setting.json?timestamp=" + new Date().getTime());
+    xhr.send();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          window.settingConfig = xhr.response
+            console.log(' xhr.response', xhr.response)
+        } else {
+          alert('setting配置读取失败！')
+        }
+      }
+    }
+  </script>
 </body>
 
 </html>
