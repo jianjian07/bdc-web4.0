@@ -189,6 +189,7 @@
           </div>
         </template>
       </a-directory-tree>
+      <a-empty v-else description="暂无材料信息" />
     </div>
     <div v-if="filePreview" class="filePreview">
       <div class="oprBtns">

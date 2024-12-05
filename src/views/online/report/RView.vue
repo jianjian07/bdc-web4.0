@@ -15,6 +15,7 @@ import {
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
 import { message } from 'ant-design-vue';
+import { router } from "/@/router";
 const VNodes = useVNodes();
 const props = defineProps({
     id: {
@@ -141,6 +142,7 @@ const generateVue3 = defineComponent({
             loading,
             ...events,
             defHttp,
+            router,
             editableData,
             search,
             handleTableChange,

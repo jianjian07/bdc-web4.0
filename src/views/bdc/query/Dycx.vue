@@ -31,7 +31,7 @@
                 :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline' }">{{
       item.djlb }}</span>
               <br />
-              <span>证号：{{ item.ybdcqzh }}</span><span style="margin-left: 10px">业务号：{{ item.ywh }}</span>
+              <span>证号：{{ item.bdcqzh }}</span><span style="margin-left: 10px">业务号：{{ item.ywh }}</span>
             </div>
 
           </a-timeline-item>
