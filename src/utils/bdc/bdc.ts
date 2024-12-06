@@ -8,7 +8,7 @@ import { guid } from "..";
  */
 export function extractData(options: any) {
     const route = router.currentRoute.value;
-    const { data, dtype, open, reload } = options
+    const { data, dtype, open, reload, regType, ywlx } = options
     const slbh = route.query.slbh?.toString()
     let dyhList: any = []
 
@@ -16,12 +16,20 @@ export function extractData(options: any) {
         const dyh = data[index];
         dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm })
     }
+    let lcid = "";
+    switch (regType) {
+        case '0101':
+            lcid = "1780060462306840577"
+            break;
+        case '0102':
+            lcid = "1780060462306840577"
+            break;
+    }
     let _data: any =
     {
-        "djdl": "CQ",
+        "ywlx": ywlx,
         "slbh": slbh,
-        "ywlx": "3",
-        "lcid": "1780060462306840577",
+        "lcid": lcid,
         "dyhList": dyhList
     }
     defHttp.post({

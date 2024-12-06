@@ -20,7 +20,16 @@
 
         <div style="width: 100%;background-color: #fff;margin-left:8px;">
             <a-table :columns="columns" :data-source="dataSource" style="width: 100%;">
-
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'action'">
+                        <a-space>
+                            <template #split>
+                                <a-divider type="vertical" />
+                            </template>
+                            <a @click="handleDelete(record.slbh, record.ajmc)">删除</a>
+                        </a-space>
+                    </template>
+                </template>
             </a-table>
         </div>
 
@@ -28,13 +37,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h } from "vue";
+import { ref, h, createVNode } from "vue";
 import CLCLB from "/@/views/components/LCLB.vue"
 import { defHttp } from "/@/utils/http/axios";
-import { ArrowRightOutlined } from '@ant-design/icons-vue';
+import { ArrowRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { addFlow } from "../utils/case";
+import { Modal, message } from "ant-design-vue";
 enum api {
-    getProcessList = "/api/zrzy-bdc/bdc/slsq/list"
+    getProcessList = "/api/zrzy-bdc/bdc/slsq/list",
+    delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData"
 }
 // 案卷编号
 // 案卷名称
@@ -57,13 +68,9 @@ const columns = [
         dataIndex: 'slsj',
         key: 'slsj',
     },
-    // {
-    //     title: '当前环节',
-    //     dataIndex: 'SLRQ',
-    //     key: 'SLRQ',
-    // },
     {
         title: '操作',
+        with: 180,
         key: 'action'
     }
 ]
@@ -73,14 +80,13 @@ let pagination = ref({
     current: 1,
     pageSize: 10,
 })
-a()
-function a() {
+loadData()
+function loadData() {
     defHttp.post({ url: api.getProcessList, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
         dataSource.value = res.result.records
     })
 }
 let processInfo: any = ref('')
-
 /**
  * 选中流程事件
  * @param process 选中的流程
@@ -88,6 +94,9 @@ let processInfo: any = ref('')
 function onSelect(process: any) {
     processInfo.value = process
 }
+/**
+ * 创建流程
+ */
 function handleAdd() {
     // 跳转至创建流程页面
     const params = {
@@ -96,6 +105,34 @@ function handleAdd() {
         processKey: processInfo.value.value
     }
     addFlow(params)
+}
+/**
+ * 删除
+ * @param slbh 
+ */
+function handleDelete(slbh: string, ajmc: string) {
+    Modal.confirm({
+        title: '确定要删除该案卷吗?',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '案卷名称：' + ajmc,
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+            defHttp.delete(
+                { url: api.delUrl, params: { slbh: slbh } }, { withToken: true }
+            ).then((res: any) => {
+                if (res?.success) {
+                    message.success('删除成功！')
+                    loadData()
+                } else {
+                    message.warning(res?.message)
+                }
+            })
+        },
+        onCancel() {
+        },
+    });
 }
 </script>
 

@@ -54,7 +54,6 @@ import { extractData } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
-import { cModal } from "/@/components/cModal/index"
 import eventBus from "/@/views/bdc/djlc/eventBus"
 import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
 const modules = import.meta.glob('/src/**/*.vue')
@@ -75,6 +74,7 @@ let btnList = ref<any>({
   center: [],
   right: []
 })
+let regType = ref("")
 // 表单内配置按钮
 let formBtnList = ref<any>([])
 // 表单列表
@@ -174,6 +174,7 @@ function getFormConfig() {
       jdmc.value = formConfig.value.jdmc || '收件'
       let qlrxx = Array.isArray(formConfig.value.qlrxx) ? formConfig.value.qlrxx : [formConfig.value.qlrxx]
       qlr.value = formConfig.value.qlrxx ? qlrxx : []
+      regType.value = res.result.regType
     }
   })
 }
@@ -187,7 +188,7 @@ async function handleClick(btn) {
     checkDemoRefs()
     // 修正非 JSON 格式字符串
     let _publicFun = publicVueFun // 定义打包识别方法
-    console.log('_publicFun',_publicFun) // 需要输出被用到一次 不然打包后eval获取不到
+    console.log('_publicFun', _publicFun) // 需要输出被用到一次 不然打包后eval获取不到
     let correctedBz = btn.bz
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
@@ -200,6 +201,7 @@ async function handleClick(btn) {
 /**数据提取 start */
 let eType = ref('')
 let formId = ref('0')
+let ywlx = ref('1')
 /**
  * 数据提取通用弹框接口
  * @param demoRefs 
@@ -210,6 +212,7 @@ function openList(demoRefs, spinning, params?: any) {
   const { vtype, reportId } = params
   eType.value = vtype != undefined ? vtype : ''
   formId.value = reportId != undefined ? reportId : ''
+  ywlx.value = params.ywlx != undefined ? params.ywlx : '1'
   open.value = true
 }
 // ref实例
@@ -239,6 +242,8 @@ let reload = ref("")
 function onReload(obj: any) {
   obj.open = open
   obj.reload = reload
+  obj.regType = regType.value
+  obj.ywlx = ywlx.value
   extractData(obj)
 }
 /**数据提取 end */

@@ -19,7 +19,7 @@
             <a-input v-model:value="flowInfo.xslx" />
         </a-form-item>
         <a-form-item label="国标登记类型">
-            <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('djlx')" />
+            <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('gbdjlx')" />
         </a-form-item>
         <a-form-item label="是否补录流程">
             <a-switch v-model:checked="flowInfo.bllc" />

@@ -258,6 +258,7 @@ export function print(params: { code: string }) {
 /**
  * 记载登记簿 支持重复记载
  * @param params 
+ * cType为0不生成证号
  * @returns 
  */
 export function register(demoRefs: any, loading: any, params: any) {
@@ -522,18 +523,18 @@ export function validateQlbl(validateKey, qlrList, value) {
  */
 export function delDataByYwh(ywh) {
   return new Promise((resolve) => {
-    defHttp.delete({ 
+    defHttp.delete({
       url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
-      params: { type: 2 }, 
+      params: { type: 2 },
       data: { ywh: ywh }
     }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          message.success('删除成功')
-          resolve(true)
-        } else {
-          message.error('删除失败')
-          resolve(false)
-        }
+      if (res && res.success) {
+        message.success('删除成功')
+        resolve(true)
+      } else {
+        message.error('删除失败')
+        resolve(false)
+      }
     })
   })
 }
@@ -544,18 +545,18 @@ export function delDataByYwh(ywh) {
  */
 export function delDataBySlbh(slbh) {
   return new Promise((resolve) => {
-    defHttp.delete({ 
+    defHttp.delete({
       url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
-      params: { type: 1 }, 
+      params: { type: 1 },
       data: { slbh: slbh }
     }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          message.success('删除成功')
-          resolve(true)
-        } else {
-          message.error('删除失败')
-          resolve(false)
-        }
+      if (res && res.success) {
+        message.success('删除成功')
+        resolve(true)
+      } else {
+        message.error('删除失败')
+        resolve(false)
+      }
     })
   })
 }
@@ -567,18 +568,18 @@ export function delDataBySlbh(slbh) {
  */
 export function delDataBySlbhZbm(slbh, zbm) {
   return new Promise((resolve) => {
-    defHttp.delete({ 
+    defHttp.delete({
       url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
-      params: { type: 3 }, 
+      params: { type: 3 },
       data: { slbh: slbh, zbm: zbm }
     }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          message.success('删除成功')
-          resolve(true)
-        } else {
-          message.error('删除失败')
-          resolve(false)
-        }
+      if (res && res.success) {
+        message.success('删除成功')
+        resolve(true)
+      } else {
+        message.error('删除失败')
+        resolve(false)
+      }
     })
   })
 }
@@ -590,18 +591,18 @@ export function delDataBySlbhZbm(slbh, zbm) {
  */
 export function delDataBySlbhBdcdyh(slbh, bdcdyh) {
   return new Promise((resolve) => {
-    defHttp.delete({ 
+    defHttp.delete({
       url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
-      params: { type: 4 }, 
+      params: { type: 4 },
       data: { slbh: slbh, bdcdyh: bdcdyh }
     }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          message.success('删除成功')
-          resolve(true)
-        } else {
-          message.error('删除失败')
-          resolve(false)
-        }
+      if (res && res.success) {
+        message.success('删除成功')
+        resolve(true)
+      } else {
+        message.error('删除失败')
+        resolve(false)
+      }
     })
   })
 }
