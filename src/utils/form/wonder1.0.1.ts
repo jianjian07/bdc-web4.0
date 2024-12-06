@@ -17,11 +17,15 @@ export async function getData(object1: { value: object }, formId?: number, param
     const url = '/api/zrzy-form/generate/select'
     // formId: 14, param: { DOC_NO: 'QG1-20221434' } }
     //formId: 1, param: { code: 'demo1' }
+    let _param = { ...query, ...params }
+    if (_param.slbh && _param.ywh) {
+        _param.slbh = _param.ywh
+    }
     await defHttp.post({
         url: url,
         data: {
             formId: formId ? formId : 14,
-            param: { ...query, ...params }
+            param: _param
         }
     },
         { withToken: true }).then((res) => {
