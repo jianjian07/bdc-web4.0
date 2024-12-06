@@ -191,11 +191,12 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
     if (find && find.validate) {
       let qlrData = find.data[0].BDC_QLR
       const newQlrData = {};
+      let qlrid = params.qlrid ? { qlrid: params.qlrid } : {}
       let _param = {
         ywh: params.ywh,
         slbh: params.slbh,
         qlrlb: params.qlrlb,
-        qlrid: params.qlrid
+        ...qlrid
       }
       for (const key in qlrData) {
         if (qlrData.hasOwnProperty(key)) {
@@ -303,6 +304,8 @@ function djb(slbh: string, cType: string) {
   }, { withToken: true }
   ).then((res: any) => {
     message.success(res.message)
+    // 刷新
+    router.push('/refresh')
   }).catch((error: any) => {
     message.success("记载失败" + error)
   })
@@ -605,4 +608,23 @@ export function delDataBySlbhBdcdyh(slbh, bdcdyh) {
       }
     })
   })
+}
+
+/**
+ * 获取缴费单位
+ * @param viewData
+ * @param fields
+ */
+export function getPayMan(viewData, tableName, field) {
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh?.toString()
+  if (!viewData.value[tableName][field]) {
+    defHttp.get({ url: '/api/zrzy-bdc/bdc/sf/getPayMan', params: { slbh: slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        viewData.value[tableName][field] = res.result
+      } else {
+        message.warning('获取缴费单位出错')
+      }
+    })
+  }
 }
