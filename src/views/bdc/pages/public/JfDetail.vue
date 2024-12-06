@@ -258,7 +258,7 @@ function validateTable() {
     let ruleColumn = columns.filter((column: any) => column.rules)
     for (let j = 0; j < ruleColumn.length; j++) {
       setInputStatus(ruleColumn[j], record)
-      if (record[ruleColumn[i].key+ 'Status'] == 'error') {
+      if (record[ruleColumn[j].key+ 'Status'] == 'error') {
         message.warning('请检查缴费信息填写')
         return false
       }
