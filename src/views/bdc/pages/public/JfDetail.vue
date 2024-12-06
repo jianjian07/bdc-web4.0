@@ -215,6 +215,7 @@ function handleChangeSfxbh(value, column, record) {
     record.sfjs = find.sffy
     record.sfxmc = find.sfxmc
   }
+  record.yse = (record.sl || 0) * (record.sfjs || 0) - (record.jme || 0)
   getYjje()
 }
 
