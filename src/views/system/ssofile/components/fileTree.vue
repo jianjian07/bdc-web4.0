@@ -235,9 +235,8 @@ const urlList = {
   defaultList: '/api/zrzy-bdc/casematerialConfig/listBySlbh', // 获取默认的附件目录
   addDefaultList: '/api/zrzy-bdc/bdcdj/upfiles/casematerial/addSelectMaterialList' //提取附件目录
 }
-
 const baseApi = ref(import.meta.env.VITE_GLOB_API_URL)
-const kkFileApi = ref(import.meta.env.VITE_KKFILE_URL)
+const kkFileApi = ref('')
 
 const props = defineProps({
   isManage: {
@@ -252,6 +251,7 @@ const props = defineProps({
 
 
 onMounted(() => {
+  kkFileApi.value = window.settingConfig.kkFileDomain
   loadFileList(true)
 })
 
