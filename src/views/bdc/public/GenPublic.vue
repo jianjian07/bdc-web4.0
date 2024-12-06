@@ -16,7 +16,10 @@ import { computed, defineAsyncComponent, onMounted, ref } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
-
+import { defHttp } from "/@/utils/http/axios"
+import { useRoute } from "vue-router"
+import { message } from "ant-design-vue"
+const route = useRoute();
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
 })
@@ -46,23 +49,25 @@ const props = defineProps({
 onMounted(() => {
   // console.log('弹窗表单',props.formData)
   showQlr.value = !! (props.formData.sfybz == '0')
+  if (showQlr.value) {
+     initQlrXx()
+  }
   resetValidateInfos()
-  initQlrXx()
 })
 
+/**
+ * 初始化权利人配置
+ */
 function initQlrXx() {
-  // todo
-  qlr.value = [{
-  "lcid": "1780060462306840577",
-  "djlx": "0101",
-  "qllx": "3",
-  "qlrlx": "12",
-  "qlrlxmc": "权利人",
-  "qlrxsmc": "权利人",
-  "btnId": "3,1,2,4",
-  "sxh": 1
-}]
   ywh.value = props.formData.ywh
+  let taskId = route.query.taskId
+  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getQlrConfig', params: { ywh: ywh.value, taskId: taskId } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      qlr.value = res.result
+    } else {
+      message.warning('获取权利人配置出错')
+    }
+  })
 }
 
 

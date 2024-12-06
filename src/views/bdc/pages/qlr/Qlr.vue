@@ -102,7 +102,7 @@ let pagination = ref({
 })
 
 enum api {
-  list = '/api/zrzy-bdc/bdc/qlr/list'
+  list = '/api/zrzy-bdc/bdc/qlr/list',
 }
 
 // 操作栏按钮
@@ -151,13 +151,17 @@ function initBtnList() {
  */
 function initData() {
   let query = route.query
-  defHttp.get({
+  let ywh = props.ywh ? { ywh: props.ywh } : {}
+  defHttp.post({
     url: api.list,
     params: {
+      pageNo: pagination.value.current,
+      pageSize: pagination.value.pageSize,
+    },
+    data: {
       slbh: query.slbh,
       qlrlb: props.qlrxx.qlrlxmc,
-      pageNo: pagination.value.current,
-      pageSize: pagination.value.pageSize
+      ...ywh
     }
   }, { withToken: true }).then((res) => {
     if (res && res.success) {
