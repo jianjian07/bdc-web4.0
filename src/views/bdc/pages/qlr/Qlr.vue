@@ -229,7 +229,9 @@ function handleLook(record) {
       formId: formId,
       iszd: '1',
       qlrid: record.qlrid,
-      ywh: record.ywh
+      ywh: record.ywh,
+      qlrmc: record.qlrmc,
+      zjh: record.zjh
     },
     footer: false
   })
@@ -252,7 +254,9 @@ function handleEdit(record) {
       slbh: query.slbh,
       ywh: record.ywh,
       qlrlb: props.qlrxx.qlrlxmc,
-      qlrList: tableData.value
+      qlrList: tableData.value,
+      qlrmc: record.qlrmc,
+      zjh: record.zjh
     },
     onOk: async (res) => {
       if (res && res.saveQlrData) {
