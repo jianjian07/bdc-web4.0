@@ -280,8 +280,8 @@ function handleJtcy() {
  */
 function handleDel(record) {
   defHttp.post({
-        url: '/api/zrzy-bdc/bdc/qlr/delete',
-        params: { id: record.qlrid }
+        url: '/api/zrzy-bdc/bdc/qlr/deleteQlr',
+        params: { qlrmc: record.qlrmc, zjh: record.zjh, slbh: route.query.slbh }
     }, { withToken: true }).then((res) => {
       if (res && res.success) {
         initData()
