@@ -76,6 +76,8 @@ let reportApiSource = info.dataSource
 reportInfo.searchInfo = generateData.searchData
 paginations.value = generateData.paginations;
 viewData.value = {}
+// 用于报表选择
+let selectedValue = ref<any>([])
 let events: any = {}
 let event1: any = ref({})
 // 20240130验证：变量定义 名称固定formProps
@@ -112,7 +114,6 @@ function transformValueByType(value: any, type: string): any {
 const exposeds = eventScript.filter(t => t.type == "Exposed")
 let arrExposed = [];
 if (exposeds.length > 0) {
-    debugger
     arrExposed = exposeds[0].name.split(',')
 }
 const emit = defineEmits(['ok', 'rowChange'])
@@ -144,6 +145,7 @@ const generateVue3 = defineComponent({
             defHttp,
             router,
             editableData,
+            selectedValue,
             search,
             handleTableChange,
             initTableV2,
@@ -199,6 +201,7 @@ const generateVue3 = defineComponent({
         }
         function onSelectChange(selectedRowKeys, selectedRows) {
             basicInfo.value.state.selectedRowKeys = selectedRowKeys;
+          
         }
         /**
          * 自动生成脚本
