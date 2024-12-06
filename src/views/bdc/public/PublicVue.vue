@@ -172,8 +172,8 @@ function getFormConfig() {
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
       jdmc.value = formConfig.value.jdmc || '收件'
-      let qlrxx = Array.isArray(formConfig.value.qlrxx) ? formConfig.value.qlrxx : [formConfig.value.qlrxx]
-      qlr.value = formConfig.value.qlrxx ? qlrxx : []
+      let qlrList = Array.isArray(formConfig.value.qlrList) ? formConfig.value.qlrList : [formConfig.value.qlrList]
+      qlr.value = formConfig.value.qlrList ? qlrList : []
       regType.value = res.result.regType
     }
   })
