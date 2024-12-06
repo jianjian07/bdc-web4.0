@@ -5,7 +5,7 @@
       <div v-if="qlrxx?.btnId?.includes('1') && !disabled" class="qlr-add">
         <a-button @click="handleAdd">新增</a-button>
       </div>
-      <a-table :columns="columns" :data-source="tableData" :pagination="pagination" rowKey="qlrid"
+      <a-table :columns="columns" :data-source="tableData" :pagination="pagination" rowKey="zjh"
                @change="onTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
@@ -56,6 +56,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  type: {
+    type: String,
+    default: ''
   }
 })
 
@@ -200,7 +204,8 @@ function handleAdd() {
         ywh: props.ywh,
         slbh: query.slbh,
         qlrlb: props.qlrxx.qlrlxmc,
-        qlrList: tableData.value
+        qlrList: tableData.value,
+        type: 'add'
       },
       onOk: async (res) => {
         if (res && res.saveQlrData) {
@@ -221,6 +226,7 @@ function handleAdd() {
  */
 function handleLook(record) {
   let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
+  let qlrid = props.type == 'modal' ? { qlrid: record.qlrid } : {}
   cModal({
     title: '查看',
     width: '70vw',
@@ -228,10 +234,11 @@ function handleLook(record) {
     formData: {
       formId: formId,
       iszd: '1',
-      qlrid: record.qlrid,
       ywh: record.ywh,
       qlrmc: record.qlrmc,
-      zjh: record.zjh
+      zjh: record.zjh,
+      type: 'look',
+      ...qlrid
     },
     footer: false
   })
@@ -244,19 +251,21 @@ function handleLook(record) {
 function handleEdit(record) {
   let query = route.query
   let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
+  let qlrid = props.type == 'modal' ? { qlrid: record.qlrid } : {}
   let modal = cModal({
     title: '编辑',
     width: '70vw',
     filePath: 'views/bdc/public/GenPublic',
     formData: {
       formId: formId,
-      qlrid: record.qlrid,
       slbh: query.slbh,
       ywh: record.ywh,
       qlrlb: props.qlrxx.qlrlxmc,
       qlrList: tableData.value,
       qlrmc: record.qlrmc,
-      zjh: record.zjh
+      zjh: record.zjh,
+      type: 'edit',
+      ...qlrid
     },
     onOk: async (res) => {
       if (res && res.saveQlrData) {
