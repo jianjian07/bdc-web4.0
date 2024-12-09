@@ -311,6 +311,7 @@ const generateVue3 = defineComponent({
             getSelectAllCheck,
             setSelectAllCheck,
             validateFun,
+            getImgUrl,
             validateInfos,
             cModal,
             Modal,
@@ -435,6 +436,14 @@ function handleChangeTab(key, callback?: any) {
     if (callback) {
         callback(key)
     }
+}
+
+/**
+ * 获取图片
+ * @param name
+ */
+function getImgUrl(name) {
+  return new URL(`/src/assets/images/${name}`, import.meta.url).href
 }
 
 defineExpose({
