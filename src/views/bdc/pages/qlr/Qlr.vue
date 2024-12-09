@@ -195,7 +195,9 @@ function onTableChange(pag) {
  */
 function handleAdd() {
   let query = route.query
-  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
+  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') 
+      ? ( props.type == 'modal' ? 117 : 109 )
+      : ( props.type == 'modal' ? 116 : 55 )
   if (tableData.value.length > 0 && tableData.value[0].gyfs == '0') {
     message.warning('该权利人共有方式为单独所有,不允许再添加')
   } else {
@@ -229,7 +231,9 @@ function handleAdd() {
  * @param record
  */
 function handleLook(record) {
-  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
+  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') 
+      ? ( props.type == 'modal' ? 117 : 109 )
+      : ( props.type == 'modal' ? 116 : 55 )
   let qlrid = props.type == 'modal' ? { qlrid: record.qlrid } : {}
   cModal({
     title: '查看',
@@ -254,7 +258,9 @@ function handleLook(record) {
  */
 function handleEdit(record) {
   let query = route.query
-  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') ? 109 : 55
+  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人') 
+      ? ( props.type == 'modal' ? 117 : 109 )
+      : ( props.type == 'modal' ? 116 : 55 )
   let qlrid = props.type == 'modal' ? { qlrid: record.qlrid } : {}
   let modal = cModal({
     title: '编辑',
