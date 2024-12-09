@@ -2,7 +2,7 @@ import { useUserStore } from "/@/store/modules/user"
 import { getFormInfo, saveFormData, saveHandleData, setValidateInfos, validateInfos } from "/@/utils/form/wonder1.0.1"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
-import { computed } from "vue"
+import { computed, nextTick } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
@@ -147,6 +147,9 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
             if (getTabsShow) {
               const currentTab = computed(() => tabStore.getCurrentTab)
               tabStore.removeTab(currentTab.value)
+              setTimeout(() => {
+                router.push('/refresh')
+              },100)
             } else {
               router.push('/analysis')
             }
