@@ -208,6 +208,22 @@ function dataFilter(data: any) {
     .ant-tabs-tab:hover {
       border: none;
       outline: none;
+      
+      .ant-tabs-tab-remove {
+          opacity: 1;
+
+          .anticon-close:hover {
+            background-color: #c0c4cc;
+            transform-origin: 100% 50%;
+            border-radius: 100%;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+            svg {
+              width: 11px;
+              color: white;
+            }
+          }
+        }
     }
 
     .ant-tabs-tab-active {
