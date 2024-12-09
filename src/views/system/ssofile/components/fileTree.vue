@@ -134,7 +134,11 @@
                 <a-input v-if="editableData[dataRef.id]" v-model:value="editableData[dataRef.id].materialName"
                   style="margin: -5px 0" size="small" @click.stop="" />
                 <template v-else>
-                  {{ dataRef.materialName }}
+                  <a-tooltip :title="dataRef.materialName">
+                    <div class="text-ellipsis">
+                      {{ dataRef.materialName }}
+                    </div>
+                  </a-tooltip>
                 </template>
               </div>
               <template v-else>
