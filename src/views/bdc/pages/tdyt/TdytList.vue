@@ -1,8 +1,7 @@
 <template>
   <div class="TdytList">
     <div class="oprBtns">
-      <a-button type="primary" @click="onAddNew()">
-        <template #icon><PlusOutlined /></template>
+      <a-button @click="onAddNew()">
         新增
       </a-button>
     </div>
@@ -222,7 +221,7 @@ const onDelete = (index: string) => {
     ).then((res: any) => {
       if(res && res.success) {
         message.success('删除成功！')
-        loadData()
+        dataSource.value.splice(index, 1)
       } else {
         message.warning('删除失败！')
       }
@@ -346,7 +345,7 @@ function findNode(arr, key) {
   flex-direction: column;
   .oprBtns {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     padding-bottom: 10px;
     text-align: right;
     width: 100%;
