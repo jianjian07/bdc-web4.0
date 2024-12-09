@@ -265,7 +265,8 @@ export function print(params: { code: string }) {
 export function register(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
-  const cType = params.cType == null ? '1' : params.cType
+  // const cType = params.cType == null ? '1' : params.cType
+  const cType = '1'
   // loading.value = true
   defHttp.get({
     url: '/api/zrzy-bdc/bdc/register/isRegister',

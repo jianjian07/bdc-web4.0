@@ -45,7 +45,6 @@ export function extractData(options: any) {
     })
 }
 export function extractDataLpb(options: any) {
-    debugger
     const route = router.currentRoute.value;
     const { data, dtype, open, reload } = options
     const slbh = route.query.slbh?.toString()
@@ -59,7 +58,8 @@ export function extractDataLpb(options: any) {
     {
         // "djdl": "CQ",
         "slbh": slbh,
-        // "guid": "1780060462306840577",
+        "ywlx": '2',
+        "lcid": "1780060462306840577",
         "dyhList": dyhList
     }
     defHttp.post({

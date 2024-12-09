@@ -20,21 +20,21 @@ import eventBus from "/@/views/bdc/djlc/eventBus"
 import dayjs from 'dayjs';
 import * as bdc from '/@/views/bdc/public/bdc'
 import {
-  getData,
-  getDataByApi,
-  // getInheritData,
-  onSubmitForm,
-  validateInfos,
-  validateFun,
-  getAccount,
-  syncChange,
-  onTableSelectClear,
-  onTableSelectRowChange,
-  getSelectAllCheck,
-  setSelectAllCheck,
-  hideField,
-  initCTableV2, 
-  initAllCTableV2
+    getData,
+    getDataByApi,
+    // getInheritData,
+    onSubmitForm,
+    validateInfos,
+    validateFun,
+    getAccount,
+    syncChange,
+    onTableSelectClear,
+    onTableSelectRowChange,
+    getSelectAllCheck,
+    setSelectAllCheck,
+    hideField,
+    initCTableV2,
+    initAllCTableV2
 } from "/@/utils/form/wonder1.0.1"
 import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
@@ -66,7 +66,6 @@ const props: any = defineProps({
  */
 watch(() => props.reload, async (newVal) => {
     if (newVal != "") {
-        debugger
         await getData(viewData, formId, props.formData)
     }
 })
@@ -206,9 +205,9 @@ const generateVue3 = defineComponent({
         // if (paginations.value) {
         //     paginations.value.onChange = onChange
         // }
-      
+
         initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value })
-      
+
         onBeforeUpdate(() => {
             // dom变化时清空 会重新设置
             demoRefs = []
@@ -228,29 +227,29 @@ const generateVue3 = defineComponent({
             paginations.value.current = pag
             initTable(viewData, dataSource, formInfo, paginations);
         }
-        
-         /**
-          * 分页 (表单)
-          * @param pag 
-          * @param paginationName 分页对象
-          */
+
+        /**
+         * 分页 (表单)
+         * @param pag 
+         * @param paginationName 分页对象
+         */
         function onChange1(pag: any, paginationName: string) {
             paginations[paginationName] = pag
-            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName]});
+            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName] });
         }
-        
+
         /**
          * 保存
          */
         async function onSubmit() {
-            return isSubmit.value ? await onSubmitForm(formRef.value,onBeforeValidate) : null
+            return isSubmit.value ? await onSubmitForm(formRef.value, onBeforeValidate) : null
         }
 
         async function onBeforeValidate() {
             if (events['onBeforeValidate']) {
-               return await events['onBeforeValidate']()
+                return await events['onBeforeValidate']()
             } else {
-               return true
+                return true
             }
         }
 
@@ -267,8 +266,8 @@ const generateVue3 = defineComponent({
             }
             return arr.length ? arr : null
         }
-      
-          return {
+
+        return {
             userInfo,
             isSubmit,
             validateFlag,
@@ -346,15 +345,20 @@ function generateTs() {
         } else {
             if (_data.param != "") {
                 if (_data.isasync) {
-                  events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                    events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
                 } else {
-                  events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                    try {
+                        eval(`(${_data.param})=> { ${_data.func}}`)
+                        events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                    } catch (error) {
+
+                    }
                 }
             } else {
                 if (_data.isasync) {
-                  events[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                    events[_data.name] = eval(`async ()=> { ${_data.func}}`)
                 } else {
-                  events[_data.name] = eval(`()=> { ${_data.func}}`)
+                    events[_data.name] = eval(`()=> { ${_data.func}}`)
                 }
             }
             // events[_data.name] = newFunction(_data)
@@ -385,9 +389,9 @@ function getViewDataByFormId(formId: String) {
     let _viewData = {}
     for (let index = 0; index < _sourcedata.length; index++) {
         if (_sourcedata[index].isList) {
-          Reflect.set(_viewData, _sourcedata[index].name, [])
+            Reflect.set(_viewData, _sourcedata[index].name, [])
         } else {
-          Reflect.set(_viewData, _sourcedata[index].name, {})
+            Reflect.set(_viewData, _sourcedata[index].name, {})
         }
     }
     return _viewData;
