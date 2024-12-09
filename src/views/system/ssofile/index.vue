@@ -4,7 +4,7 @@
       <span class="title">
         材料信息
       </span>
-      <template v-if="manage == false">
+      <template v-if="manage == undefined">
         <a-button type="primary" size="middle" @click="changeState">{{ isManage ? '返回' : '管理' }}</a-button>
       </template>
     </div>
@@ -25,7 +25,7 @@ let isManage: any = ref(false)
 const props = defineProps({
   manage: {
     type: Boolean,
-    default: false
+    default: undefined
   },
   look: {
     type: Boolean,
@@ -34,7 +34,7 @@ const props = defineProps({
 })
 
 watch(() => props.manage, val => {
-  isManage.value = val
+  isManage.value = val || false
 }, {
   immediate: true
 })

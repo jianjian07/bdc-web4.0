@@ -153,7 +153,7 @@
               <div class="fileBtn" v-if="dataRef.parentId != '0'">
                 <a-button style="margin-right: 5px" size="small" @click.stop="previewFile(dataRef)"
                   :icon="h(EyeOutlined)"></a-button>
-                <a-popconfirm title="确定删除该附件？" ok-text="确定" cancel-text="取消" @confirm="deleteCatalogOrFile(dataRef)">
+                <a-popconfirm placement="topRight" title="确定删除该附件？" ok-text="确定" cancel-text="取消" @confirm="deleteCatalogOrFile(dataRef)">
                   <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
                 </a-popconfirm>
               </div>
@@ -181,7 +181,7 @@
                       @click.stop="editCatalog(dataRef)" />
                   </a-tooltip>
                   <a-tooltip title="删除目录及附件" placement="topRight">
-                    <a-popconfirm title="确定删除该目录及该目录下的附件？" ok-text="确定" cancel-text="取消"
+                    <a-popconfirm placement="topRight" title="确定删除该目录及该目录下的附件？" ok-text="确定" cancel-text="取消"
                       @confirm="deleteCatalogOrFile(dataRef, 'folder')">
                       <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
                     </a-popconfirm>
