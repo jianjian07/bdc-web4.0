@@ -138,7 +138,11 @@
                 </template>
               </div>
               <template v-else>
-                {{ dataRef.title }}
+                <a-tooltip :title="dataRef.title">
+                  <div class="text-ellipsis">
+                    {{ dataRef.title }}
+                  </div>
+                </a-tooltip>
               </template>
             </div>
             <div class="oprBtns" v-if="isManage">
@@ -588,6 +592,13 @@ function handleOrder() {
 .ssoFileTree {
   display: flex;
   width: 100%;
+
+  .text-ellipsis {
+    width: 200px; /* 定义容器宽度 */
+    white-space: nowrap; /* 确保文本在一行内显示 */
+    overflow: hidden; /* 隐藏超出容器的内容 */
+    text-overflow: ellipsis; /* 使用省略号表示被截断的文本 */
+  }
 
   .addNewBtn {
     padding-bottom: 10px;
