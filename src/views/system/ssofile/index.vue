@@ -47,10 +47,9 @@ let _formData = reactive<any>({})
 
 onMounted(() => {
   _formData = {
-    slbh: route?.query?.slbh || 'ceshi001', // 受理编号
+    slbh: props.formData.ywh || (route?.query?.slbh || 'ceshi001'), // 受理编号
     processId: '', // 流程ID
     nodeId: route?.query?.nodeId, // 节点ID
-    ywh: props.formData.ywh
   }
 })
 
