@@ -71,7 +71,8 @@ const S4 = function () {
  * 生成guid
  */
 export function guid() {
-    return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4()
+    const timestamp = Date.now().toString(16);
+    return (S4() + S4() + '-' + S4() + '-' + timestamp + '-' + S4() + '-' + S4() + S4() + S4()
     );
 }
 /**对比属性**/
