@@ -43,14 +43,14 @@ watch(() => props.manage, val => {
   immediate: true
 })
 
-let _formData = reactive<any>({})
+let _formData = reactive<any>({
+  slbh: '',
+  processId: '',
+  nodeId: ''
+})
 
 onMounted(() => {
-  _formData = {
-    slbh: props.formData.ywh || (route?.query?.slbh || 'ceshi001'), // 受理编号
-    processId: '', // 流程ID
-    nodeId: route?.query?.nodeId, // 节点ID
-  }
+  _formData.slbh = props.formData?.ywh || route?.query?.slbh || 'CQSC202412090000534'
 })
 
 function changeState() {

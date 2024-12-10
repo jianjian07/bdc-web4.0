@@ -6,14 +6,14 @@
       </span>
     </div>
     <div class="ssoFileList">
-      <file-tree :formData="_formData"></file-tree>
+      <dir-tree :formData="_formData"></dir-tree>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, watch } from 'vue'
-import fileTree from './components/fileTree.vue';
+import dirTree from './components/dirTree.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute();
@@ -24,19 +24,15 @@ const props = defineProps({
   }
 })
 
-let _formData = reactive<any>({})
-
-onMounted(() => {
-  _formData = {
-    slbh: props.formData.ywh || (route?.query?.slbh || 'ceshi001'), // 受理编号
-    processId: '', // 流程ID
-    nodeId: route?.query?.nodeId, // 节点ID
-  }
+let _formData = reactive<any>({
+  slbh: '',
+  processId: '',
+  nodeId: ''
 })
 
-function changeState() {
-  isManage.value = props.manage ? props.manage : !isManage.value
-}
+onMounted(() => {
+  _formData.slbh = props.formData?.ywh || route?.query?.slbh || 'CQSC202412090000534'
+})
 
 </script>
 
