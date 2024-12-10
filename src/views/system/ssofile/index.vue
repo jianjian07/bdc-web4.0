@@ -9,13 +9,13 @@
       </template>
     </div>
     <div class="ssoFileList">
-      <file-tree :isManage="isManage" :formData="formData"></file-tree>
+      <file-tree :isManage="isManage" :formData="_formData"></file-tree>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue'
 import fileTree from './components/fileTree.vue';
 import { useRoute } from 'vue-router'
 
@@ -30,6 +30,10 @@ const props = defineProps({
   look: {
     type: Boolean,
     default: false
+  },
+  formData: {
+    type: Object,
+    default: {}
   }
 })
 
@@ -39,11 +43,16 @@ watch(() => props.manage, val => {
   immediate: true
 })
 
-let formData = {
-  slbh: route?.query?.slbh || 'ceshi001', // 受理编号
-  processId: '', // 流程ID
-  nodeId: route?.query?.nodeId // 节点ID
-}
+let _formData = reactive<any>({})
+
+onMounted(() => {
+  _formData = {
+    slbh: route?.query?.slbh || 'ceshi001', // 受理编号
+    processId: '', // 流程ID
+    nodeId: route?.query?.nodeId, // 节点ID
+    ywh: props.formData.ywh
+  }
+})
 
 function changeState() {
   isManage.value = props.manage ? props.manage : !isManage.value
