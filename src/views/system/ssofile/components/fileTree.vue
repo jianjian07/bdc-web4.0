@@ -210,7 +210,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h, onMounted, defineProps } from 'vue';
+import { ref, h, onMounted, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
@@ -257,10 +257,18 @@ const props = defineProps({
   }
 })
 
+watch(() => props.formData, (val) => {
+  if(val && val.slbh) {
+    loadFileList(true)
+  }
+}, {
+  immediate: true,
+  deep: true
+})
+
 
 onMounted(() => {
   kkFileApi.value = window.settingConfig.kkFileDomain
-  loadFileList(true)
 })
 
 function loadFileList(getDefault: Boolean = true) {
@@ -511,7 +519,6 @@ function downLoadFile() {
 }
 
 function onDrop(info: any) {
-  console.log(info);
   if (info.dragNode.parentId != '0') {
     message.warning('只可对目录顺序进行编辑')
     return false
