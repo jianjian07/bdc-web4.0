@@ -207,7 +207,7 @@ function getViewDataByFormId(formId: String) {
  */
 function loadSourceData(formId: any) {
     return new Promise((resolve, reject) => {
-        const _url = "/magicapi/zrzy-form/magic/form/source/list"
+        const _url = "/api/zrzy-form/data/list"
         defHttp.post({ url: _url, params: { formId: formId, dType: 'select' } }, { withToken: true }).then((res) => {
             if (res) {
                 resolve(res)
