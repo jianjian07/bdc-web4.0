@@ -5,7 +5,7 @@
         新增
       </a-button>
     </div>
-    <a-table bordered :data-source="dataSource" :columns="columns" :row-key="record => record.id0" :pagination="false" @change="handleTableChange" size="small" class="userTable">
+    <a-table :data-source="dataSource" :columns="columns" :row-key="record => record.id0" :pagination="false" @change="handleTableChange" class="userTable">
       <template #bodyCell="{ column, text, index, record }">
         <template v-if="column.type == 'treeSelect'">
           <div>
