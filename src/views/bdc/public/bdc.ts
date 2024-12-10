@@ -66,6 +66,7 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
     let beforeRes = true
     let commonSaveRes: unknown
     let afterRes = true
+    let validate = true
     if (params && params.beforeFun) {
       beforeRes = await eval(params.beforeFun)
       console.log('beforeRes', beforeRes)
@@ -97,16 +98,13 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
     if (isSubmit) {
       // 基础保存成功但是校验不通过时 不提示保存成功
       if (beforeRes && commonSaveRes && afterRes) {
-        const validate = !commonSaveRes.find(com => !com.validate)
-        saveStatus = validate
+        validate = !commonSaveRes.find(com => !com.validate)
+        saveStatus = true
         if (validate) {
           msg = type === 'baseSave' ? "保存成功!" : "保存成功,可进行移交!"
         } else {
           // 表单暂存，校验不通过，也提示表单保存成功
           msg = "暂存成功!"
-          message.success(msg)
-          resolve(saveStatus)
-          return
         }
       } else {
         saveStatus = false
@@ -120,8 +118,9 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
     if (msg) {
       saveStatus ? message.success(msg) : message.error(msg)
     }
-
-    resolve(saveStatus)
+    console.log('saveStatus',saveStatus)
+    console.log('validate',validate)
+    resolve({ status: saveStatus, validate: validate })
   })
 }
 
@@ -131,7 +130,7 @@ export async function baseSave(demoRefs: any, loading: any, params: any) {
 
 export async function handOver(demoRefs: any, loading: any, params: any) {
   let res = await sendSaveFun('handOver', demoRefs, loading, params)
-  if (res) {
+  if (res && res.status && res.validate) {
     let modal = cModal({
       title: '移交',
       width: '45vw',
