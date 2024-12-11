@@ -11,7 +11,7 @@
         <a-input v-model:value="formState.lcid" />
       </a-form-item>
       <a-form-item ref="djlx" label="登记类型" name="djlx">
-        <a-select v-model:value="formState.djlx" :options="djlx.value"  placeholder="请选择登记类型" />
+        <a-select v-model:value="formState.djlx" :options="djlx"  placeholder="请选择登记类型" />
       </a-form-item>
       <a-form-item ref="qllx" label="权利类型" name="qllx">
         <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />

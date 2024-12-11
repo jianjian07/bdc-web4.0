@@ -204,7 +204,9 @@
         <a @click="downLoadFile">下载</a>
         <a @click="closePreview">关闭</a>
       </div>
-      <iframe :src="previewData.previewUrl" style="border: none" />
+      <a-spin :spinning="!previewData.previewUrl" :delay="500">
+        <iframe :src="previewData.previewUrl" style="border: none" />
+      </a-spin>
     </div>
   </div>
 </template>
@@ -658,6 +660,7 @@ function handleOrder() {
       position: absolute;
       right: 0px;
       top: 0px;
+      z-index: 2;
 
       a {
         padding-right: 8px;
