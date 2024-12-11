@@ -79,7 +79,7 @@
           <a-table class="zrz-table ant-table-striped" :columns="zrzColumns" :data-source="zrzTableData"
             :pagination="pagination" :loading="tableLoading" :scroll="{ y: 300 }" :custom-row="customRow"
             :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : null"
-            @change="handleTableChange" size="small">
+            row-key="zbm" @change="handleTableChange" size="small">
           </a-table>
         </div>
       </div>
@@ -348,9 +348,15 @@ const fwKeys = [
   { label: '土地分摊面积(㎡)', value: 'tdftmj' }
 ]
 
+enum api {
+  list = '/api/zrzy-bdc/bdc/bdcZsx/getZrzListByPage',
+  lpb = '/api/zrzy-bdc/bdc/lpb/lpb'
+}
+
 
 onMounted(() => {
   initCurrentCase()
+  loadList()
 })
 
 /**
@@ -359,23 +365,39 @@ onMounted(() => {
 function initCurrentCase() {
 
 }
-loadList()
+
 /**
  * 加载幢列表
  */
-function loadList() {
-  // todo 接口查询列表
-  zrzTableData.value = [
-    { id: '2', zddm: '429005048032GB31004', dh: '30', zl: '测试数据2', zbm: '05048032GB31004000210' },
-    { id: '1', zddm: '429005048025GB00202', dh: '25', zl: '测试数据', zbm: '05048025GB00202000216' }
-  ]
-  currentZrzInfo.value = zrzTableData.value[0]
-  loadFwxx()
+function loadList(flag?: boolean) {
+  let params = {
+    pageNo: pagination.value.current,
+    pageSize: pagination.value.pageSize,
+    ...zrzData.value
+  }
+  defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        zrzTableData.value = res.result.records
+        pagination.value.total = res.result.total
+      } else {
+        zrzTableData.value = []
+        pagination.value.total = 0
+      }
+     if (flag && zrzTableData.value.length) {
+        // 默认选中第一条
+        currentZrzInfo.value = zrzTableData.value[0]
+        loadFwxx()
+     }
+  })
+  // zrzTableData.value = [
+  //   { id: '2', zddm: '429005048032GB31004', dh: '30', zl: '测试数据2', zbm: '05048032GB31004000210' },
+  //   { id: '1', zddm: '429005048025GB00202', dh: '25', zl: '测试数据', zbm: '05048025GB00202000216' }
+  // ]
 }
 
 async function loadFwxx(isFilter = false) {
   if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
-    const res = await defHttp.get({ url: '/api/zrzy-bdc/bdc/lpb/lpb', params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
+    const res = await defHttp.get({ url: api.lpb, params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
     if (res && res.result) {
       dyxx.value = res.result.dyhList
       cxxData.value = res.result.cxxList
@@ -429,6 +451,7 @@ function onShowAll() {
 function handleTableChange(pag) {
   pagination.value.current = pag.current
   pagination.value.pageSize = pag.pageSize
+  loadList(true)
 }
 
 
