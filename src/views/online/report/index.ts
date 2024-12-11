@@ -8,6 +8,6 @@ enum Api {
  * @param params
  */
 export const getReport = async (params: any) => {
-    const data = await defHttp.post({ url: Api.queryUrl, params }, { withToken: true })
+    const data = await defHttp.get({ url: Api.queryUrl, params }, { withToken: true })
     return data.result
 }
