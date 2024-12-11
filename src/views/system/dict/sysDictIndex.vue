@@ -64,7 +64,7 @@
     <DictModal v-if="open" :open="open" @ok="handOk" :dataInfo="dataInfo" :title="title"></DictModal>
     <!-- <a-drawer title="字典列表" :width="720" :open="drawerOpen" :body-style="{ paddingBottom: '80px' }"
         :footer-style="{ textAlign: 'right' }" @close="onClose"> -->
-    <DictItemsList v-if="drawerOpen" :open="drawerOpen" :parentId="parentId" @onClose="onClose" />
+    <DictItemsList v-if="drawerOpen" :open="drawerOpen" :parentId="parentId" :dmlx="parentDmlx" @onClose="onClose" />
     <!-- </a-drawer> -->
 </template>
 
@@ -126,8 +126,10 @@ function searchData() {
 }
 let drawerOpen = ref(false)
 let parentId = ref("0")
+let parentDmlx = ref('')
 function design(record: any) {
     parentId.value = record.id
+    parentDmlx.value = record.dictCode
     drawerOpen.value = true
 }
 
@@ -177,7 +179,7 @@ function editData(record: any) {
 */
 function addData() {
     parentId.value = "0"
-    dataInfo.value = { parentId: "0", dictType: "0", status: "1", delFlag: 0 }
+    dataInfo.value = { parentId: "0", dictType: "0", status: "1", delFlag: 0, dmlx: '' }
     title.value = "新增字典"
     open.value = true
 }

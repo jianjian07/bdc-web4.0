@@ -83,6 +83,10 @@ const props = defineProps({
     data: {
         type: Object,
         default: {}
+    },
+    dmlx: {
+        type: String,
+        default: ''
     }
 })
 let open1 = ref(props.open)
@@ -158,7 +162,7 @@ let title = ref("")
  * 添加表单
 */
 function addData() {
-    dataInfo.value = { parentId: props.parentId, dictType: props.data.dictType != "1" ? "0" : "1", status: "1", delFlag: 0 }
+    dataInfo.value = { parentId: props.parentId, dictType: props.data.dictType != "1" ? "0" : "1", status: "1", delFlag: 0, dmlx: props.dmlx }
     title.value = "新增"
     open.value = true
 }
@@ -166,6 +170,7 @@ function addData() {
  * 编辑表单
 */
 function editData(record: any) {
+    record.dmlx = props.dmlx
     dataInfo.value = record
     open.value = true
     title.value = "编辑"
