@@ -1,11 +1,19 @@
 <template>
   <div class="QlqtpzList">
-    <div class="oprBtns">
-      <a-button type="primary" @click="onShowModal(null, 'new')">
-        <template #icon><PlusOutlined /></template>
-        新增
-      </a-button>
-    </div>
+    <a-row>
+      <a-col :span="12">
+          <a-form-item label="权利类型">
+              <a-select v-model:value="qllx" :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;"  @change="loadData">
+              </a-select>
+          </a-form-item>
+      </a-col>
+      <a-col :span="12" class="oprBtns">
+        <a-button type="primary" @click="onShowModal(null, 'new')">
+          <template #icon><PlusOutlined /></template>
+          新增
+        </a-button>
+      </a-col>
+    </a-row>
     <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination" @change="handleTableChange" size="small" class="userTable">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'qllx'">
@@ -96,10 +104,11 @@ const columns = [
 const pagination = ref<any>({ 
   total: 0,
   current: 1,
-  pageSize: 100,
+  pageSize: 20,
   showSizeChanger: false, 
   showTotal: (total: Number) => `共 ${total} 条数据` 
 })
+let qllx = ref('')
 
 const urlList = {
   queryList: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/list', // 分页列表查询
@@ -146,7 +155,8 @@ function loadData() {
       params: {
         pageNo: pagination.value.current,
         pageSize: pagination.value.pageSize,
-        lcid: props.lcid
+        lcid: props.lcid,
+        qllx: qllx.value
       }
     },
     { withToken: true }
@@ -220,7 +230,7 @@ function handleTableChange(pag:any) {
 }
 
 function getLabelByCode(dict: any, value: any) {
-  return getDictItemsByCode(dict).filter((_v: any) => _v.dictCode == value)[0].dictName
+  return getDictItemsByCode(dict).filter((_v: any) => _v.dictCode == value)[0]?.dictName || ''
 }
 
 function getDjlx() {
@@ -260,6 +270,7 @@ function transformOptions(data: any) {
     justify-content: flex-end;
     padding-bottom: 10px;
     text-align: right;
+    width: 100%;
   }
 
   .userTable {
