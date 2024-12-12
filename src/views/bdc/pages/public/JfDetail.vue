@@ -229,7 +229,7 @@ function saveData() {
         }
         item.slbh = route.query.slbh
         // item.sse = props.viewData?.BDC_SF?.SFJE
-        item.sfsm = props.viewData?.BDC_SF?.BZ
+        item.sfsm = props.viewData?.bdc_sf?.bz
         return item
       })
        defHttp.post({
