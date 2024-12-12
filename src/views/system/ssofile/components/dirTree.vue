@@ -203,7 +203,7 @@ watch(() => props.formData, (val) => {
 
 onMounted(() => {
   kkFileApi.value = window.settingConfig.kkFileDomain
-  baseApi.value = window.settingConfig.baseDomian
+  baseApi.value = window.settingConfig.baseDomain
 })
 
 function loadDirList() {
