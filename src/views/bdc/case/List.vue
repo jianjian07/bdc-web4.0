@@ -4,12 +4,12 @@
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="8" :offset="0">
                     <a-form-item label="案卷名称">
-                        <a-input v-model:value="formData.processDefinitionName" />
+                        <a-input v-model:value="formData.ajmc" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8" :offset="0">
                     <a-form-item label="受理编号">
-                        <a-input v-model:value="formData.id" />
+                        <a-input v-model:value="formData.slbh" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="4" :offset="0">
@@ -34,8 +34,8 @@
             <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
                 @change="onChange($event, loadData)">
                 <template #bodyCell="{ column, record }">
-                    <template v-if="column.key === 'bpmBdcTitle'">
-                        <span>{{ record.bpmBdcTitle }}</span>
+                    <template v-if="column.key === 'ajmc'">
+                        <span>{{ record.ajmc }}</span>
                         <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseRemark }}】</span>
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
@@ -62,8 +62,7 @@
                             </template>
                             <a @click="handleCase(record)">办理</a>
 
-                            <a v-if="record.taskName == '收件'"
-                                @click="handleDelete(record.slbh, record.bpmBdcTitle)">删除</a>
+                            <a v-if="record.taskName == '收件'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
                         </a-space>
                     </template>
                 </template>
@@ -89,7 +88,7 @@ let spinning = ref<boolean>(true);
 const columns = [
     { title: "任务id", dataIndex: "taskId", align: "center" },
     { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 100 },
-    { title: "案卷名称", dataIndex: "bpmBdcTitle", align: "center", key: "bpmBdcTitle" },
+    { title: "案卷名称", dataIndex: "ajmc", align: "center", key: "ajmc" },
     { title: "受理编号", dataIndex: "slbh", align: "center" },
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },
@@ -109,7 +108,7 @@ let pagination = ref({
 loadData()
 function loadData() {
     spinning.value = true
-    defHttp.get({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
+    defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh } }, { withToken: true }).then(res => {
         if (res.success) {
             const result = res.result
             datalist.value = result.records
