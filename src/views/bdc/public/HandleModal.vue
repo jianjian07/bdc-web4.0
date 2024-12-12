@@ -29,8 +29,8 @@
           <div v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
             <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange">
               <template v-for="(item, index) in formState.taskData.histListNode">
-                <a-select-option v-if="item.NAME_ != formState.taskData.taskName" :value="item.TASK_DEF_KEY_">{{
-      item.NAME_ }}</a-select-option>
+                <a-select-option v-if="item.name_ != formState.taskData.taskName" :value="item.task_def_key_">{{
+      item.name_ }}</a-select-option>
               </template>
             </a-select>
           </div>
@@ -247,6 +247,7 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
             treeSpinning.value = false
           }
         }
+        treeSpinning.value = false
       })
     } else {
       message.warning(res.message)
@@ -474,8 +475,8 @@ function onRejectModelChange(value) {
   let obj: any = {}
   obj.rejectNode = rejectModelNode.value
   for (let i = 0; i < formState.value.taskData.histListNode.length; i++) {
-    if (rejectModelNode.value === formState.value.taskData.histListNode[i].TASK_DEF_KEY_) {
-      obj.rejectNodeName = formState.value.taskData.histListNode[i].NAME_
+    if (rejectModelNode.value === formState.value.taskData.histListNode[i].task_def_key_) {
+      obj.rejectNodeName = formState.value.taskData.histListNode[i].name_
     }
   }
   setTransData(3, obj)
@@ -489,12 +490,12 @@ function onChangeDirection(e) {
   // 重新初始化用户树
   if (e.target.value == 3) {
     let nodeName
-    rejectModelNode.value = formState.value.taskData.histListNode[0].TASK_DEF_KEY_
-    nodeName = formState.value.taskData.histListNode[0].NAME_
+    rejectModelNode.value = formState.value.taskData.histListNode[0].task_def_key_
+    nodeName = formState.value.taskData.histListNode[0].name_
     if (rejectModelNode.value === formState.value.taskData.nodeId) {
-      if (formState.value.taskData.histListNode[1].TASK_DEF_KEY_) {
-        rejectModelNode.value = formState.value.taskData.histListNode[1].TASK_DEF_KEY_
-        nodeName = formState.value.taskData.histListNode[1].NAME_
+      if (formState.value.taskData.histListNode[1].task_def_key_) {
+        rejectModelNode.value = formState.value.taskData.histListNode[1].task_def_key_
+        nodeName = formState.value.taskData.histListNode[1].name_
       } else {
         rejectModelNode.value = null
       }
