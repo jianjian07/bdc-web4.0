@@ -239,7 +239,7 @@ function updateQlrData(type, data) {
  * 附件按钮
  * @param manage 是否默认展示为管理状态
  */
-export async function showFile(params?: any) {
+export async function showFile(demoRefs: any, loading: any, params?: any) {
   eventBus.emit('showFile', params?.manage || false)
 }
 /**
