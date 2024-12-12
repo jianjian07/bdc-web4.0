@@ -122,7 +122,7 @@
                 <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
                   <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
                     :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwIndex"
-                    :class="checkFw.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
+                    :class="checkFw?.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
 
                     <div class="fw-td">
                       <span v-if="fwInfo.zbhtbazt == 1" class="zbzt" style="background-color: #FE9E38"></span>
@@ -200,9 +200,10 @@
         </template>
 
       </div>
-      <div v-show="checkFw && checkFw.shbw" class="lpb-info">
+      <div v-if="checkFw && checkFw.shbw" class="lpb-info">
         <div class="lpb-info-header">
-          房屋
+          <span>房屋</span>
+          <span @click="onClose" style="padding: 0 5px;cursor: pointer">x</span>
         </div>
         <div class="lpb-info-content">
           <div class="lpb-info-title lpb-info-row">{{ checkFw.bdcdyh }}</div>
@@ -237,6 +238,7 @@ import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlin
 import { message } from "ant-design-vue"
 import { checkShowForSingle, checkShowForZh } from "/@/views/bdc/lpb/lpb"
 import { extractDataLpb } from '/@/utils/bdc/bdc';
+import { router } from "/@/router"
 
 // 查询条件
 let zrzData = ref<any>({
@@ -327,6 +329,7 @@ console.log('date1:' + date1)
 const date2 = new Date().getTime()
 console.log('date2:' + date2)
 console.log('时间差:' + (date2 - date1))
+let regType = ref('0101')
 
 // 详细信息
 const fwKeys = [
@@ -350,14 +353,27 @@ const fwKeys = [
 
 enum api {
   list = '/api/zrzy-bdc/bdc/bdcZsx/getZrzListByPage',
-  lpb = '/api/zrzy-bdc/bdc/lpb/lpb'
+  lpb = '/api/zrzy-bdc/bdc/lpb/lpb',
+  model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel'
 }
 
 
 onMounted(() => {
-  initCurrentCase()
-  loadList()
+  getSlsqModel()
 })
+
+// 获取登记类型
+function getSlsqModel() {
+  let route = router.currentRoute.value
+  let slbh = route.query.slbh
+  defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      regType.value = res.result.regtype
+    } 
+    initCurrentCase()
+    loadList()
+  })
+}
 
 /**
  * 获取当前案卷的不动产单元号数组
@@ -569,12 +585,10 @@ function getClass(fwInfo) {
  */
 function checkShow(fwInfo) {
   if (fwInfo && fwInfo.shbw) {
-    // todo 替换regType 取值 根据流程 还有组合流程
-    let regType = '0101'
-    if (regType.split(',').length == 1) {
-      return checkShowForSingle(regType, fwInfo)
+    if (regType.value.split(',').length == 1) {
+      return checkShowForSingle(regType.value, fwInfo)
     } else {
-      return checkShowForZh(regType, fwInfo)
+      return checkShowForZh(regType.value, fwInfo)
     }
   } else {
     return false
@@ -601,6 +615,10 @@ function handleOk() {
       data: data
     })
   }
+}
+
+function onClose() {
+  checkFw.value = null
 }
 </script>
 

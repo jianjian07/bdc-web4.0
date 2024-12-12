@@ -14,7 +14,7 @@
               </template>
             </a-space-compact>
             <a-drawer v-if="open" v-model:open="open" :footer-style="{ textAlign: 'right' }"
-              :style="{ position: 'absolute' }" title="数据提取" width="1000" @close="onClose">
+              :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' :1000" @close="onClose">
               <template #extra>
                 <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
                 <a-button type="primary" @click="handleOk">确定</a-button>

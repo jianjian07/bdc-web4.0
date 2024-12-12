@@ -74,6 +74,8 @@ td {
     border-bottom: 1px solid rgba(5, 5, 5, 0.06);
     display: flex;
     align-items: center;
+    width: 100%;
+    overflow: auto;
 
     .legend-icon {
         flex: 3;
@@ -155,11 +157,11 @@ td {
     }
 
     .lpb-content {
-        //flex: auto;
+        flex: auto;
         padding: 15px;
         height: 100%;
         overflow: auto;
-        width: calc(100% - 650px);
+        //width: calc(100% - 650px);
 
         .lpb-content-search-tool {
             display: flex;
@@ -200,6 +202,7 @@ td {
             padding: 0 15px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             text-align: left;
             border-bottom: 1px solid rgba(5, 5, 5, 0.06);
         }
