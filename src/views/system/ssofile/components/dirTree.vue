@@ -177,7 +177,7 @@ const urlList = {
   // 附件材料
   downLoadFile: '/api/zrzy-bdc/bdcdj/upfiles/file/download', // 附件下载
 }
-const baseApi = ref(import.meta.env.VITE_GLOB_API_URL)
+const baseApi = ref('')
 const kkFileApi = ref('')
 
 const props = defineProps({
@@ -203,6 +203,7 @@ watch(() => props.formData, (val) => {
 
 onMounted(() => {
   kkFileApi.value = window.settingConfig.kkFileDomain
+  baseApi.value = window.settingConfig.baseDomian
 })
 
 function loadDirList() {
