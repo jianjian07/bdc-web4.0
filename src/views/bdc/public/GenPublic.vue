@@ -5,7 +5,7 @@
                 :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
       <template v-if="qlr">
-         <qlr-list v-show="showQlr" :qlr="qlr" :ywh="ywh" type="modal"></qlr-list>
+         <qlr-list v-show="showQlr" :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" type="modal"></qlr-list>
       </template>
     </a-spin>
   </div>
@@ -47,7 +47,7 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  // console.log('弹窗表单',props.formData)
+  console.log('弹窗表单',props.formData)
   showQlr.value = !! (props.formData.sfybz == '0')
   if (showQlr.value) {
      initQlrXx()
