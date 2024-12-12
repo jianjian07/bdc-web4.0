@@ -191,7 +191,7 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
   if (_result) {
     let find = _result.filter(r => r.formId == 55)[0]
     if (find && find.validate) {
-      let qlrData = find.data[0].BDC_QLR
+      let qlrData = find.data[0].bdc_qlr
       const newQlrData = {};
       let qlrid = params.qlrid ? { qlrid: params.qlrid } : {}
       let _param = {
