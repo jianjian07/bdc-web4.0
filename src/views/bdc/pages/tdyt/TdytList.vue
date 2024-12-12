@@ -166,7 +166,7 @@ const props = defineProps({
   }
 })
 
-watch(() => props.ywh, (val) => {
+watch(() => props.zddm, (val) => {
   if(val) {
     loadData()
   }
@@ -237,6 +237,10 @@ const onDelete = (index: string) => {
 }
 
 function loadData() {
+  if(!props.ywh && !props.slbh) {
+    message.warning('未获取到业务号和受理编号！')
+    return
+  }
   // 获取土地用途列表
   defHttp.get(
     {
@@ -261,6 +265,10 @@ function loadData() {
 }
 
 function onAddNew() {
+  if(!props.ywh && !props.slbh) {
+    message.warning('未获取到业务号和受理编号，不允许新增！')
+    return
+  }
   if(Object.keys(editableData).length ||(dataSource.value.length && dataSource.value[dataSource.value.length - 1].id0 == 'editId')) {
     message.warning('已存在编辑状态的列表，请先进行保存或者删除！')
     return
