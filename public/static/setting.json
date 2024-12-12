@@ -1,5 +1,5 @@
 {
   "printDomain": "http://192.168.27.87:7004",
   "kkFileDomain": "http://192.168.27.249:8012",
-  "baseDomian": "http://192.168.27.87:7777"
+  "baseDomain": "http://192.168.27.87:7777"
 }

@@ -60,10 +60,10 @@
               </a-popconfirm>
             </a-space>
             <a-sapce v-else>
-              <a @click="edit(record.id0)">编辑</a>
+              <a-button type="link" size="small" @click="edit(record.id0)" :disabled="disabled">编辑</a-button>
               <a-divider type="vertical" />
               <a-popconfirm title="确定删除?" @confirm="onDelete(index)">
-                <a style="color:#ff4d4f">删除</a>
+                <a-button type="link" size="small" :style="{color: disabled ? '' :'#ff4d4f'}" :disabled="disabled">删除</a-button>
               </a-popconfirm>
             </a-sapce>
           </div>
@@ -159,6 +159,10 @@ const props = defineProps({
   zddm: { // 宗地代码
     type: String,
     default: ''
+  },
+  disabled: {
+    type: String,
+    default: false
   }
 })
 
