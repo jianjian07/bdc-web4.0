@@ -16,7 +16,7 @@
                     <a-button type="link" :disabled="disabled">{{ item.name }}</a-button>
                   </a-popconfirm>
                 </template>
-                <a-button v-else type="link" :disabled="disabled" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
+                <a-button v-else type="link" :disabled="item.name == '查看' ? false :disabled" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
                 <a-divider v-if="index !== actionBtnList.length - 1" type="vertical"/>
               </template>
             </div>
