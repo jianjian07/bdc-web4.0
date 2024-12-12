@@ -34,7 +34,10 @@ import {
     setSelectAllCheck,
     hideField,
     initCTableV2,
-    initAllCTableV2
+    initAllCTableV2,
+    editRow, 
+    saveRow, 
+    cancelRow 
 } from "/@/utils/form/wonder1.0.1"
 import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
@@ -298,6 +301,10 @@ const generateVue3 = defineComponent({
             edit,
             save,
             cancel,
+            editableData,
+            saveRow,
+            editRow,
+            cancelRow,
             handleChangeTab,
             getDictItemsByCode,
             getTreeDictItemsByCode,

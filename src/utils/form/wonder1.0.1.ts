@@ -7,6 +7,9 @@ import { message, Modal } from "ant-design-vue"
 import { defHttp } from "../http/axios"
 import { router } from "/@/router"
 import { isJsonData } from "/@/utils/form/commonUtils"
+import { cloneDeep } from "lodash-es"
+import { isEmpty } from "/@/utils/is"
+import { compareObjects } from "/@/utils"
 export let validateInfos: any = reactive({})
 
 export async function getData(object1: { value: object }, formId?: number, params?: any) {
@@ -913,3 +916,71 @@ export async function getSelectJsonSetting(selectJsonSetting: any) {
         }
     }
 }
+
+/** 表单表格行编辑 start **/
+let obj = reactive<any>({ obj1: {}, obj2: {} })
+
+export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string) => {
+    editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
+    obj.obj1[key] = cloneDeep(editableData[key])
+    console.log('editableData',editableData)
+};
+
+export const saveRow = (key: string, editableData, dataSource: any, keyCol, tableName, _callback?: any) => {
+    Object.assign(dataSource.filter((item: { [keyCol]: string; }) => key == item[keyCol])[0], editableData[key]);
+    obj.obj2[key] = cloneDeep(editableData[key])
+    let entity = []
+    entity = compareObjects(obj.obj1[key], obj.obj2[key])
+    if (!isEmpty(entity)) {
+        let data: any = [];
+        data = entity;
+        // 当更新列为空时，默认id
+        const colName = keyCol || "id"
+        const keyValue = editableData[key][colName]
+        let url = '/imaginform/zrzy-form/form/report/update'
+        if (keyValue == "") {
+            // 执行新增的操作
+            url = '/imaginform/zrzy-form/form/report/add'
+        } else {
+            data[colName] = keyValue;
+        }
+        // 存在差异，需要更新
+        defHttp.post({
+            url: url,
+            data: {
+                keyCol: colName,
+                tableName: tableName,
+                data: entity,
+            }
+        }, { withToken: true }).then((res) => {
+            if (res.code == 200) {
+                delObj(key, editableData);
+                message.info('数据更新成功');
+                if (keyValue == "") {
+                    _callback && _callback(res.result)
+                } else {
+                    _callback && _callback()
+                }
+            } else {
+                message.error('数据更新失败');
+            }
+        })
+    } else {
+        delObj(key, editableData);
+    }
+};
+
+/**
+ * 删除对象
+ * @param key
+ */
+function delObj(key: string, editableData) {
+    delete editableData[key];
+    delete obj.obj1[key];
+    delete obj.obj2[key];
+}
+
+export const cancelRow = (key: string, editableData) => {
+    delete editableData[key];
+};
+/** 行编辑所需要代码 end **/

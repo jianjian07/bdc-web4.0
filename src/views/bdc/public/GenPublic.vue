@@ -4,15 +4,15 @@
       <component v-bind:is="generateForm" :id="formData.formId"
                 :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
-      <template v-if="qlr">
-         <qlr-list v-show="showQlr" :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" type="modal"></qlr-list>
+      <template v-if="showQlr">
+         <qlr-list :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" type="modal"></qlr-list>
       </template>
     </a-spin>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from "vue"
+import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
@@ -46,13 +46,19 @@ const props = defineProps({
   }
 })
 
-onMounted(() => {
+watch(() => props.formData.sfybz, (newVal, oldVal) => {
   console.log('弹窗表单',props.formData)
   showQlr.value = !! (props.formData.sfybz == '0')
   if (showQlr.value) {
      initQlrXx()
   }
   resetValidateInfos()
+}, {
+  immediate: true
+})
+
+onMounted(() => {
+  
 })
 
 /**
