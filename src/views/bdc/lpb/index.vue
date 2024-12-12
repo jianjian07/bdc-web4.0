@@ -91,7 +91,7 @@
                 :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
             </a-form-item>
           </div>
-          <div style="width: 33%; margin: 0 10px">
+          <div style="margin: 0 10px">
             <a-form-item label="户">
               <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>
             </a-form-item>
@@ -359,7 +359,14 @@ enum api {
 
 
 onMounted(() => {
-  getSlsqModel()
+  let route = router.currentRoute.value
+  let slbh = route.query.slbh
+  if (slbh) {
+    getSlsqModel()
+  } else {
+    initCurrentCase()
+    loadList()
+  }
 })
 
 // 获取登记类型
@@ -368,7 +375,7 @@ function getSlsqModel() {
   let slbh = route.query.slbh
   defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      regType.value = res.result.regtype
+      regType.value = res.result?.regtype || '0101'
     } 
     initCurrentCase()
     loadList()
