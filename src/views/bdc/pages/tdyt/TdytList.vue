@@ -160,10 +160,9 @@ const props = defineProps({
     type: String,
     default: ''
   }
-
 })
 
-watch(() => props.slbh, (val) => {
+watch(() => props.ywh, (val) => {
   if(val) {
     loadData()
   }
