@@ -258,7 +258,7 @@ function loadData() {
 }
 
 function onAddNew() {
-  if(Object.keys(editableData).length || dataSource.value[dataSource.value.length - 1].id0 == 'editId') {
+  if(Object.keys(editableData).length ||(dataSource.value.length && dataSource.value[dataSource.value.length - 1].id0 == 'editId')) {
     message.warning('已存在编辑状态的列表，请先进行保存或者删除！')
     return
   }
@@ -339,7 +339,7 @@ function findNode(arr, key) {
 @import url('/@/assets/less/style_lb.less');
 
 .TdytList {
-  padding: 0 10px;
+  padding: 0 10px 20px 0;
   height: 100%;
   display: flex;
   flex-direction: column;
