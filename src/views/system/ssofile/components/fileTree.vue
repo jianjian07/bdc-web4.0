@@ -607,7 +607,7 @@ function handleOrder() {
   width: 100%;
 
   .text-ellipsis {
-    width: 200px; /* 定义容器宽度 */
+    width: 180px; /* 定义容器宽度 */
     white-space: nowrap; /* 确保文本在一行内显示 */
     overflow: hidden; /* 隐藏超出容器的内容 */
     text-overflow: ellipsis; /* 使用省略号表示被截断的文本 */
@@ -641,7 +641,9 @@ function handleOrder() {
       &:hover {
         .oprBtns {
           .fileBtn {
-            display: block;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
           }
         }
       }
