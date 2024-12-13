@@ -441,4 +441,22 @@ function onShowFile(manage) {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #b6b7b9;
 }
+
+:deep(.ant-input-disabled) {
+    background-color: rgba(0, 0, 0, 0.02)
+}
+
+:deep(.ant-input[disabled]) {
+    background-color: rgba(0, 0, 0, 0.02)
+}
+
+:deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input)) {
+  .ant-select-selector {
+    background-color: rgba(0, 0, 0, 0.02)
+  }
+}
+
+:deep(.ant-picker.ant-picker-disabled) {
+    background-color: rgba(0, 0, 0, 0.02)
+})
 </style>
