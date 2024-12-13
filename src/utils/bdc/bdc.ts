@@ -70,6 +70,7 @@ export function extractDataLpb(options: any) {
             message.success('数据提取成功')
             options.open.value = false
             options.reload.value = guid()
+            router.push('/refresh')
         }
     })
 }

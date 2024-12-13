@@ -19,7 +19,7 @@
                 <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
                 <a-button type="primary" @click="handleOk">确定</a-button>
               </template>
-              <LookLpb v-if="eType == 'lpb'" ref="dataForm"></LookLpb>
+              <LookLpb v-if="eType == 'lpb'" ref="dataForm" @ok="onReloadLpb"></LookLpb>
               <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>
             </a-drawer>
           </div>
@@ -50,7 +50,7 @@
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
-import { extractData } from '/@/utils/bdc/bdc'
+import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/utils/form/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
@@ -245,6 +245,14 @@ function onReload(obj: any) {
   obj.regType = regType.value
   obj.ywlx = ywlx.value
   extractData(obj)
+}
+
+function onReloadLpb(obj: any) {
+  obj.open = open
+  obj.reload = reload
+  // obj.regType = regType.value
+  // obj.ywlx = ywlx.value
+  extractDataLpb(obj)
 }
 /**数据提取 end */
 /**

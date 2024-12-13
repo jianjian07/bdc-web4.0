@@ -67,7 +67,7 @@
               <a-input v-model:value="zrzData.clh"></a-input>
             </a-form-item>
             <div style="display: flex; justify-content: end">
-              <a-button type="primary" @click="loadList">
+              <a-button type="primary" @click="handleLoad">
                 <template #icon>
                   <SearchOutlined />
                 </template>查询
@@ -357,6 +357,7 @@ enum api {
   model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel'
 }
 
+const emit = defineEmits(['ok'])
 
 onMounted(() => {
   let route = router.currentRoute.value
@@ -368,6 +369,14 @@ onMounted(() => {
     loadList()
   }
 })
+
+function handleLoad() {
+  pagination.value.current = 1
+  checkFw.value = null
+  cxxData.value = []
+  currentZrzInfo.value = {}
+  loadList()
+}
 
 // 获取登记类型
 function getSlsqModel() {
@@ -618,9 +627,10 @@ function handleOk() {
   if (data.length == 0) {
     message.error("请选择要提取的房源")
   } else {
-    extractDataLpb({
-      data: data
-    })
+    emit('ok', { reload: true, data: data })
+    // extractDataLpb({
+    //   data: data
+    // })
   }
 }
 
