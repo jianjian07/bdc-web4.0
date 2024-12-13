@@ -4,7 +4,7 @@
       <span class="title">
         材料信息
       </span>
-      <template v-if="manage == undefined">
+      <template v-if="manage == undefined && Object.keys(formData).length == 0">
         <a-button type="primary" size="middle" @click="changeState">{{ isManage ? '返回' : '管理' }}</a-button>
       </template>
     </div>
@@ -46,11 +46,16 @@ watch(() => props.manage, val => {
 let _formData = reactive<any>({
   slbh: '',
   processId: '',
-  nodeId: ''
+  nodeId: '',
+  emit: true 
 })
 
 onMounted(() => {
   _formData.slbh = props.formData?.ywh || route?.query?.slbh || 'CQSC202412090000534'
+  if(props.formData.manage != undefined) {
+    isManage.value = props.formData.manage
+    _formData.emit = false
+  }
 })
 
 function changeState() {

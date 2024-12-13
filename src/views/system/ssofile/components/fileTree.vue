@@ -482,7 +482,9 @@ function deleteCatalogOrFile(item: any, type: String = '') {
 
 function previewFile(data: any) {
   // 后端返回kkFile路径预览附件
-  eventBus.emit('previewFile', true)
+  if(props.formData.emit) {
+    eventBus.emit('previewFile', true)
+  }
   filePreview.value = true
   previewData.value = data
   let encodeUrl = encodeURIComponent(Base64.encode(`${baseApi.value}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
@@ -491,7 +493,9 @@ function previewFile(data: any) {
 
 function closePreview() {
   filePreview.value = false
-  eventBus.emit('previewFile', false)
+  if(props.formData.emit) {
+    eventBus.emit('previewFile', false)
+  }
 }
 
 function downLoadFile() {

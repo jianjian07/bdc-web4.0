@@ -6,14 +6,14 @@
       </span>
     </div>
     <div class="ssoFileList">
-      <file-tree :formData="_formData"></file-tree>
+      <dir-tree :formData="_formData"></dir-tree>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, watch } from 'vue'
-import fileTree from './components/fileTree.vue';
+import dirTree from './components/dirTree.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute();
