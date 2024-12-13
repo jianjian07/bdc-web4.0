@@ -242,6 +242,17 @@ function updateQlrData(type, data) {
 export async function showFile(demoRefs: any, loading: any, params?: any) {
   eventBus.emit('showFile', params?.manage || false)
 }
+
+/**
+ * 刷新表单列表
+ * @param demoRefs
+ * @param loading
+ */
+export function reloadTable(demoRefs: any, loading: any) {
+  eventBus.emit('onTableReload')
+  return true
+}
+
 /**
  * 跳转至积木报表的 预览页面
  * @param url

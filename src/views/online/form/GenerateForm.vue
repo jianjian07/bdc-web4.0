@@ -301,10 +301,10 @@ const generateVue3 = defineComponent({
             edit,
             save,
             cancel,
-            editableData,
             saveRow,
             editRow,
             cancelRow,
+            reloadTable,
             handleChangeTab,
             getDictItemsByCode,
             getTreeDictItemsByCode,
@@ -443,6 +443,13 @@ function handleChangeTab(key, callback?: any) {
     if (callback) {
         callback(key)
     }
+}
+
+/**
+ * 刷新表格
+ */
+function reloadTable() {
+  initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value });
 }
 
 /**
