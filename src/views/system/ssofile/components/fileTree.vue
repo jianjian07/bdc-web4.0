@@ -205,7 +205,7 @@
         <a @click="closePreview">关闭</a>
       </div>
       <a-spin :spinning="!previewData.previewUrl" :delay="500">
-        <iframe :src="previewData.previewUrl" style="border: none" />
+        <iframe :class="[modalPreview ? 'modalIframe' : '']" :src="previewData.previewUrl" style="border: none" />
       </a-spin>
     </div>
   </div>
@@ -256,6 +256,10 @@ const props = defineProps({
   formData: { //流程信息
     type: Object,
     default: {}
+  },
+  modalPreview: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -482,7 +486,7 @@ function deleteCatalogOrFile(item: any, type: String = '') {
 
 function previewFile(data: any) {
   // 后端返回kkFile路径预览附件
-  if(props.formData.emit) {
+  if(!props.modalPreview) {
     eventBus.emit('previewFile', true)
   }
   filePreview.value = true
@@ -493,7 +497,7 @@ function previewFile(data: any) {
 
 function closePreview() {
   filePreview.value = false
-  if(props.formData.emit) {
+  if(!props.modalPreview) {
     eventBus.emit('previewFile', false)
   }
 }
@@ -678,6 +682,10 @@ function handleOrder() {
       width: 100%;
       height: 100%;
       margin-top: 20px;
+    }
+
+    .modalIframe {
+      min-height: 60vh;
     }
   }
 }

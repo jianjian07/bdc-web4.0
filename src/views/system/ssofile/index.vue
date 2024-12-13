@@ -9,7 +9,7 @@
       </template>
     </div>
     <div class="ssoFileList">
-      <file-tree :isManage="isManage" :formData="_formData"></file-tree>
+      <file-tree :isManage="isManage" :formData="_formData" :modalPreview="modalPreview"></file-tree>
     </div>
   </div>
 </template>
@@ -21,6 +21,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute();
 let isManage: any = ref(false)
+let modalPreview: any = ref(false)
 
 const props = defineProps({
   manage: {
@@ -47,14 +48,13 @@ let _formData = reactive<any>({
   slbh: '',
   processId: '',
   nodeId: '',
-  emit: true 
 })
 
 onMounted(() => {
   _formData.slbh = props.formData?.ywh || route?.query?.slbh || 'CQSC202412090000534'
   if(props.formData.manage != undefined) {
     isManage.value = props.formData.manage
-    _formData.emit = false
+    modalPreview.value = true
   }
 })
 
