@@ -354,7 +354,8 @@ const fwKeys = [
 enum api {
   list = '/api/zrzy-bdc/bdc/bdcZsx/getZrzListByPage',
   lpb = '/api/zrzy-bdc/bdc/lpb/lpb',
-  model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel'
+  model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel',
+  dyxx = '/api/zrzy-bdc/bdc/case/getDyxxList'
 }
 
 const emit = defineEmits(['ok'])
@@ -395,7 +396,18 @@ function getSlsqModel() {
  * 获取当前案卷的不动产单元号数组
  */
 function initCurrentCase() {
-
+  let route = router.currentRoute.value
+  let slbh = route.query.slbh
+  defHttp.get({ url: api.dyxx, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      currentCase.value = res.result
+      if (res.result.length) {
+        currentZrzInfo.value.zbm = res.result[0].zbm
+        zrzData.value.zddm = res.result[0].zddm
+        loadFwxx(false, true)
+      }
+    }
+  })
 }
 
 /**
@@ -427,7 +439,7 @@ function loadList(flag?: boolean) {
   // ]
 }
 
-async function loadFwxx(isFilter = false) {
+async function loadFwxx(isFilter = false, initCheck = false) {
   if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
     const res = await defHttp.get({ url: api.lpb, params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
     if (res && res.result) {
@@ -440,6 +452,9 @@ async function loadFwxx(isFilter = false) {
       setMaxHs()
       if (!isFilter) {
         cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
+      }
+      if (initCheck) {
+        initFwxxChecked(false,false,currentCase.value)
       }
     }
   }
