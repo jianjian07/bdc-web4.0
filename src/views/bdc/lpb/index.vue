@@ -85,17 +85,17 @@
       </div>
       <div class="lpb-content">
         <div v-if="cxxData.length" class="lpb-content-search-tool">
-          <div style="width: 30%">
+          <div style="width: 20%; margin: 0 10px">
             <a-form-item label="层">
               <a-select style="width: 100%" allow-clear v-model:value="filterLpb.cData" :options="cxxOptions"
                 :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
             </a-form-item>
           </div>
-          <div style="width: 30%; margin: 0 10px">
-            <a-form-item label="户" style="display: flex; flex-wrap: nowrap;">
-              <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>
-            </a-form-item>
-          </div>
+<!--          <div style="width: 30%; margin: 0 10px">-->
+<!--            <a-form-item label="户" style="display: flex; flex-wrap: nowrap;">-->
+<!--              <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>-->
+<!--            </a-form-item>-->
+<!--          </div>-->
           <a-button type="primary" @click="handleFilterLpb">查询</a-button>
         </div>
         <template v-if="cxxData.length">
@@ -220,7 +220,24 @@
           <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
             <template v-for="(item) in fwKeys">
               <a-form-item :label="item.label">
-                <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
+                <template v-if="item.label == '权利人'">
+                  <span style="color: #5e8cdc">{{ checkFw['ygqlr'] || checkFw['qlr'] }}</span>
+                </template>
+                <template v-else-if="item.label == '已办业务' || item.label == '在办业务'">
+                  <span style="color: #5e8cdc">{{ getYwStr(item.value, checkFw) }}</span>
+                </template>
+                <template v-else-if="item.label == '实际层' || item.label == '名义层'">
+                  <span style="color: #5e8cdc">{{ checkFw[item.value] }}层</span>
+                </template>
+                <template v-else-if="item.dict">
+                  <span style="color: #5e8cdc">{{ getDictStr(item.dict, checkFw[item.value]) }}</span>
+                </template>
+                <template v-else-if="item.treeDict">
+                  <span style="color: #5e8cdc">{{ getTreeDictStr(item.treeDict, checkFw[item.value]) }}</span>
+                </template>
+                <template v-else>
+                   <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
+                </template>
               </a-form-item>
             </template>
           </a-form>
@@ -236,7 +253,7 @@ import { ref, computed, onMounted } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue"
-import { checkShowForSingle, checkShowForZh } from "/@/views/bdc/lpb/lpb"
+import { checkShowForSingle, checkShowForZh, getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
 import { extractDataLpb } from '/@/utils/bdc/bdc';
 import { router } from "/@/router"
 
@@ -317,6 +334,8 @@ let filterLpb = ref<any>({
 })
 // 查询层下拉框
 let cxxOptions = ref<any>([])
+// 查询的楼盘表信(筛选用)
+let lpbData = ref<any>()
 // function getShbw(wlc: any, dyh: any, hbh: any) {
 //     const match = fwxx.find((t: any) => t.wlc === wlc && t.dyh === dyh && t.hbh === hbh);
 //     return match ? match : null;
@@ -335,27 +354,28 @@ let regType = ref('0101')
 const fwKeys = [
   { label: '室号', value: 'shbw' },
   { label: '权利人', value: 'qlr' },
-  { label: '坐落', value: 'zl' },
+  { label: '坐落', value: 'fwzl' },
   { label: '已办业务', value: 'yb' },
   { label: '在办业务', value: 'zb' },
-  { label: '实际层', value: 'sjc' },
+  { label: '实际层', value: 'wlc' },
   { label: '名义层', value: 'myc' },
   { label: '户号', value: 'hh' },
-  { label: '户型', value: 'hx' },
-  { label: '户型结构', value: 'hxjg' },
-  { label: '房屋用途', value: 'fwyt' },
-  { label: '房屋类型', value: 'fwlx' },
-  { label: '房屋性质', value: 'fwxz' },
+  { label: '户型', value: 'hx' , dict: 'hx'},
+  { label: '户型结构', value: 'hxjg', dict: 'hxjg' },
+  { label: '房屋用途', value: 'fwyt', treeDict: 'fwyt' },
+  { label: '房屋类型', value: 'fwlx', dict: 'fwlx' },
+  { label: '房屋性质', value: 'fwxz', dict: 'fwxz' },
   { label: '建筑面积(㎡)', value: 'jzmj' },
-  { label: '土地独用面积(㎡)', value: 'tddymj' },
-  { label: '土地分摊面积(㎡)', value: 'tdftmj' }
+  { label: '土地独用面积(㎡)', value: 'dytdmj' },
+  { label: '土地分摊面积(㎡)', value: 'ftjzmj' }
 ]
 
 enum api {
   list = '/api/zrzy-bdc/bdc/bdcZsx/getZrzListByPage',
   lpb = '/api/zrzy-bdc/bdc/lpb/lpb',
   model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel',
-  dyxx = '/api/zrzy-bdc/bdc/case/getDyxxList'
+  dyxx = '/api/zrzy-bdc/bdc/case/getDyxxList',
+  detail= '/api/zrzy-bdc/bdc/lpb/lpbFw'
 }
 
 const emit = defineEmits(['ok'])
@@ -403,9 +423,12 @@ function initCurrentCase() {
       currentCase.value = res.result
       if (res.result.length) {
         currentZrzInfo.value.zbm = res.result[0].zbm
+        currentZrzInfo.value.zl = res.result[0].zl
         zrzData.value.zddm = res.result[0].zddm
         loadFwxx(false, true)
       }
+    } else {
+      message.warning('获取当前案卷不动产单元号失败')
     }
   })
 }
@@ -433,10 +456,6 @@ function loadList(flag?: boolean) {
         loadFwxx()
      }
   })
-  // zrzTableData.value = [
-  //   { id: '2', zddm: '429005048032GB31004', dh: '30', zl: '测试数据2', zbm: '05048032GB31004000210' },
-  //   { id: '1', zddm: '429005048025GB00202', dh: '25', zl: '测试数据', zbm: '05048025GB00202000216' }
-  // ]
 }
 
 async function loadFwxx(isFilter = false, initCheck = false) {
@@ -454,7 +473,12 @@ async function loadFwxx(isFilter = false, initCheck = false) {
         cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
       }
       if (initCheck) {
-        initFwxxChecked(false,false,currentCase.value)
+        initFwxxChecked(false,false, currentCase.value)
+      }
+      lpbData.value = {
+        dyhList: dyxx.value,
+        cxxList: cxxData.value,
+        fwList: fwxx.value
       }
     }
   }
@@ -462,9 +486,13 @@ async function loadFwxx(isFilter = false, initCheck = false) {
 }
 
 function onCheck(item: any) {
-  // todo 获取详细房屋数据
-  checkFw.value = item
-  console.log(item);
+  defHttp.get({ url: api.detail, params: { bdcdyh: item.bdcdyh } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      checkFw.value = Object.assign(item, res.result)
+    } else {
+      message.warning('获取房屋属性失败')
+    }
+  })
 }
 
 /**
@@ -625,6 +653,7 @@ function checkShow(fwInfo) {
     return false
   }
 }
+
 defineExpose({
   handleOk
 })
@@ -632,13 +661,19 @@ defineExpose({
  * 筛选楼盘表
  */
 function handleFilterLpb() {
-
+  const wlc = filterLpb.value.cData;
+  dyxx.value = lpbData.value.dyhList;
+  cxxData.value = wlc 
+    ? lpbData.value.cxxList.filter(item => item.wlc == wlc) 
+    : lpbData.value.cxxList;
+  cxx.value = cxxData.value;
+  fwxx.value = wlc
 }
 /**
  * 提取数据
  */
 function handleOk() {
-  const data = fwxx.value.filter(t => t.checked == true)
+  const data = lpbData.value.fwList.filter(t => t.checked == true)
   if (data.length == 0) {
     message.error("请选择要提取的房源")
   } else {

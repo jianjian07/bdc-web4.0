@@ -124,7 +124,24 @@
           <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
             <template v-for="(item) in fwKeys">
               <a-form-item :label="item.label">
-                <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
+                <template v-if="item.label == '权利人'">
+                  <span style="color: #5e8cdc">{{ checkFw['ygqlr'] || checkFw['qlr'] }}</span>
+                </template>
+                <template v-else-if="item.label == '已办业务' || item.label == '在办业务'">
+                  <span style="color: #5e8cdc">{{ getYwStr(item.value, checkFw) }}</span>
+                </template>
+                <template v-else-if="item.label == '实际层' || item.label == '名义层'">
+                  <span style="color: #5e8cdc">{{ checkFw[item.value] }}层</span>
+                </template>
+                <template v-else-if="item.dict">
+                  <span style="color: #5e8cdc">{{ getDictStr(item.dict, checkFw[item.value]) }}</span>
+                </template>
+                <template v-else-if="item.treeDict">
+                  <span style="color: #5e8cdc">{{ getTreeDictStr(item.treeDict, checkFw[item.value]) }}</span>
+                </template>
+                <template v-else>
+                   <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
+                </template>
               </a-form-item>
             </template>
           </a-form>
@@ -137,6 +154,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
+import { getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
+import { message } from "ant-design-vue"
 
 // 最大户数
 let maxHs = ref<number>(0)
@@ -173,21 +192,25 @@ let showAll = ref(false)
 const fwKeys = [
   { label: '室号', value: 'shbw' },
   { label: '权利人', value: 'qlr' },
-  { label: '坐落', value: 'zl' },
+  { label: '坐落', value: 'fwzl' },
   { label: '已办业务', value: 'yb' },
   { label: '在办业务', value: 'zb' },
-  { label: '实际层', value: 'sjc' },
+  { label: '实际层', value: 'wlc' },
   { label: '名义层', value: 'myc' },
   { label: '户号', value: 'hh' },
-  { label: '户型', value: 'hx' },
-  { label: '户型结构', value: 'hxjg' },
-  { label: '房屋用途', value: 'fwyt' },
-  { label: '房屋类型', value: 'fwlx' },
-  { label: '房屋性质', value: 'fwxz' },
+  { label: '户型', value: 'hx' , dict: 'hx'},
+  { label: '户型结构', value: 'hxjg', dict: 'hxjg' },
+  { label: '房屋用途', value: 'fwyt', treeDict: 'fwyt' },
+  { label: '房屋类型', value: 'fwlx', dict: 'fwlx' },
+  { label: '房屋性质', value: 'fwxz', dict: 'fwxz' },
   { label: '建筑面积(㎡)', value: 'jzmj' },
-  { label: '土地独用面积(㎡)', value: 'tddymj' },
-  { label: '土地分摊面积(㎡)', value: 'tdftmj' }
+  { label: '土地独用面积(㎡)', value: 'dytdmj' },
+  { label: '土地分摊面积(㎡)', value: 'ftjzmj' }
 ]
+
+enum api {
+  detail= '/api/zrzy-bdc/bdc/lpb/lpbFw'
+}
 
 onMounted(() => {
   // 外部传进来当前的幢数据
@@ -201,8 +224,9 @@ async function loadFwxx(isFilter = false) {
       if (res && res.result) {
         dyxx.value = res.result.dyhList
         cxxData.value = res.result.cxxList
-        showAll.value = cxxData.value.length > 5
-        cxx.value = cxxData.value.slice(cxxData.value.length - 5, cxxData.value.length)
+        // showAll.value = cxxData.value.length > 5
+        // cxx.value = cxxData.value.slice(cxxData.value.length - 5, cxxData.value.length)
+        cxx.value = cxxData.value
         fwxx.value = res.result.fwList
         setMaxHs()
         if (!isFilter) {
@@ -214,9 +238,13 @@ async function loadFwxx(isFilter = false) {
 }
 
 function onCheck(item: any) {
-  // todo 获取详细房屋数据
-  checkFw.value = item
-  console.log(item);
+  defHttp.get({ url: api.detail, params: { bdcdyh: item.bdcdyh } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      checkFw.value = Object.assign(item, res.result)
+    } else {
+      message.warning('获取房屋属性失败')
+    }
+  })
 }
 
 /**

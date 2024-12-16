@@ -1,4 +1,6 @@
 // 单个非组合流程
+import { findNode, getDictItemsByCode, getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+
 export function checkShowForSingle(regType, fwInfo) {
   let djdl = regType.substr(0, 2)
   switch (djdl) {
@@ -289,4 +291,38 @@ function checkShowForCqZh(regType, fwInfo) {
   } else {
     return true
   }
+}
+
+export function getYwStr(type, item) {
+  const statusMap = {
+    yb: { cqzt: '不动产权', ygzt: '预告', dyzt: '抵押', cfzt: '查封' },
+    zb: { zbcqzt: '不动产权', zbygzt: '预告', zbdyzt: '抵押', zbcfzt: '查封' }
+  };
+
+  const mapping = statusMap[type];
+  if (!mapping) return ''; 
+
+  let result = [];
+  for (let key in mapping) {
+    if (item[key]) {
+      result.push(mapping[key]);
+    }
+  }
+  return result.join(',');                 
+}
+
+export function getDictStr(dict, value) {
+  let arr = getDictItemsByCode(dict)
+  if (arr) {
+    return arr.find(f => f.value == value)?.label
+  }
+  return ''
+}
+
+export function getTreeDictStr(dict, value) {
+  let arr = getTreeDictItemsByCode(dict)
+  if (arr) {
+    return findNode(arr, value)?.label
+  }
+  return ''
 }
