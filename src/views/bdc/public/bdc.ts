@@ -147,8 +147,10 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
               const currentTab = computed(() => tabStore.getCurrentTab)
               tabStore.removeTab(currentTab.value)
               setTimeout(() => {
-                router.push('/refresh')
-              },100)
+                if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
+                  router.push('/refresh')
+                }
+              },300)
             } else {
               router.push('/analysis')
             }
