@@ -14,7 +14,8 @@
   <script>
     let xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-    xhr.open("GET", "/static/setting.json?timestamp=" + new Date().getTime());
+    xhr.contentType = 'application/json;charset=UTF-8'
+    xhr.open("GET", "/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP");
     xhr.send();
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4) {
@@ -22,7 +23,7 @@
           window.settingConfig = xhr.response
             console.log(' xhr.response', xhr.response)
         } else {
-          alert('setting配置读取失败！')
+          alert('nacos配置读取失败！')
         }
       }
     }
