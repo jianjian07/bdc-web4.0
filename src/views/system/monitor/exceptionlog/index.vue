@@ -4,7 +4,7 @@
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="4" :offset="0">
           <a-form-item label="异常id">
-            <a-input v-model:value="formData.exceptionId" />
+            <a-input v-model:value="formData.traceId" />
           </a-form-item>
         </a-col>
         <a-col :span="8" :offset="0">
@@ -74,6 +74,7 @@ let pagination = ref({
 })
 const columns = [
   { title: '编号', dataIndex: "exceptionId", width: 40 },
+  { title: '异常id', dataIndex: "traceId", width: 80 },
   { title: "ip地址", dataIndex: "ipAddress", ellipsis: true, width: 80 },
   { title: '异常类型', dataIndex: "exceptionType", ellipsis: true, width: 100 },
   { title: '接口地址', dataIndex: "requestUri", ellipsis: true, width: 280 },
@@ -124,8 +125,8 @@ async function loadData() {
   if (formData.value.requestUri) {
     params.requestUri = `*${formData.value.requestUri}*`
   }
-  if (formData.value.exceptionId) {
-    params.exceptionId = formData.value.exceptionId
+  if (formData.value.traceId) {
+    params.traceId = formData.value.traceId
   }
   loading.value = true
   defHttp.get({
