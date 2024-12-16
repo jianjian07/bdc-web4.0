@@ -80,7 +80,9 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from 'lodash-es';
 import { getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
+import { useRoute } from "vue-router"
 
+const route = useRoute()
 let dataSource: any = ref([])
 const editableData: any = reactive({});
 
@@ -148,10 +150,6 @@ const urlList = {
 }
 
 const props = defineProps({
-  slbh: { // 受理编号
-    type: String,
-    default: ''
-  },
   ywh: { // 业务号
     type: String,
     default: ''
@@ -237,7 +235,7 @@ const onDelete = (index: string) => {
 }
 
 function loadData() {
-  if(!props.ywh && !props.slbh) {
+  if(!props.ywh && !route.query.slbh) {
     message.warning('未获取到业务号和受理编号！')
     return
   }
@@ -248,7 +246,7 @@ function loadData() {
       params: {
         pageNo: pagination.value.current,
         pageSize: pagination.value.pageSize,
-        slbh: props.slbh,
+        slbh: route.query.slbh,
         ywh: props.ywh,
         zddm: props.zddm
       }
@@ -265,7 +263,7 @@ function loadData() {
 }
 
 function onAddNew() {
-  if(!props.ywh && !props.slbh) {
+  if(!props.ywh && !route.query.slbh) {
     message.warning('未获取到业务号和受理编号，不允许新增！')
     return
   }
@@ -274,7 +272,7 @@ function onAddNew() {
     return
   }
   dataSource.value.push({
-    slbh: props.slbh,
+    slbh: route.query.slbh,
     ywh: props.ywh,
     zddm: props.zddm,
     id0: 'editId'
