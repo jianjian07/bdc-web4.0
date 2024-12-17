@@ -299,7 +299,7 @@ function selectRow(selected: any, record: any) {
         selectedRow.value.push(record)
     } else {
         const delIndex = selectedRow.value.findIndex((val: any) => {
-            return val[props.keyName] === record[props.keyName.toUpperCase()]
+            return val[props.keyName] === record[props.keyName]
         })
         selectedRow.value.splice(delIndex, 1)
     }
