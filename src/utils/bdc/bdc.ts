@@ -67,7 +67,8 @@ export async function extractDataLpb(options: any) {
         dyhList.push({ bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
-    let check = await checkLogic(slbh, dyhList)
+    // let check = await checkLogic(slbh, dyhList)
+    let check = true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -118,11 +119,9 @@ export function checkLogic(slbh, bdcModels) {
                   content: createVNode('div', { style: 'color:red;' }, checkResult.message),
                   onOk() {
                     resolve(true)
-                    console.log('OK');
                   },
                   onCancel() {
                     resolve(false)
-                    console.log('Cancel');
                   }
                 });
                } else {
