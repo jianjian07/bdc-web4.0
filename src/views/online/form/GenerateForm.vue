@@ -289,6 +289,7 @@ const generateVue3 = defineComponent({
             selectJsonSetting,
             ...events,
             ...bdc,
+            route,
             eventBus,
             computed,
             defHttp,

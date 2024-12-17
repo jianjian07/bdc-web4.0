@@ -147,8 +147,10 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
               const currentTab = computed(() => tabStore.getCurrentTab)
               tabStore.removeTab(currentTab.value)
               setTimeout(() => {
-                router.push('/refresh')
-              },100)
+                if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
+                  router.push('/refresh')
+                }
+              },300)
             } else {
               router.push('/analysis')
             }
@@ -368,20 +370,20 @@ export function baseGd(demoRefs: any, loading: any, params: any) {
  * @param viewData
  * @param fields
  */
-export async function setQlqtqkBySlbh(viewData: any, fields: any) {
+export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any) {
   let route = router.currentRoute.value
   if (viewData.value && fields) {
     if (fields.includes('.')) {
       let key = fields.split('.')
       if (!viewData.value[key[0]][key[1]]) {
         let slbh = route.query.slbh
-        let result = await getQlqtqkBySLBH(slbh, viewData)
+        let result = await getQlqtqkBySLBH(slbh, viewData, params)
         viewData.value[key[0]][key[1]] = result
       }
     } else {
       if (!viewData.value[fields]) {
         let slbh = route.query.slbh
-        let result = await getQlqtqkBySLBH(slbh, viewData)
+        let result = await getQlqtqkBySLBH(slbh, viewData, params)
         viewData.value[fields] = result
       }
     }
@@ -392,11 +394,15 @@ export async function setQlqtqkBySlbh(viewData: any, fields: any) {
  * 根据受理编号获取权利其他配置
  * @param slbh
  */
-export function getQlqtqkBySLBH(slbh: any, viewData: any) {
+export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
   return new Promise((resolve, reject) => {
     defHttp.post({
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
-      params: { slbh: slbh },
+      params: { 
+        slbh: slbh,
+        sfybz: params?.sfybz || '',
+        qllx: params?.qllx || ''
+      },
       data: {}
     }, { withToken: true }
     ).then((res: any) => {
@@ -404,6 +410,7 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any) {
         let result = manageQLQT(res.result, viewData)
         resolve(result)
       } else {
+        message.warning(res.message || '查询出错！')
         reject()
       }
     }).catch((error: any) => {
@@ -450,6 +457,7 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any) {
  * @param viewData
  */
 function manageQLQT(qlqtConfig: any, viewData: any) {
+  debugger
   // 获取未赋值的占位符，从表单数据中赋值
   // let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/gm //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
   // let reg = /(?<=\[)\S+(?=\])/gm //匹配中括号，返回结果不包括中括号
