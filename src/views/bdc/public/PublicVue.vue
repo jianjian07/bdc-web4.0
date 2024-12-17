@@ -17,7 +17,7 @@
               :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' :1000" @close="onClose">
               <template #extra>
                 <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
-                <a-button type="primary" @click="handleOk">确定</a-button>
+                <a-button type="primary" :loading="okLoading" @click="handleOk">确定</a-button>
               </template>
               <LookLpb v-if="eType == 'lpb'" ref="dataForm" @ok="onReloadLpb"></LookLpb>
               <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>
@@ -99,6 +99,8 @@ let showFilePanel = ref<boolean>(false)
 // 是否默认展示管理状态
 let isManage = ref<boolean>(false)
 let startX = 0
+// 提取okloading
+let okLoading = ref<boolean>(false)
 // 通用表单组件实例
 let demoRefs: any = []
 // 动态设置ref 在组件渲染后才能设置
@@ -244,14 +246,16 @@ function onReload(obj: any) {
   obj.reload = reload
   obj.regType = regType.value
   obj.ywlx = ywlx.value
+  obj.okLoading = okLoading
   extractData(obj)
 }
 
 function onReloadLpb(obj: any) {
   obj.open = open
   obj.reload = reload
-  // obj.regType = regType.value
+  obj.regType = regType.value
   // obj.ywlx = ywlx.value
+  obj.okLoading = okLoading
   extractDataLpb(obj)
 }
 /**数据提取 end */
@@ -466,6 +470,10 @@ function onShowFile(manage) {
 
 :deep(.ant-picker.ant-picker-disabled) {
     background-color: rgba(0, 0, 0, 0.02)
+}
+
+:deep(.ant-input-number-disabled) {
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 </style>
