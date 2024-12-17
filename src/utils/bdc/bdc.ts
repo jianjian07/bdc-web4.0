@@ -67,8 +67,7 @@ export async function extractDataLpb(options: any) {
         dyhList.push({ bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
-    // let check = await checkLogic(slbh, dyhList)
-    let check = true
+    let check = await checkLogic(slbh, dyhList)
     options.okLoading.value = false
     if (check) {
         let _data: any =
