@@ -11,18 +11,23 @@ export function extractData(options: any) {
     const { data, dtype, open, reload, regType, ywlx } = options
     const slbh = route.query.slbh?.toString()
     let dyhList: any = []
-
-    for (let index = 0; index < data.length; index++) {
-        const dyh = data[index];
-        dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm })
-    }
+    debugger
     let lcid = "";
     switch (regType) {
         case '0101':
-            lcid = "1780060462306840577"
+            for (let index = 0; index < data.length; index++) {
+                const dyh = data[index];
+                dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm })
+            }
             break;
         case '0102':
-            lcid = "1780060462306840577"
+        case '0103':
+        case '0104':
+        case '0105':
+            for (let index = 0; index < data.length; index++) {
+                const dyh = data[index];
+                dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh })
+            }
             break;
     }
     let _data: any =

@@ -100,7 +100,7 @@ function onSelect(process: any) {
 function handleAdd() {
     // 跳转至创建流程页面
     const params = {
-        regType: '0101',
+        // regType: '0101',
         lcid: processInfo.value.key,
         processKey: processInfo.value.value
     }

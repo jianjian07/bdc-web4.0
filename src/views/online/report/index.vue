@@ -49,14 +49,37 @@
                     </a-tag>
                 </template>
                 <template v-if="column.key === 'action'">
-                    <span>
-                        <a @click="editData(record)">编辑</a><a-divider type="vertical" />
-                        <a @click="design(record)">在线设计</a><a-divider type="vertical" />
-                        <a @click="preview(record)">在线预览</a><a-divider type="vertical" />
-                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
-                            <a>删除</a>
-                        </a-popconfirm>
-                    </span>
+                    <a-space>
+                        <template #split>
+                            <a-divider type="vertical" />
+                        </template>
+                        <a @click="design(record)">设计</a>
+                        <a-dropdown>
+                            <a class="ant-dropdown-link" @click.prevent>
+                                更多
+                                <DownOutlined />
+                            </a>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item>
+                                        <a @click="editData(record)">编辑</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
+                                        <a @click="preview(record)">预览</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
+                                        <a @click="copyData(record)">复制</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
+                                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
+                                            @confirm="deleteData(record)">
+                                            <a>删除</a>
+                                        </a-popconfirm>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </a-space>
                 </template>
             </template>
         </a-table>
@@ -67,18 +90,18 @@
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
 const ReportModal = defineAsyncComponent(() => import("/@/views/online/report/ReportModal.vue"));
 const columns = [
     { title: "ID", dataIndex: "id", width: 80 },
     { title: "初始加载", dataIndex: "isLoad", width: 100 },
-    { title: "编号", dataIndex: "code", width: 180 },
+    { title: "编号", dataIndex: "code", width: 150 },
     { title: "报表标题", dataIndex: "title" },
     { title: "数据来源", dataIndex: "cType" },
     { title: "MyBatis", dataIndex: "isMybatis" },
-    { title: '操作', key: 'action', width: 230 }
+    { title: '操作', key: 'action', width: 180 }
 ]
 let datalist: any = ref([]);
 let formData: any = ref([]);
@@ -93,20 +116,17 @@ let pagination = ref({
     current: 1,
     pageSize: 10,
 })
+
+enum Api {
+    copyUrl = '/api/zrzy-form/form/report/copyData',
+    delUrl = '/api/zrzy-form/form/report/delete',
+    list = '/api/zrzy-form/form/report/pages',
+}
 /**
  * 表格数据加载
 */
 async function loadData() {
-    // 解决翻页后查询不到的问题
-    // if (type == 'query') {
-    //     pagination.value = {
-    //         total: 0,
-    //         current: 1,
-    //         pageSize: 10,
-    //     }
-    // }
-    let url = '/api/zrzy-form/form/report/pages'
-    defHttp.post({ url: url, data: { code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: Api.list, data: { code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
         if (!res.success) return
         const { records, total } = res.result
         datalist.value = records
@@ -162,8 +182,7 @@ function editData(record: any) {
 */
 function deleteData(record) {
     if (!record.id) return
-    let url = '/api/zrzy-form/form/report/delete' // 删除
-    defHttp.post({ url: url, params: { id: record.id } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: Api.delUrl, params: { id: record.id } }, { withToken: true }).then((res) => {
         if (!res.message) {
             message.success('删除成功')
             loadData()
@@ -183,6 +202,22 @@ function handOver(val: any) {
         loadData()
     }
     open.value = false
+}
+
+/**
+ * 复制表单
+*/
+function copyData(record: any) {
+    defHttp.post({ url: Api.copyUrl, params: { id: record.id } }, { withToken: true }).then((res) => {
+        if (res) {
+            message.success('复制成功')
+            loadData()
+        } else {
+            message.error('复制失败')
+        }
+    }).catch(err => {
+        console.info(err)
+    })
 }
 </script>
 <style lang="less" scoped>
