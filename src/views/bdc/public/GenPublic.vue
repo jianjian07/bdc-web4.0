@@ -140,4 +140,8 @@ defineExpose({
 :deep(.ant-picker.ant-picker-disabled) {
     background-color: rgba(0, 0, 0, 0.02)
 }
+
+:deep(.ant-input-number-disabled) {
+  background-color: rgba(0, 0, 0, 0.02)
+}
 </style>
