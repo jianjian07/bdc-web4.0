@@ -26,71 +26,96 @@
   </div>
   <div class="wonder-table-css">
     <div class="wonder-table-toolbar" v-if="header">
-        <a-button type="primary" @click="handleModal('new')">
-            <template #icon>
-                <plus-outlined />
-            </template>
-            新增
+      <a-button type="primary" @click="handleModal('new')" style="margin-right: 8px">
+          <template #icon>
+              <plus-outlined />
+          </template>
+          新增
+      </a-button>
+      <a-dropdown v-if="state.selectedRowKeys?.length > 0">
+        <template #overlay>
+          <a-menu>
+            <a-menu-item key="1" @click="batchDelete">
+              <DeleteOutlined />
+              删除
+            </a-menu-item>
+          </a-menu>
+        </template>
+        
+        <a-button style="margin-right: 8px"> 批量操作
+          <DownOutlined />
         </a-button>
+      </a-dropdown>
     </div>
       <a-spin :spinning="spinning">
-          <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-              @change="onChange($event, loadData)">
-              <template #bodyCell="{ column, record }">
-                  <template v-if="column.dataIndex === 'priority'">
-                      <span>
-                          <a-tag color="red" v-if="record.priority == 'H'">
-                              高
-                          </a-tag>
-                          <a-tag color="yellow" v-else-if="record.priority == 'M'">
-                              中
-                          </a-tag>
-                          <a-tag color="green" v-else-if="record.priority == 'L'">
-                              低
-                          </a-tag>
-                      </span>
-                  </template>
-                  <template v-if="column.dataIndex === 'send_status'">
-                      <span>
-                          <a-tag color="green" v-if="record.send_status == '1'">
-                              已发布
-                          </a-tag>
-                          <a-tag color="red" v-else-if="record.send_status == '0'">
-                              未发布
-                          </a-tag>
-                      </span>
-                  </template>
-                  <template v-if="column.key === 'action'">
-                      <a-space>
-                          <template #split>
-                              <a-divider type="vertical" />
+          <a-table 
+            :columns="columns" 
+            :data-source="datalist" 
+            :pagination="pagination"
+            @change="onChange($event, loadData)"
+            :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
+            :row-key="record => record.id">
+            <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'priority'">
+                    <span>
+                        <a-tag color="red" v-if="record.priority == 'H'">
+                            高
+                        </a-tag>
+                        <a-tag color="yellow" v-else-if="record.priority == 'M'">
+                            中
+                        </a-tag>
+                        <a-tag color="green" v-else-if="record.priority == 'L'">
+                            低
+                        </a-tag>
+                    </span>
+                </template>
+                <template v-if="column.dataIndex === 'sendStatus'">
+                    <span>
+                        <a-tag color="green" v-if="record.sendStatus == '1'">
+                            已发布
+                        </a-tag>
+                        <a-tag color="red" v-else-if="record.sendStatus == '0'">
+                            未发布
+                        </a-tag>
+                        <a-tag color="orange" v-else-if="record.sendStatus == '2'">
+                            已撤销
+                        </a-tag>
+                    </span>
+                </template>
+                <template v-if="column.key === 'action'">
+                    <a-space>
+                        <template #split>
+                            <a-divider type="vertical" />
+                        </template>
+                        <a @click="handleModal('edit', record)">编辑</a>
+                        <a-dropdown>
+                          <a class="ant-dropdown-link" @click.prevent>
+                              更多
+                              <DownOutlined />
+                          </a>
+                          <template #overlay>
+                              <a-menu>
+                                  <a-menu-item>
+                                      <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
+                                          @confirm="handleDelete(record.id)">
+                                          <a>删除</a>
+                                      </a-popconfirm>
+                                  </a-menu-item>
+                                  <a-menu-item v-if="record.sendStatus != '1'">
+                                      <a @click="handlePublish(record, '1')">发布</a>
+                                  </a-menu-item>
+                                  <a-menu-item v-else>
+                                      <a @click="handlePublish(record, '2')">撤销</a>
+                                  </a-menu-item>
+                                  <a-menu-item>
+                                      <a @click="handleModal('view', record)">查看</a>
+                                  </a-menu-item>
+                              </a-menu>
                           </template>
-                          <a @click="handleModal('edit', record)">编辑</a>
-                          <a-dropdown>
-                            <a class="ant-dropdown-link" @click.prevent>
-                                更多
-                                <DownOutlined />
-                            </a>
-                            <template #overlay>
-                                <a-menu>
-                                    <a-menu-item>
-                                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
-                                            @confirm="handleDelete(record)">
-                                            <a>删除</a>
-                                        </a-popconfirm>
-                                    </a-menu-item>
-                                    <a-menu-item>
-                                        <a @click="handlePublish(record)">发布</a>
-                                    </a-menu-item>
-                                    <a-menu-item>
-                                        <a @click="handleModal('view', record)">查看</a>
-                                    </a-menu-item>
-                                </a-menu>
-                            </template>
-                        </a-dropdown> 
-                      </a-space>
-                  </template>
-              </template>
+                      </a-dropdown> 
+                    </a-space>
+                </template>
+            </template>
           </a-table>
       </a-spin>
   </div>
@@ -98,45 +123,51 @@
 
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
-import { ref, createVNode } from 'vue';
+import { ref, createVNode, reactive } from 'vue';
 import { SearchOutlined, RedoOutlined, DownOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { Modal, message } from "ant-design-vue";
+import { message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
+import dayjs from 'dayjs';
 
 enum api {
-  tasklist = '/api/zrzy-bdc/act/task/list',
-  delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData"
+  tasklist = '/api/zrzy-bdc/sys/sysTzgg/list',
+  delUrl = "/api/zrzy-bdc/sys/sysTzgg/delete",
+  deleteBatch = "/api/zrzy-bdc/sys/sysTzgg/deleteBatch",
+  pubUrl = '/api/zrzy-bdc/sys/sysTzgg/edit'
 }
 let datalist = ref([]);
 let formData: any = ref({})
 let spinning = ref<boolean>(true);
+const state = reactive({
+  selectedRowKeys: []
+})
 const columns = [
   { title: "标题", dataIndex: "title", align: "center", width: 300 },
   { 
     title: "消息类型", 
-    dataIndex: "msg_category", 
+    dataIndex: "msgCategory", 
     align: "center", 
     customRender: ({text}) => {
       return Number(text) === 1 ? '通知公告' : Number(text) === 2 ? '系统消息' : '公示公告'
     } 
   },
-  { title: "发布人", dataIndex: "create_by", align: "center", key: "create_by" },
+  { title: "发布人", dataIndex: "createBy", align: "center", key: "createBy" },
   { 
     title: "优先级", dataIndex: "priority", align: "center" },
   { 
     title: "通告对象", 
-    dataIndex: "msg_type", 
+    dataIndex: "msgType", 
     align: "center",
     customRender: ({text}) => {
       return text === 'USER' ? '指定用户' : '全体用户'
     } 
   },
   { 
-    title: "发布状态", dataIndex: "send_status", align: "center"},
-  { title: "发布时间", dataIndex: "send_time", align: "center" },
-  { title: "撤销时间", dataIndex: "cancel_time", align: "center" },
-  { title: "公示开始时间", dataIndex: "start_time", align: "center" },
-  { title: "公示结束时间", dataIndex: "end_time", align: "center" },
+    title: "发布状态", dataIndex: "sendStatus", align: "center"},
+  { title: "发布时间", dataIndex: "sendTime", align: "center" },
+  { title: "撤销时间", dataIndex: "cancelTime", align: "center" },
+  { title: "公示开始时间", dataIndex: "startTime", align: "center" },
+  { title: "公示结束时间", dataIndex: "endTime", align: "center" },
   { title: '操作', key: 'action', width: 200, align: "center" }
 ]
 let pagination = ref({
@@ -159,38 +190,21 @@ loadData()
 
 function loadData() {
   spinning.value = true
-  defHttp.post({ 
+  defHttp.get({ 
     url: api.tasklist, 
-    params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, 
-    data: { title: formData.value.title } 
+    params: {
+      title: formData.value.title,
+      pageNo: pagination.value.current,
+      pageSize: pagination.value.pageSize
+    }, 
   }, { withToken: true }).then(res => {
       if (res.success) {
-          const result: any = {
-            records: [{
-              id: 1,
-              title: '测试1',
-              msg_content: '测试1',
-              priority: 'H',
-              send_status: '0',
-              msg_category: "2",
-              msg_type: 'USER'
-            },
-            {
-              id: 2,
-              title: '测试2',
-              msg_content: '测试2',
-              priority: 'M',
-              send_status: '1',
-              msg_category: '1',
-              msg_type: 'ALL'
-            }],
-            total: 2
-          }
+          const result: any = res.result
           datalist.value = result.records
           pagination.value.total = result.total
       }
       spinning.value = false
-  }).catch(_err => {
+  }).catch(() => {
       spinning.value = false
   })
 }
@@ -237,6 +251,7 @@ function handleModal(type: any, record: any = null) {
       // res为弹窗内组件的dom
       let validator = await res.onSubmit()
       if (validator) {
+        loadData()
         modal.destroy()
       }
       modal.setConfirmLoading(false)
@@ -246,6 +261,13 @@ function handleModal(type: any, record: any = null) {
     }
   })
 }
+
+
+function onSelectChange(selectedRowKeys: any) {
+  state.selectedRowKeys = selectedRowKeys
+
+}
+
 /**
 * 删除
 * @param id 
@@ -256,6 +278,49 @@ function handleDelete(id: string) {
   ).then((res: any) => {
       if (res?.success) {
           message.success('删除成功！')
+          loadData()
+      } else {
+          message.warning(res?.message)
+      }
+  })
+}
+
+function batchDelete() {
+  defHttp.delete({
+    url: api.deleteBatch,
+    params: {
+      ids: state.selectedRowKeys.join(',')
+    }
+  }, {
+    withToken: true
+  }).then(res => {
+    if (res && res.success) {
+      message.warning('删除成功！')
+      state.selectedRowKeys = []
+      loadData()
+    } else {
+      message.warning('删除失败！')
+    }
+  })
+}
+
+/**
+* 发布
+* @param id 
+*/
+function handlePublish(record: any, type: any) {
+  let params = { ...record }
+  params.sendStatus = type
+  if (type == '1') {
+    params.sendTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
+  } else {
+    params.cancelTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
+  }
+  defHttp.put(
+      { url: api.pubUrl, params: params }, { withToken: true }
+  ).then((res: any) => {
+      if (res?.success) {
+          message.success('发布成功！')
           loadData()
       } else {
           message.warning(res?.message)
