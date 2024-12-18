@@ -237,7 +237,7 @@ const generateVue3 = defineComponent({
          * @param paginationName 分页对象
          */
         function onChange1(pag: any, paginationName: string) {
-            paginations[paginationName] = pag
+            paginations.value[paginationName] = pag
             initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName] });
         }
 
