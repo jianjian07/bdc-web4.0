@@ -373,7 +373,7 @@ function handlePublish(record: any, type: any) {
       { url: api.pubUrl, params: params }, { withToken: true }
   ).then((res: any) => {
       if (res?.success) {
-          message.success('发布成功！')
+          message.success(type == '1' ? '发布成功！' : '撤销成功！')
           loadData()
       } else {
           message.warning(res?.message)
