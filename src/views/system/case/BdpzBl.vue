@@ -1,13 +1,13 @@
 <template>
   <div class="bdpz-bl cc-container">
-    <div style="display: flex; flex-direction: column">
+    <div style="display: flex; flex-direction: column; height: 100%">
       <div style="line-height: 3em; background-color: #fff;padding: 10px 0px;">
         <div style="text-align: right;padding-right: 20px;">
           当前选中流程
           【<span style="color:#1890ff;font-weight: 600;">{{ processInfo.title }}</span>】
         </div>
       </div>
-      <div style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;">
+      <div style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); overflow: auto">
         <div style="width: 280px;padding: 10px 8px;">
           <a-directory-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys" 
                           :fieldNames="{ children:'children', title:'label', key:'value' }"
@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="userTabContent">
+    <div class="userTabContent" style="height: 100%">
       <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
         <a-tab-pane key="1" tab="基础配置">
           <FlowModal :lcid="processInfo.key"/>
@@ -83,6 +83,12 @@ function onSelect(_selectedKeys: any, e: any) {
 
   :deep(.ant-tabs-content) {
     height: 100%;
+  }
+  
+    
+  :deep(.ant-tabs-content-holder) {
+    height: 100%;
+    overflow: auto;
   }
 }
 </style>
