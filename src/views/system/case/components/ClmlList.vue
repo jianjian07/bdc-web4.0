@@ -242,7 +242,7 @@ function onSelectChange(selectedRowKeys: any) {
   console.log('selectedRowKeys changed: ', selectedRowKeys);
   state.selectedRowKeys = selectedRowKeys
 
-};
+}
 
 function handleTableChange(pag:any) {
   pagination.value.current = pag.current

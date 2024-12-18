@@ -1,5 +1,5 @@
 <template>
-  <div class="wonder-table-form" v-if="header">
+  <div class="wonder-table-form" v-if="operable">
       <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
           <a-row :gutter="[0, 8]" tyle="flex">
               <a-col :span="8" :offset="0">
@@ -25,7 +25,7 @@
       </a-form>
   </div>
   <div class="wonder-table-css">
-    <div class="wonder-table-toolbar" v-if="header">
+    <div class="wonder-table-toolbar" v-if="operable">
       <a-button type="primary" @click="handleModal('new')" style="margin-right: 8px">
           <template #icon>
               <plus-outlined />
@@ -53,7 +53,7 @@
             :data-source="datalist" 
             :pagination="pagination"
             @change="onChange($event, loadData)"
-            :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
+            :row-selection="operable ? { selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange } : false"
             :row-key="record => record.id">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'priority'">
@@ -87,8 +87,9 @@
                         <template #split>
                             <a-divider type="vertical" />
                         </template>
-                        <a @click="handleModal('edit', record)">编辑</a>
-                        <a-dropdown>
+                        <a v-if="operable" @click="handleModal('edit', record)">编辑</a>
+                        <a v-else @click="handleModal('view', record)">查看</a>
+                        <a-dropdown v-if="operable">
                           <a class="ant-dropdown-link" @click.prevent>
                               更多
                               <DownOutlined />
@@ -141,48 +142,98 @@ let spinning = ref<boolean>(true);
 const state = reactive({
   selectedRowKeys: []
 })
+
+const props = defineProps({
+  operable: {
+    type: Boolean,
+    default: true
+  }
+})
+
 const columns = [
-  { title: "标题", dataIndex: "title", align: "center", width: 300 },
+  { 
+    title: "标题",
+    dataIndex: "title", 
+    align: "center", 
+    width: 300, 
+    show: true 
+  },
   { 
     title: "消息类型", 
     dataIndex: "msgCategory", 
     align: "center", 
     customRender: ({text}) => {
       return Number(text) === 1 ? '通知公告' : Number(text) === 2 ? '系统消息' : '公示公告'
-    } 
+    },
+    show: true 
   },
-  { title: "发布人", dataIndex: "createBy", align: "center", key: "createBy" },
   { 
-    title: "优先级", dataIndex: "priority", align: "center" },
+    title: "发布人", 
+    dataIndex: "createBy", 
+    align: "center", 
+    key: "createBy",
+    show: props.operable
+  },
+  { 
+    title: "优先级", 
+    dataIndex: "priority", 
+    align: "center",
+    show: props.operable
+  },
   { 
     title: "通告对象", 
     dataIndex: "msgType", 
     align: "center",
     customRender: ({text}) => {
       return text === 'USER' ? '指定用户' : '全体用户'
-    } 
+    },
+    show: true
   },
   { 
-    title: "发布状态", dataIndex: "sendStatus", align: "center"},
-  { title: "发布时间", dataIndex: "sendTime", align: "center" },
-  { title: "撤销时间", dataIndex: "cancelTime", align: "center" },
-  { title: "公示开始时间", dataIndex: "startTime", align: "center" },
-  { title: "公示结束时间", dataIndex: "endTime", align: "center" },
-  { title: '操作', key: 'action', width: 200, align: "center" }
-]
+    title: "发布状态", 
+    dataIndex: "sendStatus", 
+    align: "center",
+    show: true
+  },
+  { 
+    title: "发布时间",
+    dataIndex: "sendTime", 
+    align: "center",
+    show: props.operable
+  },
+  { 
+    title: "撤销时间",
+    dataIndex: "cancelTime", 
+    align: "center",
+    show: props.operable
+  },
+  { 
+    title: "公示开始时间",
+    dataIndex: "startTime", 
+    align: "center",
+    show: props.operable
+  },
+  { 
+    title: "公示结束时间",
+    dataIndex: "endTime", 
+    align: "center",
+    show: props.operable
+  },
+  {
+    title: '操作', 
+    key: 'action', 
+    width: 200, 
+    align: "center",
+    show: true
+  }
+].filter(v => v.show)
+
 let pagination = ref({
   total: 0,
   current: 1,
   pageSize: 10,
   showTotal: () => {
       return `共 ${pagination.value.total} 条数据`
-  }
-})
-
-const props = defineProps({
-  header: {
-    type: Boolean,
-    default: true
   }
 })
 
@@ -247,14 +298,16 @@ function handleModal(type: any, record: any = null) {
       record: record
     },
     onOk: async (res: any) => {
-      modal.setConfirmLoading(true)
-      // res为弹窗内组件的dom
-      let validator = await res.onSubmit()
-      if (validator) {
-        loadData()
-        modal.destroy()
+      if(type != 'view') {
+        modal.setConfirmLoading(true)
+        // res为弹窗内组件的dom
+        let validator = await res.onSubmit()
+        if (validator) {
+          loadData()
+        }
+        modal.setConfirmLoading(false)
       }
-      modal.setConfirmLoading(false)
+      modal.destroy()
     },
     onCancel: () => {
       modal.close()
