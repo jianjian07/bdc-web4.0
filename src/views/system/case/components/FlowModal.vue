@@ -1,7 +1,7 @@
 <template>
     <a-form :model="flowInfo" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" autocomplete="off">
         <a-form-item label="流程ID" name="lcid">
-            <a-input v-model:value="flowInfo.lcid" />
+            <a-input v-model:value="flowInfo.lcid" readOnly/>
         </a-form-item>
         <!-- <a-form-item label="流程分类" name="password">
             <a-select v-model:value="flowInfo.password" :options="getDictItemsByCode('bpm_process_type')" />

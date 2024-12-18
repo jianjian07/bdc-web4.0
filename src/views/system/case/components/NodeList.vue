@@ -1,12 +1,12 @@
 <template>
-    <a-row>
-        <a-col :span="3">
+    <a-row style="padding: 10px">
+        <a-col :span="3" v-if="nodeList && nodeList.length">
             <a-tabs default-active-key @change="nodeClick" size="small" tab-position="left" class="tab-left">
                 <a-tab-pane class="tab-panel" v-for="item in nodeList" :key="item.processNodeCode"
                     :tab="item.processNodeName" />
             </a-tabs>
         </a-col>
-        <a-col :span="21">
+        <a-col :span="(nodeList && nodeList.length) ? 21 : 24">
             <BdpzModal :lcid="lcid" :jdid="jdid"></BdpzModal>
         </a-col>
     </a-row>
@@ -26,13 +26,17 @@ let props = defineProps({
 enum api {
     nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list'
 }
-let nodeList = ref()
+let nodeList = ref([])
 let lcid = ref(props.lcid)
 let jdid = ref()
 function getNode() {
     defHttp.get({ url: api.nodelistUrl, params: { processId: lcid.value } }, { withToken: true }).then((res) => {
-        nodeList.value = res.result;
-        jdid.value = res.result[0].processNodeCode
+        if (res && res.success) {
+           nodeList.value = res.result;
+           if (res.result.length) {
+              jdid.value = res.result[0].processNodeCode
+           }
+        }
     });
 }
 /**
