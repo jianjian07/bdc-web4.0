@@ -126,7 +126,6 @@ let formState = ref<any>({
   pid: 0,
   subsystemId: props.sysId
 })
-debugger
 formState.value.type = props.powerType
 const rules = ref<any>({
   type: [{ required: true, message: '请输入菜单类型!' }],

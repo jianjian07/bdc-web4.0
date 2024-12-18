@@ -30,6 +30,7 @@ let props = defineProps({
     type: Boolean,
     default: false
   },
+  // 用于区别是弹窗权利人还是表单权利人
   type: {
     type: String,
     default: ''

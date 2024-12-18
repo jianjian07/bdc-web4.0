@@ -2,7 +2,7 @@
   <div class="process-module">
     <div style="margin-bottom: 20px;overflow: auto">
       <img :src="imgPath" alt="流程图" style="border: 2px; cursor: hand" usemap="#planetmap">
-      <map name="planetmap">
+      <map v-if="false" name="planetmap">
         <template v-for="(item, key, index) in nodePositionInfo.positionList" :key="index">
           <area
               :coords="item.coords"
@@ -12,7 +12,7 @@
         </template>
       </map>
     </div>
-    <a-card title="流程历史跟踪">
+    <a-card v-if="false" title="流程历史跟踪">
       <a-table
           :columns="columns"
           :data-source="tableData"
@@ -24,15 +24,23 @@
       </a-table>
     </a-card>
     
-    <node-info-modal ref="nodeInfoModal"></node-info-modal>
+    <node-info-modal v-if="false" ref="nodeInfoModal"></node-info-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch } from "vue"
 import NodeInfoModal from "/@/views/bdc/task/components/NodeInfoModal.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+
+const props = defineProps({
+  processInstanceId: {
+    type: String,
+    default: ''
+  }
+})
+
 // 流程图背景
 let imgPath = ref<any>('')
 // 流程节点信息
@@ -85,12 +93,38 @@ let nodeInfoModal = ref()
 
 enum api {
   list = '',
-  nodeInfo = ''
+  nodeInfo = '',
+  image = '/api/zrzy-bdc/act/task/traceImage'
 }
+
+watch(() => props.processInstanceId, (newValue, _oldValue) => {
+  if (newValue) {
+    getImage(newValue)
+  }
+}, {
+  immediate: true
+})
 
 onMounted(() => {
   
 })
+
+/**
+ * 加载流程图
+ * @param id
+ */
+function getImage(id) {
+  defHttp.get({ url: api.image, params: { processInstanceId: id }, responseType: "blob" }, { withToken: true }).then((res) => {
+    console.log('getImageres',res)
+    if (res.size == 0) {
+      message.error('加载流程图出错！')
+      return
+    }
+    //处理二进制数据并创建 Blob 对象
+    const blob = new Blob([res])
+    imgPath.value = URL.createObjectURL(blob)
+  })
+}
 
 /**
  * 加载流程图

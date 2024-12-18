@@ -3,7 +3,7 @@
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <template v-for="(form, index) in formList">
         <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"
-          :formCode="form.vfd" :disabled="true" :ref="setRef">
+          :formCode="form.vfd" :disabled="true" :ref="setRef" :formData="formData">
         </component>
       </template>
        <template v-if="qlr">
@@ -17,20 +17,20 @@
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import eventBus from "/@/views/bdc/djlc/eventBus"
+import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
+import { useRoute } from "vue-router"
+import { message } from "ant-design-vue"
+const route = useRoute();
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
 })
 
 
 const props = defineProps({
-  vueList: {
-    type: Array,
-    default: []
-  },
-  qlrxx: {
-    type: Array,
-    default: []
+  data: {
+    type: Object,
+    default: {}
   }
 })
 
@@ -48,6 +48,8 @@ const setRef = (el: any) => {
     demoRefs.push(el)
   }
 }
+// 表单查询参数
+let formData = ref<any>({})
 
 const component = (path: string) => {
   let _com = `/src/views/${path}.vue`
@@ -59,10 +61,13 @@ const component = (path: string) => {
   }
 }
 
+enum api {
+  getFlowConfig = '/api/zrzy-bdc/flow/vue/getFlowConfig'
+}
+
 onMounted(() => {
   initBusEvent()
-  formList.value = props.vueList || []
-  qlr.value = props.qlrxx ? Array.isArray(props.qlrxx) ? props.qlrxx : [props.qlrxx] : []
+  getFormConfig()
 })
 
 onBeforeUnmount(() => {
@@ -75,6 +80,31 @@ function initBusEvent() {
 
 function removeBusEvent() {
   eventBus.off('onChangeQlr', onChangeQlrShow)
+}
+
+/**
+ * 获取表单配置
+ */
+function getFormConfig() {
+  spinning.value = true
+  let slbh = route.query.slbh
+  let jdid = props?.data?.nodeId
+  let taskId = props?.data?.id
+  formData.value = {
+    taskId: taskId,
+    nodeId: jdid
+  }
+  defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid, taskId: taskId } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      let formConfig = res.result
+      formList.value = formConfig?.vueList || []
+      let qlrList = Array.isArray(formConfig.qlrList) ? formConfig.qlrList : [formConfig.qlrList]
+      qlr.value = formConfig.qlrList ? qlrList : []
+    } else {
+      message.warning('获取表单配置出错')
+    }
+    spinning.value = false
+  })
 }
 
 /**
