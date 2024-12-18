@@ -14,13 +14,17 @@
 
 <script setup lang="ts">
 
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import BdpzModal from '/@/views/system/case/components/BdpzModal.vue';
 let props = defineProps({
     lcid: {
         type: String,
         default: ""
+    },
+    isBl: {
+        type: Boolean,
+        default: false
     }
 })
 enum api {
@@ -47,10 +51,18 @@ function nodeClick(key: any) {
 }
 watch(() => props.lcid, (newValue, _oldValue) => {
     lcid.value = newValue
-    getNode()
+    if (!props.isBl) {
+      getNode()
+    }
 });
 
-getNode()
+onMounted(() => {
+  if (!props.isBl) {
+    getNode()
+  }
+})
+
+
 
 </script>
 

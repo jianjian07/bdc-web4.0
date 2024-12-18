@@ -57,6 +57,12 @@ watch(() => props.jdid, (newValue, _oldValue) => {
     nodeInfo.value.lcid = props.lcid
     nodeInfo.value.jdid = props.jdid
 });
+
+watch(() => props.lcid, (newValue, _oldValue) => {
+
+    nodeInfo.value.lcid = props.lcid
+    nodeInfo.value.jdid = props.jdid
+});
 /**
  * 导出
  */

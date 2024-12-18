@@ -26,7 +26,7 @@
           <FlowModal :lcid="processInfo.key"/>
         </a-tab-pane>
         <a-tab-pane key="2" force-render tab="表单配置">
-          <NodeList v-if="activeKey == '2'" :lcid="processInfo.key"/>
+          <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" :isBl="true"/>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -63,6 +63,7 @@ function onSelect(_selectedKeys: any, e: any) {
   const process = e.node
   processInfo.value = process
   processInfo.value.title = process.label
+  processInfo.value.key = process.value
 }
 </script>
 

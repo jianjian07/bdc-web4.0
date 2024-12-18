@@ -213,7 +213,7 @@ const handleAdd = () => {
 function searchFormInfo(info) {
     const code = info.vfd;
     defHttp.get({ url: api.queryByCodeUrl, params: { code: code } }, { withToken: true }).then((res) => {
-        if (res.success) {
+        if (res.success && res.result) {
             info.formId = res.result.id;
             info.vfdtitle = res.result.formName;
         }
