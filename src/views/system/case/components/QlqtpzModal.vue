@@ -11,7 +11,8 @@
         <a-input v-model:value="formState.lcid" />
       </a-form-item>
       <a-form-item ref="djlx" label="登记类型" name="djlx">
-        <a-select v-model:value="formState.djlx" :options="djlx"  placeholder="请选择登记类型" />
+        <a-select v-model:value="formState.djlx" :options="djlxOption"  placeholder="请选择登记类型">
+        </a-select>
       </a-form-item>
       <a-form-item ref="qllx" label="权利类型" name="qllx">
         <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />
@@ -40,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw, watch } from 'vue';
+import { reactive, ref, toRaw, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
@@ -60,7 +61,7 @@ let formState: any = ref({
   zt: '',
   sjnr: ''
 })
-let djlx: any = ref([])
+let djlxOption: any = reactive([])
 
 const rules: any = {
   lcid: { required: true, message: '请选择流程类型', trigger: 'blur'}
@@ -89,13 +90,13 @@ watch(() => props.formData, (val: any) => {
   }
   formState.value.djlx = ''
   if(val.djlx && val.djlx.length) {
-    djlx.value = val.djlx.map(element => {
+    djlxOption = val.djlx.map(element => {
       return {
         label: element,
         value: element
       }
     });
-    formState.value.djlx = djlx.value[0].value
+    formState.value.djlx = djlxOption[0].value
   }
 }, {
   immediate: true,
