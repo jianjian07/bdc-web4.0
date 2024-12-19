@@ -457,11 +457,10 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any) {
  * @param viewData
  */
 function manageQLQT(qlqtConfig: any, viewData: any) {
-  debugger
   // 获取未赋值的占位符，从表单数据中赋值
   // let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/gm //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
   // let reg = /(?<=\[)\S+(?=\])/gm //匹配中括号，返回结果不包括中括号
-  let reg = /(?<=\$)\S+(?=\$)/gm //匹配$***$，返回结果不包括$
+  let reg = /(?<=\$)[^\$]+(?=\$)/gm; //匹配$***$，返回结果不包括$
   let qlqtmatch = qlqtConfig.match(reg)
   if (qlqtmatch) {
     qlqtConfig = qlqtConfig.replaceAll('$', '')
