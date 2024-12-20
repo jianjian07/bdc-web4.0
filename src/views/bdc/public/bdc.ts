@@ -143,7 +143,7 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
             // 关闭当前标签页
             const tabStore = useTabsStore()
             const { getTabsShow } = useTabsSetting()
-            if (getTabsShow) {
+            if (getTabsShow.value) {
               const currentTab = computed(() => tabStore.getCurrentTab)
               tabStore.removeTab(currentTab.value)
               setTimeout(() => {
