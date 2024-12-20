@@ -2,11 +2,16 @@
   <div class="wonder-table-form" v-if="operable">
       <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
           <a-row :gutter="[0, 8]" tyle="flex">
-              <a-col :span="8" :offset="0">
+              <a-col :span="6" :offset="0">
                   <a-form-item label="标题">
                       <a-input v-model:value="formData.title" allowClear />
                   </a-form-item>
               </a-col>
+              <a-col :span="6">
+                <a-form-item label="消息类型">
+                  <a-select v-model:value="formData.category" style="width: 100%" :options="getDictItemsByCode('tzggxxlx')" allowClear></a-select>
+                </a-form-item>
+            </a-col>
               <a-col :span="4" :offset="0">
                   <a-form-item style="text-align: center;">
                       <a-space>
@@ -124,11 +129,12 @@
 
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
-import { ref, createVNode, reactive } from 'vue';
+import { ref, createVNode, reactive, watch } from 'vue';
 import { SearchOutlined, RedoOutlined, DownOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
 import dayjs from 'dayjs';
+import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 
 enum api {
   tasklist = '/api/zrzy-bdc/sys/sysTzgg/list',
@@ -147,6 +153,10 @@ const props = defineProps({
   operable: {
     type: Boolean,
     default: true
+  },
+  category: {
+    type: String,
+    default: null
   }
 })
 
@@ -163,7 +173,7 @@ const columns = [
     dataIndex: "msgCategory", 
     align: "center", 
     customRender: ({text}) => {
-      return Number(text) === 1 ? '通知公告' : Number(text) === 2 ? '系统消息' : '公示公告'
+      return getDictItemsByCode('tzggxxlx').find(f => f.value == text)?.label
     },
     show: true 
   },
@@ -178,7 +188,10 @@ const columns = [
     title: "优先级", 
     dataIndex: "priority", 
     align: "center",
-    show: props.operable
+    show: props.operable,
+    sorter: {
+      compare: (a, b) => a.priority - b.priority,
+    },
   },
   { 
     title: "通告对象", 
@@ -193,31 +206,46 @@ const columns = [
     title: "发布状态", 
     dataIndex: "sendStatus", 
     align: "center",
-    show: true
+    show: true,
+    sorter: {
+      compare: (a, b) => a.sendStatus - b.sendStatus,
+    },
   },
   { 
     title: "发布时间",
     dataIndex: "sendTime", 
     align: "center",
-    show: props.operable
+    show: props.operable,
+    sorter: {
+      compare: (a, b) => (new Date(a.sendTime)).getTime() - (new Date(b.sendTime)).getTime()
+    },
   },
   { 
     title: "撤销时间",
     dataIndex: "cancelTime", 
     align: "center",
-    show: props.operable
+    show: props.operable,
+    sorter: {
+      compare: (a, b) => (new Date(a.cancelTime)).getTime() - (new Date(b.cancelTime)).getTime()
+    },
   },
   { 
     title: "公示开始时间",
     dataIndex: "startTime", 
     align: "center",
-    show: props.operable
+    show: props.operable,
+    sorter: {
+      compare: (a, b) => (new Date(a.startTime)).getTime() - (new Date(b.startTime)).getTime()
+    },
   },
   { 
     title: "公示结束时间",
     dataIndex: "endTime", 
     align: "center",
-    show: props.operable
+    show: props.operable,
+    sorter: {
+      compare: (a, b) => (new Date(a.endTime)).getTime() - (new Date(b.endTime)).getTime()
+    },
   },
   {
     title: '操作', 
@@ -237,7 +265,14 @@ let pagination = ref({
   }
 })
 
-loadData()
+watch(() => props.category, (val) => {
+  if(val) {
+    formData.value.category = val
+  }
+  loadData()
+}, {
+  immediate: true
+})
 
 function loadData() {
   spinning.value = true
@@ -245,6 +280,7 @@ function loadData() {
     url: api.tasklist, 
     params: {
       title: formData.value.title,
+      msgCategory: formData.value.category,
       pageNo: pagination.value.current,
       pageSize: pagination.value.pageSize
     }, 
