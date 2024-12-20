@@ -1,21 +1,38 @@
 <template>
-  <div class="scroll-container" ref="scrollRef">
+  <div :class="{'scroll-container': true, scrollable: scrollable}" ref="scrollRef">
     <a-list item-layout="horizontal" :data-source="scrollList">
       <template #renderItem="{ item }">
-        <a-list-item @click="showModal(item)" style="height: 80px" @mouseover="toggleAnimation(false)" @mouseleave="toggleAnimation(true)">
-          <a-list-item-meta
-          >
+        <a-list-item @click="showModal(item)" :style="{height: itemHeight + 'px'}" @mouseover="toggleAnimation(false)" @mouseleave="toggleAnimation(true)">
+          <a-list-item-meta v-if="!category">
             <template #description>
-              <a-tag color="red" v-if="item.priority == 'H'">高</a-tag>
-              <a-tag color="yellow" v-if="item.priority == 'M'">中</a-tag>
-              <a-tag color="green" v-if="item.priority == 'L'">低</a-tag>
-              <span>{{  item.msgAbstract }}</span>
+              <div style="display: flex; justify-content: space-between;">
+                <div>
+                  <a-tag color="red" v-if="item.priority == 'H'">高</a-tag>
+                  <a-tag color="yellow" v-if="item.priority == 'M'">中</a-tag>
+                  <a-tag color="green" v-if="item.priority == 'L'">低</a-tag>
+                  <span>{{  item.msgAbstract }}</span>
+                </div>
+                <span>{{ item.sendTime }}</span>
+              </div>
             </template>
             <template #title>
-              <a>{{ item.title }}</a>
+              <a style="color: #333">{{ item.title }}</a>
             </template>
             <template #avatar>
               <svg-icon  :name="item.msgCategory == '1' ? 'tzgg' : item.msgCategory == '2' ? 'xttz' : item.msgCategory == '3' ? 'gsgg' : 'qttz'" width="30px" height="30px" ></svg-icon>
+            </template>
+          </a-list-item-meta>
+          <a-list-item-meta v-else>
+            <template #description>
+              <div style="display: flex; justify-content: space-between; color: #333; cursor: pointer;">
+                <div>
+                  <a-tag color="red" v-if="item.priority == 'H'">高</a-tag>
+                  <a-tag color="yellow" v-if="item.priority == 'M'">中</a-tag>
+                  <a-tag color="green" v-if="item.priority == 'L'">低</a-tag>
+                  <span>{{  item.msgAbstract }}</span>
+                </div>
+                <span>{{ item.sendTime }}</span>
+              </div>
             </template>
           </a-list-item-meta>
         </a-list-item>
@@ -25,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index"
 
@@ -37,27 +54,56 @@ let scrollRef: any = ref(null)
 let spinning: any = ref(false)
 let dataList: any = ref([])
 let scrollList: any = ref([])
-let running: any = ref(false)
+let running: any = ref(true)
 let animId: any = ref(null)
 let top = 0;
 let index = 0
+let itemHeight: any = ref(70)
+let scrollable: any = ref(false)
 
-loadData()
+const props = defineProps({
+  category: {
+    type: String,
+    default: null
+  }
+})
+
+watch(() => props.category, (val) => {
+  if(val) {
+    itemHeight.value = 40
+  }
+  loadData()
+}, {
+  immediate: true
+})
 
 onMounted(() => {
-  scroll()
+  top = 0
+  index = 0
+  watch(() => dataList.value, (val) => {
+    if (val?.length) {
+      if (dataList.value.length > (Math.ceil(scrollRef.value?.offsetHeight / itemHeight.value) || 3)) {
+        scroll()
+      } else {
+        scrollable.value = true
+      }
+    }
+  }, {
+    immediate: true
+  })
 })
+
 
 const scroll = () => {
   scrollRef.value.scrollTo({
     top: top++
   })
 
-  if(top % 80 === 0) {
+  if(top % itemHeight.value === 0) {
     const target = scrollList.value[index]
     scrollList.value.push(target)
 
-    if(index < dataList.value.length - 1) {
+    if(index < (dataList.value.length - 1)) {
       index++
     } else {
       top = 0
@@ -74,6 +120,9 @@ const scroll = () => {
 }
 
 function toggleAnimation(flag: any) {
+  if(dataList.value.length <= (Math.ceil(scrollRef.value?.offsetHeight / itemHeight.value) || 3)) {
+    return 
+  }
   running.value = flag
   if(running.value) {
     scroll()
@@ -88,7 +137,8 @@ function loadData() {
     url: api.tasklist, 
     params: {
       pageNo: 1,
-      pageSize: 100
+      pageSize: 100,
+      msgCategory: props.category
     }, 
   }, { withToken: true }).then(res => {
       if (res.success) {
@@ -125,6 +175,12 @@ function showModal(record: any) {
 <style lang="less" scoped>
 .scroll-container {
   overflow: hidden;
-  height: 150px;
+  height: 100%;
+  /deep/ .ant-list-item-meta {
+    align-items: center !important;
+  }
+}
+.scrollable {
+  overflow: auto;
 }
 </style>
