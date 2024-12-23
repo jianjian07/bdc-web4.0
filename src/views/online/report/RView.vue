@@ -147,6 +147,7 @@ const generateVue3 = defineComponent({
             editableData,
             selectedValue,
             search,
+            reset,
             handleTableChange,
             initTableV2,
             execInitFun,
@@ -165,6 +166,13 @@ const generateVue3 = defineComponent({
             paginations.value.current = 1
             execInitFun()
         }
+        
+        function reset() {
+            viewData.value = {}
+            paginations.value.current = 1
+            execInitFun()
+        }
+        
         function onCExport(_data: any) {
             let exportColumns = ref(_data)
             if (exportColumns.value.length == 0) {

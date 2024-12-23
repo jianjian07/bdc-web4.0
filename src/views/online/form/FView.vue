@@ -125,6 +125,7 @@ const generateVue3 = defineComponent({
             defHttp,
             editableData,
             // tableSelectProps,
+            reset,
             search,
             onChange,
             initTable,
@@ -155,6 +156,12 @@ const generateVue3 = defineComponent({
         }
 
         function search() {
+            paginations.value.current = 1
+            initTable(viewData, dataSource, formInfo, paginations);
+        }
+        
+        function reset() {
+            viewData.value = {}
             paginations.value.current = 1
             initTable(viewData, dataSource, formInfo, paginations);
         }
