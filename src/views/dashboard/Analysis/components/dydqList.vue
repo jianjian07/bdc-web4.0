@@ -3,15 +3,12 @@
     <a-spin :spinning="spinning">
       <a-list item-layout="horizontal" :data-source="scrollList">
         <template #renderItem="{ item }">
-          <a-list-item >
+          <a-list-item  @click="onClickItem(item)">
             <a-list-item-meta
             >
-              <!-- <template #title>
-                {{ item.bdcdjzmh }}
-              </template> -->
               <template #description>
-                <div style="display: flex; justify-content: space-between; color: #333;">
-                  <span style="width: 40%; font-weight: bold;" class="text-ellipsis">{{ item.bdcdjzmh }}</span>
+                <div style="display: flex; justify-content: space-between; color: #333; cursor: pointer">
+                  <span style="width: 35%; font-weight: bold;" class="text-ellipsis">{{ item.bdcdjzmh }}</span>
                   <span><a-tag color="red">抵押结束时间</a-tag>{{ item.dyjssj || '-' }}</span>
                   <span style="width: 200px;"><a-tag color="blue">登记时间</a-tag>{{ item.djsj || '-'}}</span>
                 </div>
@@ -30,6 +27,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { defHttp } from "/@/utils/http/axios"
+import { router } from "/@/router"
 
 let scrollList = ref([])
 let pagination = ref({
@@ -70,6 +68,10 @@ function onPageChange(page, pageSize) {
   pagination.value.current = page
   pagination.value.pageSize = pageSize
   loadData()
+}
+
+function onClickItem(item) {
+  router.push('/task/hisTaskDeal?slbh=' + item.slbh)
 }
 </script>
 
