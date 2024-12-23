@@ -390,6 +390,33 @@ export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any) {
 }
 
 /**
+ * 根据受理编号设置权利其他情况
+ * @param viewData
+ * @param fields
+ */
+export async function setQlqtqkByYwh(viewData: any, fields: any, params: any) {
+  let route = router.currentRoute.value
+  if (viewData.value && fields) {
+    if (fields.includes('.')) {
+      let key = fields.split('.')
+      if (!viewData.value[key[0]][key[1]]) {
+        let slbh = route.query.slbh
+        let ywh = params?.ywh
+        let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
+        viewData.value[key[0]][key[1]] = result
+      }
+    } else {
+      if (!viewData.value[fields]) {
+        let slbh = route.query.slbh
+        let ywh = params?.ywh
+        let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
+        viewData.value[fields] = result
+      }
+    }
+  }
+}
+
+/**
  * 根据受理编号获取权利其他配置
  * @param slbh
  */
@@ -425,9 +452,9 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
  * @param slbh
  * @param ywh
  */
-export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any) {
-  const quickParam = { ywh: ywh, slbh: slbh }
-  const xmlParam = { ywh: ywh, slbh: slbh }
+export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any = null) {
+  const quickParam = { ywh: ywh, slbh: slbh, sfybz: params?.sfybz || '', qllx: params?.qllx || '' }
+  const xmlParam = { ywh: ywh, slbh: slbh, sfybz: params?.sfybz || '', qllx: params?.qllx || '' }
   const param = { quickParam: quickParam, xmlParam: xmlParam }
   return new Promise((resolve, reject) => {
     defHttp.post({
