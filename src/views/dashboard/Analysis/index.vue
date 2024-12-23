@@ -1,42 +1,38 @@
 <template>
   <div class="baseContent">
     <div class="sectionOne">
-      <a-row :gutter="24">
-        <a-col :span="10">
-          <a-card class="userBox" :bordered="false">
+      <div class="panelOne">
+        <a-card class="userBox1" v-for="info in baseInfo" :key="info.key" @click="onClickEntry(info.route)" :bordered="false">
             <div class="baseInfo">
-              <div class="infoItem" :style="{backgroundImage: 'url(' + info.icon + ')'}" v-for="info in baseInfo" :key="info.key" @click="onClickEntry(info.route)">
-                <span>{{ info.value }}</span>
+              <div class="infoItem" >
                 <span>{{ info.label }}</span>
+                <span :style="{color: info.color}">{{ info.value }}</span>
               </div>
             </div>
           </a-card>
-        </a-col>
-        <a-col :span="14">
-          <a-card class="userBox" :bordered="false">
-            <div class="commonEntry">
-              <div :class="['entryItem', 'cursorBtn', 'cursorBtn'+ index]" v-for="(entry, index) in commonEntry" :key="entry.key" @click="onClickEntry(entry.route)">
-                <span>{{ entry.label }}</span>
+      </div> 
+      <div class="panelTwo">
+        <a-card class="userBox" :bordered="false">
+          <div class="commonEntry">
+            <!-- <div :class="['entryItem']" v-for="(entry, index) in commonEntry" :key="entry.key" @click="handleAdd(entry)">
+              <div :class="['cursorBtn', 'cursorBtn' + index]" :style="{backgroundColor: entry.color}">
+                <svg-icon :name="entry.icon"  width="30px" height="30px" ></svg-icon>
               </div>
+              <span>{{ entry.label }}</span>
+            </div> -->
+            <div :class="['entryItem', 'cursorBtn', 'cursorBtn' + index]" v-for="(entry, index) in commonEntry" :key="entry.key" @click="handleAdd(entry)">
+              <span><svg-icon :name="entry.icon"  width="30px" height="30px" ></svg-icon>{{ entry.label }}</span>
             </div>
-          </a-card>
-        </a-col>
-      </a-row>
+          </div>
+        </a-card>
+      </div>
     </div>
     <div class="sectionTwo">
       <div class="itemList">
         <a-card class="userBox" title="抵押到期">
-          <template #extra><a href="#">更多...</a></template>
+          <template #extra><a @click="onClickEntry('/online/report/view/27')">更多...</a></template>
           <div class="dqList">
             <dydqList></dydqList>
-          </div>
-        </a-card>
-      </div>
-      <div class="itemList">
-        <a-card class="userBox" title="查封到期" :bordered="false">
-          <template #extra><a href="#">更多...</a></template>
-          <div class="dqList">
-            <cfdqList></cfdqList>
           </div>
         </a-card>
       </div>
@@ -45,6 +41,14 @@
           <template #extra><a @click="onClickEntry('/tzgg/index')">更多...</a></template>
           <div class="tzList">
             <tzggList type="list"></tzggList>
+          </div>
+        </a-card>
+      </div>
+      <div class="itemList">
+        <a-card class="userBox" title="查封到期" :bordered="false">
+          <template #extra><a @click="onClickEntry('/online/report/view/26')">更多...</a></template>
+          <div class="dqList">
+            <cfdqList></cfdqList>
           </div>
         </a-card>
       </div>
@@ -67,6 +71,7 @@ import { router } from "/@/router"
 import tzggList from '/@/views/system/tzgg/index.vue';
 import dydqList from './components/dydqList.vue'
 import cfdqList from './components/cfdqList.vue'
+import { addFlow } from "/@/views/bdc/utils/case";
 
 let baseInfo: any = reactive([
   {
@@ -74,52 +79,73 @@ let baseInfo: any = reactive([
     key: 'zb',
     value: 871,
     route: '/bdc/case/list',
-    icon: getUrl('images/home/bg1.png')
+    icon: getUrl('images/home/bg1.png'),
+    color: '#229de2'
   },{
     label: '已办案卷',
     key: 'yb',
     value: 902,
     route: '/bdc/case/list',
-    icon: getUrl('images/home/bg2.png')
+    icon: getUrl('images/home/bg2.png'),
+    color: '#00bd9f'
   },{
     label: '督办案卷',
     key: 'db',
     value: 40,
     route: '/bdc/dbgl',
-    icon: getUrl('images/home/bg3.png')
+    icon: getUrl('images/home/bg3.png'),
+    color: '#ff980d'
   }
 ])
 
 let commonEntry: any = reactive([
   {
     label: '产权登记',
-    key: 'cqdj',
-    route: ''
+    key: '1780060462306840577',
+    value: 'CQSC',
+    icon: 'cqdj',
   },
   {
     label: '抵押登记',
-    key: 'dydj',
-    route: ''
+    key: '1856585344386551809',
+    value: 'DYSC',
+    icon: 'dydj'
   },
   {
     label: '查封登记',
-    key: 'cfdj',
-    route: ''
+    key: '1869227861279985666',
+    value: 'CFDJ',
+    icon: 'cfdj'
   },
   {
     label: '预告登记',
-    key: 'ygdj',
-    route: ''
+    key: '1859491041466089474',
+    value: 'YGSC',
+    icon: 'ygdj'
   },
   {
-    label: '组合登记',
-    key: 'zhdj',
-    route: ''
+    label: '组合登记', // 此处选择的转移抵押
+    key: '1869228218932482050',
+    value: 'ZYDY',
+    icon: 'zhdj'
   }
 ])
 
 function onClickEntry(path, params: any = {}) {
   router.push({path: path, query: params})
+}
+
+/**
+ * 创建流程
+ */
+ function handleAdd(entry: any) {
+    // 跳转至创建流程页面
+    const params = {
+        // regType: '0101',
+        lcid: entry.key,
+        processKey: entry.value
+    }
+    addFlow(params)
 }
 
 </script>
@@ -133,13 +159,20 @@ function onClickEntry(path, params: any = {}) {
   padding: 10px;
   display: flex;
   flex-direction: column;
+  background-color: #f3f3f3;
+
+  /deep/ .ant-card-body {
+    padding: 10px 15px !important;
+  }
 
   .sectionOne {
     width: 100%;
     height: auto;
     padding: 0 0 5px 0;
+    display: flex;
+
     .userBox {
-      box-shadow: 0 1px 11px 0 rgb(0 0 0 / 15%), 0 1px 6px -1px rgb(0 0 0 / 5%), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+      // box-shadow: 0 1px 11px 0 rgb(0 0 0 / 15%), 0 1px 6px -1px rgb(0 0 0 / 5%), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
       .baseInfo, .commonEntry {
         display: flex;
         justify-content: space-around;
@@ -189,9 +222,6 @@ function onClickEntry(path, params: any = {}) {
         .infoItem:nth-of-type(3):after {
           background-image: linear-gradient(315deg, #ff980d 0%, #f9c37c 74%);
         }
-        .infoItem:hover {
-          color: #fff;
-        }
         .infoItem:hover:after {
           top: 0;
           height: 100%;
@@ -202,20 +232,134 @@ function onClickEntry(path, params: any = {}) {
 
         .entryItem {
           width: 18%;
-          height: 80px;
+          height: 90px;
           text-align: center;
           border-radius: 5px;
-          margin: 5px 0px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           span {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
+            padding-top: 8px;
           }
         }
       }
-      /deep/ .ant-card-body {
-        padding: 15px !important;
+    }
+    .panelOne {
+      width: 40%;
+      padding-right: 8px;
+      display: flex;
+      justify-content: space-around;
+      .userBox1 {
+        padding: 0 8px;
+        color: #333;
+        width: 32%;
+        cursor: pointer;
+        .baseInfo {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          color: #333;
+          font-size: 20px;
+          cursor: pointer;
+          .infoItem {
+            background-size: 100% 100%;
+            -moz-background-size: 100% 100%;
+            background-repeat: no-repeat;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 86px;
+            cursor: pointer;
+            z-index: 1;
+            position: relative;
+            span:nth-of-type(1) {
+              margin-top: 10px;
+              margin-bottom: -10px;
+            }
+            span:nth-of-type(2) {
+              font-weight: bold;
+              font-size: 46px;
+            }
+          }
+          // .infoItem:hover {
+          //   span:nth-of-type(1) {
+          //     font-size: 22px;
+          //   }
+          //   span:nth-of-type(2) {
+          //     font-weight: bold;
+          //     font-size: 48px;
+          //   }
+          // }
+        }
       }
+      .tagTitle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(
+          -135deg,
+          transparent 20%,
+          #78c6f3 20%,
+          #229de2 50%,
+          transparent 50%,
+          transparent 100%
+        );
+
+        .titleText {
+          position: absolute;
+          transform: rotate(45deg);
+          text-align: center;
+          top: 5px;
+          right: -8px;
+          width: 50px;
+          font-size: 16px;
+          color: #fff;
+          font-weight: bold;
+        }
+      }
+      .userBox1:nth-of-type(1) {
+        border-bottom: 4px solid #229de2;
+      }
+      .userBox1:nth-of-type(2) {
+        border-bottom: 4px solid #00bd9f;
+        .tagTitle {
+          background: linear-gradient(
+            -135deg,
+            transparent 20%,
+            #5ff3da 20%,
+            #00bd9f 50%,
+            transparent 50%,
+            transparent 100%
+          );
+        }
+      }
+      .userBox1:nth-of-type(3) {
+        border-bottom: 4px solid #ff980d;
+        .tagTitle {
+          background: linear-gradient(
+            -135deg,
+            transparent 20%,
+            #fecb89 20%,
+            #ff980d 50%,
+            transparent 50%,
+            transparent 100%
+          );
+        }
+      }
+      .userBox1:hover {
+        box-shadow: 0 1px 11px 0 rgb(0 0 0 / 15%), 0 1px 6px -1px rgb(0 0 0 / 5%), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+      }
+    }
+    .panelTwo {
+      width: 60%;
+      padding-left: 8px;
     }
   }
 
@@ -238,43 +382,58 @@ function onClickEntry(path, params: any = {}) {
         height: calc(100% - 45px);
       }
       /deep/ .ant-card-head {
-        background-color: #ddeafe;
+        // background-color: #ddeafe;
         min-height: 45px;
         height: 45px;
+        padding: 0 15px ;
+        .ant-card-head-title {
+          border-left: 4px solid #229de2;
+          padding-left: 8px;
+        }
       }
     }
     .itemList:nth-of-type(1) {
       padding-right: 8px;
       padding-top: 10px;
       padding-bottom: 5px;
-      /deep/ .ant-card-head {
-        background-color: #e8f0fb;
-      }
+      width: 60%;
+      // /deep/ .ant-card-head {
+      //   background-color: #e8f0fb;
+      // }
     }
     .itemList:nth-of-type(2){
       padding-left: 8px;
       padding-top: 10px;
       padding-bottom: 5px;
-      /deep/ .ant-card-head {
-        background-color: #e8f0fb;
-      }
+      width: 40%;
+      // /deep/ .ant-card-head {
+      //   background-color: #e8f0fb;
+      // }
     }
     .itemList:nth-of-type(3) {
       padding-right: 8px;
       padding-top: 10px;
-      /deep/ .ant-card-head {
-        background-color: #e8f0fb;
-      }
+      width: 60%;
+      // /deep/ .ant-card-head {
+      //   background-color: #e8f0fb;
+      // }
     }
     .itemList:nth-of-type(4) {
       padding-left: 8px;
       padding-top: 10px;
-      /deep/ .ant-card-head {
-        background-color: #e8f0fb;
-      }
+      width: 40%;
+      // /deep/ .ant-card-head {
+      //   background-color: #e8f0fb;
+      // }
     }
     .dqList {
-      // height: 300px;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      /deep/ .ant-list-item {
+        padding: 10px 0px !important;
+      }
     }
     .tzList {
       height: 100%;

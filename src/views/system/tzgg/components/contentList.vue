@@ -3,36 +3,26 @@
     <a-list item-layout="horizontal" :data-source="scrollList">
       <template #renderItem="{ item }">
         <a-list-item @click="showModal(item)" :style="{height: itemHeight + 'px'}" @mouseover="toggleAnimation(false)" @mouseleave="toggleAnimation(true)">
-          <a-list-item-meta v-if="!category">
+          <a-list-item-meta>
             <template #description>
               <div style="display: flex; justify-content: space-between;">
-                <div>
+                <div style="width: 100%; overflow: hidden; display: flex; flex-wrap: nowrap;">
                   <a-tag color="red" v-if="item.priority == 'H'">高</a-tag>
                   <a-tag color="yellow" v-if="item.priority == 'M'">中</a-tag>
                   <a-tag color="green" v-if="item.priority == 'L'">低</a-tag>
-                  <span>{{  item.msgAbstract }}</span>
-                </div>
-                <span>{{ item.sendTime }}</span>
+                  <a-tooltip :title="item.msgAbstract">
+                    <span class="text-ellipsis">{{  item.msgAbstract }}</span>
+                  </a-tooltip>
+                  </div>
+                <span style="width: 350px; padding-left: 5px" v-if="item.sendTime">发布时间：{{ item.sendTime }}</span>
               </div>
             </template>
             <template #title>
               <a style="color: #333">{{ item.title }}</a>
             </template>
             <template #avatar>
-              <svg-icon  :name="item.msgCategory == '1' ? 'tzgg' : item.msgCategory == '2' ? 'xttz' : item.msgCategory == '3' ? 'gsgg' : 'qttz'" width="30px" height="30px" ></svg-icon>
-            </template>
-          </a-list-item-meta>
-          <a-list-item-meta v-else>
-            <template #description>
-              <div style="display: flex; justify-content: space-between; color: #333; cursor: pointer;">
-                <div>
-                  <a-tag color="red" v-if="item.priority == 'H'">高</a-tag>
-                  <a-tag color="yellow" v-if="item.priority == 'M'">中</a-tag>
-                  <a-tag color="green" v-if="item.priority == 'L'">低</a-tag>
-                  <span>{{  item.msgAbstract }}</span>
-                </div>
-                <span>{{ item.sendTime }}</span>
-              </div>
+              <!-- <svg-icon  :name="item.msgCategory == '1' ? 'tzgg' : item.msgCategory == '2' ? 'xttz' : item.msgCategory == '3' ? 'gsgg' : 'qttz'" width="30px" height="30px" ></svg-icon> -->
+              <svg-icon :name="category ? 'qttz' : 'tzgg'"  width="30px" height="30px" ></svg-icon>
             </template>
           </a-list-item-meta>
         </a-list-item>
@@ -70,7 +60,7 @@ const props = defineProps({
 
 watch(() => props.category, (val) => {
   if(val) {
-    itemHeight.value = 40
+    itemHeight.value = 70
   }
   loadData()
 }, {
@@ -176,11 +166,21 @@ function showModal(record: any) {
 .scroll-container {
   overflow: hidden;
   height: 100%;
+  /deep/ .ant-list-item {
+    padding: 10px 0px !important;
+  }
   /deep/ .ant-list-item-meta {
     align-items: center !important;
   }
 }
 .scrollable {
   overflow: auto;
+}
+
+.text-ellipsis {
+  flex: 1; /* 定义容器宽度 */
+  white-space: nowrap; /* 确保文本在一行内显示 */
+  overflow: hidden; /* 隐藏超出容器的内容 */
+  text-overflow: ellipsis; /* 使用省略号表示被截断的文本 */
 }
 </style>
