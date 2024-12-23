@@ -2,11 +2,11 @@
     <div class="wonder-table-form">
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
-                <!-- <a-col :span="8" :offset="0">
+                <a-col :span="8" :offset="0">
                     <a-form-item label="案卷名称">
                         <a-input v-model:value="formData.ajmc" allowClear />
                     </a-form-item>
-                </a-col> -->
+                </a-col>
                 <a-col :span="8" :offset="0">
                     <a-form-item label="受理编号">
                         <a-input v-model:value="formData.slbh" allowClear />

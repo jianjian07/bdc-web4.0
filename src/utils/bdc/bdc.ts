@@ -25,35 +25,41 @@ export async function extractData(options: any) {
         case '0103':
         case '0104':
         case '0105':
+        case '0201':
+        case '0202':
+        case '0203':
+        case '0204':
+        case '0205':
+        case '0202,0202':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
             }
             break;
     }
-  options.okLoading.value = true
-  let check = await checkLogic(slbh, dyhList)
-  options.okLoading.value = false
-  if (check) {
-    let _data: any =
-    {
-        "ywlx": ywlx,
-        "slbh": slbh,
-        "lcid": lcid,
-        "dyhList": dyhList
-    }
-    defHttp.post({
-        url: '/api/zrzy-bdc/bdc/case/addCase',
-        data: _data
-    }, { withToken: true }).then((res) => {
-        if (res.success) {
-            message.success('数据提取成功')
-            options.open.value = false
-            options.reload.value = guid()
-            router.push('/refresh')
+    options.okLoading.value = true
+    // let check = await checkLogic(slbh, dyhList)
+    options.okLoading.value = false
+    if (true) {
+        let _data: any =
+        {
+            "ywlx": ywlx,
+            "slbh": slbh,
+            "lcid": lcid,
+            "dyhList": dyhList
         }
-    })
-  }
+        defHttp.post({
+            url: '/api/zrzy-bdc/bdc/case/addCase',
+            data: _data
+        }, { withToken: true }).then((res) => {
+            if (res.success) {
+                message.success('数据提取成功')
+                options.open.value = false
+                options.reload.value = guid()
+                router.push('/refresh')
+            }
+        })
+    }
 }
 
 export async function extractDataLpb(options: any) {
@@ -67,9 +73,9 @@ export async function extractDataLpb(options: any) {
         dyhList.push({ bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
-    let check = await checkLogic(slbh, dyhList)
+    // let check = await checkLogic(slbh, dyhList)
     options.okLoading.value = false
-    if (check) {
+    if (true) {
         let _data: any =
         {
             // "djdl": "CQ",
@@ -98,43 +104,43 @@ export async function extractDataLpb(options: any) {
  */
 export function checkLogic(slbh, bdcModels) {
     return new Promise((resolve) => {
-         defHttp.post({
+        defHttp.post({
             url: '/api/zrzy-logic/logic/check/checkLogic',
             data: {
-              slbh: slbh,
-              bdcModels: bdcModels
+                slbh: slbh,
+                bdcModels: bdcModels
             }
-         }, { withToken: true }).then((res) => {
-             if (res && res.success) {
-               const checkResult = res.result
-               if (checkResult.code == 1) {
-                 // 通过
-                 resolve(true)
-               } else if (checkResult.code == 0) {
-                 // 提醒
-                 Modal.confirm({
-                  title: '提示',
-                  icon: createVNode(ExclamationCircleOutlined),
-                  content: createVNode('div', { style: 'color:red;' }, checkResult.message),
-                  onOk() {
+        }, { withToken: true }).then((res) => {
+            if (res && res.success) {
+                const checkResult = res.result
+                if (checkResult.code == 1) {
+                    // 通过
                     resolve(true)
-                  },
-                  onCancel() {
+                } else if (checkResult.code == 0) {
+                    // 提醒
+                    Modal.confirm({
+                        title: '提示',
+                        icon: createVNode(ExclamationCircleOutlined),
+                        content: createVNode('div', { style: 'color:red;' }, checkResult.message),
+                        onOk() {
+                            resolve(true)
+                        },
+                        onCancel() {
+                            resolve(false)
+                        }
+                    });
+                } else {
+                    // 限制
+                    Modal.error({
+                        title: '提示',
+                        content: checkResult.message,
+                    });
                     resolve(false)
-                  }
-                });
-               } else {
-                 // 限制
-                 Modal.error({
-                    title: '提示',
-                    content: checkResult.message,
-                 });
-                 resolve(false)
-               }
-             } else {
-               message.warning('创建案卷逻辑检查发生错误')
-               resolve(false)
-             }
-         })
+                }
+            } else {
+                message.warning('创建案卷逻辑检查发生错误')
+                resolve(false)
+            }
+        })
     })
 }

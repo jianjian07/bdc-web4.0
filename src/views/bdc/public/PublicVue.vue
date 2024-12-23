@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;">
-    <div class="title">{{ formConfig.ajmc }}（{{ jdmc }}）</div>
+    <div class="title">{{ slbh }}-{{ jdmc }}：{{ formConfig.ajmc }}</div>
     <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
@@ -14,7 +14,7 @@
               </template>
             </a-space-compact>
             <a-drawer v-if="open" v-model:open="open" :footer-style="{ textAlign: 'right' }"
-              :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' :1000" @close="onClose">
+              :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' : 1000" @close="onClose">
               <template #extra>
                 <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
                 <a-button type="primary" :loading="okLoading" @click="handleOk">确定</a-button>
@@ -157,12 +157,12 @@ function handleResize() {
   containerWidth = formContent.value?.offsetWidth;
   leftWidth.value = containerWidth - rightWidth.value - 10; // 10px 是 split-line 的宽度
 }
-
+let slbh = route.query.slbh
 /**
  * 获取表单配置
  */
 function getFormConfig() {
-  let slbh = route.query.slbh
+
   let jdid = route.query.nodeId
   let taskId = route.query.taskId
   defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid, taskId: taskId } }, { withToken: true }).then((res) => {
@@ -455,11 +455,11 @@ function onShowFile(manage) {
 }
 
 :deep(.ant-input-disabled) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-input[disabled]) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input)) {
@@ -469,11 +469,10 @@ function onShowFile(manage) {
 }
 
 :deep(.ant-picker.ant-picker-disabled) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-input-number-disabled) {
   background-color: rgba(0, 0, 0, 0.02)
 }
-
 </style>

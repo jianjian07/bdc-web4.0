@@ -1,7 +1,7 @@
 <template>
     <a-form :model="flowInfo" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" autocomplete="off">
         <a-form-item label="流程ID" name="lcid">
-            <a-input v-model:value="flowInfo.lcid" readOnly/>
+            <a-input v-model:value="flowInfo.lcid" readOnly />
         </a-form-item>
         <!-- <a-form-item label="流程分类" name="password">
             <a-select v-model:value="flowInfo.password" :options="getDictItemsByCode('bpm_process_type')" />
@@ -19,11 +19,14 @@
             <a-input v-model:value="flowInfo.xslx" />
         </a-form-item>
         <a-form-item label="国标登记类型">
-            <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('gbdjlx')" />
+            <a-input v-model:value="flowInfo.gbdjlx" />
         </a-form-item>
-        <a-form-item label="是否补录流程">
+        <!-- <a-form-item label="国标登记类型">
+            <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('gbdjlx')" mode="multiple" />
+        </a-form-item> -->
+        <!-- <a-form-item label="是否补录流程">
             <a-switch v-model:checked="flowInfo.bllc" />
-        </a-form-item>
+        </a-form-item> -->
         <a-form-item :wrapper-col="{ offset: 6, span: 16 }">
             <a-button type="primary" @click="handleAdd">保存</a-button>
         </a-form-item>
@@ -32,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+// import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 const props = defineProps({

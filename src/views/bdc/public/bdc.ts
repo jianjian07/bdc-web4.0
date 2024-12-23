@@ -118,8 +118,8 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
     if (msg) {
       saveStatus ? message.success(msg) : message.error(msg)
     }
-    console.log('saveStatus',saveStatus)
-    console.log('validate',validate)
+    console.log('saveStatus', saveStatus)
+    console.log('validate', validate)
     resolve({ status: saveStatus, validate: validate })
   })
 }
@@ -150,7 +150,7 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
                 if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
                   router.push('/refresh')
                 }
-              },300)
+              }, 300)
             } else {
               router.push('/analysis')
             }
@@ -280,8 +280,7 @@ export function print(params: { code: string }) {
 export function register(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
-  // const cType = params.cType == null ? '1' : params.cType
-  const cType = '1'
+  const cType = (params == undefined || params.cType == null) ? '1' : params.cType
   // loading.value = true
   defHttp.get({
     url: '/api/zrzy-bdc/bdc/register/isRegister',
@@ -398,7 +397,7 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
   return new Promise((resolve, reject) => {
     defHttp.post({
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
-      params: { 
+      params: {
         slbh: slbh,
         sfybz: params?.sfybz || '',
         qllx: params?.qllx || ''
