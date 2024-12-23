@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { defHttp } from "/@/utils/http/axios"
-import { router } from "/@/router"
+import { cModal } from "/@/components/cModal/index"
 
 let scrollList = ref([])
 let pagination = ref({
@@ -71,7 +71,21 @@ function onPageChange(page, pageSize) {
 }
 
 function onClickItem(item) {
-  router.push('/task/hisTaskDeal?slbh=' + item.slbh)
+  let modal = cModal({
+    title: `【${item.bdcdjzmh}】`,
+    width: 1000,
+    filePath: `views/bdc/task/HisTaskDeal`,
+    footer: false,
+    formData: {
+      slbh: item.slbh
+    },
+    onOk: async () => {
+      modal.destroy()
+    },
+    onCancel: () => {
+      modal.close()
+    }
+  })
 }
 </script>
 

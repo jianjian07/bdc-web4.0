@@ -51,11 +51,18 @@ onMounted(() => {
   getLcjd()
 })
 
+const props = defineProps({
+  formData: {
+    type: Object,
+    default: null
+  }
+})
+
 /**
  * 获取节点信息
  */
 function getLcjd() {
-  let slbh = route.query.slbh
+  let slbh = route.query.slbh || props.formData?.slbh
   defHttp.get({ url: api.info, params: { slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       lcjd.value = res.result || []
