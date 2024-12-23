@@ -62,6 +62,10 @@ const props: any = defineProps({
     formData: {
         type: Object,
         default: {}
+    },
+    formType: {
+        type: String,
+        default: 'form'
     }
 })
 /**

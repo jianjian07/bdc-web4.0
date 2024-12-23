@@ -1,11 +1,11 @@
 <template>
   <div style="height: 100%">
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
-      <component v-bind:is="generateForm" :id="formData.formId"
+      <component v-bind:is="generateForm" :id="formData.formId" formType="modal"
                 :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
       <template v-if="showQlr">
-         <qlr-list :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" type="modal"></qlr-list>
+         <qlr-list :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" formType="modal"></qlr-list>
       </template>
     </a-spin>
   </div>

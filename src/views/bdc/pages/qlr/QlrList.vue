@@ -1,7 +1,7 @@
 <template>
     <div class="qlr-list">
       <template v-for="(item, index) in qlrList">
-        <qlr :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :disabled="disabled" :type="type"></qlr>
+        <qlr :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :disabled="disabled" :formType="formType"></qlr>
       </template>
     </div>
 </template>
@@ -31,7 +31,7 @@ let props = defineProps({
     default: false
   },
   // 用于区别是弹窗权利人还是表单权利人
-  type: {
+  formType: {
     type: String,
     default: ''
   }
