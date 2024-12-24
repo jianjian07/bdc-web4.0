@@ -6,7 +6,7 @@
           <div style="cursor: pointer;" @click="onClickItem(record)">
             <template v-if="column.dataIndex === 'bdcqzh'">
               <a-tooltip :title="record.bdcqzh">
-                <div style="width: 100%; text-align: left;">{{ record.bdcqzh }}</div>
+                <div style="width: 100%; text-align: left;" class="text-ellipsis">{{ record.bdcqzh }}</div>
               </a-tooltip>
             </template>
             <template v-if="column.dataIndex === 'expireday'">
@@ -14,7 +14,7 @@
             </template>
             <template v-if="column.dataIndex === 'qlrmc'">
               <a-tooltip :title="record.qlrmc">
-                <span>{{ record.qlrmc }}</span>
+                <div style="width: 100%;" class="text-ellipsis">{{ record.qlrmc }}</div>
               </a-tooltip>
             </template>
           </div>

@@ -1,6 +1,7 @@
 <template>
   <div 
     :class="{'full-screen-parent': true, 'full-screen': fullCoder, 'auto-height': isAutoHeight}"
+    v-if='showEditor'
   >
     <div v-if="fullScreen" class="full-screen-icon" @click="()=>fullCoder=!fullCoder">
       <FullscreenOutlined v-show="!fullCoder"/>
@@ -25,6 +26,7 @@
         width="100%"
         height="100%"
         @change="onChange"
+        @ready="onReady"
       />
     </div>
   </div>
@@ -53,6 +55,7 @@ window.jsonlint = jsonlint;
 let fullCoder: any = ref(false)
 let isAutoHeight: any = ref(false)
 let mode = ref<String>('')
+let showEditor = ref(false)
 
 const modes = [{
   label: 'JSON',
@@ -151,9 +154,13 @@ watch(() => mode.value, (val: any) => {
 
 onMounted(() => {
   setTimeout(() => {
-    cmRef.value?.refresh();
-  }, 10)
+    showEditor.value = true
+  }, 150)
 })
+
+const onReady = () => {
+  cmRef.value?.refresh();
+}
 
 const onChange = (val: string) => {
   if(val) {
