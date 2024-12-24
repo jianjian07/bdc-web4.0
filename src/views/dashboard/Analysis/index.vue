@@ -371,6 +371,9 @@ function onClickEntry(path, params: any = {}) {
     justify-content: space-between;
     padding: 1px;
     border: none;
+    /deep/ .ant-spin-container {
+      overflow: hidden !important;
+    }
     .userBox {
       box-shadow: 0 1px 11px 0 rgb(0 0 0 / 15%), 0 1px 6px -1px rgb(0 0 0 / 5%), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
       height: 100%;
@@ -433,6 +436,18 @@ function onClickEntry(path, params: any = {}) {
       flex-direction: column;
       /deep/ .ant-list-item {
         padding: 10px 0px !important;
+      }
+      /deep/ .userTable {
+        .ant-pagination {
+          margin: -25px 0 !important;
+        }
+      }
+      /deep/ .ant-table-container {
+        height: 100% !important;
+        overflow: hidden;
+        /deep/ .ant-table {
+          height: 100%;
+        }
       }
     }
     .tzList {

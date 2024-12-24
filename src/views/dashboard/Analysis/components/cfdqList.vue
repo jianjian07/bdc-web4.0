@@ -1,28 +1,27 @@
 <template>
   <div style="flex: 1; overflow: auto;">
     <a-spin :spinning="spinning">
-      <a-list item-layout="horizontal" :data-source="scrollList">
-        <template #renderItem="{ item }">
-          <a-list-item @click="onClickItem(item)">
-            <a-list-item-meta
-            >
-              <template #description>
-                <div style="display: flex; justify-content: space-between; color: #333; cursor: pointer">
-                  <span style="width: 35%; font-weight: bold;" class="text-ellipsis">{{ item.bdcqzh }}</span>
-                  <span><a-tag color="red">查封到期时间</a-tag>{{ item.cfjssj || '-' }}</span>
-                  <span style="width: 200px"><a-tag color="blue">登记时间</a-tag>{{ item.djsj || '-'}}</span>
-                </div>
-              </template>
-              <template #avatar>
-                
-              </template>
-            </a-list-item-meta>
-          </a-list-item>
+      <a-table :scroll="{y: `calc(100% - 75px)`}" :columns="columns" :data-source="scrollList" size="small" :pagination="pagination" @change="onChange($event, loadData)" class="userTable" style="height: 100%">
+        <template #bodyCell="{ column, record }">
+          <div style="cursor: pointer;" @click="onClickItem(record)">
+            <template v-if="column.dataIndex === 'bdcqzh'">
+              <a-tooltip :title="record.bdcqzh">
+                <div style="width: 100%; text-align: left;">{{ record.bdcqzh }}</div>
+              </a-tooltip>
+            </template>
+            <template v-if="column.dataIndex === 'expireday'">
+              <span>{{ record.expireday }}</span>
+            </template>
+            <template v-if="column.dataIndex === 'qlrmc'">
+              <a-tooltip :title="record.qlrmc">
+                <span>{{ record.qlrmc }}</span>
+              </a-tooltip>
+            </template>
+          </div>
         </template>
-      </a-list>
+      </a-table>
     </a-spin>
   </div>
-  <a-pagination style="text-align: right; margin-top: 10px" v-model:current="pagination.current" :total="pagination.total" simple @change="onPageChange" />
 </template>
 
 <script lang="ts" setup>
@@ -37,6 +36,28 @@ let pagination = ref({
   pageSize: 10
 })
 let spinning: any = ref(false)
+
+const columns = [
+  {
+    dataIndex: 'bdcqzh',
+    title: '查封文号',
+    align: 'left',
+    width: '35%',
+    ellipsis: true
+  },
+  {
+    dataIndex: 'expireday',
+    title: '超期天数(天)',
+    align: 'center',
+  },
+  {
+    dataIndex: 'qlrmc',
+    title: '权利人/被查封人',
+    align: 'center',
+    width: '40%',
+    ellipsis: true
+  }
+]
 
 loadData()
 
@@ -65,10 +86,10 @@ function loadData() {
   })
 }
 
-function onPageChange(page, pageSize) {
-  pagination.value.current = page
-  pagination.value.pageSize = pageSize
-  loadData()
+function onChange(pag: any, callback: any) {
+  pagination.value.current = pag.current
+  pagination.value.pageSize = pag.pageSize
+  callback()
 }
 
 function onClickItem(item) {
