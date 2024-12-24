@@ -234,6 +234,7 @@ function handleAdd() {
         slbh: query.slbh,
         qlrlb: props.qlrxx.qlrlxmc,
         qlrList: tableData.value,
+        sxh: props.qlrxx.sxh,
         type: 'add'
       },
       onOk: async (res) => {

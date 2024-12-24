@@ -67,7 +67,7 @@ onMounted(() => {
 function initQlrXx() {
   ywh.value = props.formData.ywh
   let taskId = route.query.taskId || props.formData.taskId
-  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getQlrConfig', params: { ywh: ywh.value, taskId: taskId } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { ywh: ywh.value, taskId: taskId } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       qlr.value = res.result
     } else {

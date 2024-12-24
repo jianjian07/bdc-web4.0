@@ -196,11 +196,13 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
       let qlrData = find.data[0].bdc_qlr
       const newQlrData = {};
       let qlrid = params.qlrid ? { qlrid: params.qlrid } : {}
+      let sxh = type == 'add' ? { sxh: params.sxh } : {}
       let _param = {
         ywh: params.ywh,
         slbh: params.slbh,
         qlrlb: params.qlrlb,
-        ...qlrid
+        ...qlrid,
+        ...sxh
       }
       for (const key in qlrData) {
         if (qlrData.hasOwnProperty(key)) {
