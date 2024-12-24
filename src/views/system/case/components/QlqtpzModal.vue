@@ -81,13 +81,6 @@ const props = defineProps({
 })
 
 watch(() => props.formData, (val: any) => {
-  if(val.type !== 'new') {
-    Object.keys(formState.value).forEach(key => {
-      formState.value[key] = val.itemData[key]
-    })
-  } else {
-    formState.value.lcid = val.lcid
-  }
   formState.value.djlx = ''
   if(val.djlx && val.djlx.length) {
     djlxOption = val.djlx.map(element => {
@@ -97,6 +90,13 @@ watch(() => props.formData, (val: any) => {
       }
     });
     formState.value.djlx = djlxOption[0].value
+  }
+  if(val.type !== 'new') {
+    Object.keys(formState.value).forEach(key => {
+      formState.value[key] = val.itemData[key]
+    })
+  } else {
+    formState.value.lcid = val.lcid
   }
 }, {
   immediate: true,
