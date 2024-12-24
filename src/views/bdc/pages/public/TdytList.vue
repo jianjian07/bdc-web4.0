@@ -20,7 +20,7 @@
             >
             </a-tree-select>
             <template v-else>
-              <a-input :value="getLabelByCode(column.dict, text)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+              {{ getLabelByCode(column.dict, text) }}
             </template>
           </div>
         </template>
