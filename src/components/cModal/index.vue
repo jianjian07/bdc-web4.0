@@ -2,7 +2,7 @@
   <a-config-provider :locale="zhCN">
     <a-modal class="commonModal" v-model:open="modalVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
       :wrap-class-name="(fullScreen || isFullScreen) ? 'full-common-modal' : ''" :confirmLoading="confirmLoading" :maskClosable="false"
-      v-bind="footerBind">
+      v-bind="footerBind" :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' })">
       <template #title>
         {{ title }}
         <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
@@ -49,6 +49,10 @@ const props = defineProps({
   width: {
     type: [String, Number],
     default: 520
+  },
+  height: {
+    type: [String, Number],
+    default: 0
   },
   filePath: {
     type: String,
