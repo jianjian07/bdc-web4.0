@@ -60,6 +60,10 @@ const props = defineProps({
   formType: {
     type: String,
     default: ''
+  },
+  regType: {
+    type: String,
+    default: ''
   }
 })
 
@@ -152,6 +156,7 @@ function initBtnList() {
 function initData() {
   let query = route.query
   let ywh = props.ywh ? { ywh: props.ywh } : {}
+  let sxh = getSxhParam()
   defHttp.post({
     url: api.list,
     params: {
@@ -161,7 +166,8 @@ function initData() {
     data: {
       slbh: query.slbh,
       qlrlb: props.qlrxx.qlrlxmc,
-      ...ywh
+      ...ywh,
+      ...sxh
     }
   }, { withToken: true }).then((res) => {
     if (res && res.success) {
@@ -169,6 +175,23 @@ function initData() {
       pagination.value.total = res.result.total
     }
   })
+}
+
+/**
+ * 是否要传sxh参数
+ */
+function getSxhParam() {
+  let sxh = {}
+  let item = props.qlrxx
+  let regtype = props.regType
+  switch (regtype) {
+    case '0102,0102':
+      sxh = { sxh: item.sxh }
+      break;
+    default: 
+      break;
+  }
+  return sxh
 }
 
 /**

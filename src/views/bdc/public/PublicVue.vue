@@ -30,7 +30,7 @@
               </component>
             </template>
             <template v-if="qlr">
-              <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc"></qlr-list>
+              <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc" :regType="regType"></qlr-list>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
           </div>
