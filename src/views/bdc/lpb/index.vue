@@ -99,12 +99,10 @@
           <a-button type="primary" @click="handleFilterLpb">查询</a-button>
         </div>
         <template v-if="cxxData.length">
-          <table style="margin: auto;">
+          <table>
             <thead>
               <tr class="title">
-                <td style="border: 0;background-color: #fff;"> </td>
-                <td style="border: 0;background-color: #fff;"> </td>
-                <td colspan="6" id="divtitle"
+                <td :colspan="totalHs + 2" id="divtitle"
                   style="border: 0;background-color: #39bd8a;border-radius: 26px 26px 0px 0px; /* 去掉右下角的圆角 */">
                   {{ currentZrzInfo.zl }}
                 </td>
@@ -112,7 +110,7 @@
               <tr class="title">
                 <td>物理层</td>
                 <td>名义层</td>
-                <td v-for="(item, index) in dyxx" :key="'dy' + index" :colspan="maxHs">{{ item.dyh }}单元</td>
+                <td v-for="(item, index) in dyxx" :key="'dy' + index" :colspan="item.maxHs">{{ item.dyh }}单元</td>
               </tr>
             </thead>
             <tbody class="ant-table-tbody">
@@ -294,6 +292,8 @@ const pagination = ref<any>({
 })
 // 最大户数
 let maxHs = ref<number>(0)
+// 总户数
+let totalHs = ref<number>(0)
 // 当前选择的幢数据
 let currentZrzInfo: any = ref({})
 // 当前案卷的不动产单元数组
@@ -506,6 +506,7 @@ function setMaxHs() {
       dyMaxhs = fwList.length > dyMaxhs ? fwList.length : dyMaxhs
     })
     dy.maxHs = dyMaxhs
+    totalHs.value += dy.maxHs
     maxHs.value = dyMaxhs
   })
 }
