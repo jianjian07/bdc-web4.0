@@ -109,6 +109,8 @@ enum api {
   list = '/api/zrzy-bdc/bdc/qlr/list',
 }
 
+const emit = defineEmits(['getTbxx'])
+
 // 操作栏按钮
 let actionBtnList = ref<any>([])
 
@@ -225,7 +227,7 @@ function handleAdd() {
     message.warning('该权利人共有方式为单独所有,不允许再添加')
   } else {
     let modal = cModal({
-      title: '新增',
+      title: '新增' + props.qlrxx.qlrxsmc,
       width: '70vw',
       filePath: 'views/bdc/public/GenPublic',
       formData: {
@@ -243,6 +245,7 @@ function handleAdd() {
           if (_result) {
             modal.destroy()
             initData()
+            emit('getTbxx', props.qlrxx.tbxx)
           }
         }
       }
@@ -260,7 +263,7 @@ function handleLook(record) {
       : ( props.formType == 'modal' ? 116 : 55 )
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
   cModal({
-    title: '查看',
+    title: '查看' + props.qlrxx.qlrxsmc,
     width: '70vw',
     filePath: 'views/bdc/public/GenPublic',
     formData: {
@@ -287,7 +290,7 @@ function handleEdit(record) {
       : ( props.formType == 'modal' ? 116 : 55 )
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
   let modal = cModal({
-    title: '编辑',
+    title: '编辑' + props.qlrxx.qlrxsmc,
     width: '70vw',
     filePath: 'views/bdc/public/GenPublic',
     formData: {
@@ -307,6 +310,7 @@ function handleEdit(record) {
         if (_result) {
           modal.destroy()
           initData()
+          emit('getTbxx', props.qlrxx.tbxx)
         }
       }
     }
@@ -329,11 +333,16 @@ function handleDel(record) {
       if (res && res.success) {
         initData()
         message.success('删除成功')
+        emit('getTbxx', props.qlrxx.tbxx)
       } else {
         message.warning('删除失败')
       }
   })
 }
+
+defineExpose({
+  initData
+})
 </script>
 
 <style lang="less" scoped>
