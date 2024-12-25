@@ -104,6 +104,13 @@ const columns = [
     width: 200
   },
   {
+    title: '宗地面积(m²)',
+    dataIndex: 'zdmj',
+    align: 'center',
+    type: 'inputNumber',
+    width: 150
+  },
+  {
     title: '使用期限(年)',
     dataIndex: 'tdsyqx',
     align: 'center',
