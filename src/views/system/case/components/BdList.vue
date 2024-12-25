@@ -136,6 +136,8 @@ dataSource.value = bdList.value
 /** 监控qllx 权利类型切换时，重新加载对应的表单数据 **/
 watch(props.nodeInfo, (_newValue, _oldValue) => {
     getList()
+}, {
+  immediate: true
 });
 function getList() {
     defHttp.post({ url: api.listUrl, data: { ...props.nodeInfo } }, { withToken: true }).then((res) => {
@@ -161,7 +163,6 @@ const save = (key: string) => {
     }
     defHttp.post({ url: _url, data: _data }, { withToken: true }).then((res) => {
         if (res.success) {
-            debugger
             editableData[key].id0 = res.result
             //    const _index= dataSource.value.findIndex(item => key == item.id0)
             //    dataSource.value[_index]=editableData[key]

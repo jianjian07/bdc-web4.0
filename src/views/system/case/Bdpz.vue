@@ -35,6 +35,9 @@
                 <a-tab-pane key="5" tab="材料目录配置" force-render>
                     <ClmlList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="baseInfo"/>
                 </a-tab-pane>
+                <a-tab-pane key="6" tab="权利人配置" force-render>
+                    <qlrpz v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="baseInfo"></qlrpz>
+                </a-tab-pane>
             </a-tabs>
         </div>
 
@@ -49,6 +52,7 @@ const NodeList = defineAsyncComponent(() => import("/@/views/system/case/compone
 const QlqtpzList = defineAsyncComponent(() => import("/@/views/system/case/components/QlqtpzList.vue"))
 const YwysList = defineAsyncComponent(() => import("/@/views/system/case/components/YwysList.vue"))
 const ClmlList = defineAsyncComponent(() => import("/@/views/system/case/components/ClmlList.vue"))
+const Qlrpz = defineAsyncComponent(() => import("/@/views/system/case/components/Qlrpz.vue"))
 const activeKey = ref('1');
 let processInfo: any = ref('')
 let baseInfo: any = ref(null)
