@@ -30,7 +30,7 @@ export async function extractData(options: any) {
         case '0203':
         case '0204':
         case '0205':
-        case '0202,0202':
+        case '0102,0102':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
