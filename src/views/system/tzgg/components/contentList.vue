@@ -14,7 +14,7 @@
                     <span class="text-ellipsis">{{  item.msgAbstract }}</span>
                   </a-tooltip>
                   </div>
-                <span style="width: 350px; padding-left: 5px" v-if="item.sendTime">发布时间：{{ item.sendTime }}</span>
+                <div style="width: 350px; padding-left: 5px; text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" v-if="item.sendTime">发布时间：{{ item.sendTime }}</div>
               </div>
             </template>
             <template #title>
