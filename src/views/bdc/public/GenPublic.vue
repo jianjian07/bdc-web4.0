@@ -5,7 +5,7 @@
                 :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
       <template v-if="showQlr">
-         <qlr-list :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" formType="modal"></qlr-list>
+         <qlr-list :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" formType="modal" :regType="regType"></qlr-list>
       </template>
     </a-spin>
   </div>
@@ -38,6 +38,8 @@ let showQlr = ref<boolean>(true)
 let qlr = ref<any>()
 // 业务号
 let ywh = ref<any>('')
+// regType
+let regType = ref<string>('')
 
 const props = defineProps({
   formData: {
@@ -69,7 +71,8 @@ function initQlrXx() {
   let taskId = route.query.taskId || props.formData.taskId
   defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { ywh: ywh.value, taskId: taskId } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      qlr.value = res.result
+      qlr.value = res.result.qlrModelList || []
+      regType.value = res.result.regType || ''
     } else {
       message.warning('获取权利人配置出错')
     }
