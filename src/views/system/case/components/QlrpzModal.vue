@@ -82,10 +82,12 @@ watch(() => props.formData, (val: any) => {
       if (key == 'btnId' && formState.value[key]) {
         formState.value['btnIdArr'] = formState.value['btnId'].includes(',') ? formState.value['btnId'].split(',') : [formState.value['btnId']]
       }
+      formState.value.qlrxsmc = formState.value.qlrxsmc || formState.value.qlrlxmc
     })
   } else {
     formState.value.lcid = val.lcid
   }
+  formState.value.sxh = formState.value.sxh || 1
 }, {
   immediate: true,
   deep: true
@@ -151,6 +153,7 @@ function onSubmit() {
 function onChange(value) {
   let label = getDictItemsByCode('qlrlb').filter((_v: any) => _v.dictCode == value)[0]?.dictName || ''
   formState.value.qlrlxmc = label
+  formState.value.qlrxsmc = label
 }
 
 defineExpose({
