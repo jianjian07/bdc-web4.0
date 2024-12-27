@@ -29,7 +29,7 @@
                 :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">
               </component>
             </template>
-            <template v-if="qlr">
+            <template v-if="qlr && showQlr">
               <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc" :regType="regType"></qlr-list>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
