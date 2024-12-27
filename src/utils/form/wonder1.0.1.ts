@@ -22,7 +22,7 @@ export async function getData(object1: { value: object }, formId?: number, param
     //formId: 1, param: { code: 'demo1' }
     let _param = { ...query, ...params }
     if (_param.slbh && _param.ywh) {
-        _param.slbh = _param.ywh
+        _param.slbh = ''
     }
     await defHttp.post({
         url: url,
@@ -322,7 +322,7 @@ function updateFormDatas(formRes, params?: any) {
         const query = router.currentRoute.value.query
         let param = { ...query, ...params }
         if (param.ywh && param.slbh) {
-            param.slbh = param.ywh
+            param.slbh = ''
         } 
         // code: 'demo1'
         defHttp.post({

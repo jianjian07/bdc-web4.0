@@ -8,7 +8,8 @@
       :disabled="formData.type == 'view'"
     >
       <a-form-item ref="djlx" label="登记类型" name="djlx">
-        <a-input v-model:value="formState.djlx" readOnly></a-input>
+        <a-select v-model:value="formState.djlx" :options="djlxOption"  placeholder="请选择登记类型">
+        </a-select>
       </a-form-item>
       <a-form-item ref="qllx" label="权利类型" name="qllx">
         <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />
@@ -43,7 +44,7 @@
 
 <script lang="ts" setup>
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
-import { ref, toRaw, watch } from "vue"
+import { reactive, ref, toRaw, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 
@@ -61,6 +62,7 @@ let formState: any = ref({
   btnId: '',
   orderNum: ''
 })
+let djlxOption: any = reactive([])
 
 const props = defineProps({
   formData: {
@@ -75,8 +77,12 @@ enum api {
 }
 
 watch(() => props.formData, (val: any) => {
-  formState.value.djlx = val.djlx.join(',')
-  if(val.type !== 'new') {
+   if (val.djlx && val.djlx.length) {
+     djlxOption = getOptions(val.djlx)
+     formState.value.djlx = djlxOption[0].value
+  }
+  formState.value.sxh = formState.value.sxh || 1
+  if (val.type !== 'new') {
     Object.keys(formState.value).forEach(key => {
       formState.value[key] = val.itemData[key]
       if (key == 'btnId' && formState.value[key]) {
@@ -87,7 +93,6 @@ watch(() => props.formData, (val: any) => {
   } else {
     formState.value.lcid = val.lcid
   }
-  formState.value.sxh = formState.value.sxh || 1
 }, {
   immediate: true,
   deep: true
@@ -154,6 +159,26 @@ function onChange(value) {
   let label = getDictItemsByCode('qlrlb').filter((_v: any) => _v.dictCode == value)[0]?.dictName || ''
   formState.value.qlrlxmc = label
   formState.value.qlrxsmc = label
+}
+
+/**
+ * 获取登记类型下拉框
+ * @param djlx
+ */
+function getOptions(djlx) {
+  let options = djlx.map(element => {
+    return {
+      label: element,
+      value: element
+    }
+  });
+  let map = new Map();
+  for (let item of options) {
+      if (!map.has(item.id)) {
+          map.set(item.id, item);
+      };
+  };
+  return [...map.values()];
 }
 
 defineExpose({

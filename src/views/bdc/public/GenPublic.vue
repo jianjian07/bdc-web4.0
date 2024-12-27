@@ -40,6 +40,8 @@ let qlr = ref<any>()
 let ywh = ref<any>('')
 // regType
 let regType = ref<string>('')
+// 不动产单元号
+let bdcdyh = ref<string>('')
 
 const props = defineProps({
   formData: {
@@ -68,8 +70,10 @@ onMounted(() => {
  */
 function initQlrXx() {
   ywh.value = props.formData.ywh
+  bdcdyh.value = props.formData.bdcdyh
+  
   let taskId = route.query.taskId || props.formData.taskId
-  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { ywh: ywh.value, taskId: taskId } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { ywh: ywh.value, bdcdyh: bdcdyh.value, taskId: taskId } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       qlr.value = res.result.qlrModelList || []
       regType.value = res.result.regType || ''
