@@ -174,8 +174,8 @@ function getOptions(djlx) {
   });
   let map = new Map();
   for (let item of options) {
-      if (!map.has(item.id)) {
-          map.set(item.id, item);
+      if (!map.has(item.value)) {
+          map.set(item.value, item);
       };
   };
   return [...map.values()];
