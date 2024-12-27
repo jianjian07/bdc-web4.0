@@ -5,7 +5,7 @@
                 :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
      </component>
       <template v-if="showQlr">
-         <qlr-list :qlr="qlr" :ywh="ywh" :disabled="formData.iszd == '1'" formType="modal" :regType="regType"></qlr-list>
+         <qlr-list :qlr="qlr" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="formData.iszd == '1'" formType="modal" :regType="regType"></qlr-list>
       </template>
     </a-spin>
   </div>

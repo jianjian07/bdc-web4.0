@@ -1,7 +1,7 @@
 <template>
     <div class="qlr-list">
       <template v-for="(item, index) in qlrList">
-        <qlr :ref="qlrRef(item.qlrxsmc)" :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :disabled="disabled" :formType="formType" :regType="regType" @getTbxx="getTbxx"></qlr>
+        <qlr :ref="qlrRef(item.qlrxsmc)" :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="disabled" :formType="formType" :regType="regType" @getTbxx="getTbxx"></qlr>
       </template>
     </div>
 </template>
@@ -25,6 +25,10 @@ let props = defineProps({
     default: ''
   },
   ywh: {
+    type: String,
+    default: ''
+  },
+  bdcdyh: {
     type: String,
     default: ''
   },

@@ -64,6 +64,10 @@ const props = defineProps({
   regType: {
     type: String,
     default: ''
+  },
+  bdcdyh: {
+    type: String,
+    default: ''
   }
 })
 
@@ -158,6 +162,7 @@ function initBtnList() {
 function initData() {
   let query = route.query
   let ywh = props.ywh ? { ywh: props.ywh } : {}
+  let bdcdyh = props.bdcdyh ? { bdcdyh: props.bdcdyh }: {}
   let sxh = getSxhParam()
   defHttp.post({
     url: api.list,
@@ -169,6 +174,7 @@ function initData() {
       slbh: query.slbh,
       qlrlb: props.qlrxx.qlrlxmc,
       ...ywh,
+      ...bdcdyh,
       ...sxh
     }
   }, { withToken: true }).then((res) => {
@@ -233,6 +239,7 @@ function handleAdd() {
       formData: {
         formId: formId,
         ywh: props.ywh,
+        bdcdyh: props.bdcdyh,
         slbh: query.slbh,
         qlrlb: props.qlrxx.qlrlxmc,
         qlrList: tableData.value,
@@ -297,6 +304,7 @@ function handleEdit(record) {
       formId: formId,
       slbh: query.slbh,
       ywh: record.ywh,
+      bdcdyh: record.bdcdyh || props.bdcdyh,
       qlrlb: props.qlrxx.qlrlxmc,
       qlrList: tableData.value,
       qlrmc: record.qlrmc,
