@@ -64,8 +64,14 @@ const qlrRef = (qlrxsmc) => (el) => {
  * @param value
  */
 function getTbxx(value) {
-  if (value && qlrRefs[value] && qlrRefs[value].initData) {
-    qlrRefs[value].initData()
+  if (value) {
+    let arr = value.includes(',') ? value.split(',') : [value]
+    for (let i = 0; i < arr.length; i++) {
+      let item = arr[i]
+      if (qlrRefs[item] && qlrRefs[item].initData) {
+        qlrRefs[item].initData()
+      }
+    }
   }
 }
 

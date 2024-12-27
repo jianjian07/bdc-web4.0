@@ -199,6 +199,7 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
       let sxh = type == 'add' ? { sxh: params.sxh } : {}
       let _param = {
         ywh: params.ywh,
+        bdcdyh: params.bdcdyh,
         slbh: params.slbh,
         qlrlb: params.qlrlb,
         ...qlrid,
