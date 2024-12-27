@@ -120,6 +120,8 @@ const columns = [
 let btnList: any = ref([])
 watch(props.nodeInfo, (_newValue, _oldValue) => {
     getList()
+},{
+  immediate: true
 });
 function getList() {
     defHttp.post({ url: api.listUrl, data: { ...props.nodeInfo } }, { withToken: true }).then((res) => {

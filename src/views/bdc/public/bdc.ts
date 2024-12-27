@@ -1,5 +1,12 @@
 import { useUserStore } from "/@/store/modules/user"
-import { getFormInfo, saveFormData, saveHandleData, setValidateInfos, validateInfos } from "/@/utils/form/wonder1.0.1"
+import {
+  getFormInfo,
+  saveFormData,
+  saveHandleData,
+  setInputValue,
+  setValidateInfos, updateFormDatas,
+  validateInfos
+} from "/@/utils/form/wonder1.0.1"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed, nextTick } from "vue"
@@ -141,25 +148,73 @@ export async function handOver(demoRefs: any, loading: any, params: any) {
           if (_result) {
             modal.destroy()
             // 关闭当前标签页
-            const tabStore = useTabsStore()
-            const { getTabsShow } = useTabsSetting()
-            if (getTabsShow.value) {
-              const currentTab = computed(() => tabStore.getCurrentTab)
-              tabStore.removeTab(currentTab.value)
-              setTimeout(() => {
-                if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
-                  router.push('/refresh')
-                }
-              }, 300)
-            } else {
-              router.push('/analysis')
-            }
+            closeCurrentTab()
           }
         }
       }
     })
   }
   return res
+}
+
+/**
+ * 关闭当前页面
+ */
+function closeCurrentTab() {
+  const tabStore = useTabsStore()
+  const { getTabsShow } = useTabsSetting()
+  if (getTabsShow.value) {
+    const currentTab = computed(() => tabStore.getCurrentTab)
+    tabStore.removeTab(currentTab.value)
+    setTimeout(() => {
+      if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
+        router.push('/refresh')
+      }
+    }, 300)
+  } else {
+    router.push('/analysis')
+  }
+}
+
+/**
+ * 提交(查封台账)
+ * @param demoRefs
+ * @param loading
+ * @param type
+ */
+export async function submit(demoRefs: any, loading: any, obj: any) {
+  if (obj && obj.type == 'cftz') {
+    let res = await getFormInfo(demoRefs)
+    let find = res.find(r => r.validate == false)
+    let validateFlag = !find
+    if (!validateFlag) {
+      // message.warning('请检查表单填写')
+    } else {
+      let el: any = document.getElementById('qszt') as HTMLElement
+      if (el) {
+        const route = router.currentRoute.value;
+        let query = route.query
+        if (query.jf == '1') {
+          // 解封界面 状态提交改为2
+          setInputValue(el, '2')
+        } else {
+          // 查封界面 状态提交改为1
+          setInputValue(el, '1')
+        }
+      }
+      let newInfo = await getFormInfo(demoRefs)
+      let allRes: any = []
+      for (let i = 0; i < res.length; i++) {
+          const promiseRes = await updateFormDatas(newInfo[i])
+          allRes.push(promiseRes)
+      }
+      let status = allRes ? allRes.filter(r => r).length == res.length : false
+      if (status) {
+        message.success('提交成功!')
+        closeCurrentTab()
+      }
+    }
+  }
 }
 
 // 保存前方法测试
@@ -177,6 +232,55 @@ export async function aa(demoRefs, test) {
 export function handBack(demoRefs: any, loading: any, val1, val2) {
   console.log('val1', val1)
   console.log('val2', val2)
+}
+
+/**
+ * 批量解查封
+ * @param demoRefs
+ * @param spinning
+ * @param params
+ */
+export async function sendPlJcf(demoRefs: any, spinning: any, params?: any) {
+  spinning.value = true
+  let saveRes: any = false
+  let _result = await getFormInfo(demoRefs)
+  if (_result) {
+    let find = _result.filter(r => r.formId == 77)[0]
+    if (find && find.validate) {
+      let data = find.data[0].bdc_cftz
+      const newQlrData = {};
+      let arr = params.slbhChecks || []
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          newQlrData[key.toLowerCase()] = data[key];
+        }
+      }
+      let merged = Object.assign({}, newQlrData, { qszt: '2' });
+      arr = arr.map((item) => {
+        return {
+          slbh: item,
+          ...merged
+        }
+      })
+      saveRes = await editBatchJcf(arr)
+    }
+  }
+  spinning.value = false
+  return saveRes
+}
+
+function editBatchJcf(arr) {
+  return new Promise((resolve, reject) => {
+    defHttp.put({ url: '/api/zrzy-bdc/bdc/bdcCftz/editBatch', data: arr }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+        message.success('提交成功!')
+      } else {
+        resolve(false)
+        message.warning('提交失败!')
+      }
+    })
+  })
 }
 
 /**

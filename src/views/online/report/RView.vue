@@ -14,7 +14,8 @@ import {
 } from "/@/utils/form/wonder-report"
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
-import { message } from 'ant-design-vue';
+import { cModal } from "/@/components/cModal/index"
+import { message, Modal } from 'ant-design-vue';
 import { router } from "/@/router";
 const VNodes = useVNodes();
 const props = defineProps({
@@ -160,7 +161,9 @@ const generateVue3 = defineComponent({
             onExportExcelApi,
             onCExport,
             formatMultipleSelectValue,
-            onSelectChange
+            onSelectChange,
+            cModal,
+            Modal
         }
         function search() {
             paginations.value.current = 1
@@ -243,8 +246,15 @@ const generateVue3 = defineComponent({
         if (info.isLoad == 1) {
             execInitFun()
         }
+         // 固定了mounted的事件名
+        const monunted = eventScript.filter(t => t.type == "Mounted")
+        // console.log('monunted',monunted)
+        if (monunted.length > 0) {
+            events["initMount"]()
+        }
     }
 })
+
 function execInitFun() {
     if (info.cType == 'sql') {
         initTableV2(options)

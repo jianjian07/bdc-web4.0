@@ -13,9 +13,9 @@
 
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
-import { sendSaveFun, getMultipleRef, sendQlrSaveFun } from "/@/views/bdc/public/bdc"
+import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
+import { getFormInfo, resetValidateInfos } from "/@/utils/form/wonder1.0.1"
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
@@ -123,9 +123,21 @@ async function saveQlrData(type: any, params?: any) {
   return await sendQlrSaveFun(type, demoRefs, spinning, params)
 }
 
+async function savePlJcf(params?:any) {
+  if (params) {
+    params = params?.params || props.formData
+  } else {
+    params = props.formData
+  }
+  
+  checkDemoRefs()
+  return await sendPlJcf(demoRefs, spinning, params)
+}
+
 defineExpose({
   saveData,
-  saveQlrData
+  saveQlrData,
+  savePlJcf
 })
 </script>
 
