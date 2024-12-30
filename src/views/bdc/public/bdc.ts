@@ -210,11 +210,32 @@ export async function submit(demoRefs: any, loading: any, obj: any) {
       }
       let status = allRes ? allRes.filter(r => r).length == res.length : false
       if (status) {
-        message.success('提交成功!')
-        closeCurrentTab()
+        let yw = await updateYwblqk()
+        if (yw) {
+          message.success('提交成功!')
+          closeCurrentTab()
+        }
       }
     }
   }
+}
+
+/**
+ * 查封台账更新业务办理情况
+ */
+function updateYwblqk() {
+  const route = router.currentRoute.value;
+  let slbh = route.query.slbh
+  return new Promise((resolve, reject) => {
+    defHttp.put({ url: '/api/zrzy-bdc/bdc/bdcCftz/updateYwblqkBySlbh', params: { slbh: slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+      } else {
+        message.warning('更新业务办理情况出错')
+        resolve(false)
+      }
+    })
+  })
 }
 
 // 保存前方法测试
@@ -249,7 +270,7 @@ export async function sendPlJcf(demoRefs: any, spinning: any, params?: any) {
     if (find && find.validate) {
       let data = find.data[0].bdc_cftz
       const newQlrData = {};
-      let arr = params.slbhChecks || []
+      let arr = params.id0Checks || []
       for (const key in data) {
         if (data.hasOwnProperty(key)) {
           newQlrData[key.toLowerCase()] = data[key];
@@ -258,7 +279,7 @@ export async function sendPlJcf(demoRefs: any, spinning: any, params?: any) {
       let merged = Object.assign({}, newQlrData, { qszt: '2' });
       arr = arr.map((item) => {
         return {
-          slbh: item,
+          id0: item,
           ...merged
         }
       })
@@ -804,5 +825,30 @@ export function lookDjb(record?: any) {
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
     router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record?.ywh }})
+  }
+}
+
+/**
+ * 创建查封台账
+ */
+export function addCfCase() {
+  defHttp.post({ url: '/api/zrzy-bdc/bdc/bdcCftz/start', data: { lcid: 'cf1735093073136' } }, { withToken: true }).then(res => {
+    if (res.success) {
+        router.push({ path: '/bdc/blcasedoing', query: { slbh: res.result.slbh, jf: '0' } });
+    } else {
+        message.error('创建失败')
+    }
+  })
+}
+
+/**
+ * 编辑查封台账
+ * @param type 0 查封 1 解封
+ */
+export function editCfOrJfCase(slbh, type) {
+  if (slbh) {
+    router.push({ path: '/bdc/blcasedoing', query: { slbh: slbh, jf: type } });
+  } else {
+    message.warning('受理编号为空!')
   }
 }
