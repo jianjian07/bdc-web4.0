@@ -791,7 +791,7 @@ export function previewDjb(record?: any) {
   const route = router.currentRoute.value
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
-    router.push({ path: '/djb/preview', query: { slbh: slbh, ywh: record.ywh }})
+    router.push({ path: '/djb/preview', query: { slbh: slbh, ywh: record?.ywh }})
   }
 }
 
@@ -803,6 +803,6 @@ export function lookDjb(record?: any) {
   const route = router.currentRoute.value
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
-    router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record.ywh }})
+    router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record?.ywh }})
   }
 }
