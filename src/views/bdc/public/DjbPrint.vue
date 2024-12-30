@@ -33,6 +33,7 @@ import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { Base64 } from "js-base64"
+import { message } from "ant-design-vue"
 
 const route = useRoute()
 // 加载
@@ -56,15 +57,18 @@ onMounted(() => {
 })
 
 function initData() {
-   let ywh = route.query.ywh || '19990000010006'
-  if (ywh) {
-    defHttp.get({ url: api.list, params: { ywh: ywh } }, { withToken: true }).then((res) => {
+  let ywh = route.query.ywh
+  let slbh = route.query.slbh
+  if (ywh || slbh) {
+    defHttp.get({ url: api.list, params: { slbhOrYwh: ywh || slbh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         list.value = res.result
         if (list.value.length) {
           selectedKeys.value = [list.value[0].id0]
           setUrl(list.value[0].id0, list.value[0].filename)
         }
+      } else {
+        message.warning(res.message)
       }
     })
   }

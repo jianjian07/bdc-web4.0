@@ -782,3 +782,27 @@ export function getPayMan(viewData, tableName, field) {
     })
   }
 }
+
+/**
+ * 预览登记簿
+ * @param record
+ */
+export function previewDjb(record?: any) {
+  const route = router.currentRoute.value
+  const slbh = route.query.slbh?.toString()
+  if (record || slbh) {
+    router.push({ path: '/djb/preview', query: { slbh: slbh, ywh: record.ywh }})
+  }
+}
+
+/**
+ * 查看登记簿
+ * @param record
+ */
+export function lookDjb(record?: any) {
+  const route = router.currentRoute.value
+  const slbh = route.query.slbh?.toString()
+  if (record || slbh) {
+    router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record.ywh }})
+  }
+}

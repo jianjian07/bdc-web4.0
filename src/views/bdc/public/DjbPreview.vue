@@ -32,6 +32,7 @@
 import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
 
 const route = useRoute()
 // 加载
@@ -57,9 +58,11 @@ onMounted(() => {
  * 初始化数据
  */
 function initData() {
-  let ywh = route.query.ywh || '19990000010006'
-  if (ywh) {
-    defHttp.get({ url: api.list, params: { ywh: ywh } }, { withToken: true }).then((res) => {
+  // 19990000010006
+  let ywh = route.query.ywh
+  let slbh = route.query.slbh
+  if (ywh || slbh) {
+    defHttp.get({ url: api.list, params: { slbhOrYwh: ywh || slbh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         if (res.result) {
           list.value = res.result.djbList || []
@@ -74,6 +77,8 @@ function initData() {
             setUrl(list.value[0].id)
           }
         }
+      } else {
+        message.warning(res.message)
       }
     })
   }
