@@ -58,9 +58,9 @@ let formState: any = ref({
   qlrlxmc: '',
   qlrxsmc: '',
   tbxx: '',
-  sxh: '',
+  sxh: 1,
   btnId: '',
-  orderNum: ''
+  orderNum: 1
 })
 let djlxOption: any = reactive([])
 
