@@ -316,14 +316,14 @@ export function getFormUpdateData(formDoms) {
     return res
 }
 
-function updateFormDatas(formRes, params?: any) {
+export function updateFormDatas(formRes, params?: any) {
     return new Promise((resolve) => {
         const url = "/api/zrzy-form/generate/update"
         const query = router.currentRoute.value.query
         let param = { ...query, ...params }
         if (param.ywh && param.slbh) {
             param.slbh = ''
-        } 
+        }
         // code: 'demo1'
         defHttp.post({
             url: url,
@@ -375,7 +375,7 @@ export async function onSubmitForm(dom: any, callback?: any) {
     success = isValidateSuccess() && callbackRes
     // console.log('validateInfos', validateInfos)
     // console.log('callbackRessuccess', success)
-    console.log('sosososso',success)
+    console.log('sosososso', success)
     return {
         validate: success,
         updateData: getUpdateData(formDom)
@@ -622,12 +622,12 @@ export function resetValidateInfos() {
     return validateInfos
 }
 
- export function setValidateInfos(key, validateStatus, help){
-  if (!validateInfos[key]) {
-    validateInfos[key] = {}
-  }
-  validateInfos[key]['validateStatus'] = validateStatus
-  validateInfos[key]['help'] = help
+export function setValidateInfos(key, validateStatus, help) {
+    if (!validateInfos[key]) {
+        validateInfos[key] = {}
+    }
+    validateInfos[key]['validateStatus'] = validateStatus
+    validateInfos[key]['help'] = help
 }
 /**
  * 下拉框同步
@@ -923,7 +923,7 @@ let obj = reactive<any>({ obj1: {}, obj2: {} })
 export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string) => {
     editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
     obj.obj1[key] = cloneDeep(editableData[key])
-    console.log('editableData',editableData)
+    console.log('editableData', editableData)
 };
 
 export const saveRow = (key: string, editableData, dataSource: any, keyCol, tableName, _callback?: any) => {
