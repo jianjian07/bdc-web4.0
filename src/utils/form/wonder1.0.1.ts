@@ -93,28 +93,32 @@ export async function getInheritData(object: { value: object }, caseCode: string
  * table 数据源方法
  * @param options
  */
-export function initTable(options: { dataSourceObj: { value: object }, bindName: string, pagination?: any, formId: number }) {
+export function initTable(options: { dataSourceObj: { value: object }, bindName: string, pagination?: any, formId: number }, params?: any) {
     const query = router.currentRoute.value.query
     const url = '/api/zrzy-form/generate/getGridModels'
-    let params = {
+    let obj = {
         isPage: false
     }
     if (options.pagination != false) {
-        params.isPage = true
-        params["current"] = options.pagination.current
-        params["size"] = options.pagination.pageSize
+        obj.isPage = true
+        obj["current"] = options.pagination.current
+        obj["size"] = options.pagination.pageSize
+    }
+    let _param = { ...query, ...params }
+    if (_param.slbh && _param.ywh) {
+        _param.slbh = ''
     }
     defHttp.post({
         url: url,
         data: {
             formId: options.formId ? options.formId : 14,
             readName: options.bindName,
-            param: { slbh: query.slbh ? query.slbh : '06-09098' },
+            param: _param,
             ...params
         }
     }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
-            if (params.isPage) {
+            if (obj.isPage) {
                 options.dataSourceObj.value = res.result.records
                 options.pagination.total = res.result.total
             } else {
@@ -129,12 +133,12 @@ export function initTable(options: { dataSourceObj: { value: object }, bindName:
  * 查询所有表单表格
  * @param options
  */
-export function initAllCTableV2(options: { viewData: { value: object }, paginations?: any, formId: number }) {
+export function initAllCTableV2(options: { viewData: { value: object }, paginations?: any, formId: number }, params?: any) {
     let paginations = options.paginations
     for (const key in paginations) {
         let pagination = paginations[key]
         if (pagination.bindName) {
-            initCTableV2({ viewData: options.viewData, formId: options.formId, pagination: pagination });
+            initCTableV2({ viewData: options.viewData, formId: options.formId, pagination: pagination }, params);
         }
     }
 }
@@ -143,28 +147,32 @@ export function initAllCTableV2(options: { viewData: { value: object }, paginati
  * table 数据源方法 (新)
  * @param options
  */
-export function initCTableV2(options: { viewData: { value: object }, pagination?: any, formId: number }) {
+export function initCTableV2(options: { viewData: { value: object }, pagination?: any, formId: number }, params?: any) {
     const query = router.currentRoute.value.query
     const url = '/api/zrzy-form/generate/getGridModels'
-    let params = {
-        isPage: false
+    let obj = {
+        isPage: false,
     }
     if (options.pagination.pageSize) {
-        params.isPage = true
-        params["current"] = options.pagination.current
-        params["size"] = options.pagination.pageSize
+        obj.isPage = true
+        obj["current"] = options.pagination.current
+        obj["size"] = options.pagination.pageSize
+    }
+    let _param = { ...query, ...params }
+    if (_param.slbh && _param.ywh) {
+        _param.slbh = ''
     }
     defHttp.post({
         url: url,
         data: {
             formId: options.formId ? options.formId : 14,
             readName: options.pagination.bindName,
-            param: { slbh: query.slbh ? query.slbh : '1932501' },
-            ...params
+            param: _param,
+            ...obj
         }
     }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
-            if (params.isPage) {
+            if (obj.isPage) {
                 options.viewData.value[options.pagination.bindName] = res.result.records
                 options.pagination.total = res.result.total
             } else {

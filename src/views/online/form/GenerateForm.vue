@@ -138,7 +138,6 @@ viewData.value = getViewDataByFormId(info.id)
 const apiArr = _sourcedata.filter((item: { cType: string; }) => item.cType == 'javascript')
 let apiDataSource = apiArr
 // await getDataByApi(viewData, apiDataSource)
-
 await getData(viewData, formId, props.formData)
 
 // 20240130验证：变量定义 名称固定formProps
@@ -212,8 +211,7 @@ const generateVue3 = defineComponent({
         // if (paginations.value) {
         //     paginations.value.onChange = onChange
         // }
-
-        initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value })
+        initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value }, props.formData)
 
         onBeforeUpdate(() => {
             // dom变化时清空 会重新设置
@@ -242,7 +240,7 @@ const generateVue3 = defineComponent({
          */
         function onChange1(pag: any, paginationName: string) {
             paginations.value[paginationName] = pag
-            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName] });
+            initCTableV2({ viewData: viewData, formId: formId, pagination: paginations.value[paginationName] }, props.formData);
         }
 
         /**
@@ -454,7 +452,7 @@ function handleChangeTab(key, callback?: any) {
  * 刷新表格
  */
 function reloadTable() {
-  initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value });
+  initAllCTableV2({ viewData: viewData, formId: formId, paginations: paginations.value }, props.formData);
 }
 
 /**

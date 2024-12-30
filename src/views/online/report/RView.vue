@@ -17,6 +17,7 @@ import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
 import { message, Modal } from 'ant-design-vue';
 import { router } from "/@/router";
+import * as bdc from '/@/views/bdc/public/bdc'
 const VNodes = useVNodes();
 const props = defineProps({
     id: {
@@ -143,6 +144,7 @@ const generateVue3 = defineComponent({
             columns,
             loading,
             ...events,
+            ...bdc,
             defHttp,
             router,
             editableData,
