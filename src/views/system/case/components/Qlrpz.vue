@@ -19,6 +19,9 @@
         <template v-if="column.dataIndex === 'qllx'">
           <a-input :value="getLabelByCode('qllx', record.qllx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
         </template>
+        <template v-if="column.dataIndex === 'qlrlxmc'">
+          <a-input :value="getLabelByCode('qlrlb', record.qlrlb)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+        </template>
         <template v-if="column.dataIndex === 'operation'">
           <a @click="onShowModal(record, 'view')">详情</a>
           <a-divider type="vertical" />

@@ -7,14 +7,14 @@
       :wrapper-col="{ span: 16 }"
       :disabled="formData.type == 'view'"
     >
-      <a-form-item ref="djlx" label="登记类型" name="djlx">
+      <a-form-item ref="djlx" label="登记类型" name="djlx" :rules="[{ required: true, message: '请选择登记类型' }]">
         <a-select v-model:value="formState.djlx" :options="djlxOption"  placeholder="请选择登记类型">
         </a-select>
       </a-form-item>
-      <a-form-item ref="qllx" label="权利类型" name="qllx">
+      <a-form-item ref="qllx" label="权利类型" name="qllx" :rules="[{ required: true, message: '请选择权利类型' }]">
         <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />
       </a-form-item>
-      <a-form-item ref="qlrlxmc" label="权利人名称" name="qlrlxmc">
+      <a-form-item ref="qlrlxmc" label="权利人名称" name="qlrlxmc" :rules="[{ required: true, message: '请选择权利人名称' }]">
         <a-select v-model:value="formState.qlrlb" :options="getDictItemsByCode('qlrlb')" placeholder="请选择权利人名称" @change="onChange"></a-select>
       </a-form-item>
       <a-form-item ref="qlrxsmc" label="权利人显示名称" name="qlrxsmc">
@@ -32,10 +32,10 @@
            <a-checkbox value="5">家庭成员</a-checkbox>
          </a-checkbox-group>
       </a-form-item>
-      <a-form-item ref="sxh" label="顺序号" name="sxh">
+      <a-form-item ref="sxh" label="顺序号" name="sxh" :rules="[{ required: true, message: '请输入顺序号' }]">
         <a-input-number v-model:value="formState.sxh" placeholder="请输入顺序号" :disabled="formData.type == 'view'" style="width: 100%"></a-input-number>
       </a-form-item>
-      <a-form-item ref="orderNum" label="排序" name="orderNum">
+      <a-form-item ref="orderNum" label="排序" name="orderNum" :rules="[{ required: true, message: '请输入排序' }]">
         <a-input-number v-model:value="formState.orderNum" placeholder="请输入排序" :disabled="formData.type == 'view'" style="width: 100%"></a-input-number>
       </a-form-item>
     </a-form>
