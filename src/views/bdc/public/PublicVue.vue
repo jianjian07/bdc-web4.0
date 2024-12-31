@@ -293,8 +293,8 @@ function onDragging(event) {
   if (newLeftWidth < 500) {
     newLeftWidth = 500
     newRightWidth = containerWidth - newLeftWidth - 10
-  } else if (newRightWidth < 250) {
-    newRightWidth = 250
+  } else if (newRightWidth < 350) {
+    newRightWidth = 350
     newLeftWidth = containerWidth - newRightWidth - 10
   }
 
@@ -330,6 +330,7 @@ function onChangeQlrShow(value) {
  * @param value
  */
 function onPreviewFile(value) {
+  console.log('vonPreviewFilealue',value)
   if (value) {
     previewFile.value = true
     if (rightWidth.value < 900) {
@@ -405,12 +406,14 @@ function onShowFile(manage) {
   background-color: #fff;
   padding: 5px;
   height: 100%;
+  overflow: auto;
 }
 
 .right-content {
   background-color: #fff;
   padding: 5px;
   height: 100%;
+  overflow: auto;
 }
 
 .open-Content {
