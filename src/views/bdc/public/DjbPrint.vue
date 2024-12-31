@@ -57,6 +57,7 @@ onMounted(() => {
 })
 
 function initData() {
+  spinning.value = true
   let ywh = route.query.ywh
   let slbh = route.query.slbh
   if (ywh || slbh) {
@@ -70,6 +71,10 @@ function initData() {
       } else {
         message.warning(res.message)
       }
+      spinning.value = false
+    }).catch(err => {
+      spinning.value = false
+      message.warning(err)
     })
   }
 }

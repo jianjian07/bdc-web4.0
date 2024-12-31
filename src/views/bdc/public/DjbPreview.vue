@@ -59,6 +59,7 @@ onMounted(() => {
  */
 function initData() {
   // 19990000010006
+  spinning.value = true
   let ywh = route.query.ywh
   let slbh = route.query.slbh
   if (ywh || slbh) {
@@ -80,6 +81,10 @@ function initData() {
       } else {
         message.warning(res.message)
       }
+       spinning.value = false
+    }).catch(err => {
+       message.warning(err)
+       spinning.value = true
     })
   }
 }
