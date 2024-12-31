@@ -20,7 +20,7 @@
           <a-input :value="getLabelByCode('qllx', record.qllx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
         </template>
         <template v-if="column.dataIndex === 'sfybz'">
-          <a-input :value="getLabelByCode('yn', record.sfybz)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+          <a-input :value="getLabelByCode('sfybz', record.sfybz)" :bordered="false" readonly style="text-align: center;width: 100%"/>
         </template>
         <template v-if="column.dataIndex === 'sfpl'">
           <a-input :value="getLabelByCode('ispl', record.sfpl)" :bordered="false" readonly style="text-align: center;width: 100%"/>
@@ -101,12 +101,12 @@ const columns = [
   },
 ]
 // 分页
-const pagination = ref<any>({ 
+const pagination = ref<any>({
   total: 0,
   current: 1,
   pageSize: 20,
-  showSizeChanger: false, 
-  showTotal: (total: Number) => `共 ${total} 条数据` 
+  showSizeChanger: false,
+  showTotal: (total: Number) => `共 ${total} 条数据`
 })
 let qllx = ref('')
 
@@ -198,7 +198,7 @@ function onShowModal(data: any = null, type: String = 'new') {
         }
         modal.setConfirmLoading(false)
       }
-      
+
     },
     onCancel: () => {
       modal.close()

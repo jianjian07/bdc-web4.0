@@ -18,7 +18,7 @@
         <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />
       </a-form-item>
       <a-form-item ref="sfybz" label="是否一本证" name="sfybz">
-        <a-select v-model:value="formState.sfybz" :options="getDictItemsByCode('yn')" placeholder="请选择是否一本证" />
+        <a-select v-model:value="formState.sfybz" :options="getDictItemsByCode('sfybz')" placeholder="请选择是否一本证" />
       </a-form-item>
       <a-form-item ref="sfpl" label="是否批量" name="sfpl">
         <a-select v-model:value="formState.sfpl" :options="getDictItemsByCode('ispl')" placeholder="请选择是否批量" />
