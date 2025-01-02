@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ slbh }}-{{ jdmc }}：{{ formConfig.ajmc }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" />
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl"/>
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
@@ -101,6 +101,8 @@ let isManage = ref<boolean>(false)
 let startX = 0
 // 提取okloading
 let okLoading = ref<boolean>(false)
+// 是否批量
+let isPl = ref<boolean>(false)
 // 通用表单组件实例
 let demoRefs: any = []
 // 动态设置ref 在组件渲染后才能设置
@@ -177,6 +179,7 @@ function getFormConfig() {
       let qlrList = Array.isArray(formConfig.value.qlrList) ? formConfig.value.qlrList : [formConfig.value.qlrList]
       qlr.value = formConfig.value.qlrList ? qlrList : []
       regType.value = res.result.regType
+      isPl.value = formConfig.value.vueList.length > 0 ? (formConfig.value.vueList[0].ispl == '1') : false
     }
   })
 }

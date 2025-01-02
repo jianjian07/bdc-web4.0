@@ -605,6 +605,32 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any =
 }
 
 /**
+ * 批量生成权利其他情况
+ */
+export function batchQlqt() {
+  return new Promise((resolve, reject) => {
+    let route = router.currentRoute.value
+    let slbh = route.query.slbh
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/updateQlqtBatch',
+      params: { slbh: slbh }
+    }, {
+      withToken: true
+    }).then((res: any) => {
+      if (res && res.success) {
+        resolve(true)
+        message.success('成功生成!')
+      } else {
+        message.warning(res.message)
+        resolve(false)
+      }
+    })
+  }).catch(err =>{
+    message.warning(err)
+  })
+}
+
+/**
  * 替换获取到的权利其他配置值中的占位符为实际值
  * 规则为获取所有匹配 viewData.value. 形式的占位符并替换成实际值
  * @param qlqtConfig

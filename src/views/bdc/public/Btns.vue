@@ -17,7 +17,12 @@
               </template>
             </a-button>
             <template v-for="(btn, index) in visibleButtons" :key="index">
-              <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+              <template v-if="btn.funName == 'batchQlqt'">
+                <template v-if="!sfybz && isPl">
+                  <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+                </template>
+              </template>
+              <a-button v-else size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
             </template>
             <a-button v-if="canScrollRight" class="scroll-button" size="small" type="primary" @click="scrollRight">
               <template #icon>
@@ -69,6 +74,14 @@ const props = defineProps({
     default: []
   },
   spinning: {
+    type: Boolean,
+    default: false
+  },
+  sfybz: {
+    type: Boolean,
+    default: false
+  },
+  isPl: {
     type: Boolean,
     default: false
   }
