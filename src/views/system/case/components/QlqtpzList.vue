@@ -17,16 +17,16 @@
     <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination" @change="handleTableChange" size="small" class="userTable">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'qllx'">
-          <a-input :value="getLabelByCode('qllx', record.qllx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+          {{ getLabelByCode('qllx', record.qllx) }}
         </template>
         <template v-if="column.dataIndex === 'sfybz'">
-          <a-input :value="getLabelByCode('sfybz', record.sfybz)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+          {{ getLabelByCode('sfybz', record.sfybz) }}
         </template>
         <template v-if="column.dataIndex === 'sfpl'">
-          <a-input :value="getLabelByCode('ispl', record.sfpl)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+          {{ getLabelByCode('ispl', record.sfpl) }}
         </template>
         <template v-if="column.dataIndex === 'jzlx'">
-          <a-input :value="getLabelByCode('jzlx', record.jzlx)" :bordered="false" readonly style="text-align: center;width: 100%"/>
+          {{ getLabelByCode('jzlx', record.jzlx) }}
         </template>
         <template v-if="column.dataIndex === 'operation'">
           <a @click="onShowModal(record, 'view')">详情</a>
@@ -70,7 +70,7 @@ const columns = [
     title: '权利类型',
     dataIndex: 'qllx',
     align: 'center',
-    width: 400,
+    width: 350,
     sorter: {
       compare: (a, b) => a.qllx - b.qllx,
     },
@@ -79,7 +79,7 @@ const columns = [
     title: '一本证',
     dataIndex: 'sfybz',
     align: 'center',
-    width: 150
+    width: 220
   },
   {
     title: '批量',

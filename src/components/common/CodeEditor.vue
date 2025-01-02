@@ -58,11 +58,13 @@ let mode = ref<String>('')
 let showEditor = ref(false)
 
 const modes = [{
-  label: 'JSON',
+  label: 'json',
   value: 'application/json'
 }, {
-  
+  label: 'xml',
+  value: 'application/xml'
 }]
+
 // application/json
 const props = defineProps({
   // 外部传入的内容，用于实现双向绑定
@@ -105,9 +107,7 @@ const props = defineProps({
   }
 })
 
-let placeholder = computed(() => {
-  return `请在此输入${props.language}代码`
-})
+let placeholder:any = ref('')
 
 let cmOptions = ref({
     mode: 'application/json', // Language mode
@@ -133,7 +133,10 @@ watch(() => props.value, (val: any) => {
 })
 
 watch(() => props.language, (val: String) => {
-  mode.value = val
+  if(val) {
+    mode.value = val
+    placeholder.value = `请在此输入代码`
+  }
 }, {
   immediate: true
 })
@@ -143,7 +146,7 @@ watch(() => mode.value, (val: any) => {
   if(val) {
     let mode: any = modes.filter((_v) => _v.label == val)[0].value
     cmOptions.value.mode = mode
-    if(val == 'JSON' && code.value) { //检查JSON格式
+    if(val == 'json' && code.value) { //检查JSON格式
       cmOptions.value.lint = true
     }
   }

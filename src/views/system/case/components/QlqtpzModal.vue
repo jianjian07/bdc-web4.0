@@ -32,8 +32,11 @@
       <a-form-item ref="zt" label="状态" name="zt">
         <a-select v-model:value="formState.zt" :options="getDictItemsByCode('sfys')" placeholder="请选择状态" />
       </a-form-item>
+      <a-form-item ref="sjnrFormat" label="设计内容格式" name="sjnrFormat">
+        <a-select v-model:value="formState.sjnrFormat" :options="getDictItemsByCode('sjnrgs')" placeholder="请选择设计内容格式" />
+      </a-form-item>
       <a-form-item ref="sjnr" label="设计内容" name="sjnr">
-        <CodeEditor :fullScreen="true" language="JSON" @codeValue="getCodeValue" :value="formState.sjnr"></CodeEditor>
+        <CodeEditor :fullScreen="true" :language="formState.sjnrFormat" @codeValue="getCodeValue" :value="formState.sjnr"></CodeEditor>
       </a-form-item>
 
     </a-form>
@@ -59,7 +62,8 @@ let formState: any = ref({
   jzlx: '',
   sjbm: '',
   zt: '',
-  sjnr: ''
+  sjnr: '',
+  sjnrFormat: ''
 })
 let djlxOption: any = reactive([])
 
@@ -91,9 +95,13 @@ watch(() => props.formData, (val: any) => {
     });
     formState.value.djlx = djlxOption[0].value
   }
+  formState.value.sjnrFormat = getDictItemsByCode('sjnrgs')[0].dictCode
   if(val.type !== 'new') {
     Object.keys(formState.value).forEach(key => {
       formState.value[key] = val.itemData[key]
+      if(key == 'sjnrFormat' && !formState.value.sjnrFormat) {
+        formState.value.sjnrFormat = 'json'
+      }
     })
   } else {
     formState.value.lcid = val.lcid
@@ -113,7 +121,6 @@ function onSubmit() {
     formRef.value
     .validate()
     .then(() => {
-      console.log('values', formState, toRaw(formState));
       let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
       if(props.formData.type == 'edit') {
         defHttp.put(
