@@ -194,6 +194,7 @@ function getSxhParam() {
   let regtype = props.regType
   switch (regtype) {
     case '0102,0102':
+    case '0204,0102,0201':
       sxh = { sxh: item.sxh }
       break;
     default: 
