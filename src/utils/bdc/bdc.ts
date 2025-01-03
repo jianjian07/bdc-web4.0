@@ -25,15 +25,26 @@ export async function extractData(options: any) {
         case '0103':
         case '0104':
         case '0105':
+        case '0106':
         case '0201':
         case '0202':
         case '0203':
         case '0204':
         case '0205':
+        case '0206':
+        case '0401'://查封
+        case '0402'://续查封
+        case '0404'://解查封
         case '0102,0102':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
+            }
+            break;
+        case '0204,0102,0201':
+            for (let index = 0; index < data.length; index++) {
+                const dyh = data[index];
+                dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
             }
             break;
     }
