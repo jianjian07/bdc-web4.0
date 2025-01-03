@@ -50,6 +50,9 @@ import jsonlint from "jsonlint-mod-fixed";
 import "codemirror/addon/lint/lint.css";
 import "codemirror/addon/lint/lint.js";
 import "codemirror/addon/lint/json-lint";
+import xmlFormatter from "xml-formatter";
+import { XMLFormatterOptions } from "xml-formatter/src/index"
+
 
 window.jsonlint = jsonlint;
 let fullCoder: any = ref(false)
@@ -104,6 +107,10 @@ const props = defineProps({
   autoHeight: {
     type: [String, Boolean],
     default: true
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -119,6 +126,7 @@ let cmOptions = ref({
     gutters: ["CodeMirror-lint-markers"],
     lint: false,
     autoRefresh: true,
+    readOnly: props.readOnly
   })
 
 const cmRef = ref<CmComponentRef>();
@@ -127,7 +135,11 @@ let code: any = ref('')
 const emit = defineEmits(['codeValue'])
 
 watch(() => props.value, (val: any) => {
-  code.value = val
+  if (mode.value == 'xml' && val) {
+    formatXml(val)
+  } else {
+    code.value = val
+  }
 }, {
   immediate: true
 })
@@ -143,14 +155,14 @@ watch(() => props.language, (val: String) => {
 
 watch(() => mode.value, (val: any) => {
   cmOptions.value.lint = false
-  if(val) {
+  if (val) {
     let mode: any = modes.filter((_v) => _v.label == val)[0].value
     cmOptions.value.mode = mode
     if(val == 'json' && code.value) { //检查JSON格式
       cmOptions.value.lint = true
     }
   }
-
+  formatXml(code.value)
 }, {
   immediate: true
 })
@@ -173,6 +185,20 @@ const onChange = (val: string) => {
   }
   emit('codeValue', val)
 };
+
+function formatXml(str) {
+  try {
+    code.value = xmlFormatter(str || "", {
+      indentation: "  ", // 缩进两个空格
+      collapseContent: true, // 内容折叠成单行
+      lineSeparator: "\n", // 换行符
+      stripComments: false, // 保留注释
+    } as XMLFormatterOptions );
+  } catch (error) {
+    console.error("XML 格式化失败:", error.message);
+    code.value = str
+  }
+}
 </script>
 
 <style lang="less" scoped>
