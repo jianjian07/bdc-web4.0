@@ -28,7 +28,7 @@
     "codemirror": "^5.65.18",
     "codemirror-editor-vue3": "^2.8.0",
     "crypto-js": "^4.2.0",
-    "form-imagining": "0.0.88-2",
+    "form-imagining": "0.0.88-4",
     "js-base64": "^3.7.7",
     "jsencrypt": "^3.3.2",
     "jsonlint-mod-fixed": "^1.7.7",
@@ -43,7 +43,8 @@
     "vue-router": "^4.4.3",
     "vuedraggable": "^4.1.0",
     "xlsx": "^0.18.5",
-    "xlsx-js-style": "^1.2.0"
+    "xlsx-js-style": "^1.2.0",
+    "xml-formatter": "^3.6.3"
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",
