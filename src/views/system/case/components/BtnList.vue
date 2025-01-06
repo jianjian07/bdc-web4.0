@@ -86,7 +86,7 @@ const columns = [
         title: '名称',
         dataIndex: 'btnName',
         align: 'center',
-        width: 160,
+        width: 150,
         componentType: 'input'
     },
     {
@@ -104,6 +104,14 @@ const columns = [
         dict: 'anwz'
     },
     {
+        title: '批量',
+        dataIndex: 'ispl',
+        align: 'center',
+        width: 80,
+        componentType: 'select',
+        dict: 'yn'
+    },
+    {
         title: '顺序',
         dataIndex: 'orderNum',
         width: 80,
@@ -114,7 +122,7 @@ const columns = [
         title: '操作',
         dataIndex: 'operation',
         align: 'center',
-        width: 210
+        width: 200
     },
 ];
 let btnList: any = ref([])
@@ -186,6 +194,7 @@ const handleAdd = () => {
         btnName: '',
         bz: '',
         anwz: '',
+        ispl: '1',
         orderNum: parseInt(max.toString()) + 1,
     };
     btnList.value.push(newData);

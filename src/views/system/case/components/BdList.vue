@@ -108,13 +108,13 @@ const columns = [
         componentType: 'select',
         dict: 'yn'
     },
-    {
-        title: '权利人分类',
-        dataIndex: 'qlrlb',
-        align: 'center',
-        componentType: 'select',
-        dict: 'qlrfl'
-    },
+    // {
+    //     title: '权利人分类',
+    //     dataIndex: 'qlrlb',
+    //     align: 'center',
+    //     componentType: 'select',
+    //     dict: 'qlrfl'
+    // },
     {
         title: '顺序',
         dataIndex: 'orderNum',
@@ -126,7 +126,7 @@ const columns = [
         title: '操作',
         dataIndex: 'operation',
         align: 'center',
-        width: 210
+        width: 200
     },
 ];
 
@@ -204,8 +204,8 @@ const handleAdd = () => {
         bdfl: 0,
         ispl: '1',
         iszd: '1',
-        qlrlb: '',
-        qlrlbmc: '',
+        // qlrlb: '',
+        // qlrlbmc: '',
         orderNum: parseInt(max.toString()) + 1,
     };
     dataSource.value.push(newData);

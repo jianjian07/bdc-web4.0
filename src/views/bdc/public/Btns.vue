@@ -18,7 +18,10 @@
             </a-button>
             <template v-for="(btn, index) in visibleButtons" :key="index">
               <template v-if="btn.funName == 'batchQlqt'">
-                <template v-if="!sfybz && isPl">
+<!--                <template v-if="!sfybz && isPl">-->
+<!--                  <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>-->
+<!--                </template>-->
+                <template v-if="!sfybz">
                   <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
                 </template>
               </template>
