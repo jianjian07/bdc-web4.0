@@ -258,7 +258,7 @@ async function initData() {
   rootMenu.value = await getRootMenuData()
   menuList.value = setMenuList(menuRes)
   allParentKeys.value = getAllParentKeys(menuList.value, [])
-  handleExpandTable()
+  // handleExpandTable()
 }
 
 /**
