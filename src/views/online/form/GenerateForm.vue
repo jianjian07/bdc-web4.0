@@ -9,7 +9,7 @@
 import { computed, defineComponent, onBeforeUpdate, reactive, ref, useAttrs, watch } from 'vue'
 import { generateFormHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes, getZjzlRuleCode } from '/@/utils/form/commonUtils'
+import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes, getZjzlRuleCode, getLabelByDictCode } from '/@/utils/form/commonUtils'
 import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
 import { getForm } from '.';
 import { useRoute } from 'vue-router';
@@ -312,6 +312,7 @@ const generateVue3 = defineComponent({
             getDictItemsByCode,
             getTreeDictItemsByCode,
             getCasDictItemsByCode,
+            getLabelByDictCode,
             formatMultipleSelectValue,
             formatMultipleTreeSelectValue,
             getZjzlRuleCode,

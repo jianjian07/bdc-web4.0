@@ -48,15 +48,9 @@
         :loading="loading" :pagination="paginations" bordered :row-selection="isSelectList ? rowSelection : undefined"
         :rowKey="isSelectList ? keyName : undefined" :customRow="isSelectList ? customRow : undefined" :size="size"
         @change="handleTableChange">
-        <template #bodyCell="{ column, text, record }">
-            <a-space v-if="column.key === 'action'">
-                <template #split>
-                    <a-divider type="vertical" />
-                </template>
-                <slot name="rowbar" :record="record">
-                </slot>
-            </a-space>
-        </template>
+      <template #bodyCell="{ column, text, record }">
+        <slot name="bodyCell" :column="column" :text="text" :record="record"></slot>
+      </template>
     </a-table>
 </template>
 

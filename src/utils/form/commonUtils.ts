@@ -213,3 +213,22 @@ export function getZjzlRuleCode(dictCode) {
   }
   return rule
 }
+
+/**
+ * 数据字典获取标题
+ * @param dict
+ * @param value
+ */
+export function getLabelByDictCode(dict: any, value: any) {
+  return getDictItemsByCode(dict).filter((_v: any) => _v.dictCode == value)[0]?.dictName || ''
+}
+
+/**
+ * 分类字典获取标题
+ * @param dict
+ * @param value
+ */
+export function getLabelByTreeDictCode(dict: any, value: any) {
+  let find = findNode(getTreeDictItemsByCode(dict),value)
+  return find.dictName || find.label || ''
+}

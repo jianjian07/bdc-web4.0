@@ -149,11 +149,73 @@ function getSearchData(viewData, reportInfo) {
 /** 行编辑所需要代码 begin **/
 // export const editableData: any = reactive({});
 let obj = reactive<any>({ obj1: {}, obj2: {} })
-export const edit = (key: string, editableData: any, dataSource: any) => {
+export const edit = (key: string, editableData: any, dataSource: any, keyCol: string) => {
+    // editableData[key] = cloneDeep(dataSource.filter((item) => key == item[keyCol])[0]);
+    // obj.obj1[key] = cloneDeep(editableData[key])
+    
+    const keyData = cloneDeep(dataSource.filter((item) => key === item[keyCol])[0]);
+    // 转换字符串使能匹配上数据字典
+    Object.keys(keyData).forEach(field => {
+        const value = keyData[field];
+        if (value !== null && value !== undefined && typeof value !== 'function') {
+            keyData[field] = String(value);
+        }
+    });
+    
+    editableData[key] = keyData;
+    obj.obj1[key] = cloneDeep(editableData[key]);
+};
+
+export const editOld = (key: string, editableData: any, dataSource: any) => {
     editableData[key] = cloneDeep(dataSource.filter((item: { id: string; }) => key == item.id)[0]);
     obj.obj1[key] = cloneDeep(editableData[key])
 };
-export const save = (key: string, editableData, dataSource: any, reportInfo: any, _callback?: any) => {
+
+export const save = (key: string, editableData, dataSource: any, keyCol, tableName, _callback?: any) => {
+    Object.assign(dataSource.filter((item: { [keyCol]: string; }) => key == item[keyCol])[0], editableData[key]);
+    obj.obj2[key] = cloneDeep(editableData[key])
+    let entity = []
+    entity = compareObjects(obj.obj1[key], obj.obj2[key])
+    if (!isEmpty(entity)) {
+        let data: any = [];
+        data = entity;
+        // 当更新列为空时，默认id
+        const colName = keyCol || "id"
+        const keyValue = editableData[key][colName]
+        let url = '/imaginform/zrzy-form/form/report/update'
+        if (keyValue == "") {
+            // 执行新增的操作
+            url = '/imaginform/zrzy-form/form/report/add'
+        } else {
+            data[colName] = keyValue;
+        }
+        // 存在差异，需要更新
+        defHttp.post({
+            url: url,
+            data: {
+                keyCol: colName,
+                tableName: tableName,
+                data: entity,
+            }
+        }, { withToken: true }).then((res) => {
+            if (res.code == 200) {
+                delObj(key, editableData);
+                message.info('数据更新成功');
+                if (keyValue == "") {
+                    _callback && _callback(res.result)
+                } else {
+                    _callback && _callback()
+                }
+            } else {
+                message.error('数据更新失败');
+            }
+        })
+    } else {
+        delObj(key, editableData);
+    }
+};
+
+export const saveOld = (key: string, editableData, dataSource: any, reportInfo: any, _callback?: any) => {
     Object.assign(dataSource.filter((item: { id: string; }) => key == item.id)[0], editableData[key]);
     obj.obj2[key] = cloneDeep(editableData[key])
     let entity = []
@@ -196,6 +258,7 @@ export const save = (key: string, editableData, dataSource: any, reportInfo: any
         delObj(key, editableData);
     }
 };
+
 export const cancel = (key: string, editableData) => {
     delete editableData[key];
 };

@@ -929,9 +929,20 @@ export async function getSelectJsonSetting(selectJsonSetting: any) {
 let obj = reactive<any>({ obj1: {}, obj2: {} })
 
 export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string) => {
-    editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
-    obj.obj1[key] = cloneDeep(editableData[key])
-    console.log('editableData', editableData)
+    // editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
+    // obj.obj1[key] = cloneDeep(editableData[key])
+    
+    const keyData = cloneDeep(dataSource.filter((item) => key === item[keyCol])[0]);
+    // 转换字符串使能匹配上数据字典
+    Object.keys(keyData).forEach(field => {
+        const value = keyData[field];
+        if (value !== null && value !== undefined && typeof value !== 'function') {
+            keyData[field] = String(value);
+        }
+    });
+    
+    editableData[key] = keyData;
+    obj.obj1[key] = cloneDeep(editableData[key]);
 };
 
 export const saveRow = (key: string, editableData, dataSource: any, keyCol, tableName, _callback?: any) => {
