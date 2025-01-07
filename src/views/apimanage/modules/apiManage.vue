@@ -246,7 +246,7 @@ function formatSelectItem(select) {
   select.requestHeader = JSON.stringify(select.apiHeaders)
   select.requestBody = JSON.stringify(select.apiBody)
   console.log('select.isResultDecryptCheck',select.isResultDecrypt)
-  select.isResultDecrypt = select.isResultDecrypt == undefined ? false : select.isResultDecrypt
+  select.isResultDecrypt = select.isResultDecrypt == undefined ? 0 : select.isResultDecrypt
   console.log('select.isResultDecrypt',select.isResultDecrypt)
   let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新增接口' : false
   if (addType) {
