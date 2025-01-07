@@ -156,7 +156,9 @@ const save = (key: string) => {
     }
     defHttp.post({ url: _url, data: _data }, { withToken: true }).then((res) => {
         if (res.success) {
-            editableData[key].id0 = res.result
+            if (key.includes('l')) {
+               editableData[key].id0 = res.result
+            }
             Object.assign(btnList.value.filter(item => key == item.id0)[0], editableData[key]);
             delete editableData[key];
         }
