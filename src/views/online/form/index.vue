@@ -3,10 +3,8 @@
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="6" :offset="0">
-                    <a-form-item label="表单分类">
-                        <a-tree-select v-model:value="formData.formType" :tree-data="getTreeDictItemsByCode('BDFL')"
-                            allowClear @select="onSelect" @change="changeType">
-                        </a-tree-select>
+                    <a-form-item label="表单ID">
+                        <a-input v-model:value="formData.id" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6" :offset="0">
@@ -135,7 +133,7 @@ const columns = [
     { title: '操作', key: 'action', width: 180, fixed: 'right', }
 ]
 let datalist: any = ref([]);
-let formData: any = ref({ formName: '', code: '', formType: '' });
+let formData: any = ref({ formName: '', code: '', id: '' });
 let formModal = ref(); // 新增弹窗
 let formTypeValue = ref('');
 onMounted(() => {
@@ -173,7 +171,7 @@ async function loadData(type?: string | undefined) {
     }
     loading.value = true
     let url = '/api/zrzy-form/form/list'
-    defHttp.post({ url: url, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { formType: formTypeValue.value, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: url, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { id: formData.value.id, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
         console.log("res.list", res.result)
         if (res.success) {
             datalist.value = res.result.records
