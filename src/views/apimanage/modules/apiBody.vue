@@ -83,7 +83,7 @@ const props = defineProps({
 })
 
 // 当前选中的面板key
-let activeKey = ref<string>('json')
+let activeKey = ref<string>('view')
 // json
 let jsonContent = ref<string>('')
 // 行展开
