@@ -68,7 +68,7 @@ let pagination = ref({
  * 表格数据加载
 */
 async function loadData() {
-    let url = '/api/zrzy-dzzw/apiLog/getApiLogList'
+    let url = '/api/zrzy-api/apiLog/getApiLogList'
     if (formData.value.createTime) {
         formData.value.startTime = dayjs(formData.value.createTime[0]).format('YYYY-MM-DD')
         formData.value.endTime = dayjs(formData.value.createTime[1]).format('YYYY-MM-DD')
