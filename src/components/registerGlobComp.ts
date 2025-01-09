@@ -2,6 +2,7 @@ import type { App } from 'vue';
 import SvgIcon from './icon/SvgIcon.vue'
 import SpinMask from './common/SpinMask.vue'
 import CTable from '/@/components/table/index.vue'
+import CInput from '/@/components/input/index.vue'
 import CChildForm from '/@/components/common/childForm.vue'
 import dayjs from 'dayjs'; //日期时间组件API
 import 'dayjs/locale/zh-cn';
@@ -56,6 +57,7 @@ export function registerGlobComp(app: App) {
     app.component("spin-mask", SpinMask)
     app.component("c-table", CTable)
     app.component("c-child-form", CChildForm)
+    app.component("c-input", CInput)
     app
         .use(Flex)
         .use(Layout)
