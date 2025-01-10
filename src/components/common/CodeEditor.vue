@@ -44,12 +44,20 @@ import "codemirror/addon/display/placeholder.js";
 // language
 import "codemirror/mode/xml/xml.js";
 import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/sql/sql.js"
 // theme
+import 'codemirror/theme/base16-light.css' // 主题
 import "codemirror/theme/dracula.css";
 import jsonlint from "jsonlint-mod-fixed";
 import "codemirror/addon/lint/lint.css";
 import "codemirror/addon/lint/lint.js";
 import "codemirror/addon/lint/json-lint";
+import "codemirror/addon/hint/sql-hint";
+import "codemirror/addon/hint/show-hint.js";
+import 'codemirror/addon/hint/show-hint.css'
+import "codemirror/addon/selection/active-line"
+import "codemirror/addon/edit/matchbrackets"
+import "codemirror/addon/display/autorefresh"
 import xmlFormatter from "xml-formatter";
 import { XMLFormatterOptions } from "xml-formatter/src/index"
 
@@ -66,6 +74,12 @@ const modes = [{
 }, {
   label: 'xml',
   value: 'application/xml'
+}, {
+  label: 'sql',
+  value: 'text/x-sql'
+}, {
+  label : 'javascript',
+  value: 'text/javascript'
 }]
 
 // application/json
@@ -111,6 +125,10 @@ const props = defineProps({
   readOnly: {
     type: Boolean,
     default: false
+  },
+  theme: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -118,7 +136,7 @@ let placeholder:any = ref('')
 
 let cmOptions = ref({
     mode: 'application/json', // Language mode
-    theme: "dracula", // Theme
+    theme: props.theme == 'dark' ? "dracula" : 'base16-light', // Theme
     // tab宽度
     tabSize: 2,
     lineNumbers: true,
@@ -162,7 +180,9 @@ watch(() => mode.value, (val: any) => {
       cmOptions.value.lint = true
     }
   }
-  formatXml(code.value)
+  if (mode.value == 'xml') {
+     formatXml(code.value)
+  }
 }, {
   immediate: true
 })

@@ -173,7 +173,6 @@ function onEdit(targetKey: string | MouseEvent, action: string) {
 
 function clearResponseBody() {
   let find = tabList.value.findIndex(f => f.id == activeKey.value)
-  console.log('find',find)
   if (find) {
     tabList.value[find].responseBody = ''
   }
@@ -349,14 +348,12 @@ async function sendApi() {
 function saveApi(isSend?: any) {
   return new Promise((resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
-    console.log('se', select)
     select = formatSelectItem(select)
     let saveRes 
     if (select.apiType == '2') {
       let body = getMagicApiBody(JSON.parse(JSON.stringify(select)))
       saveRes = saveMagicApi(body, isSend)
     }
-    console.log('select',select)
     if (select.jsonContent) {
       delete select.jsonContent
     }
@@ -430,8 +427,6 @@ function sendMagicApi(sendParams) {
   return new Promise((resolve, reject) => {
     let path = ensureSingleSlashStart(sendParams.url)
     let fullPath = '/api/zrzy-form/' + ensureSingleSlashStart(sendParams.groupName) + path
-    console.log('sendParams.requestType',sendParams.requestType)
-    console.log('JSON.parse(sendParams.body)',JSON.parse(sendParams.body))
     defHttp[sendParams.requestType.toLowerCase()]({
       url: fullPath, 
       params: sendParams.params,
