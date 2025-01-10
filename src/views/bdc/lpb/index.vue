@@ -119,7 +119,7 @@
                 <td class="title">{{ cInfo.myc }}层</td>
                 <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
                   <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
-                    :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwIndex"
+                    :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwInfo.wlc + '-' + fwInfo.dyh + '-' + fwIndex"
                     :class="checkFw?.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
 
                     <div class="fw-td">
@@ -247,7 +247,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue"
@@ -667,8 +667,11 @@ function handleFilterLpb() {
   cxxData.value = wlc 
     ? lpbData.value.cxxList.filter(item => item.wlc == wlc) 
     : lpbData.value.cxxList;
-  cxx.value = cxxData.value;
-  fwxx.value = wlc
+  cxx.value = [];
+  nextTick(() => {
+    cxx.value = cxxData.value;
+    fwxx.value = wlc ? lpbData.value.fwList.filter(item => item.wlc == wlc) : lpbData.value.fwList
+  })
 }
 /**
  * 提取数据
