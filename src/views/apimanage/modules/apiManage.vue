@@ -83,6 +83,7 @@ import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { findNodeById, getFieldValue, getUrl } from "/@/views/apimanage/modules/apiUtil"
 
 const props = defineProps({
   apiTreeData: {
@@ -245,9 +246,7 @@ function formatSelectItem(select) {
   select.requestParam = JSON.stringify(select.apiParameters)
   select.requestHeader = JSON.stringify(select.apiHeaders)
   select.requestBody = JSON.stringify(select.apiBody)
-  console.log('select.isResultDecryptCheck',select.isResultDecrypt)
   select.isResultDecrypt = select.isResultDecrypt == undefined ? 0 : select.isResultDecrypt
-  console.log('select.isResultDecrypt',select.isResultDecrypt)
   let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新增接口' : false
   if (addType) {
     delete select.id
@@ -255,7 +254,6 @@ function formatSelectItem(select) {
   if (select.responseBody) {
     delete select.responseBody
   }
-  debugger
   if (select.url && select.url.indexOf("?") > -1) {
     // url不拼接参数保存
     select.url = select.url.substring(0, select.url.indexOf("?"));
@@ -298,28 +296,6 @@ function setApiParameters() {
       props.selectItem.apiParameters = copy
       activeParamPane.value = 'query'
     }
-  }
-}
-
-/**
- * 获取地址栏参数
- * @param url
- */
-function getUrl(url) {
-  if (url.includes('?')) {
-    let arr = url.split('?')
-    let res = arr[1].split('&')
-    let items = []
-    for (let i = 0; i < res.length; i++) {
-      let a = res[i].split('=')
-      items.push({
-        key: a[0],
-        value: a[1]
-      })
-    }
-    return items
-  } else {
-    return null
   }
 }
 
@@ -400,56 +376,7 @@ async function sendApi(type?: string) {
   // }
 }
 
-/**
- * 获取参数值
- * @param dataType
- * @param value
- */
-function getFieldValue(dataType, value) {
-  let fieldValue
-  switch (dataType) {
-    case 'String':
-    case 'Date':
-    case 'Byte':
-    case 'MultipartFile':
-    case 'MultipartFiles':
-      fieldValue = value + ''
-      break
-    case 'Integer':
-    case 'Double':
-    case 'Float':
-      fieldValue = isCanNumber(value) ? Number(value) : -1
-      break
-    case 'Boolean':
-      fieldValue = value == 'true'
-      break
-    default:
-      fieldValue = value ? value + '' : ''
-      break
-  }
-  return fieldValue
-}
 
-/**
- * 是否可以转为number
- * @param number
- */
-function isCanNumber(number) {
-  if (typeof number == 'number') {
-    return true
-  } else {
-    try {
-      let obj = Number(number)
-      if (obj && typeof obj === "number") {
-        return true
-      } else {
-        return false
-      }
-    } catch (e) {
-      return false
-    }
-  }
-}
 
 /**
  * 目录数据改变
@@ -471,22 +398,6 @@ function dirDataChange(e, dir) {
   }
 }
 
-/**
- * 根据id找节点
- * @param arr
- * @param id
- */
-function findNodeById(arr, id) {
-  for (let i = 0; i < arr.length; i++) {
-    let node = arr[i]
-    if (node.id === id) return node
-    if (node.children && node.children.length > 0) {
-      let foundNode = findNodeById(node.children, id)
-      if (foundNode) return foundNode
-    }
-  }
-  return null
-}
 </script>
 
 <style lang="less" scoped>
