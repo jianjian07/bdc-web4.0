@@ -61,7 +61,7 @@
       </a-tab-pane>
       <a-tab-pane key="json" class="api-body-pane" tab="json">
         <monaco-editor v-model="jsonContent" height="100%" language="json" style="width: 100%;overflow: auto"
-                       theme="vs" :readOnly="true">
+                       theme="vs" >
         </monaco-editor>
       </a-tab-pane>
     </a-tabs>
@@ -158,17 +158,25 @@ const dicts = [
   }
 ]
 
+
 watch(() => jsonContent.value, (newVal: string) => {
-  // if (isJsonData(newVal)) {
-  //   props.apiData.apiBody = jsonToView(newVal, props.apiData.apiBody)
-  // }
+  if (isJsonData(newVal)) {
+    props.apiData.apiBody = jsonToView(newVal, props.apiData.apiBody)
+  }
 }, {
   deep: true
 })
 
 watch(() => props.apiData.apiBody, (newVal) => {
-  jsonContent.value = parseObj(newVal)
-  props.apiData.jsonContent = jsonContent.value
+  let str = parseObj(JSON.parse(JSON.stringify(newVal)))
+  let _str = JSON.parse(JSON.stringify(str))
+  let _js = JSON.parse(JSON.stringify(jsonContent.value))
+  if (!areJsonStringsEqual(_str, _js)) {
+    nextTick(() => {
+      jsonContent.value = str;
+      props.apiData.jsonContent = jsonContent.value;
+    });
+  }
 }, {
   deep: true,
   immediate: true
@@ -176,6 +184,22 @@ watch(() => props.apiData.apiBody, (newVal) => {
 
 onMounted(() => {
 })
+
+/**
+ * 两个字符串是否一致
+ * @param jsonStr1
+ * @param jsonStr2
+ */
+function areJsonStringsEqual(jsonStr1, jsonStr2) {
+    try {
+        const obj1 = JSON.parse(jsonStr1);
+        const obj2 = JSON.parse(jsonStr2);
+
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    } catch (e) {
+        return false;
+    }
+}
 
 /**
  * 加密方式改变 设置是否加密字段
@@ -387,136 +411,143 @@ function isCanNumber(number) {
 
 //
 
-// /**
-//  * 判断是否是json数据
-//  * @param str
-//  */
-// function isJsonData(str) {
-//   if (typeof str === "string") {
-//     try {
-//       var obj = JSON.parse(str)
-//       if (obj && typeof obj === "object") {
-//         return true
-//       } else {
-//         return false
-//       }
-//     } catch (e) {
-//       console.log("$isJSON error：", e)
-//       return false
-//     }
-//   } else {
-//     return false
-//   }
-// }
+/**
+ * 判断是否是json数据
+ * @param str
+ */
+function isJsonData(str) {
+  if (typeof str === "string") {
+    try {
+      var obj = JSON.parse(str)
+      if (obj && typeof obj === "object") {
+        return true
+      } else {
+        return false
+      }
+    } catch (e) {
+      console.log("$isJSON error：", e)
+      return false
+    }
+  } else {
+    return false
+  }
+}
 
-// function getType(object) {
-//   if (Array.isArray(object)) {
-//     return "Array"
-//   }
-//   const typeStr = typeof object
-//   if (typeStr === 'object') {
-//     return "Object"
-//   }
-//   if (typeStr === 'number') {
-//     if (object > 0x7fffffff || object < -0x80000000) {
-//       return 'Long'
-//     }
-//     return 'Integer'
-//   }
-//
-//   return typeStr === 'boolean' ? 'Boolean' : 'String'
-// }
+function getType(object) {
+  if (Array.isArray(object)) {
+    return "Array"
+  }
+  const typeStr = typeof object
+  if (typeStr === 'object') {
+    return "Object"
+  }
+  if (typeStr === 'number') {
+    if (object > 0x7fffffff || object < -0x80000000) {
+      return 'Long'
+    }
+    return 'Integer'
+  }
 
-// function jsonToView(bodyStr, srcObj) {
-//   srcObj = srcObj || {}
-//   try {
-//     const obj = JSON.parse(bodyStr)
-//     return {
-//       key: '1',
-//       parentKey: '-1',
-//       fieldName: '根节点',
-//       fieldValue: '-',
-//       dataType: getType(obj),
-//       defaultValue: srcObj.defaultValue || '',
-//       isMust: srcObj.isMust || false,
-//       isEncrypt: srcObj.isEncrypt || false,
-//       encryptType: srcObj.encryptType || '',
-//       description: srcObj.description || '',
-//       children: processBody(obj, objToMap(srcObj))
-//     }
-//   } catch (e) {
-//     console.error(e)
-//   }
-// }
+  return typeStr === 'boolean' ? 'Boolean' : 'String'
+}
 
-// function processBody(content, srcObj) {
-//   let arr = []
-//   let defaultParam = {
-//     // key: guid(),
-//     // parentKey: srcObj.key,
-//     fieldName: '-',
-//     // fieldValue: '-',
-//     // dataType: getType(obj),
-//     defaultValue: '',
-//     isMust: false,
-//     isEncrypt: false,
-//     encryptType: '',
-//     description: '',
-//     children: []
-//   }
-//
-//   if (Array.isArray(content)) {
-//     if (content[0] !== undefined) {
-//       let value = content[0]
-//       const simpleObject = isSimpleObject(value)
-//       let param = {
-//         ...defaultParam,
-//         fieldValue: simpleObject ? value + '' : '-',
-//         dataType: srcObj['']?.dataType || getType(value),
-//       }
-//       if (!simpleObject) {
-//         param.children = processBody(value, objToMap(srcObj['']))
-//       }
-//       arr.push(param)
-//
-//     }
-//   } else {
-//     Object.keys(content).forEach(name => {
-//       const value = content[name]
-//       const simpleObject = isSimpleObject(value)
-//       let param = {
-//         ...defaultParam,
-//         fieldName: srcObj[name]?.fieldName || name,
-//         defaultValue: srcObj[name]?.defaultValue || '',
-//         isMust: srcObj[name]?.isMust === true,
-//         isEncrypt: srcObj[name]?.isEncrypt === true,
-//         encryptType: srcObj[name]?.encryptType == '',
-//         description: srcObj[name]?.description || '',
-//         fieldValue: simpleObject ? value + '' : '-',
-//         dataType: getType(value),
-//       }
-//       if (!simpleObject) {
-//         param.children = processBody(value, objToMap(srcObj[name]))
-//       }
-//       arr.push(param)
-//     })
-//   }
-//   return arr
-// }
+function jsonToView(bodyStr, srcObj) {
+  srcObj = srcObj || {}
+  try {
+    const obj = JSON.parse(bodyStr)
+    return {
+      key: '1',
+      parentKey: '-1',
+      fieldName: '根节点',
+      fieldValue: '-',
+      dataType: getType(obj),
+      defaultValue: srcObj.defaultValue || '',
+      isMust: srcObj.isMust || false,
+      isEncrypt: srcObj.isEncrypt || false,
+      encryptType: srcObj.encryptType || '',
+      description: srcObj.description || '',
+      children: processBody(obj, objToMap(srcObj))
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
 
-// const objToMap = obj => {
-//   const map = {}
-//   obj?.children?.forEach(it => map[it.name] = it)
-//   return map
-// }
+function processBody(content, srcObj) {
+  let arr = []
+  let defaultParam = {
+    parentKey: srcObj.key || '1',
+    fieldName: '-',
+    fieldValue: '-',
+    // dataType: getType(obj),
+    defaultValue: '',
+    isMust: false,
+    isEncrypt: false,
+    encryptType: '',
+    description: '',
+    children: []
+  }
 
-// /**
-//  * 是否普通对象
-//  * @param object
-//  */
-// function isSimpleObject(object) {
-//   return !(object != null && typeof object === 'object')
-// }
+  if (Array.isArray(content)) {
+    if (content[0] !== undefined) {
+      let value = content[0]
+      const simpleObject = isSimpleObject(value)
+      let param = {
+        ...defaultParam,
+        key: guid(),
+        fieldValue: simpleObject ? value + '' : '-',
+        dataType: srcObj['']?.dataType || getType(value),
+      }
+      if (!simpleObject) {
+        param.children = processBody(value, objToMap(srcObj['']))
+      }
+      if (param.children && param.children.length == 0) {
+        delete param.children
+      }
+      arr.push(param)
+
+    }
+  } else {
+    Object.keys(content).forEach(name => {
+      const value = content[name]
+      const simpleObject = isSimpleObject(value)
+      let param = {
+        ...defaultParam,
+        key: guid(),
+        fieldName: srcObj[name]?.fieldName || name,
+        defaultValue: srcObj[name]?.defaultValue || '',
+        isMust: srcObj[name]?.isMust === true,
+        isEncrypt: srcObj[name]?.isEncrypt === true,
+        encryptType: srcObj[name]?.encryptType == '',
+        description: srcObj[name]?.description || '',
+        fieldValue: simpleObject ? value + '' : '-',
+        dataType: getType(value),
+      }
+      if (!simpleObject) {
+        param.children = processBody(value, objToMap(srcObj[name]))
+      }
+      if (param.children && param.children.length == 0) {
+        delete param.children
+      }
+      arr.push(param)
+    })
+  }
+  return arr
+}
+
+const objToMap = obj => {
+  const map = {}
+  obj?.children?.forEach(it => map[it.name] = it)
+  return map
+}
+
+/**
+ * 是否普通对象
+ * @param object
+ */
+function isSimpleObject(object) {
+  return !(object != null && typeof object === 'object')
+}
 </script>
 
 <style lang="less" scoped>
