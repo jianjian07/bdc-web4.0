@@ -60,7 +60,8 @@ watch(() => tabActiveKeys.value, (newVal, oldVal) => {
   selectedKeys.value = [newVal]
   let find = findNode(menuList,newVal,'path')
   if (find) {
-    state.openKeys = [find.pid]
+    let result = getAllParentIds(menuList, find);
+    state.openKeys = result
   }
 })
 
@@ -130,6 +131,32 @@ function onOpenChange(openKeys) {
   } else {
     state.openKeys = latestOpenKey ? [latestOpenKey] : [];
   }
+}
+
+/**
+ * 递归查找父节点
+ * @param menuList
+ * @param find
+ * @param key
+ * @param pidKey
+ */
+function getAllParentIds(menuList, find, key = 'id', pidKey = 'pid') {
+  let arr = [find[pidKey]]
+  
+  function findParent(menuList, currentPid) {
+    if (!currentPid || currentPid === '0') {
+      return
+    }
+    let parent = findNode(menuList, currentPid, key)
+    if (parent) {
+      arr.push(parent[pidKey])
+      findParent(menuList, parent[pidKey])
+    }
+  }
+  
+  findParent(menuList, find[pidKey]);
+
+  return arr;
 }
 </script>
 <style lang="less" scoped></style>

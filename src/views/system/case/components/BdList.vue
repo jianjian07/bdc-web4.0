@@ -163,7 +163,9 @@ const save = (key: string) => {
     }
     defHttp.post({ url: _url, data: _data }, { withToken: true }).then((res) => {
         if (res.success) {
-            editableData[key].id0 = res.result
+            if (key.includes('l')) {
+                editableData[key].id0 = res.result
+            }
             //    const _index= dataSource.value.findIndex(item => key == item.id0)
             //    dataSource.value[_index]=editableData[key]
             Object.assign(dataSource.value.filter(item => key == item.id0)[0], editableData[key]);
