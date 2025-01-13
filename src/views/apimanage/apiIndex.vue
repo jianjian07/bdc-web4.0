@@ -104,5 +104,11 @@ function setTree(list, dirName) {
   width: 100%;
   height: 100%;
   display: flex;
+  
+  :deep(.ant-table.ant-table-small) {
+    .ant-table-tbody>tr>td {
+      padding: 2px;
+    }
+  }
 }
 </style>

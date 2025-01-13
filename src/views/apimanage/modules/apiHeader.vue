@@ -4,16 +4,18 @@
              :scroll="{ y: 300 }" bordered size="small">
       <template #bodyCell="{ column, text, record, index }">
         <template v-if="['isMust'].includes(column.dataIndex)">
-          <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+          <div style="display: flex;justify-content: center">
+            <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+          </div>
         </template>
         <template v-else-if="['dataType'].includes(column.dataIndex)">
           <a-select v-model:value="record[column.dataIndex]" :options="dicts.find(t => t.key == column.dataIndex)!.data"
-                    style="width: 120px;">
+                    style="width: 100%;">
           </a-select>
         </template>
         <template v-else-if="column.dataIndex == 'description'">
           <div class="flex-content">
-            <a-input v-model:value="record[column.dataIndex]" style="width: 80%"/>
+            <a-input v-model:value="record[column.dataIndex]" style="width: calc(100% - 25px)"/>
             <close-outlined v-if="hoverRowIndex == index && hoverRowIndex !== apiData.apiHeaders.length - 1"
                             style="margin-right: 5px" @click="delRow(record, index)"/>
           </div>
@@ -45,7 +47,7 @@ const columns = [
     title: '必填',
     dataIndex: 'isMust',
     key: 'isMust',
-    width: 50
+    width: 45
   },
   {
     title: '参数名',

@@ -409,7 +409,6 @@ function onShowFile(manage) {
   background-color: #fff;
   padding: 5px;
   height: 100%;
-  overflow: auto;
 }
 
 .right-content {

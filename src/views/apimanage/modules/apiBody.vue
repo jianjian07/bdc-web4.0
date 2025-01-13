@@ -11,7 +11,9 @@
                  :scroll="{ y: 300 }" bordered size="small" v-model:expandedRowKeys="expandedRowKeys">
           <template #bodyCell="{ column, text, record, index }">
             <template v-if="['isMust'].includes(column.dataIndex)">
-              <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+               <div style="display: flex;justify-content: center">
+                 <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+               </div>
             </template>
             <template v-else-if="column.dataIndex == 'fieldName'">
               <span v-if="record.parentKey == '-1'">{{ record[column.dataIndex] }}</span>
@@ -101,7 +103,7 @@ const columns = [
     title: '必填',
     dataIndex: 'isMust',
     key: 'isMust',
-    width: 50
+    width: 45
   },
   {
     title: '参数类型',

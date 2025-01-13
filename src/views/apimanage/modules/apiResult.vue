@@ -52,6 +52,10 @@ function handleClear() {
       }
     }
   }
+  
+  :deep(.monaco-mouse-cursor-text) {
+    font-size: 12px!important;
+  }
 
   .claer {
     position: absolute;
