@@ -46,7 +46,7 @@
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a-popconfirm title="你确定要删除该目录吗, 这会删除该目录下所有接口信息" @confirm="delDir(node)">删除</a-popconfirm>
+                      <a-popconfirm title="你确定要删除该目录吗?" @confirm="delDir(node)">删除</a-popconfirm>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -55,14 +55,14 @@
           </div>
           <div v-else class="api-row-content">
             <div class="left">
-              <span :class="['api-type', 'api-type-' + node.requestType]">{{ node.requestType }}</span>
-              <span v-if="node.apiName.indexOf(searchValue) > -1" style="margin-left:10px">
-                {{ node.apiName.substr(0, node.apiName.indexOf(searchValue)) }}
+              <span :class="['api-type', 'api-type-' + node.method]">{{ node.method }}</span>
+              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:10px">
+                {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
-                {{ node.apiName.substr(node.apiName.indexOf(searchValue) + searchValue.length) }}
+                {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
               </span>
-              <span v-else style="margin-left:10px">{{ node.apiName }}</span>
-              <!--              <span style="margin-left:10px">{{ node.apiName }}</span>-->
+              <span v-else style="margin-left:10px">{{ node.name }}</span>
+              <!--              <span style="margin-left:10px">{{ node.name }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
               <a-popconfirm
@@ -102,6 +102,7 @@ import { ref, watch } from "vue"
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { guid } from "/@/utils"
+import { getMagicApiInfo, removeMagicApiById } from "/@/views/apimanage/modules/apiUtil"
 // 搜索
 let searchValue = ref<string>('')
 // 是否展开
@@ -135,7 +136,8 @@ const props = defineProps({
 const emit = defineEmits(['update:selectItem'])
 
 enum api {
-  delDir = '/api/zrzy-api/inner/dir/delete'
+  delDir = '/api/zrzy-api/inner/dir/delete',
+  delApi = '/api/zrzy-api/inner/api/delete'
 }
 
 watch(() => props.apiTreeData, (newVal: any) => {
@@ -186,7 +188,7 @@ function generateList(data: any) {
   for (let i = 0; i < data.length; i++) {
     const node = data[i]
     const id = node.id
-    let title = node.children ? node.name : node.apiName
+    let title = node.name
     dataList.value.push({ id, title: title })
     if (node.children) {
       generateList(node.children)
@@ -284,14 +286,15 @@ function addDir() {
   let dir = {
     id: '新建目录' + timestamp,
     name: '新建目录' + timestamp,
-    code: 'wwsj',
+    code: '',
     publicKey: '',
     privateKey: '',
     isEncrypt: '0',
     encryptType: '',
     apiType: '1',
     bz: '',
-    children: []
+    children: [],
+    orderNum: props.apiTreeData.length + 1
   }
   props.apiTreeData?.push(dir)
   selectedKeys.value = [dir.id]
@@ -336,6 +339,10 @@ async function delDirOld(item) {
  */
 function delDir(item) {
   if (props.apiTreeData) {
+    if (item.children.length) {
+      message.warning('存在接口不允许直接删除目录!')
+      return
+    }
     let addType = typeof item.id == 'string' ? item.id.substr(0, 4) == '新建目录' : false
     if (addType) {
       removeById(props.apiTreeData, item.id)
@@ -392,21 +399,22 @@ async function addApi(dir) {
     message.warning('需先保存目录后再添加接口')
     return
   }
-  // let apiCode = await getApiCode()
-  
   let apiCode = guid()
   if (apiCode) {
     let api = {
       id: '新增接口' + apiCode,
       pid: dir.id,
-      apiCode: '',
-      apiName: '新增接口',
-      apiType: '3',
-      apiGroupName: dir.name,
+      code: '',
+      name: '新增接口',
+      apiType: 1,
+      dirId: dir.id,
+      dirName: dir.name,
+      dirCode: dir.code,
       publicKey: dir.publicKey,
       privateKey: dir.privateKey,
-      requestType: 'POST',
-      versionCode: 'testEnv',
+      method: 'POST',
+      version: 'testEnv',
+      isResultDecrypt: dir.isEncrypt,
       apiHeaders: [],
       apiParameters: [],
       apiBody: {
@@ -422,7 +430,7 @@ async function addApi(dir) {
         description: "根节点"
       },
       apiDataSource: [],
-      apiScript: ''
+      script: ''
     }
     if (props.apiTreeData) {
       let find = props.apiTreeData.find(f => f.id == dir.id)
@@ -451,6 +459,12 @@ async function delApi(item) {
     res = true
   } else {
     res = await removeApiById(item.id)
+    if (item.apiType == 2) {
+      let _res = await getMagicApiInfo(item.id)
+      if (_res) {
+        res = await removeMagicApiById(item.id)
+      }
+    }
   }
   if (res) {
     removeById(parent.children, item.id)
@@ -464,19 +478,18 @@ async function delApi(item) {
  */
 function removeApiById(id) {
   return new Promise((resolve) => {
-    message.warning('接口待完善')
-    // defHttp.get({ url: api.delConfig + '/' + id }, { withToken: true }).then((res) => {
-    //   if (res.code == 200) {
-    //     resolve(true)
-    //   } else {
-    //     resolve(false)
-    //   }
-    // }).catch(err => {
-    //   resolve(false)
-    // })
-    resolve(true)
+    defHttp.delete({ url: api.delApi, params: { id: id } }, { withToken: true }).then((res) => {
+      if (res.code == 200) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    }).catch(err => {
+      resolve(false)
+    })
   })
 }
+
 </script>
 
 <style lang="less" scoped>

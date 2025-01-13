@@ -90,6 +90,8 @@ const dicts = [
       { value: 'Integer', label: 'Integer' },
       { value: 'Date', label: 'Date' },
       { value: 'Double', label: 'Double' },
+      { value: 'Long', label: 'Long' },
+      { value: 'Short', label: 'Short'}, 
       { value: 'Float', label: 'Float' },
       { value: 'Byte', label: 'Byte' },
       { value: 'MultipartFile', label: 'MultipartFile' },

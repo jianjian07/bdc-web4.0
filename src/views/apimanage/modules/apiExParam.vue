@@ -1,9 +1,9 @@
 <template>
-    <div class="api-param">
+  <div class="api-param">
     <a-tabs v-model:activeKey="activeKey" class="api-param-tabs-card" hide-add @change="tabChange">
-      <a-tab-pane v-if="apiType == '2'" key="script" tab="script" class="api-param-pane" forceRender>
+      <a-tab-pane v-if="apiType == 2" key="script" tab="script" class="api-param-pane" forceRender>
         <div class="api-script" style="height: 100%; overflow: auto">
-           <CodeEditor :fullScreen="true" language="javascript" :value="apiData.apiScript" @codeValue="getCodeValue"></CodeEditor>
+           <CodeEditor :fullScreen="true" language="javascript" :value="apiData.script" @codeValue="getCodeValue"></CodeEditor>
         </div>
       </a-tab-pane>
       <a-tab-pane key="header" tab="Header" class="api-param-pane" forceRender>
@@ -12,18 +12,25 @@
       <a-tab-pane key="query" tab="params" class="api-param-pane" forceRender>
         <api-query :apiData="apiData"></api-query>
       </a-tab-pane>
-      <a-tab-pane v-if="apiType == '2'"  key="body" tab="json" class="api-param-pane" forceRender>
+      <a-tab-pane v-if="apiType == 2"  key="body" tab="json" class="api-param-pane" forceRender>
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
       <a-tab-pane v-else key="datasource" tab="数据源" class="api-param-pane" forceRender>
         <api-ex-data-source :apiData="apiData"></api-ex-data-source>
+      </a-tab-pane>
+      <a-tab-pane key="bz" tab="接口说明" class="api-param-pane" forceRender>
+        <a-textarea
+            v-model:value="apiData.bz"
+            placeholder="请输入接口说明"
+            style="height: 100%"
+        />
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue"
+import { onMounted, ref, watch } from "vue"
 import ApiHeader from "/@/views/apimanage/modules/apiHeader.vue"
 import ApiQuery from "/@/views/apimanage/modules/apiQuery.vue"
 import ApiExDataSource from "/@/views/apimanage/modules/apiExDataSource.vue"
@@ -43,16 +50,19 @@ const props = defineProps({
     default: 'header'
   },
   apiType: {
-    type: String,
-    default: '1'
+    type: Number,
+    default: 1
   }
 })
 
 const emit = defineEmits(['update:activePane'])
 
 watch(() => props.activePane, (val: string) => {
-  activeKey.value = val
+  activeKey.value = val ? val : 'header'
+}, {
+  immediate: true
 })
+
 /**
  * tab改变
  * @param key
@@ -62,7 +72,7 @@ function tabChange(key) {
 }
 
 function getCodeValue(value) {
-  props.apiData.apiScript = value
+  props.apiData.script = value
 }
 </script>
 

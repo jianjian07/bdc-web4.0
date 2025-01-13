@@ -13,6 +13,7 @@ import { onMounted, ref } from "vue"
 import ApiManage from "/@/views/apimanage/modules/apiManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import { setParentId } from "/@/views/apimanage/modules/apiUtil"
 // 接口列表
 let apiList = ref<any>([])
 // 树
@@ -96,25 +97,6 @@ function setTree(list, dirName) {
   return att
 }
 
-/**
- * 设置fPid 一级父节点id
- * @param newArr
- * @param parentId
- */
-function setParentId(newArr: any[], parentId?: any) {
-  let newData = newArr.map((item: { pid: any; id: any; children: any; }) => {
-    if (parentId) {
-      item.pid = parentId
-    }
-    let pid = parentId ? parentId : item.id
-
-    if (item.children) {
-      item.children = setParentId(item.children, pid)
-    }
-    return item
-  })
-  return newData
-}
 </script>
 
 <style lang="less" scoped>

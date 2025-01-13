@@ -87,15 +87,11 @@ let selectedKeys = ref<any>([])
 // 选中node
 let selectedNode = ref<any>()
 
-watch(() => props.apiData.apiDataSource, (newVal) => {
-  console.log('aaa',newVal)
-  if (newVal.length) {
-    selectedNode.value = newVal[0]
-    selectedKeys.value = [newVal[0].id]
+onMounted(() => {
+  if (props.apiData.apiDataSource.length) {
+    selectedNode.value = props.apiData.apiDataSource[0]
+    selectedKeys.value = [props.apiData.apiDataSource[0].id]
   }
-}, {
-  deep: true,
-  immediate: true
 })
 
 /**

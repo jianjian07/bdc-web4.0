@@ -3,7 +3,7 @@
     <div class="api-editor-manage-tabs">
       <a-tabs v-model:activeKey="activeKey" class="api-editor-manage-tabs-card" hide-add type="editable-card"
               @change="tabChange" @edit="onEdit">
-        <a-tab-pane v-for="(pane) in tabList" :key="pane.id" :tab="pane.children ? pane.name : pane.apiName"
+        <a-tab-pane v-for="(pane) in tabList" :key="pane.id" :tab="pane.name"
                     class="api-editor-manage-pane">
           <div v-if="pane.children" class="api-editor-manage-dir">
             <a-form-item class="flex-form-item" label="目录名称">
@@ -38,31 +38,37 @@
                 <a-radio value="0">接入</a-radio>
               </a-radio-group>
             </a-form-item>
+            <a-form-item label="目录排序">
+              <a-input-number v-model:value="pane.orderNum"/>
+            </a-form-item>
             <a-form-item label="目录备注">
-              <a-textarea :auto-size="{ minRows: 5 }"/>
+              <a-textarea v-model:value="pane.bz" :auto-size="{ minRows: 5 }"/>
             </a-form-item>
           </div>
            <div v-else class="api-editor-manage-interface">
             <div class="top">
               <a-breadcrumb class="api-editor-manage-interface-breadcrumb">
-                <a-breadcrumb-item>{{ pane.apiGroupName }}</a-breadcrumb-item>
-                <a-breadcrumb-item>{{ pane.apiName }}</a-breadcrumb-item>
+                <a-breadcrumb-item>{{ pane.dirName }}</a-breadcrumb-item>
+                <a-breadcrumb-item>{{ pane.name }}</a-breadcrumb-item>
               </a-breadcrumb>
               <div class="api-editor-manage-interface-options">
                 <div class="api-editor-manage-interface-header">
                   <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px" >
                     <a-radio-group v-model:value="pane.apiType" @change="handleChangeApiType">
-                      <a-radio-button value="1">自定义</a-radio-button>
-                      <a-radio-button value="2">magicapi</a-radio-button>
-                      <a-radio-button value="3">通用接口</a-radio-button>
+                      <a-radio-button :value="1">自定义</a-radio-button>
+                      <a-radio-button :value="2">magicapi</a-radio-button>
+                      <a-radio-button :value="3">通用接口</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
-                  <a-form-item label="接口名称" style="flex: 1; margin-right: 10px; margin-bottom: 10px">
-                    <a-input v-model:value="pane.apiName"/>
+                  <a-form-item label="接口名称" style="margin-right: 10px">
+                    <a-input v-model:value="pane.name" style="width: 250px"/>
                   </a-form-item>
                   <a-form-item label="接口编号"
                                style="flex: 1; margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
-                    <a-input v-model:value="pane.apiCode"/>
+                    <a-input v-model:value="pane.code" style="width: 100px"/>
+                  </a-form-item>
+                  <a-form-item label="版本">
+                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
                   </a-form-item>
                 </div>
               </div>
@@ -70,7 +76,7 @@
               <div class="api-editor-manage-interface-url">
                 <a-input v-model:value="pane.url" @change="onChangeUrl">
                   <template #addonBefore>
-                    <a-select v-model:value="pane.requestType" style="width: 100px">
+                    <a-select v-model:value="pane.method" style="width: 100px">
                       <a-select-option value="POST">
                         <span class="api-type api-type-POST">POST</span>
                       </a-select-option>
@@ -104,7 +110,13 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import { findNodeById, getFieldValue, getUrl } from "/@/views/apimanage/modules/apiUtil"
+import {
+  findNodeById,
+  getFieldValue,
+  getMagicApiInfo,
+  getUrl,
+  removeMagicApiById
+} from "/@/views/apimanage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import ApiExParam from "/@/views/apimanage/modules/apiExParam.vue"
 import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
@@ -136,7 +148,9 @@ const emit = defineEmits(['update:selectItem', 'load'])
 enum api {
   addDir = '/api/zrzy-api/inner/dir/add',
   editDir = '/api/zrzy-api/inner/dir/update',
-  saveMagicApi = '/api/zrzy-form/magic/web/resource/file/api/save?auto=1'
+  saveMagicApi = '/api/zrzy-form/magic/web/resource/file/api/save?auto=1',
+  addApi = '/api/zrzy-api/inner/api/add',
+  editApi = '/api/zrzy-api/inner/api/update'
 }
 
 watch(() => props.selectItem, (newVal: any) => {
@@ -221,10 +235,10 @@ function dirDataChange(e, dir) {
   dir.encryptType = dir.isEncrypt ? dir.encryptType : ''
   if (dir.children && dir.children.length > 0) {
     dir.children = dir.children.map((child) => {
-      child.name = dir.name
+      child.dirName = dir.name
       child.publicKey = dir.publicKey
       child.privateKey = dir.privateKey
-      child.isEncrypt = dir.isEncrypt
+      child.isResultDecrypt = dir.isEncrypt
       child.encryptType = dir.encryptType
       return child
     })
@@ -283,11 +297,13 @@ function saveDir() {
     }
     defHttp.post({ url: addType ? api.addDir : api.editDir, data: select }, { withToken: true }).then((res) => {
        if (res && res.success) {
-         select.id = res.result.id
-         select.oldId = oldId
-         tabList.value = tabList.value.filter(pane => pane.id !== oldId)
-         tabList.value.push(select)
-         emit('update:selectItem', select)
+         if (addType) {
+           select.id = res.result.id
+           select.oldId = oldId
+           tabList.value = tabList.value.filter(pane => pane.id !== oldId)
+           tabList.value.push(select)
+           emit('update:selectItem', select)
+         }
          message.success('保存成功')
        } else {
          message.warning('保存失败')
@@ -314,8 +330,8 @@ async function sendApi() {
   let body = JSON.parse(JSON.stringify(select.jsonContent))
   let sendParams = {
     groupName: '/testapi', //暂时固定
-    requestType: select.requestType,
-    apiCode: select.apiCode,
+    method: select.method,
+    code: select.code,
     url: select.url,
     headers: headers,
     params: params,
@@ -327,10 +343,9 @@ async function sendApi() {
   let saveRes = await saveApi(true)
   if (saveRes) {
     let response:any = ''
-    if (select.apiType == '2')  {
+    if (select.apiType == 2)  {
       // 调用magicApi的请求接口
       response = await sendMagicApi(sendParams)
-     
     } else {
       // 调用通用的接口请求接口
     }
@@ -346,24 +361,71 @@ async function sendApi() {
  * @param isSend
  */
 function saveApi(isSend?: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
     select = formatSelectItem(select)
     let saveRes 
-    if (select.apiType == '2') {
+    if (select.apiType == 2) {
+      saveRes = await saveCommonApi(select, true)
+      select.id = saveRes
       let body = getMagicApiBody(JSON.parse(JSON.stringify(select)))
-      saveRes = saveMagicApi(body, isSend)
+      saveRes = await saveMagicApi(body, isSend)
+    } else {
+      let addType = !select.id
+      if (!addType) {
+        // 当前更新切换了接口类型, 查询是否已经保存过magicApi接口, 若保存过则删除
+        let _res = await getMagicApiInfo(select.id)
+        if (_res) {
+          await removeMagicApiById(select.id)
+        }
+      } 
+      saveRes = await saveCommonApi(select, isSend)
     }
     if (select.jsonContent) {
       delete select.jsonContent
     }
-    resolve(saveRes) 
+    resolve(saveRes)
   })
 }
 
-
-function saveCommonApi() {
-  
+/**
+ * 通用接口保存
+ * @param isSend
+ */
+function saveCommonApi(data, isSend?: any) {
+  return new Promise((resolve, reject) => {
+    let url = data.id ? api.editApi : api.addApi
+    defHttp.post({ url: url, data: data }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+        if (!isSend) {
+          message.success('保存成功')
+        }
+        if (!data.id) {
+          let select = JSON.parse(JSON.stringify(props.selectItem))
+          let oldId = select.id
+          select.id = res.result.id
+          select.oldId = oldId
+          tabList.value = tabList.value.filter(pane => pane.id !== oldId)
+          tabList.value.push(select)
+          emit('update:selectItem', select)
+          activeParamPane.value = activeParamPane.value
+          resolve(select.id)
+        } else {
+          resolve(data.id)
+        }
+      } else {
+        if (!isSend) {
+          message.warning(res.message)
+        }
+        resolve(false)
+      }
+    }).catch(err => {
+      if (!isSend) {
+        message.warning('保存失败')
+      }
+      resolve(false)
+    })
+  })
 }
 
 /**
@@ -374,11 +436,11 @@ function getMagicApiBody(select) {
   let definition = mapToRequestFields([JSON.parse(select.requestBody)])
   let body = {
     id: select.id,
-    name: select.apiName,
+    name: select.name,
     path: select.url,
     groupId: "e34aa1d052c74c658d5c673e0ee52450", // 目录id 暂时先固定
-    method: select.requestType,
-    script: select.apiScript,
+    method: select.method,
+    script: select.script,
     requestBody: select.jsonContent,
     requestBodyDefinition: definition.length ? definition[0] : [],
     parameters: mapToRequestFields(select.apiParameters),
@@ -400,13 +462,6 @@ function saveMagicApi(body, isSend?: any) {
           if (!isSend) {
             message.success('保存成功')
           }
-          let select = JSON.parse(JSON.stringify(props.selectItem))
-          let oldId = select.id
-          select.id = res
-          select.oldId = oldId
-          tabList.value = tabList.value.filter(pane => pane.id !== oldId)
-          tabList.value.push(select)
-          emit('update:selectItem', select)
           resolve(true)
         } else {
           message.warning(res.message)
@@ -427,7 +482,7 @@ function sendMagicApi(sendParams) {
   return new Promise((resolve, reject) => {
     let path = ensureSingleSlashStart(sendParams.url)
     let fullPath = '/api/zrzy-form/' + ensureSingleSlashStart(sendParams.groupName) + path
-    defHttp[sendParams.requestType.toLowerCase()]({
+    defHttp[sendParams.method.toLowerCase()]({
       url: fullPath, 
       params: sendParams.params,
       data: JSON.parse(sendParams.body),
@@ -442,6 +497,7 @@ function sendMagicApi(sendParams) {
     })
   })
 }
+
 
 /**
  * 替换/
@@ -495,8 +551,8 @@ function formatSelectItem(select) {
   select.requestParam = JSON.stringify(select.apiParameters)
   select.requestHeader = JSON.stringify(select.apiHeaders)
   select.requestBody = JSON.stringify(select.apiBody)
-  select.isEncrypt = select.isEncrypt == undefined ? '0' : select.isEncrypt
-  select.requestDataSource = JSON.stringify(select.apiDataSource)
+  select.apiSql = JSON.stringify(select.apiDataSource)
+  select.isResultDecrypt = select.isResultDecrypt == undefined ? '0' : select.isResultDecrypt
   let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新增接口' : false
   if (addType) {
     delete select.id
@@ -553,9 +609,11 @@ function handleChangeApiType(e) {
 
   .api-editor-manage-interface {
     height: 100%;
+    display: flex;
+    flex-direction: column;
 
     .top {
-      height: 125px;
+      //height: 125px;
 
       .api-editor-manage-interface-breadcrumb {
         margin-bottom: 10px;
@@ -578,7 +636,9 @@ function handleChangeApiType(e) {
     }
 
     .bottom {
-      height: calc(100% - 125px);
+      //height: calc(100% - 125px);
+      flex: auto;
+      overflow: auto;
 
       .api-editor-manage-interface-param {
         height: 60%;

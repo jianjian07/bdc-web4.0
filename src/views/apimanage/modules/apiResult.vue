@@ -34,6 +34,7 @@ function handleClear() {
 <style lang="less" scoped>
 .api-result {
   height: 100%;
+  position: relative;
 
   .api-result-tabs-card {
     height: 100%;
@@ -57,6 +58,7 @@ function handleClear() {
     right: 0px;
     cursor: pointer;
     z-index: 999;
+    top: 5px;
   }
 }
 </style>

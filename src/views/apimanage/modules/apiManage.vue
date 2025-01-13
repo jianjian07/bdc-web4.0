@@ -194,7 +194,6 @@ function remove(targetKey: string) {
 function saveApi(isSend?: any) {
   return new Promise((resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
-    console.log('se',select)
     select = formatSelectItem(select)
     if (select.jsonContent) {
       delete select.jsonContent
@@ -205,7 +204,6 @@ function saveApi(isSend?: any) {
           message.success('保存成功')
         }
         props.selectItem.id = res.result
-        // emit('load')
         resolve(true)
       } else {
         if (!isSend) {
@@ -391,7 +389,6 @@ function dirDataChange(e, dir) {
       child.apiGroupName = dir.apiGroupName
       child.publicKey = dir.publicKey
       child.privateKey = dir.privateKey
-      console.log('dir.isResultDecryptCheck',dir.isResultDecryptCheck)
       child.isResultDecrypt = dir.isResultDecrypt
       return child
     })
