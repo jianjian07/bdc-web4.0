@@ -3,66 +3,67 @@
     <div class="api-ex-data-source-list">
       <a-button @click="handleAdd" class="btn-add">
         新增
-        <template #icon><PlusOutlined style="font-size: 10px"/></template>
+        <template #icon>
+          <PlusOutlined style="font-size: 10px" />
+        </template>
       </a-button>
       <div class="api-ex-data-source-tree">
         <template v-if="apiData.apiDataSource.length">
-          <a-tree :tree-data="apiData.apiDataSource" 
-                  v-model:selectedKeys="selectedKeys" 
-                  :fieldNames="{ key: 'id' }" 
-                  :blockNode="true"
-                  @select="handleSelectTreeItem">
+          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys" :fieldNames="{ key: 'id' }"
+            :blockNode="true" @select="handleSelectTreeItem">
             <template #title="node">
               <div class="api-row-content">
                 <div class="left" :title="node.title">
                   {{ node.title }}
                 </div>
                 <div v-if="selectedKeys[0] == node.id" class="right">
-              <a-popconfirm
-                  title="你确定要删除该数据源吗?"
-                  @confirm.stop="del(node)"
-              >
-                <a-button style="margin-left: 8px;">
-                  <template #icon>
-                    <minus-outlined style="font-size: 10px"/>
-                  </template>
-                </a-button>
-              </a-popconfirm>
-            </div>
+                  <a-popconfirm title="你确定要删除该数据源吗?" @confirm.stop="del(node)">
+                    <a-button style="margin-left: 8px;">
+                      <template #icon>
+                        <minus-outlined style="font-size: 10px" />
+                      </template>
+                    </a-button>
+                  </a-popconfirm>
+                </div>
               </div>
             </template>
           </a-tree>
         </template>
         <template v-else>
-          <a-empty description="请先添加数据源"/>
+          <a-empty description="请先添加数据源" />
         </template>
       </div>
-     
+
     </div>
     <div class="api-ex-data-source-form">
       <div v-if="selectedKeys.length" class="data-source-form-body">
-         <a-form-item label="属性名称" :label-col="{ style: { width:'80px'} }">
-           <a-input v-model:value="selectedNode.title"></a-input>
-         </a-form-item>
-         <a-form-item label="keyName" :label-col="{ style: { width:'80px'} }">
-           <a-input v-model:value="selectedNode.keyName"></a-input>
-         </a-form-item>
-         <a-form-item label="主数据源" :label-col="{ style: { width:'80px'} }">
-           <a-radio-group v-model:value="selectedNode.isMain" @change="(e) => handleIsMain(e, selectedNode)">
-             <a-radio value="1">是</a-radio>
-             <a-radio value="0">否</a-radio>
-           </a-radio-group>
-         </a-form-item>
-         <a-form-item label="类型" :label-col="{ style: { width:'80px'} }">
-           <a-radio-group v-model:value="selectedNode.type">
-             <a-radio value="sql">sql</a-radio>
-             <a-radio value="mybatis">mybatis</a-radio>
-           </a-radio-group>
-         </a-form-item>
-          <CodeEditor :fullScreen="true" language="javascript" :value="selectedNode.content" @codeValue="getCodeValue"></CodeEditor>
+        <a-flex :vertical="aa === 'vertical'" gap="small">
+          <a-form-item label="属性名称" :label-col="{ style: { width: '80px' } }">
+            <a-input v-model:value="selectedNode.title"></a-input>
+          </a-form-item>
+          <a-form-item label="keyName" :label-col="{ style: { width: '80px' } }">
+            <a-input v-model:value="selectedNode.keyName"></a-input>
+          </a-form-item>
+          <a-form-item label="主数据源" :label-col="{ style: { width: '80px' } }">
+            <a-radio-group v-model:value="selectedNode.isMain" @change="(e) => handleIsMain(e, selectedNode)">
+              <a-radio value="1">是</a-radio>
+              <a-radio value="0">否</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item label="类型" :label-col="{ style: { width: '80px' } }">
+            <a-radio-group v-model:value="selectedNode.type">
+              <a-radio value="sql">sql</a-radio>
+              <a-radio value="mybatis">mybatis</a-radio>
+            </a-radio-group>
+          </a-form-item>
+        </a-flex>
+
+        <CodeEditor :fullScreen="true" language="javascript" :value="selectedNode.content" @codeValue="getCodeValue"
+          style="height: 300px;">
+        </CodeEditor>
       </div>
-        <a-empty v-else description="请先选择数据源"/>
-    
+      <a-empty v-else description="请先选择数据源" />
+
     </div>
   </div>
 </template>
@@ -74,7 +75,7 @@ import {
 } from '@ant-design/icons-vue'
 import CodeEditor from '/@/components/common/CodeEditor.vue'
 import { onMounted, ref, watch } from "vue"
-
+let aa = ref('horizontal');
 const props = defineProps({
   apiData: {
     type: Object,
@@ -174,12 +175,12 @@ function getCodeValue(value) {
 .api-ex-data-source {
   height: 100%;
   display: flex;
-  
+
   .api-ex-data-source-list {
     width: 200px;
     height: 100%;
     border-right: 1px solid #f0f0f0;
-    
+
     .btn-add {
       //width: 20px;
       height: 25px;
@@ -188,19 +189,19 @@ function getCodeValue(value) {
       align-items: center;
       margin-bottom: 10px;
     }
-    
+
     .api-ex-data-source-tree {
       margin-right: 24px;
       margin-left: -24px;
       height: calc(100% - 35px);
       overflow: auto;
     }
-    
+
     .api-row-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .left {
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -227,18 +228,18 @@ function getCodeValue(value) {
       }
     }
   }
-  
-  
+
+
   .api-ex-data-source-form {
-    width: calc(100% - 200px);
+    width: calc(100% - 50px);
     height: 100%;
     display: flex;
     justify-content: center;
     overflow: auto;
-    
+
     .data-source-form-body {
-      width: 80%;
-      margin: 10px auto;
+      width: 90%;
+      margin: 5px auto;
     }
   }
 }

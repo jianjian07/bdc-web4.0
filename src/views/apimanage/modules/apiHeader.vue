@@ -1,7 +1,7 @@
 <template>
   <div class="api-header">
     <a-table :columns="columns" :customRow="customRow" :data-source="apiData.apiHeaders" :pagination="false"
-             :scroll="{ y: 300 }" bordered size="small">
+      :scroll="{ y: 300 }" bordered size="small">
       <template #bodyCell="{ column, text, record, index }">
         <template v-if="['isMust'].includes(column.dataIndex)">
           <div style="display: flex;justify-content: center">
@@ -10,21 +10,21 @@
         </template>
         <template v-else-if="['dataType'].includes(column.dataIndex)">
           <a-select v-model:value="record[column.dataIndex]" :options="dicts.find(t => t.key == column.dataIndex)!.data"
-                    style="width: 100%;">
+            style="width: 100%;">
           </a-select>
         </template>
         <template v-else-if="column.dataIndex == 'description'">
           <div class="flex-content">
-            <a-input v-model:value="record[column.dataIndex]" style="width: calc(100% - 25px)"/>
+            <a-input v-model:value="record[column.dataIndex]" style="width: calc(100% - 25px)" />
             <close-outlined v-if="hoverRowIndex == index && hoverRowIndex !== apiData.apiHeaders.length - 1"
-                            style="margin-right: 5px" @click="delRow(record, index)"/>
+              style="margin-right: 5px" @click="delRow(record, index)" />
           </div>
         </template>
         <template v-else-if="column.dataIndex == 'encryptType'">
-          <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)"/>
+          <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" />
         </template>
         <template v-else>
-          <a-input v-model:value="record[column.dataIndex]"/>
+          <a-input v-model:value="record[column.dataIndex]" />
         </template>
       </template>
     </a-table>
@@ -52,12 +52,14 @@ const columns = [
   {
     title: '参数名',
     dataIndex: 'fieldName',
-    key: 'fieldName'
+    key: 'fieldName',
+    width: '180px'
   },
   {
     title: '参数类型',
     dataIndex: 'dataType',
-    key: 'dataType'
+    key: 'dataType',
+    width: '150px'
   },
   {
     title: '参数值',
@@ -72,7 +74,8 @@ const columns = [
   {
     title: '加密方式',
     dataIndex: 'encryptType',
-    key: 'encryptType'
+    key: 'encryptType',
+    width: '150px'
   },
   {
     title: '参数描述',

@@ -1,28 +1,22 @@
-<template> 
+<template>
   <div class="api-ex-tree">
     <div class="api-editor-search">
-      <a-input-search
-          v-model:value="searchValue"
-          placeholder="搜索目录/接口"
-          @search="onSearch"
-      />
+      <a-input-search v-model:value="searchValue" placeholder="搜索目录/接口" @search="onSearch" />
       <a-button style="margin-left: 8px" @click="handleExpand">
         <template #icon>
-          <VerticalAlignMiddleOutlined v-if="isExpand"/>
-          <ColumnHeightOutlined v-else/>
+          <VerticalAlignMiddleOutlined v-if="isExpand" />
+          <ColumnHeightOutlined v-else />
         </template>
       </a-button>
     </div>
     <div class="api-editor-tree-content">
       <a-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
-              :auto-expand-parent="autoExpandParent" :fieldNames="fieldNames" :tree-data="apiTreeData" blockNode
-              show-icon
-              style="width: 100%;"
-              @select="handleSelectTreeItem">
+        :auto-expand-parent="autoExpandParent" :fieldNames="fieldNames" :tree-data="apiTreeData" blockNode show-icon
+        style="width: 100%;" @select="handleSelectTreeItem">
         <template #title="node">
           <div v-if="node.children" class="api-row-content">
             <div class="left">
-              <folder-outlined/>
+              <folder-outlined />
               <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
@@ -33,16 +27,16 @@
             <div v-if="selectedKeys[0] == node.id" class="right">
               <a-button style="margin-left: 8px;" @click.stop="addApi(node)">
                 <template #icon>
-                  <plus-outlined style="font-size: 10px"/>
+                  <plus-outlined style="font-size: 10px" />
                 </template>
               </a-button>
               <a-dropdown>
                 <a-button style="margin-left: 8px">
                   <template #icon>
-                    <ellipsis-outlined style="font-size: 10px"/>
+                    <ellipsis-outlined style="font-size: 10px" />
                   </template>
                 </a-button>
-                <ellipsis-outlined/>
+                <ellipsis-outlined />
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
@@ -56,22 +50,19 @@
           <div v-else class="api-row-content">
             <div class="left">
               <span :class="['api-type', 'api-type-' + node.method]">{{ node.method }}</span>
-              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:10px">
+              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
                 {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
               </span>
-              <span v-else style="margin-left:10px">{{ node.name }}</span>
+              <span v-else style="margin-left:4px">{{ node.name }}</span>
               <!--              <span style="margin-left:10px">{{ node.name }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
-              <a-popconfirm
-                  title="你确定要删除该接口吗?"
-                  @confirm.stop="delApi(node)"
-              >
+              <a-popconfirm title="你确定要删除该接口吗?" @confirm.stop="delApi(node)">
                 <a-button style="margin-left: 8px;">
                   <template #icon>
-                    <minus-outlined style="font-size: 10px"/>
+                    <minus-outlined style="font-size: 10px" />
                   </template>
                 </a-button>
               </a-popconfirm>
@@ -82,7 +73,7 @@
     </div>
     <div class="api-editor-dir-add">
       <a-button style="width: 100%" type="dashed" @click="addDir">
-        <plus-outlined/>
+        <plus-outlined />
         新建
       </a-button>
     </div>
@@ -150,13 +141,13 @@ watch(() => props.selectItem, (newVal: any) => {
   selectedKeys.value = newVal ? [newVal.id] : []
   // 新增目录/接口后替换id
   if (newVal && newVal.oldId) {
-    let find = findNodeById(props.apiTreeData, newVal.oldId) 
+    let find = findNodeById(props.apiTreeData, newVal.oldId)
     if (find) {
       find.id = newVal.id
       delete newVal.oldId
     }
   }
- 
+
 }, {
   immediate: true
 })
@@ -253,7 +244,7 @@ function findNodeById(arr, id) {
  * 搜索
  */
 function onSearch() {
-  
+
 }
 
 /**
@@ -311,7 +302,7 @@ async function delDirOld(item) {
   if (props.apiTreeData) {
     let findDir = props.apiTreeData.find(_data => _data.id == item.id)
     if (findDir && findDir.children) {
-      for (let i = 0; i < findDir.children.length ; i++) {
+      for (let i = 0; i < findDir.children.length; i++) {
         let addType = typeof findDir.children[i].id == 'string' ? findDir.children[i].id.substr(0, 4) == '新增接口' : false
         let promise
         promise = addType ? removeApiByIdWithoutHttp() : removeApiById(findDir.children[i].id)
@@ -348,14 +339,14 @@ function delDir(item) {
       removeById(props.apiTreeData, item.id)
       message.success('删除成功')
     } else {
-      defHttp.delete({ url: api.delDir, params: { id: item.id }}, { withToken: true }).then((res) => { 
+      defHttp.delete({ url: api.delDir, params: { id: item.id } }, { withToken: true }).then((res) => {
         if (res && res.success) {
           removeById(props.apiTreeData, item.id)
           message.success('删除成功')
         } else {
           message.warning('删除失败')
         }
-     })
+      })
     }
   }
 }
@@ -494,7 +485,7 @@ function removeApiById(id) {
 
 <style lang="less" scoped>
 .api-ex-tree {
-  width: 300px;
+  width: 350px;
   height: 100%;
   padding: 10px;
   border-right: 1px solid #f9f9f9;

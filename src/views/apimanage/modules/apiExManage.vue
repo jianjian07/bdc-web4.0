@@ -2,33 +2,33 @@
   <div class="api-editor-manage">
     <div class="api-editor-manage-tabs">
       <a-tabs v-model:activeKey="activeKey" class="api-editor-manage-tabs-card" hide-add type="editable-card"
-              @change="tabChange" @edit="onEdit">
-        <a-tab-pane v-for="(pane) in tabList" :key="pane.id" :tab="pane.name"
-                    class="api-editor-manage-pane">
+        @change="tabChange" @edit="onEdit">
+        <a-tab-pane v-for="(pane) in tabList" :key="pane.id" :tab="pane.name" class="api-editor-manage-pane">
           <div v-if="pane.children" class="api-editor-manage-dir">
             <a-form-item class="flex-form-item" label="目录名称">
-              <a-input v-model:value="pane.name" @change="dirDataChange($event, pane)"/>
+              <a-input v-model:value="pane.name" @change="dirDataChange($event, pane)" />
               <a-button style="margin-left: 10px" type="primary" @click="saveDir">保存目录</a-button>
             </a-form-item>
-             <a-divider/>
+            <a-divider />
             <a-form-item label="接口标识">
-              <a-input v-model:value="pane.code" @change="dirDataChange($event, pane)"/>
+              <a-input v-model:value="pane.code" @change="dirDataChange($event, pane)" />
             </a-form-item>
             <a-form-item label="目录公钥">
-              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)"/>
+              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)" />
             </a-form-item>
             <a-form-item label="目录私钥">
-              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)"/>
+              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)" />
             </a-form-item>
             <div style="display: flex">
               <div>
                 <a-form-item label="是否加密">
-                  <a-checkbox v-model:checked="pane.isEncryptCheck" @change="dirDataChange($event, pane)"/>
+                  <a-checkbox v-model:checked="pane.isEncryptCheck" @change="dirDataChange($event, pane)" />
                 </a-form-item>
               </div>
               <div style="margin-left: 20px; flex: 1" v-if="pane.isEncryptCheck">
                 <a-form-item label="加密方式">
-                  <a-select v-model:value="pane.encryptType" allow-clear :options="getDictItemsByCode('encryptType')" @change="dirDataChange($event, pane)" style="width: 100%"/>
+                  <a-select v-model:value="pane.encryptType" allow-clear :options="getDictItemsByCode('encryptType')"
+                    @change="dirDataChange($event, pane)" style="width: 100%" />
                 </a-form-item>
               </div>
             </div>
@@ -39,40 +39,41 @@
               </a-radio-group>
             </a-form-item>
             <a-form-item label="目录排序">
-              <a-input-number v-model:value="pane.orderNum"/>
+              <a-input-number v-model:value="pane.orderNum" />
             </a-form-item>
             <a-form-item label="目录备注">
-              <a-textarea v-model:value="pane.bz" :auto-size="{ minRows: 5 }"/>
+              <a-textarea v-model:value="pane.bz" :auto-size="{ minRows: 5 }" />
             </a-form-item>
           </div>
-           <div v-else class="api-editor-manage-interface">
+          <div v-else class="api-editor-manage-interface">
             <div class="top">
               <a-breadcrumb class="api-editor-manage-interface-breadcrumb">
                 <a-breadcrumb-item>{{ pane.dirName }}</a-breadcrumb-item>
-                <a-breadcrumb-item>{{ pane.name }}</a-breadcrumb-item>
+                <a-breadcrumb-item>
+                  <a-input v-model:value="pane.name" style="width: 400px;border: 0px;padding:0px 4px" />
+                </a-breadcrumb-item>
               </a-breadcrumb>
               <div class="api-editor-manage-interface-options">
                 <div class="api-editor-manage-interface-header">
-                  <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px" >
+                  <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px">
                     <a-radio-group v-model:value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
                       <a-radio-button :value="1">自定义</a-radio-button>
                       <a-radio-button :value="2">magicapi</a-radio-button>
                       <a-radio-button :value="3">通用接口</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
-                  <a-form-item label="接口名称" style="margin-right: 10px">
-                    <a-input v-model:value="pane.name" style="width: 250px"/>
+                  <!-- <a-form-item label="接口名称" style="margin-right: 10px">
+                    <a-input v-model:value="pane.name" style="width: 250px" />
                   </a-form-item>
-                  <a-form-item label="接口编号"
-                               style="flex: 1; margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
-                    <a-input v-model:value="pane.code" style="width: 100px"/>
-                  </a-form-item>
+                  <a-form-item label="接口编号" style="flex: 1; margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
+                    <a-input v-model:value="pane.code" style="width: 100px" />
+                  </a-form-item> -->
                   <a-form-item label="版本">
                     <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
                   </a-form-item>
                 </div>
               </div>
-              
+
               <div class="api-editor-manage-interface-url">
                 <a-input v-model:value="pane.url" @change="onChangeUrl">
                   <template #addonBefore>
@@ -95,7 +96,8 @@
             </div>
             <div class="bottom">
               <div class="api-editor-manage-interface-param">
-                <api-ex-param :apiData="pane" v-model:activePane="pane.activeParamPane" :apiType="pane.apiType"></api-ex-param>
+                <api-ex-param :apiData="pane" v-model:activePane="pane.activeParamPane"
+                  :apiType="pane.apiType"></api-ex-param>
               </div>
               <div class="api-editor-manage-interface-result">
                 <api-result :response-body="pane.responseBody" @clearResponseBody="clearResponseBody"></api-result>
@@ -294,21 +296,21 @@ function saveDir() {
       delete select.id
     }
     defHttp.post({ url: addType ? api.addDir : api.editDir, data: select }, { withToken: true }).then((res) => {
-       if (res && res.success) {
-         if (addType) {
-           select.id = res.result.id
-           select.oldId = oldId
-           tabList.value = tabList.value.filter(pane => pane.id !== oldId)
-           tabList.value.push(select)
-           emit('update:selectItem', select)
-         }
-         message.success('保存成功')
-       } else {
-         message.warning('保存失败')
-       }
+      if (res && res.success) {
+        if (addType) {
+          select.id = res.result.id
+          select.oldId = oldId
+          tabList.value = tabList.value.filter(pane => pane.id !== oldId)
+          tabList.value.push(select)
+          emit('update:selectItem', select)
+        }
+        message.success('保存成功')
+      } else {
+        message.warning('保存失败')
+      }
     })
   })
-  
+
 }
 
 /**
@@ -340,8 +342,8 @@ async function sendApi() {
   }
   let saveRes = await saveApi(true)
   if (saveRes) {
-    let response:any = ''
-    if (select.apiType == 2)  {
+    let response: any = ''
+    if (select.apiType == 2) {
       // 调用magicApi的请求接口
       response = await sendMagicApi(sendParams)
     } else {
@@ -362,7 +364,7 @@ function saveApi(isSend?: any) {
   return new Promise(async (resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
     select = formatSelectItem(select)
-    let saveRes 
+    let saveRes
     if (select.apiType == 2) {
       saveRes = await saveCommonApi(select, true)
       select.id = saveRes
@@ -376,7 +378,7 @@ function saveApi(isSend?: any) {
         if (_res) {
           await removeMagicApiById(select.id)
         }
-      } 
+      }
       saveRes = await saveCommonApi(select, isSend)
     }
     if (select.jsonContent) {
@@ -455,7 +457,7 @@ function getMagicApiBody(select) {
 function saveMagicApi(body, isSend?: any) {
   return new Promise((resolve, reject) => {
     defHttp.post({ url: api.saveMagicApi, data: body }, { withToken: true }).then((res) => {
-      if (res) { 
+      if (res) {
         if (!res.code) {
           if (!isSend) {
             message.success('保存成功')
@@ -481,7 +483,7 @@ function sendMagicApi(sendParams) {
     let path = ensureSingleSlashStart(sendParams.url)
     let fullPath = '/api/zrzy-form/' + ensureSingleSlashStart(sendParams.groupName) + path
     defHttp[sendParams.method.toLowerCase()]({
-      url: fullPath, 
+      url: fullPath,
       params: sendParams.params,
       data: JSON.parse(sendParams.body),
       headers: sendParams.headers
@@ -516,7 +518,7 @@ function mapToRequestFields(fields) {
       required: field.isMust,
       description: field.description,
     };
-    
+
     if (field.children && Array.isArray(field.children)) {
       processedField.children = mapToRequestFields(field.children);
     }
@@ -567,7 +569,7 @@ function formatSelectItem(select) {
 
 function handleChangeApiType(pane, e) {
   let value = e.target.value
-  pane.activeParamPane = value == '2' ?  'script' : 'header'
+  pane.activeParamPane = value == '2' ? 'script' : 'header'
 }
 </script>
 
@@ -624,9 +626,9 @@ function handleChangeApiType(pane, e) {
       .api-editor-manage-interface-options {
         :deep(.ant-form-item) {
           margin-bottom: 10px;
-        } 
+        }
       }
-      
+
       .api-editor-manage-interface-url {
         display: flex;
         margin-bottom: 15px;
