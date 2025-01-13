@@ -54,7 +54,7 @@
               <div class="api-editor-manage-interface-options">
                 <div class="api-editor-manage-interface-header">
                   <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px" >
-                    <a-radio-group v-model:value="pane.apiType" @change="handleChangeApiType">
+                    <a-radio-group v-model:value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
                       <a-radio-button :value="1">自定义</a-radio-button>
                       <a-radio-button :value="2">magicapi</a-radio-button>
                       <a-radio-button :value="3">通用接口</a-radio-button>
@@ -95,7 +95,7 @@
             </div>
             <div class="bottom">
               <div class="api-editor-manage-interface-param">
-                <api-ex-param :apiData="pane" v-model:activePane="activeParamPane" :apiType="pane.apiType"></api-ex-param>
+                <api-ex-param :apiData="pane" v-model:activePane="pane.activeParamPane" :apiType="pane.apiType"></api-ex-param>
               </div>
               <div class="api-editor-manage-interface-result">
                 <api-result :response-body="pane.responseBody" @clearResponseBody="clearResponseBody"></api-result>
@@ -140,8 +140,6 @@ let tabList = ref<any>([])
 let activeKey = ref<any>()
 // 实时响应
 let responseBody = ref<string>('')
-// 当前选中参数pane
-let activeParamPane = ref<string>('')
 
 const emit = defineEmits(['update:selectItem', 'load'])
 
@@ -278,7 +276,7 @@ function setApiParameters() {
         return cParam
       })
       props.selectItem.apiParameters = copy
-      activeParamPane.value = 'query'
+      props.selectItem.activeParamPane = 'query'
     }
   }
 }
@@ -408,7 +406,7 @@ function saveCommonApi(data, isSend?: any) {
           tabList.value = tabList.value.filter(pane => pane.id !== oldId)
           tabList.value.push(select)
           emit('update:selectItem', select)
-          activeParamPane.value = activeParamPane.value
+          select.activeParamPane = select.activeParamPane
           resolve(select.id)
         } else {
           resolve(data.id)
@@ -567,9 +565,9 @@ function formatSelectItem(select) {
   return select
 }
 
-function handleChangeApiType(e) {
+function handleChangeApiType(pane, e) {
   let value = e.target.value
-  activeParamPane.value = value == '2' ?  'script' : 'header'
+  pane.activeParamPane = value == '2' ?  'script' : 'header'
 }
 </script>
 

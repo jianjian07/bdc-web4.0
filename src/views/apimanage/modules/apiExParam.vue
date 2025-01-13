@@ -47,7 +47,7 @@ const props = defineProps({
   },
   activePane: {
     type: String,
-    default: 'header'
+    default: ''
   },
   apiType: {
     type: Number,
@@ -58,7 +58,11 @@ const props = defineProps({
 const emit = defineEmits(['update:activePane'])
 
 watch(() => props.activePane, (val: string) => {
-  activeKey.value = val ? val : 'header'
+  if (props.apiType == 2) {
+    activeKey.value = val ? val : 'script'
+  } else {
+    activeKey.value = val ? val : 'header'
+  }
 }, {
   immediate: true
 })
