@@ -878,3 +878,53 @@ export function editCfOrJfCase(slbh, type) {
     message.warning('受理编号为空!')
   }
 }
+
+/**
+ * 选择审批意见
+ * @param viewData
+ * @param fields
+ */
+export async function chooseSpyj(viewData: any, fields: any) {
+  if (viewData.value && fields) {
+    if (fields.includes('.')) {
+      let key = fields.split('.')
+      if (!viewData.value[key[0]][key[1]]) {
+        let spyj = await getSpyj()
+        if (spyj) {
+          viewData.value[key[0]][key[1]] = spyj
+        }
+      }
+    } else {
+      if (!viewData.value[fields]) {
+        let spyj = await getSpyj()
+        if (spyj) {
+          viewData.value[fields] = spyj
+        }
+      }
+    }
+  }
+}
+
+function getSpyj() {
+  return new Promise((resolve, reject) => {
+    let modal = cModal({
+      title: '审批意见',
+      width: 800,
+      filePath: 'views/bdc/pages/public/SpyjList',
+      onOk: async (res: any) => {
+        // res为弹窗内组件的dom
+        let row = await res.getSelectRow()
+        if (row && row.length > 0) {
+          resolve(row[0].designContent)
+          modal.destroy()
+        } else {
+          message.warning('请选中一条数据!')
+        }
+      },
+      onCancel: () => {
+        resolve(false)
+        modal.close()
+      }
+    })
+  })
+}
