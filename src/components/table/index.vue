@@ -60,6 +60,7 @@ import { message } from "ant-design-vue";
 import { DragOutlined, SettingFilled } from '@ant-design/icons-vue';
 import draggable from "vuedraggable";
 import ExportModal from '/@/components/table/ExportModal.vue'
+import { getRowSpan } from "/@/utils/form/commonUtils"
 // let eLoading = ref<boolean>(false)
 const props = defineProps({
     // 表格数据
@@ -108,7 +109,14 @@ const props = defineProps({
 let paginations = ref(props.pagination)
 // let visible = ref(false)
 let filterColumns: any = ref([])
-filterColumns.value = props.columns
+filterColumns.value = props.columns.map((column) => {
+  if (column.options && column.options.isRowSpan) {
+    column.customCell = (_, index) => {
+      return { rowSpan: getRowSpan(props.dataSource, index, column.dataIndex)}
+    }
+  }
+  return column
+})
 // let exportColumns: any = ref([])
 // exportColumns.value = props.columns
 let defaultOptions: any = ref([])

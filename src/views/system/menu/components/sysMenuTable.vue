@@ -449,7 +449,7 @@ function reset() {
       }
 
       :deep(.ant-table) {
-        height: calc(100% - 50px);
+        height: calc(100% - 70px);
       }
 
       :deep(.ant-table-container) {

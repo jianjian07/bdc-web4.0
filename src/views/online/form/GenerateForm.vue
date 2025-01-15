@@ -9,7 +9,18 @@
 import { computed, defineComponent, onBeforeUpdate, reactive, ref, useAttrs, watch } from 'vue'
 import { generateFormHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes, getZjzlRuleCode, getLabelByDictCode } from '/@/utils/form/commonUtils'
+import {
+  formatMultipleSelectValue,
+  formatMultipleTreeSelectValue,
+  getCasDictItemsByCode,
+  getDictItemsByCode,
+  getTreeDictItemsByCode,
+  useVNodes,
+  getZjzlRuleCode,
+  getLabelByDictCode,
+  getLabelByTreeDictCode,
+  getRowSpan
+} from '/@/utils/form/commonUtils'
 import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
 import { getForm } from '.';
 import { useRoute } from 'vue-router';
@@ -125,7 +136,16 @@ const generateData = generateFormHtml(info, vue3Script)
 // columns.value = []
 let selectJsonSetting = ref<any>(generateData.selectJsonSetting)
 // getSelectJsonSetting(selectJsonSetting)
-columns.value = generateData.columns
+// columns.value = generateData.columns
+// 合并行
+columns.value = generateData.columns.map((column) => {
+  if (column.options && column.options.isRowSpan) {
+    column.customCell = (_, index) => {
+      return { rowSpan: getRowSpan(props.dataSource, index, column.dataIndex)}
+    }
+  }
+  return column
+})
 // if (generateData.columns != '') {
 //     columns.value = JSON.parse(generateData.columns)//拷贝
 // }
@@ -313,6 +333,7 @@ const generateVue3 = defineComponent({
             getTreeDictItemsByCode,
             getCasDictItemsByCode,
             getLabelByDictCode,
+            getLabelByTreeDictCode,
             formatMultipleSelectValue,
             formatMultipleTreeSelectValue,
             getZjzlRuleCode,

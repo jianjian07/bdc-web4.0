@@ -49,7 +49,8 @@ import {
     Tag,
     FloatButton,
     Skeleton,
-    Flex
+    Flex,
+    Transfer
 } from 'ant-design-vue';
 
 export function registerGlobComp(app: App) {
@@ -105,5 +106,6 @@ export function registerGlobComp(app: App) {
         .use(FloatButton)
         .use(Result)
         .use(Tag)
-        .use(Skeleton);
+        .use(Skeleton)
+        .use(Transfer)
 }

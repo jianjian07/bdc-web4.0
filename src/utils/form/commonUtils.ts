@@ -232,3 +232,30 @@ export function getLabelByTreeDictCode(dict: any, value: any) {
   let find = findNode(getTreeDictItemsByCode(dict),value)
   return find.dictName || find.label || ''
 }
+
+/**
+ * 行合并
+ * @param data
+ * @param rowIndex
+ * @param key
+ */
+export function getRowSpan(data, rowIndex, key) {
+  let rowSpan = 1;
+
+  // 遍历后续行，检查当前列 key 是否值相同
+  for (let i = rowIndex + 1; i < data.length; i++) {
+    if (data[i][key] !== data[rowIndex][key]) {
+      break;
+    }
+    rowSpan++;
+  }
+
+  // 如果前面的行存在相同的值，rowSpan 为 0（表示应跳过合并）
+  for (let i = rowIndex - 1; i >= 0; i--) {
+    if (data[i][key] === data[rowIndex][key]) {
+      return 0; // 当前行不需要渲染
+    }
+  }
+
+  return rowSpan;
+}

@@ -8,7 +8,7 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { generateReportHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, useVNodes, getLabelByDictCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, useVNodes, getLabelByDictCode, getLabelByTreeDictCode } from '/@/utils/form/commonUtils';
 import {
     initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
 } from "/@/utils/form/wonder-report"
@@ -160,6 +160,7 @@ const generateVue3 = defineComponent({
             getDictItemsByCode,
             getTreeDictItemsByCode,
             getLabelByDictCode,
+            getLabelByTreeDictCode,
             onExportExcel,
             onExportExcelApi,
             onCExport,
