@@ -89,7 +89,8 @@ export const usePermissionStore = defineStore({
             //         this.setIgsList(igsList)
             //     }
             // }
-            routes = [PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE, ...routeList]
+            // routes = [...routeList, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE]
+            routes = [...routeList, REDIRECT_ROUTE, REFRESH_ROUTE]
             routes.push(ERROR_LOG_ROUTE);
             return routes
         },

@@ -111,16 +111,16 @@ export function createPermissionGuard(router: Router) {
       next();
       return;
     }
-    else {
-      const routes = await permissionStore.buildRoutesAction();
-      routes.forEach((route) => {
-        router.addRoute(route as unknown as RouteRecordRaw);
-      });
+    const routes = await permissionStore.buildRoutesAction();
 
-      router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
-
-      permissionStore.setDynamicAddedRoute(true);
-    }
+    routes.forEach((route) => {
+      router.addRoute(route as unknown as RouteRecordRaw);
+    });
+    
+    router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
+    
+    permissionStore.setDynamicAddedRoute(true);
+    // console.log('Updated Routes1:', router.getRoutes().map(route => route.path));
     if (to.name === PAGE_NOT_FOUND_ROUTE.name) {
       // 动态添加路由后，此处应当重定向到fullPath，否则会加载404页面内容
       next({ path: to.fullPath, replace: true, query: to.query });
