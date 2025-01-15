@@ -14,7 +14,7 @@
         :auto-expand-parent="autoExpandParent" :fieldNames="fieldNames" :tree-data="apiTreeData" blockNode show-icon
         style="width: 100%;" @select="handleSelectTreeItem">
         <template #title="node">
-          <div v-if="node.children" class="api-row-content">
+          <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
               <folder-outlined />
               <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
@@ -50,12 +50,17 @@
           <div v-else class="api-row-content">
             <div class="left">
               <span :class="['api-type', 'api-type-' + node.method]">{{ node.method }}</span>
-              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
-                {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else style="margin-left:4px">{{ node.name }}</span>
+              <a-tooltip placement="topLeft">
+                <template #title>
+                  {{ node.name }}
+                </template>
+                <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
+                  {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
+                  <span style="color: #f50">{{ searchValue }}</span>
+                  {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
+                </span>
+                <span v-else style="margin-left:4px">{{ node.name }}</span>
+              </a-tooltip>
               <!--              <span style="margin-left:10px">{{ node.name }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
@@ -89,7 +94,7 @@ import {
   ColumnHeightOutlined,
   VerticalAlignMiddleOutlined
 } from '@ant-design/icons-vue'
-import { ref, watch } from "vue"
+import { nextTick, ref, watch } from "vue"
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { guid } from "/@/utils"
@@ -481,6 +486,16 @@ function removeApiById(id) {
   })
 }
 
+function onDoubleClick(node) {
+  let findIndex = expandedKeys.value.findIndex(f => f == node.id)
+  if (findIndex > -1) {
+    expandedKeys.value.splice(findIndex,1)
+  } else {
+    expandedKeys.value.push(node.id)
+  }
+  expandedKeys.value = Array.from(new Set(expandedKeys.value))
+}
+
 </script>
 
 <style lang="less" scoped>
@@ -503,7 +518,14 @@ function removeApiById(id) {
       display: flex;
       justify-content: space-between;
       align-items: center;
-
+      
+      .left {
+        width: 240px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      
       .right {
         display: flex;
 

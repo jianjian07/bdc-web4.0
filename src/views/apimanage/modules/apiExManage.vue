@@ -575,7 +575,7 @@ function handleChangeApiType(pane, e) {
 
 <style lang="less" scoped>
 .api-editor-manage {
-  width: calc(100% - 300px);
+  width: calc(100% - 350px);
   height: 100%;
   padding: 10px;
 
