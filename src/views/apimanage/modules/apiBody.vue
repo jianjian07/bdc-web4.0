@@ -479,7 +479,7 @@ function processBody(content, srcObj) {
   let arr = []
   let defaultParam = {
     parentKey: srcObj.key || '1',
-    fieldName: '-',
+    fieldName: '',
     fieldValue: '-',
     // dataType: getType(obj),
     defaultValue: '',
@@ -496,7 +496,7 @@ function processBody(content, srcObj) {
       const simpleObject = isSimpleObject(value)
       let param = {
         ...defaultParam,
-        key: guid(),
+        key: srcObj['']?.key || guid(),
         fieldValue: simpleObject ? value + '' : '-',
         dataType: srcObj['']?.dataType || getType(value),
       }
@@ -515,7 +515,7 @@ function processBody(content, srcObj) {
       const simpleObject = isSimpleObject(value)
       let param = {
         ...defaultParam,
-        key: guid(),
+        key: srcObj[name]?.key || guid(),
         fieldName: srcObj[name]?.fieldName || name,
         defaultValue: srcObj[name]?.defaultValue || '',
         isMust: srcObj[name]?.isMust === true,
@@ -539,7 +539,7 @@ function processBody(content, srcObj) {
 
 const objToMap = obj => {
   const map = {}
-  obj?.children?.forEach(it => map[it.name] = it)
+  obj?.children?.forEach(it => map[it.fieldName] = it)
   return map
 }
 
