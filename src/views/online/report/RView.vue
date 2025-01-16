@@ -12,6 +12,7 @@ import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, 
 import {
     initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
 } from "/@/utils/form/wonder-report"
+import { getSelectAllCheck, setSelectAllCheck } from "/@/utils/form/wonder1.0.1"
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
@@ -161,6 +162,8 @@ const generateVue3 = defineComponent({
             getTreeDictItemsByCode,
             getLabelByDictCode,
             getLabelByTreeDictCode,
+            getSelectAllCheck,
+            setSelectAllCheck,
             onExportExcel,
             onExportExcelApi,
             onCExport,
