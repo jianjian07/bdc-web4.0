@@ -9,20 +9,26 @@
       </a-button>
       <div class="api-ex-data-source-tree">
         <template v-if="apiData.apiDataSource.length">
-          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys" :fieldNames="{ key: 'id' }"
+          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys" 
+                  v-model:expandedKeys="expandedRowKeys" :fieldNames="{ children:'children', key: 'id' }"
             :blockNode="true" @select="handleSelectTreeItem">
             <template #title="node">
               <div class="api-row-content">
-                <div class="left" :title="node.title">
+                <div class="left" :title="node.title" :id="`left-${node.id}`" :style="getFieldNameStyle(node)">
                   {{ node.title }}
                 </div>
                 <div v-if="selectedKeys[0] == node.id" class="right">
+                  <a-button @click.stop="addChild(node)">
+                    <template #icon>
+                      <appstore-add-outlined style="font-size: 10px" />
+                    </template>
+                  </a-button>
                   <a-popconfirm title="你确定要删除该数据源吗?" @confirm.stop="del(node)">
-                    <a-button style="margin-left: 8px;">
-                      <template #icon>
-                        <minus-outlined style="font-size: 10px" />
-                      </template>
-                    </a-button>
+                     <a-button style="margin-left: 8px;">
+                        <template #icon>
+                          <minus-outlined style="font-size: 10px" />
+                        </template>
+                     </a-button>
                   </a-popconfirm>
                 </div>
               </div>
@@ -44,12 +50,12 @@
           <a-form-item label="keyName" :label-col="{ style: { width: '80px' } }">
             <a-input v-model:value="selectedNode.keyName"></a-input>
           </a-form-item>
-          <a-form-item label="主数据源" :label-col="{ style: { width: '80px' } }">
-            <a-radio-group v-model:value="selectedNode.isMain" @change="(e) => handleIsMain(e, selectedNode)">
-              <a-radio value="1">是</a-radio>
-              <a-radio value="0">否</a-radio>
-            </a-radio-group>
-          </a-form-item>
+<!--          <a-form-item label="主数据源" :label-col="{ style: { width: '80px' } }">-->
+<!--            <a-radio-group v-model:value="selectedNode.isMain" @change="(e) => handleIsMain(e, selectedNode)">-->
+<!--              <a-radio value="1">是</a-radio>-->
+<!--              <a-radio value="0">否</a-radio>-->
+<!--            </a-radio-group>-->
+<!--          </a-form-item>-->
           <a-form-item label="类型" :label-col="{ style: { width: '80px' } }">
             <a-radio-group v-model:value="selectedNode.type">
               <a-radio value="sql">sql</a-radio>
@@ -72,9 +78,11 @@
 import {
   PlusOutlined,
   MinusOutlined,
+  AppstoreAddOutlined
 } from '@ant-design/icons-vue'
 import CodeEditor from '/@/components/common/CodeEditor.vue'
-import { onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, ref, watch } from "vue"
+import { findNode } from "/@/utils/form/commonUtils"
 let aa = ref('horizontal');
 const props = defineProps({
   apiData: {
@@ -87,6 +95,8 @@ const props = defineProps({
 let selectedKeys = ref<any>([])
 // 选中node
 let selectedNode = ref<any>()
+// 展开keys
+let expandedRowKeys = ref<any[]>([])
 
 onMounted(() => {
   if (props.apiData.apiDataSource.length) {
@@ -100,14 +110,17 @@ onMounted(() => {
  */
 function handleAdd() {
   let timestamp = new Date().getTime()
-  let isMain = props.apiData.apiDataSource.find(f => f.isMain == '1')
+  // let isMain = props.apiData.apiDataSource.find(f => f.isMain == '1')
   let id = '新增数据源' + timestamp
   let node = {
     id: id,
+    pid: '-1',
+    level: 0,
     title: id,
-    isMain: isMain ? '0' : '1',
+    // isMain: isMain ? '0' : '1',
     type: 'sql',
-    content: ''
+    content: '',
+    children: []
   }
   props.apiData.apiDataSource.push(node)
   selectedKeys.value = [id]
@@ -120,7 +133,8 @@ function handleAdd() {
  */
 function del(node) {
   let currentSelect
-  let arr = props.apiData.apiDataSource
+  let findParent = findParentNode(props.apiData.apiDataSource,node.id)
+  let arr = findParent.children || []
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].id == node.id) {
       if (arr[i + 1]) {
@@ -169,6 +183,95 @@ function handleIsMain(e, node) {
 function getCodeValue(value) {
   selectedNode.value.content = value
 }
+
+function addChild(node) {
+  let find = findNode(props.apiData.apiDataSource, node.id,'id')
+  if (find) {
+    if (!find.children) {
+      find.children = []
+    }
+    let timestamp = new Date().getTime()
+    let id = '新增数据源' + timestamp
+    let childNode = {
+      id: id,
+      pid: find.id,
+      level: find.level ? find.level + 1 : undefined,
+      title: id,
+      type: 'sql',
+      content: '',
+      children: []
+    }
+    find.children.push(childNode)
+    selectedKeys.value = [id]
+    selectedNode.value = childNode
+    let extend = JSON.parse(JSON.stringify(expandedRowKeys.value))
+    extend.push(find.id)
+    expandedRowKeys.value = Array.from(new Set(extend))
+  }
+}
+
+/**
+ * 设置标题长度
+ * @param node
+ */
+function getFieldNameStyle(node) {
+  let num: number | null = 0
+  if (node.level) {
+    num = node.level
+  } else {
+    num = findNodeLevel(props.apiData.apiDataSource, node.id)
+  }
+  if (num !== null || num !== undefined) {
+    nextTick(() => {
+    let dom = document.getElementById('left-' + node.id)
+    if (dom) {
+      let width = 95 - 24 * num
+      dom.style.width = `${width}px`
+    }
+  })
+  }
+}
+
+/**
+ * 子节点是第几级
+ * @param tree
+ * @param targetId
+ * @param currentLevel
+ */
+function findNodeLevel(tree: any[], targetId: string | number, currentLevel = 0): number | null {
+  for (const node of tree) {
+    if (node.id === targetId) {
+      return currentLevel
+    }
+    if (node.children && node.children.length > 0) {
+      const level = findNodeLevel(node.children, targetId, currentLevel + 1)
+      if (level !== null) {
+        return level
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * 找父节点
+ * @param tree
+ * @param targetId
+ */
+function findParentNode(tree: any[], targetId: string | number): any | null {
+  for (const node of tree) {
+    if (node.children && node.children.some((child) => child.id === targetId)) {
+      return node
+    }
+    if (node.children && node.children.length > 0) {
+      const parent = findParentNode(node.children, targetId);
+      if (parent) {
+        return parent
+      }
+    }
+  }
+  return null
+}
 </script>
 
 <style lang="less" scoped>
@@ -191,8 +294,8 @@ function getCodeValue(value) {
     }
 
     .api-ex-data-source-tree {
-      margin-right: 24px;
-      margin-left: -24px;
+      //margin-right: 24px;
+      //margin-left: -24px;
       height: calc(100% - 35px);
       overflow: auto;
     }
@@ -205,7 +308,7 @@ function getCodeValue(value) {
       .left {
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 130px;
+        //width: 100px;
         overflow: hidden;
       }
 

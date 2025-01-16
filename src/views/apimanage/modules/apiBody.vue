@@ -35,24 +35,35 @@
             </template>
             <template v-else-if="column.dataIndex == 'operate'">
               <div class="operate-btn">
-                <a-button :disabled="record.parentKey == '-1'" style="margin-right: 8px" @click="handleAddRow(record)">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                </a-button>
-                <a-button
+                <a-tooltip>
+                  <template #title>添加同级</template>
+                  <a-button :disabled="record.parentKey == '-1'" style="margin-right: 8px" @click="handleAddRow(record)">
+                    <template #icon>
+                      <PlusOutlined/>
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                
+                <a-tooltip>
+                  <template #title>添加子级</template>
+                  <a-button
                     :disabled="record['dataType'].toLowerCase() !== 'object' && record['dataType'].toLowerCase() !== 'array'"
                     style="margin-right: 8px"
                     @click="handleAddChildRow(record)">
-                  <template #icon>
-                    <AppstoreAddOutlined/>
-                  </template>
-                </a-button>
-                <a-button :disabled="record.parentKey == '-1'" @click="handleDelRow(record)">
-                  <template #icon>
-                    <CloseOutlined/>
-                  </template>
-                </a-button>
+                    <template #icon>
+                      <AppstoreAddOutlined/>
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                
+                <a-tooltip>
+                  <template #title>删除</template>
+                  <a-button :disabled="record.parentKey == '-1'" @click="handleDelRow(record)">
+                    <template #icon>
+                      <CloseOutlined/>
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </template>
             <template v-else>

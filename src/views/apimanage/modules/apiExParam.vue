@@ -12,10 +12,10 @@
       <a-tab-pane key="query" tab="params" class="api-param-pane" forceRender>
         <api-query :apiData="apiData"></api-query>
       </a-tab-pane>
-      <a-tab-pane v-if="apiType == 2"  key="body" tab="json" class="api-param-pane" forceRender>
+      <a-tab-pane key="body" :tab="apiType == 2 ? 'json' : 'body'" class="api-param-pane" forceRender>
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
-      <a-tab-pane v-else key="datasource" tab="数据源" class="api-param-pane" forceRender>
+      <a-tab-pane v-if="apiType != 2" key="datasource" tab="数据源" class="api-param-pane" forceRender>
         <api-ex-data-source :apiData="apiData"></api-ex-data-source>
       </a-tab-pane>
       <a-tab-pane key="bz" tab="接口说明" class="api-param-pane" forceRender>

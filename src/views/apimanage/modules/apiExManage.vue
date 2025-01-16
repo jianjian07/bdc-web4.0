@@ -13,11 +13,39 @@
             <a-form-item label="接口标识">
               <a-input v-model:value="pane.code" @change="dirDataChange($event, pane)" />
             </a-form-item>
-            <a-form-item label="目录公钥">
-              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)" />
-            </a-form-item>
-            <a-form-item label="目录私钥">
-              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)" />
+<!--            <a-form-item label="目录公钥">-->
+<!--              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)" />-->
+<!--            </a-form-item>-->
+<!--            <a-form-item label="目录私钥">-->
+<!--              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)" />-->
+<!--            </a-form-item>-->
+            <a-form-item label="公钥私钥">
+              <div>
+                <a-button size="small" style="margin-bottom: 10px" @click="handleAddApiKeys(pane)"> 
+                  <template #icon>
+                    <plus-outlined style="font-size: 12px" />
+                  </template>
+                </a-button>
+                <a-table :columns="columns" 
+                         :data-source="pane.apiKeys"
+                         size="small"
+                         :pagination="false"
+                         bordered
+                >
+                  <template #bodyCell="{ column, record, index }">
+                    <div v-if="column.dataIndex == 'index'" style="text-align: center">
+                      {{ index + 1 }}
+                    </div>
+                    <div v-else-if="column.dataIndex == 'operate'" style="display: flex; justify-content: center">
+                       <a @click="del(pane, record, index)">删除</a>
+                    </div>
+                    <template v-else>
+                      <a-input v-model:value="record[column.dataIndex]"></a-input>
+                    </template>
+                  </template>
+                </a-table>
+              </div>
+              
             </a-form-item>
             <div style="display: flex">
               <div>
@@ -124,6 +152,7 @@ import ApiExParam from "/@/views/apimanage/modules/apiExParam.vue"
 import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import { PlusOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
   apiTreeData: {
@@ -142,6 +171,39 @@ let tabList = ref<any>([])
 let activeKey = ref<any>()
 // 实时响应
 let responseBody = ref<string>('')
+
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+    width: 50,
+    align: 'center'
+  },
+  {
+    title: 'keyName',
+    dataIndex: 'keyName',
+    key: 'keyName',
+    width: 150
+  },
+  {
+    title: '公钥',
+    dataIndex: 'publicKey',
+    key: 'publicKey'
+  },
+  {
+    title: '私钥',
+    dataIndex: 'privateKey',
+    key: 'privateKey'
+  },
+  {
+    title: '操作',
+    dataIndex: 'operate',
+    key: 'operate',
+    align: 'center',
+    width: 60
+  }
+]
 
 const emit = defineEmits(['update:selectItem', 'load'])
 
@@ -238,6 +300,7 @@ function dirDataChange(e, dir) {
       child.dirName = dir.name
       child.publicKey = dir.publicKey
       child.privateKey = dir.privateKey
+      child.apiKeys = dir.apiKeys,
       child.isResultDecrypt = dir.isEncrypt
       child.encryptType = dir.encryptType
       return child
@@ -290,6 +353,7 @@ function setApiParameters() {
 function saveDir() {
   return new Promise((resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
+    select.encryptKey = JSON.stringify(select.apiKeys)
     let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新建目录' : false
     let oldId = select.id
     if (addType) {
@@ -571,6 +635,26 @@ function handleChangeApiType(pane, e) {
   let value = e.target.value
   pane.activeParamPane = value == '2' ? 'script' : 'header'
 }
+
+/**
+ * 添加公钥私钥
+ * @param pane
+ */
+function handleAddApiKeys(pane) {
+  if (!pane.apiKeys) {
+    pane.apiKeys = []
+  }
+  pane.apiKeys.push({})
+}
+
+/**
+ * 删除公钥私钥
+ * @param record
+ * @param index
+ */
+function del(pane, record, index) {
+  pane.apiKeys.splice(index, 1)
+}
 </script>
 
 <style lang="less" scoped>
@@ -587,6 +671,7 @@ function handleChangeApiType(pane, e) {
 
       :deep(.ant-tabs-content-holder) {
         height: 100%;
+        overflow: auto;
 
         .ant-tabs-content {
           height: 100%;
