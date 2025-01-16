@@ -13,10 +13,10 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 
 const props = defineProps({
-  readOnly: {
-    type: Boolean,
-    default: false
-  },...editorProps
+    readOnly: {
+        type: Boolean,
+        default: false
+    }, ...editorProps
 })
 const emit = defineEmits(['update:modelValue', 'change', 'editor-mounted'])
 self.MonacoEnvironment = {
@@ -66,16 +66,16 @@ const init = () => {
 
 // 切换编码语言
 const handleLanguage = (language: string) => {
-  let model = editor.getModel()
-  if (model) {
-    monaco.editor.setModelLanguage(model, language)
-  }
+    let model = editor.getModel()
+    if (model) {
+        monaco.editor.setModelLanguage(model, language)
+    }
 }
 
 watch(() => props.language, newValue => {
-  if (editor) {
-    handleLanguage(newValue)
-  }
+    if (editor) {
+        handleLanguage(newValue)
+    }
 })
 watch(
     () => props.modelValue,
@@ -95,12 +95,12 @@ onMounted(() => {
 })
 
 const format = (): void => {
-  const readOnly = props.readOnly;
-  editor?.updateOptions({ readOnly: false });
-  editor?.getAction('editor.action.formatDocument')?.run()
-      .then()
-      .finally(() => editor?.updateOptions({ readOnly }));
-  editor?.setValue(editor?.getValue());
+    const readOnly = props.readOnly;
+    editor?.updateOptions({ readOnly: false });
+    editor?.getAction('editor.action.formatDocument')?.run()
+        .then()
+        .finally(() => editor?.updateOptions({ readOnly }));
+    editor?.setValue(editor?.getValue());
 }
 </script>
 
@@ -108,5 +108,6 @@ const format = (): void => {
 .codeEditBox {
     width: v-bind(width);
     height: v-bind(height);
+    border-radius: 2px;
 }
 </style>

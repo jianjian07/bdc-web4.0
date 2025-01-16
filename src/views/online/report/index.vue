@@ -2,6 +2,11 @@
     <div class="wonder-table-form">
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
+                <a-col :span="4" :offset="0">
+                    <a-form-item label="表单ID">
+                        <a-input v-model:value="formData.id" allowClear />
+                    </a-form-item>
+                </a-col>
                 <a-col :span="8" :offset="0">
                     <a-form-item label="表单编码">
                         <a-input v-model:value="formData.code" allowClear />
@@ -54,6 +59,7 @@
                             <a-divider type="vertical" />
                         </template>
                         <a @click="design(record)">设计</a>
+                        <a @click="editData(record)">编辑</a>
                         <a-dropdown>
                             <a class="ant-dropdown-link" @click.prevent>
                                 更多
@@ -61,9 +67,7 @@
                             </a>
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item>
-                                        <a @click="editData(record)">编辑</a>
-                                    </a-menu-item>
+
                                     <a-menu-item>
                                         <a @click="preview(record)">预览</a>
                                     </a-menu-item>
@@ -126,7 +130,7 @@ enum Api {
  * 表格数据加载
 */
 async function loadData() {
-    defHttp.post({ url: Api.list, data: { code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: Api.list, data: { id: formData.value.id || '', code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
         if (!res.success) return
         const { records, total } = res.result
         datalist.value = records

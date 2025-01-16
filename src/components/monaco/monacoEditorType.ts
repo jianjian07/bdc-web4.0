@@ -54,7 +54,7 @@ export const editorProps = {
                     enabled: true,
                 },
                 readOnly: false,
-                fontSize: 16,
+                fontSize: 13,
                 scrollBeyondLastLine: false,
                 overviewRulerBorder: false,
             }
