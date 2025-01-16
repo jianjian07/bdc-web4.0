@@ -138,7 +138,9 @@ let selectJsonSetting = ref<any>(generateData.selectJsonSetting)
 // getSelectJsonSetting(selectJsonSetting)
 // columns.value = generateData.columns
 // 合并行
-columns.value = generateData.columns.map((column) => {
+columns.value = generateData.columns
+if (columns.value && columns.value.length) {
+  columns.value = columns.value.map((column) => {
   if (column.options && column.options.isRowSpan) {
     column.customCell = (_, index) => {
       return { rowSpan: getRowSpan(props.dataSource, index, column.dataIndex)}
@@ -146,6 +148,7 @@ columns.value = generateData.columns.map((column) => {
   }
   return column
 })
+}
 // if (generateData.columns != '') {
 //     columns.value = JSON.parse(generateData.columns)//拷贝
 // }

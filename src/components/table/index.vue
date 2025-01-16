@@ -109,7 +109,9 @@ const props = defineProps({
 let paginations = ref(props.pagination)
 // let visible = ref(false)
 let filterColumns: any = ref([])
-filterColumns.value = props.columns.map((column) => {
+filterColumns.value = props.columns
+if (filterColumns.value && filterColumns.value.length) {
+  filterColumns.value?.map((column) => {
   if (column.options && column.options.isRowSpan) {
     column.customCell = (_, index) => {
       return { rowSpan: getRowSpan(props.dataSource, index, column.dataIndex)}
@@ -117,6 +119,7 @@ filterColumns.value = props.columns.map((column) => {
   }
   return column
 })
+}
 // let exportColumns: any = ref([])
 // exportColumns.value = props.columns
 let defaultOptions: any = ref([])
