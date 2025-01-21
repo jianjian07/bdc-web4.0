@@ -280,7 +280,7 @@ async function deleteData(record: any) {
             if (record.parentId == "0") {
                 datalist.value.splice(datalist.value.indexOf(record), 1)
             } else {
-                let _find = findNodeById(datalist.value, Number(record.parentId))
+                let _find = findNodeById(datalist.value, record.parentId)
                 if (_find) {
                     if (_find.children.length > 1) {
                         _find.children.splice(_find.children.indexOf(record), 1)
