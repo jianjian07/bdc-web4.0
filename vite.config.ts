@@ -46,7 +46,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         "vue": "vue/dist/vue.esm-bundler.js",
         '/@/': pathResolve('src') + '/',
         '/#/': pathResolve('types') + '/',
-      },
+      }
     },
     plugins: [
       createSvgIconsPlugin({

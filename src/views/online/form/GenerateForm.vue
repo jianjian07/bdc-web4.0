@@ -143,7 +143,7 @@ if (columns.value && columns.value.length) {
   columns.value = columns.value.map((column) => {
   if (column.options && column.options.isRowSpan) {
     column.customCell = (_, index) => {
-      return { rowSpan: getRowSpan(props.dataSource, index, column.dataIndex)}
+      return { rowSpan: getRowSpan(dataSource.value, index, column.dataIndex)}
     }
   }
   return column
