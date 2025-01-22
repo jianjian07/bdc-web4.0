@@ -1,6 +1,6 @@
 <template>
   <div class="sfbzpz">
-    <a-row :gutter="10" style="height: 100%">
+    <a-row :gutter="10" style="height: 100%;width: 100%">
       <a-col class="left" :md="7" :sm="24" style="padding:10px;border-right: 1px solid rgba(5, 5, 5, 0.06);height: 100%; overflow: auto">
         <a-alert type="info" :show-icon="true" style="margin-bottom: 10px">
           <template #message>
