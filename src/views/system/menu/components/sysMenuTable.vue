@@ -52,8 +52,8 @@
           </a-space>
         </div>
         <div class="sys-menu-table-body">
-          <a-table rowKey="id" v-model:expandedRowKeys="expandedRowKeys" :columns="columns" :data-source="menuList"
-            :row-selection="rowSelection" :scroll="{ y: 300 }">
+          <a-table rowKey="id" :pagination="false" v-model:expandedRowKeys="expandedRowKeys" :columns="columns"
+            :data-source="menuList" :row-selection="rowSelection" :scroll="{ y: 300 }">
             <template #bodyCell="{ column, text, record }">
               <template v-if="column.dataIndex === 'type'">
                 <a-tag color="orange" v-if="record.type == 0">

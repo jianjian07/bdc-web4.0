@@ -1,80 +1,73 @@
 <template>
   <div class="api-body">
-    <a-tabs
-        v-model:activeKey="activeKey"
-        class="api-body-tabs"
-        size="small"
-        tab-position="left"
-    >
+    <a-tabs v-model:activeKey="activeKey" class="api-body-tabs" size="small" tab-position="left">
       <a-tab-pane key="view" class="api-body-pane" tab="配置">
-        <a-table :columns="columns" :data-source="[apiData.apiBody]" :pagination="false"
-                 :scroll="{ y: 300 }" bordered size="small" v-model:expandedRowKeys="expandedRowKeys">
+        <a-table :columns="columns" :data-source="[apiData.apiBody]" :pagination="false" :scroll="{ y: 300 }" bordered
+          size="small" v-model:expandedRowKeys="expandedRowKeys">
           <template #bodyCell="{ column, text, record, index }">
             <template v-if="['isMust'].includes(column.dataIndex)">
-               <div style="display: flex;justify-content: center">
-                 <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
-               </div>
+              <div style="display: flex;justify-content: center">
+                <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+              </div>
             </template>
             <template v-else-if="column.dataIndex == 'fieldName'">
               <span v-if="record.parentKey == '-1'">{{ record[column.dataIndex] }}</span>
-              <a-input v-else v-show="filedShows[`field-name-${record.key}`]" :id="`field-name-${record.key}`" v-model:value="record[column.dataIndex]"
-                       :style="getFieldNameStyle(`field-name-${record.key}`)"/>
+              <a-input v-else v-show="filedShows[`field-name-${record.key}`]" :id="`field-name-${record.key}`"
+                v-model:value="record[column.dataIndex]" :style="getFieldNameStyle(`field-name-${record.key}`)" />
             </template>
             <template v-else-if="['dataType'].includes(column.dataIndex)">
               <a-select v-model:value="record[column.dataIndex]"
-                        :options="dicts.find(t => t.key == column.dataIndex)!.data"
-                        style="width: 100%"
-              >
+                :options="dicts.find(t => t.key == column.dataIndex)!.data" style="width: 100%">
               </a-select>
             </template>
             <template v-else-if="['fieldValue'].includes(column.dataIndex)">
-              <a-input v-model:value="record[column.dataIndex]"/>
+              <a-input v-model:value="record[column.dataIndex]" />
             </template>
             <template v-else-if="column.dataIndex == 'encryptType'">
-              <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)"/>
+              <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" />
             </template>
             <template v-else-if="column.dataIndex == 'operate'">
               <div class="operate-btn">
                 <a-tooltip>
                   <template #title>添加同级</template>
-                  <a-button :disabled="record.parentKey == '-1'" style="margin-right: 8px" @click="handleAddRow(record)">
+                  <a-button :disabled="record.parentKey == '-1'" style="margin-right: 8px"
+                    @click="handleAddRow(record)">
                     <template #icon>
-                      <PlusOutlined/>
+                      <PlusOutlined />
                     </template>
                   </a-button>
                 </a-tooltip>
-                
+
                 <a-tooltip>
                   <template #title>添加子级</template>
                   <a-button
                     :disabled="record['dataType'].toLowerCase() !== 'object' && record['dataType'].toLowerCase() !== 'array'"
-                    style="margin-right: 8px"
-                    @click="handleAddChildRow(record)">
+                    style="margin-right: 8px" @click="handleAddChildRow(record)">
                     <template #icon>
-                      <AppstoreAddOutlined/>
+                      <AppstoreAddOutlined />
                     </template>
                   </a-button>
                 </a-tooltip>
-                
+
                 <a-tooltip>
                   <template #title>删除</template>
                   <a-button :disabled="record.parentKey == '-1'" @click="handleDelRow(record)">
                     <template #icon>
-                      <CloseOutlined/>
+                      <CloseOutlined />
                     </template>
                   </a-button>
                 </a-tooltip>
               </div>
             </template>
             <template v-else>
-              <a-input v-model:value="record[column.dataIndex]"/>
+              <a-input v-model:value="record[column.dataIndex]" />
             </template>
           </template>
         </a-table>
       </a-tab-pane>
       <a-tab-pane key="json" class="api-body-pane" tab="json">
         <monaco-editor v-model="jsonContent" height="100%" language="json" style="width: 100%;overflow: auto"
-                       theme="vs" >
+          theme="vs">
         </monaco-editor>
       </a-tab-pane>
     </a-tabs>
@@ -204,14 +197,14 @@ onMounted(() => {
  * @param jsonStr2
  */
 function areJsonStringsEqual(jsonStr1, jsonStr2) {
-    try {
-        const obj1 = JSON.parse(jsonStr1);
-        const obj2 = JSON.parse(jsonStr2);
+  try {
+    const obj1 = JSON.parse(jsonStr1);
+    const obj2 = JSON.parse(jsonStr2);
 
-        return JSON.stringify(obj1) === JSON.stringify(obj2);
-    } catch (e) {
-        return false;
-    }
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
+  } catch (e) {
+    return false;
+  }
 }
 
 /**
@@ -532,7 +525,7 @@ function processBody(content, srcObj) {
         isMust: srcObj[name]?.isMust === true,
         isEncrypt: srcObj[name]?.isEncrypt === true,
         encryptType: srcObj[name]?.encryptType == '',
-        description: srcObj[name]?.description || '',
+        description: srcObj[name]?.description || value,
         fieldValue: simpleObject ? value + '' : '-',
         dataType: getType(value),
       }
@@ -631,7 +624,10 @@ function isSimpleObject(object) {
       color: #008000;
     }
 
-    &.integer, &.double, &.float, &.byte {
+    &.integer,
+    &.double,
+    &.float,
+    &.byte {
       color: #0000ff;
     }
 

@@ -3,27 +3,24 @@
     <a-tabs v-model:activeKey="activeKey" class="api-param-tabs-card" hide-add @change="tabChange">
       <a-tab-pane v-if="apiType == 2" key="script" tab="script" class="api-param-pane" forceRender>
         <div class="api-script" style="height: 100%; overflow: auto">
-           <CodeEditor :fullScreen="true" language="javascript" :value="apiData.script" @codeValue="getCodeValue"></CodeEditor>
+          <CodeEditor :fullScreen="true" language="javascript" :value="apiData.script" @codeValue="getCodeValue">
+          </CodeEditor>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="header" tab="Header" class="api-param-pane" forceRender>
+      <a-tab-pane key="header" tab="Headers" class="api-param-pane" forceRender>
         <api-header :apiData="apiData"></api-header>
       </a-tab-pane>
-      <a-tab-pane key="query" tab="params" class="api-param-pane" forceRender>
+      <a-tab-pane key="query" tab="Params" class="api-param-pane" forceRender>
         <api-query :apiData="apiData"></api-query>
       </a-tab-pane>
-      <a-tab-pane key="body" :tab="apiType == 2 ? 'json' : 'body'" class="api-param-pane" forceRender>
+      <a-tab-pane key="body" :tab="apiType == 2 ? 'Json' : 'Body'" class="api-param-pane" forceRender>
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
       <a-tab-pane v-if="apiType != 2" key="datasource" tab="数据源" class="api-param-pane" forceRender>
         <api-ex-data-source :apiData="apiData"></api-ex-data-source>
       </a-tab-pane>
       <a-tab-pane key="bz" tab="接口说明" class="api-param-pane" forceRender>
-        <a-textarea
-            v-model:value="apiData.bz"
-            placeholder="请输入接口说明"
-            style="height: 100%"
-        />
+        <a-textarea v-model:value="apiData.bz" placeholder="请输入接口说明" style="height: 100%" />
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -72,7 +69,7 @@ watch(() => props.activePane, (val: string) => {
  * @param key
  */
 function tabChange(key) {
-  emit('update:activePane',key)
+  emit('update:activePane', key)
 }
 
 function getCodeValue(value) {
