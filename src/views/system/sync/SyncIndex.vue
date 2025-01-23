@@ -58,7 +58,7 @@
                </template>
             </template>
         </a-table>
-    <sync-modal ref="refModal" @ok="handleModalOk"></sync-modal>
+<!--    <sync-modal ref="refModal" @ok="handleModalOk"></sync-modal>-->
   </div>
 </template>
 
@@ -67,7 +67,8 @@ import { onMounted, ref } from "vue"
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import SyncModal from "/@/views/system/sync/components/SyncModal.vue"
+// import SyncModal from "/@/views/system/sync/components/SyncModal.vue"
+import { router } from "/@/router"
 let formData = ref<any>({})
 let dataList = ref<any>([])
 let refModal = ref()
@@ -125,7 +126,8 @@ function refreshData() {
 }
 
 function add() {
-  refModal.value.add()
+  // refModal.value.add()
+  router.push({ path: '/system/syncdesign', params: { id: '123'}  })
 }
 
 function edit(record) {

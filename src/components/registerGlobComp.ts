@@ -50,7 +50,8 @@ import {
     FloatButton,
     Skeleton,
     Flex,
-    Transfer
+    Transfer,
+    Steps
 } from 'ant-design-vue';
 
 export function registerGlobComp(app: App) {
@@ -108,4 +109,5 @@ export function registerGlobComp(app: App) {
         .use(Tag)
         .use(Skeleton)
         .use(Transfer)
+        .use(Steps)
 }
