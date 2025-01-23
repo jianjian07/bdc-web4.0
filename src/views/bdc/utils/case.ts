@@ -6,6 +6,7 @@ enum api {
     porcessList = '/tyyw/jeecg-cloud-joa/joa/designform/designFormCommuse/queryPorcessList',
     add = '/api/zrzy-bdc/bdc/process/start',
     taskList = '/api/zrzy-bdc/bdc/process/list',//自己
+    addBL = '/api/zrzy-bdc/bdc/bl/startBl',
     // taskList1 = '/tyyw/jeecg-cloud-bpm/process/extActDesignFlowData/list?column=createTime&order=desc&pageNo=1&pageSize=10',//jeecg
     // sss = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des'//统一运维
 }
@@ -27,6 +28,21 @@ export function addFlow(params: any) {
     defHttp.post({ url: api.add, data: { ...params } }, { withToken: true }).then(res => {
         if (res.success) {
             router.push({ path: '/bdc/casedoing', query: { slbh: res.result.slbh, nodeId: res.result.nodeId, taskId: res.result.taskId } });
+        } else {
+            message.error('流程创建失败')
+        }
+
+    }).catch(err => {
+        message.error('流程创建失败' + err)
+    })
+}
+/**
+ * @description: 添加流程
+ */
+export function addFlowBL(params: any) {
+    defHttp.post({ url: api.addBL, data: { ...params } }, { withToken: true }).then(res => {
+        if (res.success) {
+            router.push({ path: '/bdc/blcasedoing', query: { slbh: res.result.slbh } });
         } else {
             message.error('流程创建失败')
         }

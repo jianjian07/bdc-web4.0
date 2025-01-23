@@ -82,7 +82,7 @@ let pagination = ref({
 })
 loadData()
 function loadData() {
-    defHttp.post({ url: api.getProcessList, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: api.getProcessList, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, ajlx: 1 } }, { withToken: true }).then((res) => {
         dataSource.value = res.result.records
     })
 }

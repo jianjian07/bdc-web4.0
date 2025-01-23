@@ -7,13 +7,12 @@
           【<span style="color:#1890ff;font-weight: 600;">{{ processInfo.title }}</span>】
         </div>
       </div>
-      <div style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); overflow: auto">
+      <div
+        style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); overflow: auto">
         <div style="width: 280px;padding: 10px 8px;">
-          <a-directory-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys" 
-                          :fieldNames="{ children:'children', title:'label', key:'value' }"
-                          :tree-data="treeData"
-                          multiple
-                          @select="onSelect">
+          <a-directory-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
+            :fieldNames="{ children: 'children', title: 'label', key: 'value' }" :tree-data="treeData" multiple
+            @select="onSelect">
             <template #icon="">
             </template>
           </a-directory-tree>
@@ -23,10 +22,13 @@
     <div class="userTabContent" style="height: 100%">
       <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
         <a-tab-pane key="1" tab="基础配置">
-          <FlowModal :lcid="processInfo.key"/>
+          <FlowModal :lcid="processInfo.key" @setBaseInfo="setBaseInfo" />
         </a-tab-pane>
         <a-tab-pane key="2" force-render tab="表单配置">
-          <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" :isBl="true"/>
+          <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" :isBl="true" />
+        </a-tab-pane>
+        <a-tab-pane key="6" tab="权利人配置" force-render>
+          <qlrpz v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="baseInfo"></qlrpz>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -38,12 +40,13 @@ import { defineAsyncComponent, onMounted, ref } from "vue"
 import { getDictItemsByCode } from "/@/utils/form/commonUtils"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
+const Qlrpz = defineAsyncComponent(() => import("/@/views/system/case/components/Qlrpz.vue"))
 let processInfo: any = ref('')
 let activeKey = ref('1')
 let treeData = ref<any>([])
 let selectedKeys = ref<any>([])
 let expandedKeys = ref<any>([])
-
+let baseInfo: any = ref(null)
 onMounted(() => {
   initData()
 })
@@ -65,6 +68,13 @@ function onSelect(_selectedKeys: any, e: any) {
   processInfo.value.title = process.label
   processInfo.value.key = process.value
 }
+/**
+ * 基础配置
+ * @param data 当前选中流程的基础配置
+ */
+function setBaseInfo(data: any) {
+  baseInfo.value = data
+}
 </script>
 
 <style lang="less" scoped>
@@ -84,8 +94,8 @@ function onSelect(_selectedKeys: any, e: any) {
   :deep(.ant-tabs-content) {
     height: 100%;
   }
-  
-    
+
+
   :deep(.ant-tabs-content-holder) {
     height: 100%;
     overflow: auto;

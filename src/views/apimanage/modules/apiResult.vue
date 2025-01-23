@@ -1,6 +1,6 @@
 <template>
   <div class="api-result">
-    <a-button class="claer" @click="handleClear">清除</a-button>
+    <!-- <a-button class="claer" @click="handleClear">清除</a-button> -->
     <a-tabs v-model:activeKey="activeKey" class="api-result-tabs-card" hide-add>
       <a-tab-pane key="response" tab="实时响应" class="api-result-pane">
         <monaco-editor :modelValue="responseBody" :readOnly="true" theme="vs" language="json"
@@ -52,9 +52,9 @@ function handleClear() {
       }
     }
   }
-  
+
   :deep(.monaco-mouse-cursor-text) {
-    font-size: 12px!important;
+    font-size: 12px !important;
   }
 
   .claer {

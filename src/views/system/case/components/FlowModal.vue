@@ -21,6 +21,9 @@
         <a-form-item label="国标登记类型">
             <a-input v-model:value="flowInfo.gbdjlx" />
         </a-form-item>
+        <a-form-item label="流程前缀(补录)">
+            <a-input v-model:value="flowInfo.prefix" />
+        </a-form-item>
         <!-- <a-form-item label="国标登记类型">
             <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('gbdjlx')" mode="multiple" />
         </a-form-item> -->
