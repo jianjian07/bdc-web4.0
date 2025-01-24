@@ -38,7 +38,7 @@
               <a-row>
                 <a-col :md="12" :sm="24">
                    <a-form-item label="收费条目名称" name="sfxmc" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                     <a-input v-model:value="formState.sfxmc" placeholder="请输入收费条目名称"></a-input>
+                     <a-input v-model:value="formState.sfxmc" placeholder="请输入收费条目名称" style="width: 100%"></a-input>
                    </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
