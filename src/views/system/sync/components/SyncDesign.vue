@@ -131,12 +131,13 @@
                       :dropdownMatchSelectWidth="false"
                       placeholder="请选择目标表"
                       style="width: 100%;"
+                      show-search
                     >
                       <a-select-option v-for="(selectItem, selectIndex) in viewTables.target.table" :value="selectItem.tablename">{{ selectItem.tablename }}</a-select-option>
                     </a-select>
                     <MinusOutlined style="margin: 0px 10px;font-size: 16px"/>
                     <a-input v-model:value="item.targetKey" placeholder="请输入目标表关键字" style="width: 100%"/>
-                    <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer" @click="handleEdit(type, item)"/>
+                    <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer" @click="handleEdit(type, item, index)"/>
                     <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer" @click="handelDelRow(type, item, index)"/>
                   </div>
                 </div>
@@ -203,6 +204,8 @@ let viewTables = ref<any>({
 let viewAllCheck = ref<boolean>(false)
 // 表全选
 let tableAllCheck = ref<boolean>(false)
+// 当前选中编辑的数据
+let currentEdit = ref<any>()
 // 弹窗
 let refModal = ref()
 const steps = [{ title: '填写同步基本信息' }, { title: '选择同步信息对应' }];
@@ -221,7 +224,7 @@ onMounted(() => {
 function initData() {
   let id = router.currentRoute.value.params.id
   if (id) {
-    
+    // todo 编辑
   }
 }
 
@@ -282,10 +285,9 @@ function handleChangeCheckBox(type) {
  * 下一步
  */
 function next() {
-  current.value++
-  // formRef.value.validate().then(() => {
-  //   current.value++
-  // })
+  formRef.value.validate().then(() => {
+    current.value++
+  })
 }
 
 /**
@@ -329,12 +331,17 @@ function cancelSelectAll(type) {
  * @param type
  * @param item
  */
-function handleEdit(type, item) {
+function handleEdit(type, item, index) {
   if (!item.targetTable) {
     message.warning('请先选择目标表!')
     return 
   }
-  // refModal.value.edit(item)
+  currentEdit.value = {
+    type: type,
+    item: item,
+    index: index
+  }
+  refModal.value.edit(item)
 }
 
 /**
@@ -356,14 +363,18 @@ function handelDelRow(type, item, index) {
  * @param value
  */
 function handleModalOk(value) {
-  
+  currentEdit.value.item = value
+  let type = currentEdit.value.type
+  let index = currentEdit.value.index
+  formState.value[`${type}CheckRow`][index] = value
 }
 
 /**
  * 完成
  */
 function handleComplete() {
-  
+  message.success('请前往控制台查看数据')
+  console.log('formState',formState.value)
 }
 </script>
 

@@ -8,28 +8,14 @@
          <div class="sync-table">
            <div class="sync-table-header">
              <div class="left">
-               <a-form-item label="同步名称" name="name" :rules="[{ required: true, message: '请填写同步名称!' }]" :label-col="labelCol">
-                 <a-input v-model:value="formState.name" placeholder="请填写同步名称"></a-input>
-               </a-form-item>
-             </div>
-             <div class="right">
-               <a-form-item label="同步code" name="code" :rules="[{ required: true, message: '请填写同步code!' }]" :label-col="labelCol">
-                 <a-input v-model:value="formState.code" placeholder="请填写同步code"></a-input>
-               </a-form-item>
-             </div>
-           </div>
-           <div class="sync-table-header">
-             <div class="left">
-               <a-form-item label="源表" name="sourceTable" :rules="[{ required: true, message: '请选择源表!' }]" :label-col="labelCol">
-                  <a-select v-model:value="formState.sourceTable" :options="sourceTableList" allow-clear
-                          placeholder="请选择源表" show-search @change="getField('sourceTable')" :dropdownMatchSelectWidth="false"></a-select>
+               <a-form-item label="源表" name="sourceTable" :label-col="labelCol">
+                 <a-input readOnly v-model:value="formState.sourceTable"></a-input>
                 </a-form-item>
              </div>
              <div class="right">
                <a-form-item label="目标表" name="targetTable" :rules="[{ required: true, message: '请选择目标表!' }]" :label-col="labelCol">
-                  <a-select v-model:value="formState.targetTable" :options="targetTableList" allow-clear
-                            placeholder="请选择目标表" show-search @change="getField('targetTable')" :dropdownMatchSelectWidth="false"></a-select>
-                </a-form-item>
+                 <a-input readOnly v-model:value="formState.targetTable"></a-input>
+               </a-form-item>
              </div>
            </div>
            <a-space style="margin-bottom: 10px">
@@ -70,48 +56,6 @@
             </template>
           </a-table>
          </div>
-         <div class="sync-form">
-           <div class="sync-row">
-             <div class="left">
-               <a-form-item label="同步类型" name="tblx" :rules="[{ required: true, message: '请选择同步类型!' }]" :label-col="labelCol">
-                 <a-select v-model:value="formState.tblx" allow-clear style="width: 100%" placeholder="请选择同步类型" :options="getDictItemsByCode('tblx')"/>
-               </a-form-item>
-             </div>
-             <div class="right">
-               <a-form-item label="全量写入模式" name="qlxrms" :rules="[{ required: true, message: '请选择全量写入模式!' }]" :label-col="labelCol">
-                 <a-select v-model:value="formState.qlxrms" allow-clear style="width: 100%" placeholder="请选择全量写入模式" :options="getDictItemsByCode('qlxrms')"/>
-               </a-form-item>
-             </div>
-           </div>
-           <div class="sync-row">
-             <div class="left">
-               <a-form-item label="读取数据" name="dqsj" :rules="[{ required: true, message: '请输入每次读取数据!' }]" :label-col="labelCol">
-                 <a-input-number v-model:value="formState.dqsj" style="width: 100%" placeholder="请输入每次读取数据"/>
-               </a-form-item>
-             </div>
-             <div class="right">
-               <a-form-item label="遇到错误停止" name="isStop" :rules="[{ required: true, message: '请选择遇到错误是否停止!' }]" :label-col="labelCol">
-                 <a-select v-model:value="formState.isStop" allow-clear style="width: 100%" placeholder="请选择遇到错误是否停止" :options="getDictItemsByCode('yn')"/>
-               </a-form-item>
-             </div>
-           </div>
-           <div class="sync-row">
-             <div class="left">
-               <a-form-item label="定时器表达式" name="corn" :label-col="labelCol" >
-                <a-input v-model:value="formState.corn" style="width: 100%" :auto-size="{ minRows: 2, maxRows: 5 }"></a-input>
-               </a-form-item>
-             </div>
-             <div class="right">
-               <a-form-item label="状态" name="status"  :rules="[{ required: true, message: '请选择状态!' }]"  :label-col="labelCol">
-                 <a-radio-group v-model:value="formState.status">
-                   <a-radio value="1">待启动</a-radio>
-                   <a-radio value="2">运行中</a-radio>
-                   <a-radio value="3">执行完毕</a-radio>
-                 </a-radio-group>
-               </a-form-item>
-             </div>
-           </div>
-         </div>
          <div class="sync-param">
             <a-form-item label="源表查询条件" name="sourceFilter" :rules="[{ required: true, message: '请填写源表查询条件!' }]" :label-col="labelCol" >
               <a-input v-model:value="formState.sourceFilter" prefix="where" style="width: 100%" :auto-size="{ minRows: 2, maxRows: 5 }"></a-input>
@@ -144,8 +88,7 @@ let formRef = ref()
 let formState = ref<any>({
   sourceTable: null,
   targetTable: null,
-  content: [],
-  status: '1'
+  content: []
 })
 // 源表选择集合
 let sourceTableList = ref<any>([])
@@ -228,58 +171,19 @@ watch(() => selectedValue.value, (newVal, oldVal) => {
 })
 
 enum api {
-  // getTableName = '/api/zrzy-system/inheritData/getAllTableName',
-  // getColumName = '/api/zrzy-system/inheritData/getAllcolumName',
+  getColumName = '/api/zrzy-api/data/sync/getAllColumns',
   // save = '/api/zrzy-system/inheritData/saveData'
 }
 
 const emit = defineEmits(['ok'])
 
 defineExpose({
-  add,
   edit
 })
 
 onMounted(() => {
-  initData()
 })
 
-function initData() {
-  initTableList('sourceTable', true)
-  initTableList('targetTable', false)
-}
-
-/**
- * 获取所有表、视图
- * @type 类型 sourceTable, targetTable
- * @containView 是否返回视图
- */
-function initTableList(type, containView) {
-  // defHttp.get({ url: api.getTableName, params: { containView: containView } }, { withToken: true }).then((res) => {
-  //   if (res && res.code == 200) {
-  //     if (type == 'sourceTable') {
-  //       sourceTableList.value = res.result.map((item) => {
-  //         return { label: item, value: item }
-  //       })
-  //     } else {
-  //       targetTableList.value = res.result.map((item) => {
-  //         return { label: item, value: item }
-  //       })
-  //     }
-  //   }
-  // })
-}
-
-
-
-/**
- * 新增
- */
-function add() {
-  modalVisible.value = true
-  modalTitle.value = '新增'
-  reset()
-}
 
 /**
  * 编辑
@@ -292,7 +196,11 @@ async function edit(record) {
     spinning: true,
     tip: '正在匹配,请稍后...'
   }
+  let formStateCopy = JSON.parse(JSON.stringify(formState.value))
   formState.value = JSON.parse(JSON.stringify(record))
+  if (!formState.value.content) {
+    formState.value.content = '[]'
+  }
   let contentStr = JSON.parse(JSON.stringify(formState.value.content))
   let content = JSON.parse(contentStr)
   content = content.map(c => {
@@ -300,8 +208,15 @@ async function edit(record) {
     return c
   })
   formState.value.content = content
-  sourceFields.value = await getFieldList(formState.value.sourceTable)
-  targetFields.value = await getFieldList(formState.value.targetTable)
+  
+  // 跟之前打开一样的表就不再查询键名
+  if (formStateCopy.sourceDataSource != formState.value.sourceDataSource || formStateCopy.sourceTable != formState.value.sourceTable) {
+     sourceFields.value = await getFieldList(formState.value.sourceDataSource, formState.value.sourceTable)
+  }
+  if (formStateCopy.targetDataSource != formState.value.targetDataSource || formStateCopy.targetTable != formState.value.targetTable) {
+    targetFields.value = await getFieldList(formState.value.targetDataSource, formState.value.targetTable)
+  }
+  
   autoMatchFields()
   tableLoading.value = false
 }
@@ -314,8 +229,7 @@ function reset() {
   formState.value = {
     sourceTable: null,
     targetTable: null,
-    content: [],
-    status: '1'
+    content: []
   }
   selectedRow.value = []
   selectedValue.value = []
@@ -415,17 +329,20 @@ async function getField(type) {
   }
   formState.value.content = []
   let tableName
+  let dbKey
   if (type == 'sourceTable') {
     tableName = formState.value.sourceTable
+    dbKey = formState.value.sourceDataSource
     if (tableName) {
-      sourceFields.value = await getFieldList(tableName)
+      sourceFields.value = await getFieldList(dbKey, tableName)
     } else {
       sourceFields.value = []
     }
   } else {
     tableName = formState.value.targetTable
+    dbKey = formState.value.targetDataSource
     if (tableName) {
-      targetFields.value = await getFieldList(tableName)
+      targetFields.value = await getFieldList(dbKey, tableName)
     } else {
       targetFields.value = []
     }
@@ -438,14 +355,23 @@ async function getField(type) {
  * 获取表下的所有字段
  * @param tableName
  */
-function getFieldList(tableName) {
+function getFieldList(dbKey, tableName) {
   return new Promise((resolve) => {
-    resolve([])
-    // defHttp.get({ url: api.getColumName, params: { tableName: tableName } }, { withToken: true }).then((res) => {
-    //   resolve(res && res.code == 200 ? res.result : [])
-    // }).catch(err => {
-    //   resolve([])
-    // })
+    defHttp.get({ url: api.getColumName, params: { dbKey: dbKey, tableName: tableName } }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+        let _result = res.result.map((item) => {
+          item.label = item.description
+          item.type = item.columntype
+          item.value = item.columnname
+          return item
+        })
+        resolve(_result)
+      } else {
+        resolve([])
+      }
+    }).catch(err => {
+      resolve([])
+    })
   })
 }
 
@@ -521,37 +447,13 @@ function handleAdd() {
 
 function handleModalOk() {
    formRef.value.validate().then(() => {
-    let id
-    if (formState.value.id) {
-      id = { id: formState.value.id }
-    }
-    // 去掉label属性 (不存储于数据库)
-    let content = JSON.parse(JSON.stringify(formState.value.content))
-    content = content.map(c => { delete c.label; return c })
-    let extractParam = {
-      majorKey: formState.value.majorKey,
-      seqName: formState.value.seqName
-    }
-    // let param = {
-    //   caseName: props.record.caseName,
-    //   caseCode: props.record.caseCode,
-    //   sourceTable: formState.value.sourceTable,
-    //   targetTable: formState.value.targetTable,
-    //   content: JSON.stringify(content),
-    //   sourceFilter: formState.value.sourceFilter,
-    //   remark: formState.value.remark,
-    //   saveType: props.type == 'inherit' ? '1': '0',
-    //   ...extractParam,
-    //   ...id
-    // }
-
-    // defHttp.post({ url: api.save, data: param }, { withToken: true }).then((res) => {
-    //   message.success(modalTitle.value + '成功')
-    //   modalVisible.value = false
-    //   emit('ok')
-    // }).catch(err => {
-    //   message.error(modalTitle.value + '失败')
-    // })
+     // 去掉label属性 (不存储于数据库)
+     let content = JSON.parse(JSON.stringify(formState.value.content))
+     content = content.map(c => { delete c.label; return c })
+     let param = JSON.parse(JSON.stringify(formState.value))
+     param.content = JSON.stringify(content)
+     modalVisible.value = false
+     emit('ok', param)
   })
   .catch(error => {
     console.log('error', error);
@@ -592,7 +494,7 @@ function handleCheckInvert() {
  * 取消
  */
 function handleCancel() {
-  formRef.value.resetFields()
+  // formRef.value.resetFields()
 }
 
 </script>
@@ -628,7 +530,7 @@ function handleCancel() {
   }
 
   .sync-param {
-    // margin-top: 20px;
+    margin-top: 20px;
   }
 
   .sync-content {
