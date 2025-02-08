@@ -13,7 +13,7 @@
             <template v-if="selectItem.type == 'kf'">
               <a-row>
                 <a-col :md="24">
-                   <a-form-item label="库房编号" name="code1" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
+                   <a-form-item label="库房编号" name="code" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
                     <a-input v-model:value="formState.code" @change="handleChangeCode"/>
                   </a-form-item>
                 </a-col>
@@ -28,7 +28,7 @@
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="库房号" name="kfid" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input style="width: 100%" v-model:value="formState.kfid"></a-input>
+                   <a-input style="width: 100%" v-model:value="formState.kfid" readOnly></a-input>
                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
@@ -97,6 +97,9 @@
                   <a-button type="primary" @click="handleSave">
                     保存
                   </a-button>
+<!--                  <a-button v-if="formState.type == 'pj' && formState.id" @click="handleCreateKg">-->
+<!--                    生成库格-->
+<!--                  </a-button>-->
                 </a-space>
              </div>
           </a-form>
@@ -108,6 +111,8 @@
 
 <script lang="ts" setup>
 import { ref,watch } from "vue"
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
 
 const props = defineProps({
   selectItem: {
@@ -120,20 +125,26 @@ let formSpinning = ref<boolean>(false)
 // 表单实例
 let formRef = ref();
 // 详细信息
-let formState = ref<any>({
-  
-})
-
+let formState = ref<any>({})
+// 是否是在修改名称
 let isChangeName = false
 
 // 校验规则
 let rules = ref<any>({
-  code1: [{ required: true, message: '请输入库房编号' }],
+  code: [{ required: true, message: '请输入库房编号' }],
 })
+
+const emit = defineEmits(['update:selectItem'])
+
+enum api {
+  savePj = '/api/zrzy-bdc/arch/arch/savePjxx',
+  saveKf = '/api/zrzy-bdc/arch/arch/saveArchive',
+  getPj = '/api/zrzy-bdc/arch/arch/getPjxx',
+  getKf = '/api/zrzy-bdc/arch/arch/getArchive'
+}
 
 watch(() => props.selectItem, (newVal: any) => {
   if (newVal) {
-    // formRef.value?.resetFields()
     formState.value = newVal
     if (newVal.isNeedGetInfo && !isChangeName) {
       getInfoById()
@@ -145,11 +156,23 @@ watch(() => props.selectItem, (newVal: any) => {
   immediate: true
 })
 
+/**
+ * 通过id获取属性
+ */
 function getInfoById() {
-  // 查询完后变为false
-  props.selectItem.isNeedGetInfo = false
+  let url = formState.value.type == 'kf' ? api.getKf : api.getPj
+  defHttp.get({ url: url, params: { id: formState.value.id } }, { withToken: true }).then((res: any) => {
+    if (res && res.success) {
+      Object.assign(formState.value, res.result);
+      // 查询完后变为false
+      props.selectItem.isNeedGetInfo = false
+    }
+  })
 }
 
+/**
+ * code变化
+ */
 function handleChangeCode() {
   formState.value.name = formState.value.code 
   props.selectItem.name = formState.value.name
@@ -157,11 +180,33 @@ function handleChangeCode() {
 }
 
 function handleSave() {
-  formState.value.name = formState.value.code 
+  formState.value.name = formState.value.code
+  formSpinning.value = true
+  formRef.value.validate().then(() => {
+    let url = formState.value.type == 'kf' ? api.saveKf : api.savePj
+    let oldKey = formState.value.key
+    let select = JSON.parse(JSON.stringify(formState.value))
+    defHttp.post({ url: url, data: select }, { withToken: true }).then((res: any) => {
+      if (res && res.success) {
+        select.id = res.result
+        select.oldKey = oldKey
+        select.key = `${select.type}-${select.id}`
+        emit('update:selectItem',select)
+        message.success('保存成功')
+      } else {
+        message.success('保存失败:' + res.message)
+      }
+      formSpinning.value = false
+    })
+  })
 }
 
-// 
-
+/**
+ * 生成库格
+ */
+function handleCreateKg() {
+  
+}
 
 </script>
 

@@ -71,6 +71,7 @@ import {
 import { findNode } from "/@/utils/form/commonUtils"
 import { guid } from "/@/utils"
 import { message } from "ant-design-vue"
+import { defHttp } from "/@/utils/http/axios"
 
 const props = defineProps({
   fileTree: {
@@ -103,6 +104,11 @@ let autoExpandParent = ref<boolean>(true)
 
 const emit = defineEmits(['update:selectItem'])
 
+enum api {
+  delKf = '/api/zrzy-bdc/arch/arch/deleteArchive',
+  delPj = '/api/zrzy-bdc/arch/arch/deletePjxx'
+}
+
 watch(() => props.fileTree, (newVal: any) => {
   init()
 }, {
@@ -132,6 +138,7 @@ watch(() => props.selectItem, (newVal: any) => {
     let find = findNode(props.fileTree, newVal.oldKey, 'key')
     if (find) {
       find.key = newVal.key
+      find.id = newVal.id
       delete newVal.oldKey
     }
   }
@@ -195,7 +202,7 @@ function getAllParentKeys(data: any = [], arr: any = []) {
  * 收缩/展开
  */
 function handleExpand() {
-   if (isExpand.value) {
+  if (isExpand.value) {
     expandedKeys.value = []
   } else {
     expandedKeys.value = allParentKeys.value
@@ -240,31 +247,33 @@ function handleSelectTreeItem(selectedKey, e) {
  * @param node
  */
 function add(node) {
-  if (node.key.includes('新增') && node.type === 'pj') {
+  let data = node.dataRef
+  if (data.key.includes('新增') && data.type === 'kf') {
     message.warning('请先保存库房')
     return
   }
   let obj:any = {
     key: `新增${guid()}`,
-    pkey: node.key,
-    pid: node.id,
-    name: node.type === 'dag' ? '新增库房' : '新增排架',
-    type: node.type === 'dag' ? 'kf' : 'pj',
+    pkey: data.key,
+    pid: data.id,
+    name: data.type === 'dag' ? '新增库房' : '新增排架',
+    code: data.type === 'dag' ? '新增库房' : '新增排架',
+    type: data.type === 'dag' ? 'kf' : 'pj',
     isNeedGetInfo: false
   };
   
-  if (node.type !== 'dag') {
-    obj.kfid = node.key
+  if (obj.type == 'pj') {
+    obj.kfid = data.id
   }
   
-  if (!node.children) {
-    node.children = []
+  if (!data.children) {
+    data.children = []
   }
   
-  node.children.push(obj)
+  data.children.push(obj)
   emit('update:selectItem', obj)
   let expands = JSON.parse(JSON.stringify(expandedKeys.value))
-  expands.push(node.key)
+  expands.push(data.key)
   expandedKeys.value = Array.from(new Set(expands))
 }
 
@@ -273,7 +282,46 @@ function add(node) {
  * @param node
  */
 function del(node) {
-  
+  let select = node.dataRef
+  let url = select.type == 'kf' ? api.delKf : api.delPj
+  if (select.children && select.children.length) {
+    message.warning('存在排架不允许直接删除库房!')
+    return
+  }
+  let addType = !select.id
+  let parent = findNode(props.fileTree, select.pid, 'id')
+  if (addType) {
+    removeByKey(parent.children, select.key)
+    message.success('删除成功')
+  } else {
+    defHttp.delete({ url: url, params: { id: select.id } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        removeByKey(parent.children, select.key)
+        message.success('删除成功')
+      } else {
+        message.warning('删除失败:' + res.message)
+      }
+    })
+  }
+}
+
+function removeByKey(arr, key) {
+  let currentSelect
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].key == key) {
+      if (arr[i + 1]) {
+        currentSelect = arr[i + 1]
+      } else if (arr[i - 1]) {
+        currentSelect = arr[i - 1]
+      } else {
+        currentSelect = undefined
+      }
+      arr.splice(i, 1)
+      selectedKeys.value = currentSelect ? [currentSelect.key] : []
+      emit('update:selectItem', currentSelect)
+      return
+    }
+  }
 }
 </script>
 

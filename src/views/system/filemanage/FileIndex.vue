@@ -9,37 +9,32 @@
 import { onMounted, ref } from "vue"
 import FileTree from "/@/views/system/filemanage/components/FileTree.vue"
 import FileForm from "/@/views/system/filemanage/components/FileForm.vue"
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
 // 树
 let treeData = ref<any>([])
 // 当前选中数据
 let currentSelectItem = ref<any>()
-//
+// 加载状态
 let loading = ref<boolean>(false)
+
+enum api {
+  tree = '/api/zrzy-bdc/arch/arch/getArchiveTree'
+}
 
 onMounted(() => {
   initData()
 })
 
 function initData() {
-  let result = [{
-   "pid":"0",
-   "id":"1",
-   "type":"dag",
-   "name":"档案",
-   "children":[{
-    "pid":"1",
-    "id":"1",
-    "type":"kf",
-    "name":"01",
-    "children":[{
-     "pid":"1",
-     "id":"1",
-     "type":"pj",
-     "name":"01"
-    }]
-   }]
-  }]
-  initTree(result)
+  defHttp.get({ url: api.tree }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      let result = res.result ? [res.result] : []
+      initTree(result)
+    } else {
+      message.warning('加载失败')
+    }
+  })
 }
 
 /**
