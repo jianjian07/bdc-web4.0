@@ -65,14 +65,14 @@
                 <a-col :md="12" :sm="24">
                   <a-form-item label="双排架" name="isspj" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
                    <a-select  v-model:value="formState.isspj">
-                     <a-select-option value="1">是</a-select-option>
-                     <a-select-option value="0">否</a-select-option>
+                     <a-select-option :value="1">是</a-select-option>
+                     <a-select-option :value="0">否</a-select-option>
                    </a-select>
                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="编号方式" name="bhfs" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input-number style="width: 100%" v-model:value="formState.bhfs"></a-input-number>
+                    <a-select v-model:value="formState.bhfs" allow-clear :options="getDictItemsByCode('bhfs')" style="width: 100%" />
                  </a-form-item>
                 </a-col>
               </a-row>
@@ -80,8 +80,8 @@
                 <a-col :md="12" :sm="24">
                   <a-form-item label="预留排架" name="isyl" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
                    <a-select v-model:value="formState.isyl">
-                     <a-select-option value="1">是</a-select-option>
-                     <a-select-option value="0">否</a-select-option>
+                     <a-select-option :value="1">是</a-select-option>
+                     <a-select-option :value="0">否</a-select-option>
                    </a-select>
                  </a-form-item>
                 </a-col>
@@ -97,9 +97,12 @@
                   <a-button type="primary" @click="handleSave">
                     保存
                   </a-button>
-<!--                  <a-button v-if="formState.type == 'pj' && formState.id" @click="handleCreateKg">-->
-<!--                    生成库格-->
-<!--                  </a-button>-->
+                  <a-button v-if="formState.type == 'pj' && formState.id" @click="handleCreateKg">
+                    生成库格
+                  </a-button>
+                  <a-button v-if="formState.type == 'pj' && formState.id" @click="handleLookKg">
+                    查看库格
+                  </a-button>
                 </a-space>
              </div>
           </a-form>
@@ -113,6 +116,8 @@
 import { ref,watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import { cModal } from "/@/components/cModal/index"
+import { getDictItemsByCode } from "/@/utils/form/commonUtils"
 
 const props = defineProps({
   selectItem: {
@@ -132,6 +137,13 @@ let isChangeName = false
 // 校验规则
 let rules = ref<any>({
   code: [{ required: true, message: '请输入库房编号' }],
+  pjjs: [{ required: true, message: '请输入排架节数' }],
+  pjzs: [{ required: true, message: '请输入排架组数' }],
+  isspj: [{ required: true, message: '请选择是否双排架' }],
+  pjc: [{ required: true, message: '请输入排架长' }],
+  kgc: [{ required: true, message: '请输入库格长' }],
+  bhfs: [{ required: true, message: '请选择编号方式' }],
+  kgylc: [{ required: true, message: '请输入库格预留长度' }]
 })
 
 const emit = defineEmits(['update:selectItem'])
@@ -140,7 +152,8 @@ enum api {
   savePj = '/api/zrzy-bdc/arch/arch/savePjxx',
   saveKf = '/api/zrzy-bdc/arch/arch/saveArchive',
   getPj = '/api/zrzy-bdc/arch/arch/getPjxx',
-  getKf = '/api/zrzy-bdc/arch/arch/getArchive'
+  getKf = '/api/zrzy-bdc/arch/arch/getArchive',
+  createKg = '/api/zrzy-bdc/arch/arch/generateKg'
 }
 
 watch(() => props.selectItem, (newVal: any) => {
@@ -164,6 +177,7 @@ function getInfoById() {
   defHttp.get({ url: url, params: { id: formState.value.id } }, { withToken: true }).then((res: any) => {
     if (res && res.success) {
       Object.assign(formState.value, res.result);
+      formState.value.bhfs = (formState.value.bhfs !== undefined && formState.value.bhfs !== null) ? formState.value.bhfs + '' : ''
       // 查询完后变为false
       props.selectItem.isNeedGetInfo = false
     }
@@ -179,23 +193,35 @@ function handleChangeCode() {
   isChangeName = true
 }
 
-function handleSave() {
-  formState.value.name = formState.value.code
-  formSpinning.value = true
-  formRef.value.validate().then(() => {
-    let url = formState.value.type == 'kf' ? api.saveKf : api.savePj
-    let oldKey = formState.value.key
-    let select = JSON.parse(JSON.stringify(formState.value))
-    defHttp.post({ url: url, data: select }, { withToken: true }).then((res: any) => {
-      if (res && res.success) {
-        select.id = res.result
-        select.oldKey = oldKey
-        select.key = `${select.type}-${select.id}`
-        emit('update:selectItem',select)
-        message.success('保存成功')
-      } else {
-        message.success('保存失败:' + res.message)
-      }
+function handleSave(isNeedMsg = true) {
+  return new Promise((resolve) => {
+    formState.value.name = formState.value.code
+    formSpinning.value = true
+    formRef.value.validate().then(() => {
+      let url = formState.value.type == 'kf' ? api.saveKf : api.savePj
+      let oldKey = formState.value.key
+      let select = JSON.parse(JSON.stringify(formState.value))
+      defHttp.post({ url: url, data: select }, { withToken: true }).then((res: any) => {
+        if (res && res.success) {
+          select.id = res.result
+          select.oldKey = oldKey
+          select.key = `${select.type}-${select.id}`
+          emit('update:selectItem',select)
+          if (isNeedMsg) {
+            message.success('保存成功')
+          }
+          resolve(true)
+        } else {
+          message.success('保存失败:' + res.message)
+          resolve(false)
+        }
+        formSpinning.value = false
+      }).catch(err => {
+        resolve(false)
+        formSpinning.value = false
+      })
+    }).catch(err => {
+      resolve(false)
       formSpinning.value = false
     })
   })
@@ -204,8 +230,32 @@ function handleSave() {
 /**
  * 生成库格
  */
-function handleCreateKg() {
-  
+async function handleCreateKg() {
+  let saveRes = await handleSave(false)
+  if (saveRes) {
+    defHttp.post({ url: api.createKg, params: { pjid: formState.value.id } }, { withToken: true }).then((res: any) => {
+      if (res && res.success) {
+        message.success('生成成功!')
+      } else {
+        message.warning('生成失败!' + res.message)
+      }
+    })
+  }
+}
+
+/**
+ * 查看库格
+ */
+function handleLookKg() {
+  let modal = cModal({
+    title: '库格楼盘表',
+    isFullScreen: true,
+    filePath: 'views/system/filemanage/components/LookKgLpb',
+    formData: {
+      id: formState.value.id
+    },
+    footer: false
+  })
 }
 
 </script>
