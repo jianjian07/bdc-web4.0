@@ -94,7 +94,7 @@ let processInfo: any = ref('')
  * @param process 选中的流程
  */
 function onSelect(process: any) {
-    debugger
+    // debugger
     processInfo.value = process
 }
 /**
@@ -107,7 +107,7 @@ function handleAdd() {
         lcid: processInfo.value.dictCode,
         // processKey: processInfo.value.value
     }
-    debugger
+    // debugger
     addFlowBL(params)
 }
 function edit(record: any) {
