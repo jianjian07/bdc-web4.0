@@ -125,18 +125,25 @@ export function isJsonData(str) {
  * 校验规则(表格)
  * @param key
  * @param value
+ * @param record
  */
-export function validateRules(rules, value) {
+export function validateRules(rules, value, record?: any) {
   let msg = ''
   let findRequired = rules.find(rule => rule.required)
   if (findRequired) {
     if (validateRequired(value)) {
       msg = findRequired.message
       return msg
-    } 
+    }
   }
   
-  if (value) {
+  let flag = !!value
+  let findValidator = rules.find(rule => rule.validator)
+  if (findValidator) {
+    flag = true
+  }
+
+  if (flag) {
     for (let i = 0; i < rules.length; i++) {
       let pattern = rules[i].pattern
       if (pattern) {
@@ -144,6 +151,12 @@ export function validateRules(rules, value) {
           msg = rules[i].message
           break;
         }
+      }
+
+      let validator = rules[i].validator
+      if (validator) {
+        msg = validator(value, record)
+        break;
       }
     }
   }

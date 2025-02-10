@@ -42,6 +42,10 @@
   }
 }
 
+.ant-select-disabled .ant-select-selector {
+    background-color: rgba(0, 0, 0, 0.02)
+}
+
 .ant-picker.ant-picker-disabled {
     background-color: rgba(0, 0, 0, 0.02)
 }
@@ -388,6 +392,19 @@
         font-family: SimSun, sans-serif;
         line-height: 1;
         content: "*";
+    }
+}
+
+.optional-text {
+
+    &::before {
+        display: inline-block;
+        margin-inline-end: 4px;
+        color: #ffc069;
+        font-size: 14px;
+        line-height: 1;
+        content: "*";
+        font-family: SimSun, sans-serif;
     }
 }
 

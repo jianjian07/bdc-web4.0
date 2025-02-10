@@ -318,6 +318,7 @@ function removeByKey(arr, key) {
       }
       arr.splice(i, 1)
       selectedKeys.value = currentSelect ? [currentSelect.key] : []
+      currentSelect.isNeedGetInfo = true
       emit('update:selectItem', currentSelect)
       return
     }
