@@ -12,7 +12,7 @@ export function formatToDateTime(date: any, format = DATE_TIME_FORMAT): string {
     return dayjs(date).format(format);
 }
 
-export function formatToDate(date: Date | undefined = undefined, format = DATE_FORMAT): string {
+export function formatToDate(date: any, format = DATE_FORMAT): string {
     return dayjs(date).format(format);
 }
 

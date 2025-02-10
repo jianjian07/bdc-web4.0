@@ -73,8 +73,7 @@
       </a-form-item>
       <a-form-item label="上级类目" name="pid">
         <a-tree-select v-model:value="formState.pid" style="width: 100%"
-          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="上级类目" tree-default-expand-all
-          :tree-data="treeRoot">
+          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="上级类目" :tree-data="treeRoot">
         </a-tree-select>
       </a-form-item>
       <a-form-item label="附加信息">
