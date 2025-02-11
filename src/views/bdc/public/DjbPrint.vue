@@ -95,9 +95,9 @@ function onSelect(keys, e) {
  * @param id
  */
 function setUrl(id0,name) {
-  let encodeUrl = encodeURIComponent(Base64.encode(`${window.settingConfig.baseDomain}/zrzy-bdc/bdc/bdcDjb/download?id0=${id0}&fullfilename=${name}`))
-  iframeUrl.value = `${window.settingConfig.kkFileDomain}/onlinePreview?url=${encodeUrl}`
-  console.log('iframeUrl.value',`${window.settingConfig.baseDomain}/zrzy-bdc/bdc/bdcDjb/download?id0=${id0}&fullfilename=${name}`)
+  let encodeUrl = encodeURIComponent(Base64.encode(`${window.settingConfig.baseDomain}/zrzy-bdc/bdc/bdcDjb/download?id0=${id0}&fullfilename=${name+id0}`))
+  iframeUrl.value = `${window.settingConfig.kkFileDomain}/onlinePreview?url=${encodeUrl}&officePreviewType=pdf`
+  console.log('iframeUrl.value',`${window.settingConfig.baseDomain}/zrzy-bdc/bdc/bdcDjb/download?id0=${id0}&fullfilename=${name+id0}`)
   // defHttp.get({ url: api.download, params: { id0: id0 }, responseType: "blob" }, { withToken: true }).then((res) => {
   //   //处理二进制数据并创建 Blob 对象
   //     const blob = new Blob([res])
