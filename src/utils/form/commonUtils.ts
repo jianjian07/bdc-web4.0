@@ -136,7 +136,7 @@ export function validateRules(rules, value, record?: any) {
       return msg
     }
   }
-  
+
   let flag = !!value
   let findValidator = rules.find(rule => rule.validator)
   if (findValidator) {
@@ -152,12 +152,12 @@ export function validateRules(rules, value, record?: any) {
           break;
         }
       }
-
-      let validator = rules[i].validator
-      if (validator) {
-        msg = validator(value, record)
-        break;
+      
+      if (rules[i].validator) {
+        msg = rules[i].validator(value, record)
+        break
       }
+      
     }
   }
   return msg
@@ -168,8 +168,9 @@ export function validateRules(rules, value, record?: any) {
  * @param column
  * @param record
  */
-export function setInputStatus(column, record) {
-  if (validateRules(column.rules, record[column.key])){
+export async function setInputStatus(column, record) {
+  let res = validateRules(column.rules, record[column.key], record)
+  if (!!res) {
     record[column.key + 'Status'] = 'error'
   } else {
     record[column.key + 'Status'] = ''

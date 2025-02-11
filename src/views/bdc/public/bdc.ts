@@ -928,3 +928,72 @@ function getSpyj() {
     })
   })
 }
+
+/**
+ * 选择库格
+ * @param slbh
+ * @param viewData
+ */
+export function chooseKgLpb(slbh, viewData) {
+  let modal = cModal({
+    title: '库格楼盘表',
+    isFullScreen: true,
+    filePath: 'views/system/filemanage/components/KgLpb',
+    formData: {
+      slbh: slbh,
+      id: viewData.value.bdc_yw_gd.pjh,
+      dahgg: viewData.value.bdc_yw_gd.dahgg
+    },
+     onOk: async (res: any) => {
+        if (res && res.handleOk) {
+          let _result = await res.handleOk()
+          viewData.value.bdc_yw_gd.dacfjbm = _result
+          if (_result) {
+            modal.destroy()
+          }
+        }
+      }
+  })
+}
+
+/**
+ * 获取库房选项
+ */
+export function getKfOptions() {
+   return new Promise((resolve, reject) => {
+    defHttp.get({
+      url: '/api/zrzy-bdc/arch/arch/getArchiveCodeTbl',
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        message.warning(res.message)
+        resolve([])
+      }
+    })
+   })
+}
+
+/**
+ * 根据库房id查询排架下拉字典
+ * @param kfid
+ */
+export function getPjOptionsByKf(kfid) {
+  return new Promise((resolve, reject) => {
+    if (kfid) {
+        defHttp.get({
+        url: '/api/zrzy-bdc/arch/arch/getPjCodeTbl',
+        params: { kfid: kfid }
+      }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          resolve(res.result)
+        } else {
+          message.warning(res.message)
+          resolve([])
+        }
+      })
+    } else {
+      resolve([])
+    }
+   })
+}
