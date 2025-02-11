@@ -9,28 +9,27 @@
 import { onMounted, ref } from "vue"
 import FileCodeList from "/@/views/system/filemanage/components/FileCodeList.vue"
 import FileCodeForm from "/@/views/system/filemanage/components/FileCodeForm.vue"
+import { defHttp } from "/@/utils/http/axios"
 // 树
 let treeData = ref<any>([])
 // 当前选中数据
 let currentSelectItem = ref<any>()
+
+enum api {
+  list = '/api/zrzy-system/sys/coderule/ruleTree'
+}
 
 onMounted(() => {
   initData()
 })
 
 function initData() {
-  let tree = [
-    {
-      ruleName: '规则1',
-      ruleCode: 'code1'
-    },
-    {
-      ruleName: '规则2',
-      ruleCode: 'code2'
+  defHttp.get({ url: api.list }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      let tree = res.result
+      initTree(tree)
     }
-  ]
-  
-  initTree(tree)
+  })
 }
 
 /**

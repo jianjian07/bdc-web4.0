@@ -57,7 +57,7 @@ watch(() => props.selectItem, (newVal: any) => {
   selectedKeys.value = newVal ? [newVal.key] : []
   // 新增后替换
   if (newVal && newVal.oldCode) {
-    let find = findNode(props.fileTree, newVal.oldCode, 'key')
+    let find = findNode(props.treeData, newVal.oldCode, 'key')
     if (find) {
       find.key = newVal.key
       delete newVal.oldCode

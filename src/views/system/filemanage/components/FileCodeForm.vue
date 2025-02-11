@@ -80,12 +80,17 @@
                             </a-select>
                           </template>
                           <template v-else-if="column?.dict">
-                            <a-select v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" 
+                            <a-select v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)"  :status="record[column.key + 'Status']"
                                   :placeholder="column.placeholder"  allow-clear :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)" @change="(value, option) => handleChangeValue(value, option, column, record)" >
                               <a-select-option v-for="(item,index) in getDict(column.dict)" :label="item.label" :value="item.value">
                                 {{ item.label }}
                               </a-select-option>
                             </a-select>
+                          </template>
+                          <template v-else-if="column?.key == 'orderId'">
+                            <a-input-number v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" :status="record[column.key + 'Status']" :placeholder="column.placeholder"
+                                            @focus="setInputStatus(column, record)" @change="(value) => handleChangeValue(value, null, column, record)">
+                            </a-input-number>
                           </template>
                           <template v-else>
                             <a-input v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" 
@@ -109,9 +114,10 @@
                   <a-button type="primary" @click="handleSubmit">
                     保存
                   </a-button>
-                  <a-button type="primary" @click="handleDel">
-                    删除
-                  </a-button>
+                  <a-popconfirm cancel-text="取消" ok-text="确定" title="是否确定删除？"
+                                      @confirm="handleDel">
+                    <a-button >删除</a-button>
+                  </a-popconfirm>
                 </a-space>
              </div>
           </a-form>
@@ -122,13 +128,14 @@
 </template>
 
 <script lang="ts" setup>
-import { getDictItemsByCode, validateRules, setInputStatus, findNode } from '/@/utils/form/commonUtils'
+import { getDictItemsByCode, validateRules, setInputStatus } from '/@/utils/form/commonUtils'
 import { ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import dayjs from "dayjs"
 import { useUserStore } from "/@/store/modules/user"
 import { validateRequired } from "/@/utils/form/validateUtil"
+import { guid } from "/@/utils"
 
 const props = defineProps({
   selectItem: {
@@ -150,8 +157,7 @@ let formState = ref<any>({})
 // 校验规则
 let rules = ref<any>({
   ruleName: [{ required: true, message: '请输入规则名称' }],
-  ruleCode: [{ required: true, message: '请输入规则code' }],
-  ruleClass: [{ required: true, message: '请输入规则实现类' }]
+  ruleCode: [{ required: true, message: '请输入规则code' }]
 })
 // 规则集合
 let ruleList = ref<any>([])
@@ -161,8 +167,11 @@ let tableLoading = ref<boolean>(false)
 watch(() => props.selectItem, (newVal: any) => {
   if (newVal) {
     formState.value = JSON.parse(JSON.stringify(newVal))
+    if (formState.value.key?.includes('新增')) {
+      ruleList.value = []
+    }
     if (newVal.isNeedGetInfo) {
-      formRef.value.resetFields()
+      formRef.value?.resetFields()
       getInfoByCode()
     }
   }
@@ -198,7 +207,7 @@ const columns = [
     title: '流水号类型',
     dataIndex: 'serialType',
     key: 'serialType',
-    dict: [{ label: 'year', value: 'year' }, { label: 'month', value: 'month' }],
+    dict: [{ label: '年', value: 'year' }, { label: '月', value: 'month' }],
     placeholder: '请选择流水号类型',
     optional: true
   },
@@ -213,7 +222,8 @@ const columns = [
     title: '排序',
     dataIndex: 'orderId',
     key: 'orderId',
-    placeholder: '请输入排序'
+    placeholder: '请输入排序',
+    rules: [{ required: true, message: '请输入排序' }, { validator: validateOrderId }],
   },
   {
     title: '操作',
@@ -225,9 +235,10 @@ const columns = [
 ]
 
 enum api {
-  delRuleItem = '',
-  delRule = '',
-  info = ''
+  delRuleItem = '/api/zrzy-system/sys/coderule/deleteRule',
+  delRule = '/api/zrzy-system/sys/coderule/deleteAll',
+  info = '/api/zrzy-system/sys/coderule/rulesByCode',
+  save = '/api/zrzy-system/sys/coderule/saveRules'
 }
 
 const emit = defineEmits(['update:selectItem'])
@@ -244,19 +255,28 @@ function getDict(dict) {
  * 通过编码code查询数据
  */
 function getInfoByCode() {
-  // defHttp.get({ url: api.info, params: { id: formState.value.code } }, { withToken: true }).then((res: any) => {
-  //   if (res && res.success) {
-  //     Object.assign(formState.value, res.result);
-  //     formState.value.isNeedGetInfo = false
-  //   }
-  // })
+  defHttp.get({ url: api.info, params: { ruleCode: formState.value.ruleCode } }, { withToken: true }).then((res: any) => {
+    if (res && res.success) {
+      let row = res.result[0]
+      formState.value.ruleName = row.ruleName
+      formState.value.ruleCode = row.ruleCode
+      formState.value.ruleClass = row.ruleClass
+      ruleList.value = res.result.map((item) => {
+        item.key = item.id
+        return item
+      })
+      formState.value.isNeedGetInfo = false
+    }
+  })
 }
 
 /**
  * 添加规则
  */
 function handleAddRule() {
-  ruleList.value.push({})
+  ruleList.value.push({
+    key: '新增' + guid()
+  })
 }
 
 /**
@@ -275,6 +295,27 @@ function validateRuleValue(value, record) {
 }
 
 /**
+ * 排序校验
+ * @param value
+ * @param record
+ */
+function validateOrderId(value, record) {
+  let msg = ''
+  if (value === undefined || value === null || value === '') {
+    msg = '请输入排序'
+  } else {
+    if (record) {
+      let list = JSON.parse(JSON.stringify(ruleList.value)).filter(f => f.key != record.key)
+      let find = list.find(f => f.orderId == value)
+      if (find) {
+        msg = '排序不能重复'
+      }
+    }
+  }
+  return msg
+}
+
+/**
  * 获取禁用状态
  * @param column
  * @param record
@@ -282,6 +323,12 @@ function validateRuleValue(value, record) {
 function getDisabled(column, record) {
   let status = false
   switch (column.key) {
+    // case 'ruleParam':
+    //   if (record.id) {
+    //     // 保存过只能删除再修改类型
+    //     status = true
+    //   }
+    //   break;
     case 'ruleValue':
       if (record?.ruleParam == 'current_year' || record?.ruleParam == 'current_month' || record?.ruleParam == 'current_day') {
         record.ruleValue = ''
@@ -313,7 +360,7 @@ function handleDelRule(record, index) {
         message.success('删除成功')
         ruleList.value.splice(index, 1)
       } else {
-        message.warning('删除失败:' + res.message)
+        message.warning('删除失败')
       }
     })
   } else {
@@ -332,12 +379,12 @@ function handleDel() {
     removeByKey(props.treeData, select.key)
     message.success('删除成功')
   } else {
-    defHttp.delete({ url: api.delRule, params: { id: select.id } }, { withToken: true }).then((res) => {
+    defHttp.delete({ url: api.delRule, params: { ruleCode: select.ruleCode } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         removeByKey(props.treeData, select.key)
         message.success('删除成功')
       } else {
-        message.warning('删除失败:' + res.message)
+        message.warning('删除失败')
       }
     })
   }
@@ -383,10 +430,65 @@ function handleChangeValue(value, option, column, record) {
  * 保存
  */
 function handleSubmit() {
-  // formState.createTime = formState.createTime || dayjs().format("YYYY-MM-DD HH:mm:ss")
-  // formState.createBy = formState.createBy || useUserStore().getUserInfo.username
-  // formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
-  // formState.updateBy = useUserStore().getUserInfo.username
+  formRef.value
+    .validate()
+    .then(() => {
+      if (validateTable()) {
+        ruleList.value = ruleList.value.map((rule) => {
+          rule.createTime = rule.createTime || dayjs().format("YYYY-MM-DD HH:mm:ss")
+          rule.createBy = rule.createBy || useUserStore().getUserInfo.username
+          rule.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
+          rule.updateBy = useUserStore().getUserInfo.username
+          rule.ruleName = formState.value.ruleName
+          rule.ruleCode = formState.value.ruleCode
+          rule.ruleClass = formState.value.ruleClass
+          rule.serialLength = rule.serialLength || ''
+          rule.serialType = rule.serialType || ''
+          rule.ruleValue = rule.ruleValue || ''
+          return rule
+        })
+        
+        defHttp.post({ url: api.save, data: ruleList.value }, { withToken: true }).then((res) => {
+          if (res && res.success) {
+            for (let i = 0; i < res.result.length; i++) {
+              ruleList.value[i].key = res.result[i]
+              ruleList.value[i].id = res.result[i]
+            }
+            if (formState.value.key != formState.value.ruleCode) {
+              formState.value.oldCode = formState.value.key
+              formState.value.key = formState.value.ruleCode
+              emit('update:selectItem', formState.value)
+            }
+            message.success('保存成功')
+          } else {
+            message.warning(res.message)
+          }
+        })
+      }
+    })
+}
+
+/**
+ * 表格校验
+ */
+function validateTable() {
+  if (ruleList.value.length == 0) {
+    message.warning('请添加编码规则')
+    return false
+  } else {
+    for (let i = 0; i < ruleList.value.length; i++) {
+      let record = ruleList.value[i]
+      let ruleColumn = columns.filter((column: any) => column.rules)
+      for (let j = 0; j < ruleColumn.length; j++) {
+        setInputStatus(ruleColumn[j], record)
+        if (record[ruleColumn[j].key+ 'Status'] && record[ruleColumn[j].key+ 'Status'] == 'error') {
+          message.warning('请检查'+ ruleColumn[j].title + '填写')
+          return false
+        }
+      }
+    }
+  }
+  return true
 }
 </script>
 

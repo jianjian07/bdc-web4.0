@@ -275,7 +275,7 @@ const columns = [
     dict: 'sxtj',
     bz: 0,
     placeholder: '请选择筛选条件',
-    rules: [{ required: true, message: '请选择筛选方式' }]
+    rules: [{ required: true, message: '请选择筛选条件' }]
   },
   {
     title: '操作',
