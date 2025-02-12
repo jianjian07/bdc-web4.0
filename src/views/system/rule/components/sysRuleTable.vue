@@ -310,6 +310,7 @@ function toggleFullscreen() {
 
     :deep(.ant-spin-container) {
       height: 100%;
+      overflow: hidden;
     }
 
     :deep(.ant-spin-nested-loading) {

@@ -1,7 +1,7 @@
 <template>
     <a-row style="padding: 10px">
         <a-col :span="3" v-if="nodeList && nodeList.length">
-            <a-tabs default-active-key @change="nodeClick" size="small" tab-position="left" class="tab-left">
+            <a-tabs default-active-key v-model:activeKey="activeKey" @change="nodeClick" size="small" tab-position="left" class="tab-left">
                 <a-tab-pane class="tab-panel" v-for="item in nodeList" :key="item.processNodeCode"
                     :tab="item.processNodeName" />
             </a-tabs>
@@ -33,12 +33,14 @@ enum api {
 let nodeList = ref([])
 let lcid = ref(props.lcid)
 let jdid = ref()
+let activeKey = ref()
 function getNode() {
     defHttp.get({ url: api.nodelistUrl, params: { processId: lcid.value } }, { withToken: true }).then((res) => {
         if (res && res.success) {
            nodeList.value = res.result;
            if (res.result.length) {
               jdid.value = res.result[0].processNodeCode
+              activeKey.value = res.result[0].processNodeCode
            }
         }
     });
