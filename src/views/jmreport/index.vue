@@ -65,11 +65,11 @@ enum Api {
 }
 const columns = [
     { title: "id", dataIndex: "id", width: 150 },
-    { title: "报表名称", dataIndex: "name", width: 220, ellipsis: true },
+    { title: "报表名称", dataIndex: "name", width: 320, ellipsis: true },
     // { title: "表单编码", dataIndex: "code", width: 150 },
     { title: "报表分类", dataIndex: "typeName", width: 220 },
     { title: "创建时间", dataIndex: "createTime", width: 140 },
-    { title: '操作', key: 'action', width: 400, fixed: 'right', }
+    { title: '操作', key: 'action', width: 250, fixed: 'right', }
 ]
 let datalist: any = ref([]);
 let formData: any = ref({ name: '', code: '', formType: '' });
