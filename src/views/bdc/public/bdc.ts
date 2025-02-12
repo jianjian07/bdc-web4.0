@@ -947,7 +947,9 @@ export function chooseKgLpb(slbh, viewData) {
      onOk: async (res: any) => {
         if (res && res.handleOk) {
           let _result = await res.handleOk()
-          viewData.value.bdc_yw_gd.dacfjbm = _result
+          if (_result)  {
+             viewData.value.bdc_yw_gd.dacfjbm = _result
+          }
           if (_result) {
             modal.destroy()
           }

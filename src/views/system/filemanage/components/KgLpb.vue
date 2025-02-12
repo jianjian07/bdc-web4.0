@@ -7,7 +7,7 @@
               <tr class="title">
                 <td :colspan="maxHs + 1" id="divtitle"
                   style="border: 0;background-color: #39bd8a;border-radius: 26px 26px 0px 0px; /* 去掉右下角的圆角 */">
-                  {{ key == 'zmList' ? '正面' : '反面' }}
+                  {{ key == 'zmList' ? '正面'  : '反面' }} （ 库格长: {{ kgc }} CM, 预留长: {{ ylc }} CM ）
                 </td>
               </tr>
               <tr class="title">
@@ -20,13 +20,14 @@
                 <td class="title">{{ hs }}行</td>
                 <template v-for="ls in maxLs" :key="hs.toString() + ls">
                   <td v-for="(info) in list[key].filter((t: any) => Number(t.pjzh) == ls && Number(t.pjjh) == hs)" 
-                      :key="info.pjjh + '-' + info.pjzh">
-                    <div>
-                      <a-checkbox v-if="info.canStore" :checked="info.checked" @change="(e) => onChangeCheckedBox(e, info)">
+                      :key="info.pjjh + '-' + info.pjzh" :class="info.canStore ? 'td-can-store' : 'td-cant-store'"> 
+                    <div v-if="info.canStore">
+                      <a-checkbox  :checked="info.checked" @change="(e) => onChangeCheckedBox(e, info)">
                         <span>{{ info.code }}</span>
                       </a-checkbox>
                     </div>
-                    <span>{{ info.name }}</span>
+                    <div v-else>{{ info.code }}</div>
+                    <div>{{ info.name }}</div>
                   </td>
                 </template>
               </tr>
@@ -59,10 +60,15 @@ let maxHs = ref<number>(0)
 let maxLs = ref<number>(0)
 // 当前选中
 let selectCheckedBox = ref<any>()
+// 库格长
+let kgc = ref<number>(0)
+// 预留长
+let ylc = ref<number>(0)
 
 enum api {
   getLpb = '/api/zrzy-bdc/arch/arch/kgLpb',
-  save = '/api/zrzy-bdc/arch/arch/confirmKg'
+  save = '/api/zrzy-bdc/arch/arch/confirmKg',
+  getChosen = '/api/zrzy-bdc/arch/arch/chosenKg'
 }
 
 onMounted(() => {
@@ -80,9 +86,44 @@ function initData() {
       list.value.fmList = res.result.fmKgList || []
       maxLs.value = res.result.zs 
       maxHs.value = res.result.js
+      kgc.value = res.result.kgc
+      ylc.value = res.result.ylc
+      initChosenId()
     } else {
       message.warning(res.message)
     }
+  })
+}
+
+/**
+ * 初始化已选中的库格号
+ */
+function initChosenId() {
+  defHttp.get({ url: api.getChosen, params: { slbh: props.formData.slbh } }, { withToken: true }).then((res: any) => {
+    if (res && res.success) {
+      if (res.result) {
+        list.value.zmList = updateCheckedList(list.value.zmList, res.result)
+        list.value.fmList = updateCheckedList(list.value.fmList, res.result)
+      }
+    } else {
+      message.warning(res.message)
+    }
+  })
+}
+
+/**
+ * 处理数据
+ * @param list
+ * @param id
+ */
+function updateCheckedList(list, id) {
+  return list.map((zm) => {
+    zm.checked = zm.id === id
+    if (zm.checked) {
+      zm.canStore = zm.sycd === 0 ? true : zm.canStore
+      selectCheckedBox.value = zm
+    }
+    return zm
   })
 }
 
@@ -155,5 +196,13 @@ td {
 .lpb-content {
   margin-bottom: 10px;
   text-align: center;
+}
+
+.td-can-store {
+  
+}
+
+.td-cant-store {
+  background-color: rgba(255,0,0,0.2);
 }
 </style>
