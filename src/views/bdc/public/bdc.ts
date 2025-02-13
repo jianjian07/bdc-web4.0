@@ -389,13 +389,23 @@ export function reloadTable(demoRefs: any, loading: any) {
  * @param id
  * @param token
  */
-export function print(params: { code: string }) {
+export function print(params: { code: string, [key: string]: string | number }) {
   // let domain = window._CONFIG['domianURL']
   const route = router.currentRoute.value;
-  const slbh = route.query.slbh?.toString()
+  const routeSlbh = route.query.slbh?.toString(); // 从路由获取的 slbh
   let domain = `${window.settingConfig.printDomain}/zrzy-form/`
   let url = `${domain}jmreport/view/${params.code}`
-  url += `?slbh=${slbh}`
+  const queryParams = new URLSearchParams()
+  const slbhValue = params.slbh ? params.slbh.toString() : routeSlbh
+  if (slbhValue) {
+    queryParams.append('slbh', slbhValue)
+  }
+  Object.entries(params).forEach(([key, value]) => {
+    if (key !== 'code' && key !== 'slbh' && (typeof value === 'string' || typeof value === 'number')) {
+      queryParams.append(key, value.toString())
+    }
+  })
+  url += `?${queryParams.toString()}`
   window.open(url, '_blank')
 }
 
@@ -998,4 +1008,19 @@ export function getPjOptionsByKf(kfid) {
       resolve([])
     }
    })
+}
+
+/**
+ * 生成档案号
+ */
+export function createDah(viewData, tableName, field) {
+  defHttp.get({
+    url: '/api/zrzy-bdc/arch/arch/genArchiveCode'
+  }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      viewData.value[tableName][field] = res.result
+    } else {
+      message.warning(res.message)
+    }
+  })
 }
