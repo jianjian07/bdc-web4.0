@@ -3,7 +3,7 @@
     <a-spin :spinning="spinning">
       <div class="print-content">
         <a-col :md="4" style="border-right:1px solid #ebedf0; height: 100%">
-<!--          <h4 style="text-align: center;padding-top: 14px;color: #1890ff">打印清单</h4>-->
+          <h4 style="text-align: center;padding-top: 14px;color: #1890ff">打印清单</h4>
           <div class="print-tree">  
             <a-tree
               v-if="list.length>0"
@@ -135,7 +135,7 @@ function setUrl(item) {
     display: flex;
     
     .print-tree {
-      height: calc(100% - 20px);
+      height: calc(100% - 60px);
       overflow: auto;
     }
     
