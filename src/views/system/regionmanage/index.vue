@@ -112,7 +112,6 @@ function addRegion(type: any = 'parent') {
     formData: {
       type: type, // 添加区域'parent'或下级区域'child'
       parentNode: selectInfo.value, // 上级区域信息
-      regionData: regionData.value //行政区信息
     },
     onOk: async (res: any) => {
       modal.setConfirmLoading(true)

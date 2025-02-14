@@ -94,7 +94,6 @@ const urlList = {
 
 const emit = defineEmits(['refreshList'])
 
-loadRegionList()
 
 watch(() => props.selectInfo, (val) => {
   if(val) {
@@ -117,6 +116,7 @@ watch(() => props.formData, (val) => {
   deep: true
 })
 
+loadRegionList()
 
 // 添加区域
 const addRegion = () => {
@@ -212,7 +212,10 @@ function getCodeLevel(code) {
 
 // 重置区域
 const resetRegion = () => {
-
+  if(props.selectInfo) {
+    regionState.areaName = props.selectInfo.areaName
+    regionState.simpleName = props.selectInfo.simpleName
+  }
 }
 
 

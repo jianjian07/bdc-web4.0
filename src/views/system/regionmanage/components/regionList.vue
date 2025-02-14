@@ -201,7 +201,6 @@ function toggleCheck() {
         return getParentKey(item.key, gData.value);
       }).filter(i =>  i != undefined)
     checkKeys.value = checked;
-    console.log(' checkKeys.value',  checkKeys.value)
   } else {
     checkKeys.value = [];
   }
