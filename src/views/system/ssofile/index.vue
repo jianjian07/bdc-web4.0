@@ -48,10 +48,14 @@ let _formData = reactive<any>({
   slbh: '',
   processId: '',
   nodeId: '',
+  isNeedDefault: true
 })
 
 onMounted(() => {
   _formData.slbh = props.formData?.ywh || route?.query?.slbh || 'CQSC202412090000534'
+  if (props.formData.isNeedDefault !== null && props.formData.isNeedDefault !== undefined) {
+    _formData.isNeedDefault = props.formData.isNeedDefault
+  }
   if(props.formData.manage != undefined) {
     isManage.value = props.formData.manage
     modalPreview.value = true

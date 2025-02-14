@@ -288,7 +288,7 @@ function loadFileList(getDefault: Boolean = true) {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
-      if (res.result.length == 0 && getDefault) {
+      if (res.result.length == 0 && getDefault && props.formData.isNeedDefault) {
         // 获取默认的材料配置目录
         loadDefaultList()
       } else {
