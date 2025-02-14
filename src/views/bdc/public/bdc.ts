@@ -79,7 +79,12 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
       console.log('beforeRes', beforeRes)
     }
     if (beforeRes) {
-      commonSaveRes = await saveFormData(demoRefs, params?.params)
+      // 校验通过才能执行保存接口
+      if (params?.validateSave) {
+        commonSaveRes = await saveHandleData(demoRefs, params?.params)
+      } else {
+        commonSaveRes = await saveFormData(demoRefs, params?.params)
+      }
       console.log('commonSaveRes', commonSaveRes)
       if (commonSaveRes && params && params.afterFun) {
         afterRes = await eval(params.afterFun)

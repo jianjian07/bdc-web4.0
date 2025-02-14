@@ -173,6 +173,7 @@ const generateVue3 = defineComponent({
             formatMultipleSelectValue,
             onSelectChange,
             cModal,
+            reloadTable,
             Modal
         }
         function search() {
@@ -278,6 +279,14 @@ function createCase() {
     } else {
         emit('ok', { reload: true, data: basicInfo.value.state.selectedRowKeys })
     }
+}
+
+
+/**
+ * 刷新表格
+ */
+function reloadTable() {
+  execInitFun()
 }
 defineExpose({
     createCase,

@@ -240,22 +240,21 @@ export function saveFormData(formDoms: any, params?: any) {
  */
 export function saveHandleData(formDoms: any, params?: any) {
     return new Promise(async (resolve) => {
-        let res: any = getFormInfo(formDoms)
-        let find = res.find(r => r.validate == false)
+        let _result: any = await getFormInfo(formDoms)
+        let find = _result.find(r => r.validate == false)
         let validateFlag = !find
         if (!validateFlag) {
-            message.warning('请检查表单填写')
+            // message.warning('请检查表单填写')
             resolve(null)
         } else {
-            let promises: any = []
-            for (let i = 0; i < res.length; i++) {
-                promises.push(updateFormDatas(res[i]), params)
+            let allRes: any = []
+            for (let i = 0; i < _result.length; i++) {
+                const promiseRes = await updateFormDatas(_result[i])
+                allRes.push(promiseRes)
             }
-            let allRes: any = await Promise.all(promises)
-            let status = allRes ? allRes.filter(r => r).length == res.length : false
+            let status = allRes ? allRes.filter(r => r).length == _result.length : false
             if (status) {
-                message.info("保存成功")
-                resolve(res)
+                resolve(_result)
             } else {
                 resolve(null)
             }

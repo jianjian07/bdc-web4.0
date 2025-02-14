@@ -112,6 +112,23 @@ async function saveData(params?: any) {
   return await sendSaveFun('baseSave', demoRefs, spinning, params)
 }
 
+/**
+ * 需要通过表单校验才能执行保存接口
+ * @param params
+ */
+async function saveValidateData(params?: any) {
+  console.log('保存表单',demoRefs)
+  if (params) {
+    params['params'] = params?.params || props.formData
+    params['validateSave'] = true
+  } else {
+    params = { params: props.formData, validateSave: true }
+  }
+  
+  checkDemoRefs()
+  return await sendSaveFun('baseSave', demoRefs, spinning, params)
+}
+
 async function saveQlrData(type: any, params?: any) {
   if (params) {
     params = params?.params || props.formData
@@ -136,6 +153,7 @@ async function savePlJcf(params?:any) {
 
 defineExpose({
   saveData,
+  saveValidateData,
   saveQlrData,
   savePlJcf
 })
