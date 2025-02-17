@@ -1,5 +1,5 @@
 <template>
-  <div class="addNewContent">
+  <div class="addNewContent" v-if="showModal">
     <!-- 新增目录 -->
     <a-form
       ref="formRef"
@@ -21,7 +21,7 @@
         name="parentCode"
         v-if="formData?.type !=='parent'"
       >
-        <a-cascader :disabled="true" :fieldNames="fieldNames" v-model:value="regionState.parentCode" :options="regionList"/>
+        <a-select :disabled="true" :fieldNames="fieldNames" v-model:value="regionState.parentCode" :options="regionList"/>
       </a-form-item>
       <a-form-item
         label="区域代码"
@@ -83,7 +83,7 @@ const catalogRules: any = {
 }
 
 const fieldNames = { label: 'areaName', value: 'areaCode', }
-let regionList:any = [{'areaName': '无', 'areaCode': '0'}]
+let regionList:any = []
 
 const urlList = {
   add: '/api/zrzy-bdc/sys/areacode/add',
@@ -93,7 +93,9 @@ const urlList = {
 }
 
 const emit = defineEmits(['refreshList'])
+let showModal = ref(false)
 
+loadRegionList()
 
 watch(() => props.selectInfo, (val) => {
   if(val) {
@@ -115,8 +117,6 @@ watch(() => props.formData, (val) => {
   immediate: true,
   deep: true
 })
-
-loadRegionList()
 
 // 添加区域
 const addRegion = () => {
@@ -158,6 +158,7 @@ const addRegion = () => {
                     // 刷新树
                     emit('refreshList')
                   } else {
+                    loadRegionList()
                     message.success('区域新增成功！')
                   } 
                   return resolve(true)
@@ -220,6 +221,7 @@ const resetRegion = () => {
 
 
 function loadRegionList() {
+  regionList.value = []
   defHttp.get(
     {
       url: urlList.queryList,
@@ -227,13 +229,24 @@ function loadRegionList() {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
-      regionList = res?.result
       regionList.push({'areaName': '无', 'areaCode': '0'})
+      flattenArray(res.result)
+      showModal.value = true
     } else {
-      message.warning(res?.message || '未查询到数据！')
+      message.warning(res?.message || '未查询到行政区数据！')
     }
   })
 }
+
+function flattenArray(arr) {
+  arr.forEach(element => {
+    regionList.push({areaName: element.areaName, areaCode: element.areaCode})
+    if(element.children?.length) {
+      flattenArray(element.children)
+    }
+  });
+}
+
 
 defineExpose({
   addRegion
