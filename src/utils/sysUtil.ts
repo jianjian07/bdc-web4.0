@@ -5,7 +5,7 @@ import { message } from "ant-design-vue"
 import { PageEnum } from "/@/enums/pageEnum"
 import { doLogout } from "/@/api/sys/user"
 
-const timeOut = 1 * 60 * 1000; //设置超时时间: 60分钟
+const timeOut = 60 * 60 * 1000; //设置超时时间: 60分钟
 const timeInterval = 30 * 1000 // 定时器间隔时间 30秒
 
 window.onload = function() {
