@@ -21,7 +21,8 @@ import {
   LOGIN_INFO_KEY,
   MENU_INFO,
   IGS_INFO,
-  TOOLBAR_INFO
+  TOOLBAR_INFO,
+  LAST_OPERATE_TIME
 } from '/@/enums/cacheEnum'
 import { DEFAULT_CACHE_TIME } from '/@/settings/encryptionSetting';
 import { toRaw } from 'vue';
@@ -43,7 +44,8 @@ interface BasicStore {
   [LOGIN_INFO_KEY]: LoginInfo;
   [MENU_INFO]: [];
   [IGS_INFO]: [],
-  [TOOLBAR_INFO]: []
+  [TOOLBAR_INFO]: [],
+  [LAST_OPERATE_TIME]: number
 }
 
 type LocalStore = BasicStore;

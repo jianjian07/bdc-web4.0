@@ -44,6 +44,9 @@ export const MENU_INFO = 'MENU_INFO'
 export const IGS_INFO = 'IGS_INFO'
 // 工具栏
 export const TOOLBAR_INFO = 'TOOLBAR_INFO'
+// 操作时间
+export const LAST_OPERATE_TIME = 'LAST_OPERATE_TIME'
+
 export enum CacheTypeEnum {
   SESSION,
   LOCAL,

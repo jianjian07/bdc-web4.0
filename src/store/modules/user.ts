@@ -10,16 +10,19 @@ import {
   TOKEN_KEY,
   USER_INFO_KEY,
   SZ_USER_INFO_KEY,
+  LAST_OPERATE_TIME,
   LOGIN_INFO_KEY,
   DB_DICT_DATA_KEY,
   CATEGORY_DATA_KEY,
   VALIDATE_RULE_DATA_KEY,
   TENANT_ID,
-  IGS_INFO
+  IGS_INFO, 
+  APP_LOCAL_CACHE_KEY, 
+  APP_SESSION_CACHE_KEY
 } from '/@/enums/cacheEnum'
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams, ThirdLoginParams } from '/@/api/sys/model/userModel';
-import { getUserInfo, licence, loginApi, getSysDict, login_tyyw } from '/@/api/sys/user';
+import { getUserInfo, licence, loginApi, getSysDict, login_tyyw, doLogout } from '/@/api/sys/user'
 // import { useI18n } from '/@/hooks/web/useI18n';
 // import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '../../router';
@@ -31,6 +34,7 @@ import { Modal, notification } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { createVNode } from 'vue';
 import { getCategoryDict, getDataDict, getDict, getRuleList } from "/@/api/sys/dict"
+import { setCookie } from "/@/utils/sysUtil"
 // import { useGlobSetting } from '/@/hooks/setting';
 // import { useSso } from '/@/hooks/web/useSso';
 
@@ -59,7 +63,8 @@ interface UserState {
   menuIndex?: number,
   licence?: string,
   // 是否移交（发送弹窗）
-  saveFormFlag?: boolean
+  saveFormFlag?: boolean,
+  lastOperateTime?: number 
 }
 
 export const useUserStore = defineStore({
@@ -97,7 +102,9 @@ export const useUserStore = defineStore({
     menuIndex: -1,
     licence: '',
     // 是否移交（发送弹窗）
-    saveFormFlag: true
+    saveFormFlag: true,
+    // 上次操作时间(用于离开锁定)
+    lastOperateTime: new Date().getTime(),
   }),
   getters: {
     getUserInfo(): UserInfo {
@@ -151,6 +158,9 @@ export const useUserStore = defineStore({
     getLicence(): string {
       return this.licence || '';
     },
+    getLastOperateTime(): number {
+      return this.lastOperateTime || getAuthCache(LAST_OPERATE_TIME) || this.getAppCommonLocal(LAST_OPERATE_TIME) || this.getAppCommonSession(LAST_OPERATE_TIME)
+    },
     getSaveFormFlag(): boolean {
       return this.saveFormFlag
     }
@@ -163,6 +173,7 @@ export const useUserStore = defineStore({
     setToken(info: string | undefined) {
       this.token = info ? info : ''; // for null or undefined value
       setAuthCache(TOKEN_KEY, info);
+      // setCookie(TOKEN_KEY, info)//存储localStorage的同时，也存储一个cookie来监听
     },
     // setRoleList(roleList: RoleEnum[]) {
     //   this.roleList = roleList;
@@ -219,6 +230,10 @@ export const useUserStore = defineStore({
     },
     setLicence(licence: string) {
       this.licence = licence;
+    },
+    setLastOperateTime(lastOperateTime: number) {
+      this.lastOperateTime = lastOperateTime
+      setAuthCache(LAST_OPERATE_TIME, lastOperateTime);
     },
     setSaveFormFlag(bool: boolean) {
       this.saveFormFlag = bool
@@ -314,6 +329,49 @@ export const useUserStore = defineStore({
         return this.afterLoginAction(true, {});
       } catch (error) {
         return Promise.reject(error);
+      }
+    },
+     /**
+     * 获取localStorage
+     */
+    getAppCommonLocal(key: string) {
+      if (localStorage[`CC__${APP_LOCAL_CACHE_KEY}`] && this.isJsonData(localStorage[`CC__${APP_LOCAL_CACHE_KEY}`])) {
+        let ls = JSON.parse(localStorage[`CC__${APP_LOCAL_CACHE_KEY}`]).value
+        return ls[key]?.value
+      } else {
+        return undefined
+      }
+    },
+    /**
+     * 获取sessionStorage
+     */
+    getAppCommonSession(key: string) {
+      if (sessionStorage[`CC__${APP_SESSION_CACHE_KEY}`] && this.isJsonData(sessionStorage[`CC__${APP_SESSION_CACHE_KEY}`])) {
+        let ls = JSON.parse(sessionStorage[`CC__${APP_SESSION_CACHE_KEY}`]).value
+        return ls[key]?.value
+      } else {
+        return undefined
+      }
+    },
+    /**
+     * 判断是否是json数据
+     * @param str
+     */
+    isJsonData(str) {
+      if (typeof str === "string") {
+        try {
+          let obj = JSON.parse(str)
+          if (obj && typeof obj === "object") {
+            return true
+          } else {
+            return false
+          }
+        } catch (e) {
+          console.log("$isJSON error：", e)
+          return false
+        }
+      } else {
+        return false
       }
     },
     /**
@@ -417,13 +475,13 @@ export const useUserStore = defineStore({
     async logout(goLogin = false) {
       if (this.getToken) {
         try {
-          //   await doLogout();
+          await doLogout();
         } catch {
           console.log('注销Token失败');
         }
       }
       this.setToken('');
-      setAuthCache(TOKEN_KEY, null);
+      // setAuthCache(TOKEN_KEY, null);
       this.setSessionTimeout(false);
       this.setUserInfo(null);
       this.setLoginInfo(null);

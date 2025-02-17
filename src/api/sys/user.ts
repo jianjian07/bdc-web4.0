@@ -11,6 +11,7 @@ enum api {
   getTokenApiTyyw = '/tyyw/auth/oauth/token',
   getTokenApi = '/api/zrzy-system/api/v1/auth/authorization',
   getUserInfoApi = '/api/zrzy-system/sys/v1/user/getUserInfo',//旧，未使用
+  logoutApi = '/api/zrzy-system/api/v1/auth/logOut'
   // licenseApi = '/onemap/zrzy-om-licence/licence',
   // getDictApi = '/magicapi/zrzy-om-sjsw/magic/wlgz/dic/list',//旧，未使用
 }
@@ -71,6 +72,20 @@ export function loginApi(params: LoginParams) {
     }))
   })
 }
+
+/**
+ * 退出 清理token
+ */
+export function doLogout() {
+    return new Promise((resolve) => {
+        defHttp.post({ url: api.logoutApi }, { withToken: true }).then((res) => {
+            resolve(true)
+        }).catch(err => {
+            resolve(false)
+        })
+    })
+}
+
 /**
  * @description: 得到用户信息
  */

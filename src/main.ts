@@ -7,6 +7,7 @@ import { setupStore } from './store';
 import { router, setupRouter } from './router';
 import { setupRouterGuard } from './router/guard';
 import { initGlobalSetting } from './settings/initSetting';
+import checkTimeout from '/@/utils/sysUtil'
 
 import formImagining from 'form-imagining'
 import 'form-imagining/dist/style.css'
@@ -25,6 +26,8 @@ async function bootstrap() {
     setupRouter(app)
     // 路由保护
     setupRouterGuard(router)
+    // 定时器(长时间不操作退出)
+    checkTimeout()
     app.use(formImagining)
     app.mount('#app', true)
 }
