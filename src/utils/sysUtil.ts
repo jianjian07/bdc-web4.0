@@ -5,7 +5,7 @@ import { message } from "ant-design-vue"
 import { PageEnum } from "/@/enums/pageEnum"
 import { doLogout } from "/@/api/sys/user"
 
-const timeOut = 60 * 60 * 1000; //设置超时时间: 60分钟
+const timeOut = 1 * 60 * 1000; //设置超时时间: 60分钟
 const timeInterval = 30 * 1000 // 定时器间隔时间 30秒
 
 window.onload = function() {
@@ -33,7 +33,7 @@ async function checkTimeout() {
     // 跳到登陆页
     if (pageList.includes(router.currentRoute.value.path)) return; // 已是登陆页或是401时不跳转
     // 判断是否超时
-    if (this.getToken) {
+    if (userStore.getToken) {
       try {
         await doLogout();
         // 退出系统时设置最后操作时间
