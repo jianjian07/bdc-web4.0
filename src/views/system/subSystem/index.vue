@@ -119,7 +119,7 @@ const columns = [
 const pagination = ref<any>({ 
   total: 0,
   current: 1,
-  pageSize: 20,
+  pageSize: 10,
   showSizeChanger: false, 
   showTotal: (total: Number) => `共 ${total} 条数据` 
 })
