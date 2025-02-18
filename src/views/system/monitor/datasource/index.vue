@@ -71,7 +71,7 @@ const DataSourceModal = defineAsyncComponent(() => import("./DataSourceModal.vue
 const columns = [
     // { title: "ID", dataIndex: "id", width: 0, ellipsis: true },
     { title: "数据源名称", dataIndex: "name", width: 200 },
-    // { title: "编码", dataIndex: "code", width: 250 },
+    { title: "编码", dataIndex: "code", width: 250 },
     { title: "数据源类型", dataIndex: "dbTypeText", width: 200 },
     { title: '驱动', dataIndex: "dbDriver", width: 200 },
     { title: '数据源地址', dataIndex: "dbUrl", ellipsis: true },

@@ -4,17 +4,17 @@
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="6" :offset="0">
                     <a-form-item label="表单ID">
-                        <a-input v-model:value="formData.id" />
+                        <a-input v-model:value="formData.id" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6" :offset="0">
                     <a-form-item label="表单名称">
-                        <a-input v-model:value="formData.formName" />
+                        <a-input v-model:value="formData.formName" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6" :offset="0">
                     <a-form-item label="表单编码">
-                        <a-input v-model:value="formData.code" />
+                        <a-input v-model:value="formData.code" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="4" :offset="0">

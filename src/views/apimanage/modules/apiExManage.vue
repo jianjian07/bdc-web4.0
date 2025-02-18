@@ -13,31 +13,26 @@
             <a-form-item label="接口标识">
               <a-input v-model:value="pane.code" @change="dirDataChange($event, pane)" />
             </a-form-item>
-<!--            <a-form-item label="目录公钥">-->
-<!--              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)" />-->
-<!--            </a-form-item>-->
-<!--            <a-form-item label="目录私钥">-->
-<!--              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)" />-->
-<!--            </a-form-item>-->
+            <!--            <a-form-item label="目录公钥">-->
+            <!--              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)" />-->
+            <!--            </a-form-item>-->
+            <!--            <a-form-item label="目录私钥">-->
+            <!--              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)" />-->
+            <!--            </a-form-item>-->
             <a-form-item label="公钥私钥">
               <div>
-                <a-button size="small" style="margin-bottom: 10px" @click="handleAddApiKeys(pane)"> 
+                <a-button size="small" style="margin-bottom: 10px" @click="handleAddApiKeys(pane)">
                   <template #icon>
                     <plus-outlined style="font-size: 12px" />
                   </template>
                 </a-button>
-                <a-table :columns="columns" 
-                         :data-source="pane.apiKeys"
-                         size="small"
-                         :pagination="false"
-                         bordered
-                >
+                <a-table :columns="columns" :data-source="pane.apiKeys" size="small" :pagination="false" bordered>
                   <template #bodyCell="{ column, record, index }">
                     <div v-if="column.dataIndex == 'index'" style="text-align: center">
                       {{ index + 1 }}
                     </div>
                     <div v-else-if="column.dataIndex == 'operate'" style="display: flex; justify-content: center">
-                       <a @click="del(pane, record, index)">删除</a>
+                      <a @click="del(pane, record, index)">删除</a>
                     </div>
                     <template v-else>
                       <a-input v-model:value="record[column.dataIndex]"></a-input>
@@ -45,7 +40,7 @@
                   </template>
                 </a-table>
               </div>
-              
+
             </a-form-item>
             <div style="display: flex">
               <div>
@@ -128,7 +123,7 @@
                   :apiType="pane.apiType"></api-ex-param>
               </div>
               <div class="api-editor-manage-interface-result">
-                <api-result :response-body="pane.responseBody" @clearResponseBody="clearResponseBody"></api-result>
+                <api-result :response-body="_responseBody" @clearResponseBody="clearResponseBody"></api-result>
               </div>
             </div>
           </div>
@@ -301,7 +296,7 @@ function dirDataChange(e, dir) {
       child.publicKey = dir.publicKey
       child.privateKey = dir.privateKey
       child.apiKeys = dir.apiKeys,
-      child.isResultDecrypt = dir.isEncrypt
+        child.isResultDecrypt = dir.isEncrypt
       child.encryptType = dir.encryptType
       return child
     })
@@ -376,11 +371,35 @@ function saveDir() {
   })
 
 }
+let _responseBody: any = ref()
+async function sendApi() {
+  let select = JSON.parse(JSON.stringify(props.selectItem))
 
+  let url = '/api/zrzy-api/sql/' + select.url
+
+  var params: any = {}
+  let body = JSON.parse(select.requestBody).children
+  if (body.length > 0) {
+    body.forEach(item => {
+      params[item.fieldName] = item.defaultValue
+    })
+  }
+  debugger
+  defHttp.post({ url: url, params: params, data: params }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      debugger
+      _responseBody.value = JSON.stringify(res.result)
+      message.success('请求成功')
+    } else {
+      // message.warning('请求失败')
+      _responseBody.value = '请求失败'
+    }
+  })
+}
 /**
  * 发送api
  */
-async function sendApi() {
+async function sendApi_bf() {
   let select = JSON.parse(JSON.stringify(props.selectItem))
   select = formatSelectItem(select)
   let headers = {}

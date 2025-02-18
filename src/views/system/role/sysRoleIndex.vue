@@ -41,7 +41,7 @@
           type="info" />
         <div class="sys-role-table-body">
           <a-table :columns="columns" :data-source="roleList" :pagination="pagination" :row-selection="rowSelection"
-            :scroll="{ y: 300 }" rowKey="id">
+            :scroll="{ y: 300 }" rowKey="id" @change="onChange($event, loadRole)">
             <template #bodyCell="{ column, text, record, index }">
               <template v-if="column.dataIndex === 'index'">
                 {{ index + 1 }}
@@ -97,6 +97,11 @@ onMounted(() => {
   loadMenu()
 })
 let roleList = ref([])
+let pagination = ref({
+  total: 0,
+  current: 1,
+  pageSize: 10,
+})
 function loadRole() {
   defHttp.get({ url: api.listRoleApi, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, name: searchFormState.value.name } }, { withToken: true }).then((res) => {
     roleList.value = res.result.records
@@ -104,6 +109,15 @@ function loadRole() {
   }).catch(err => {
     console.info(err)
   })
+}
+/**
+* 分页
+* @param pag
+* @param callback 回调函数
+*/
+function onChange(pag: any, callback: any) {
+  pagination.value = pag
+  callback()
 }
 function loadMenu() {
   defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
@@ -172,16 +186,7 @@ const rowSelection = ref({
   }
 })
 
-let page = ref<any>({
-  total: 0,
-  current: 1
-})
 
-const pagination = computed(() => ({
-  total: page.value.total,
-  current: page.value.current,
-  pageSize: 10,
-}))
 
 /**
  * 添加角色

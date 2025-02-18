@@ -124,13 +124,13 @@ const columns = [
   {
     title: '默认值',
     dataIndex: 'defaultValue',
-    key: 'defaultValue',
-    width: 100
+    key: 'defaultValue'
   },
   {
     title: '加密方式',
     dataIndex: 'encryptType',
-    key: 'encryptType'
+    key: 'encryptType',
+    width: 100
   },
   {
     title: '参数描述',

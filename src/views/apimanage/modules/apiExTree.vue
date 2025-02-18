@@ -50,7 +50,7 @@
           <div v-else class="api-row-content">
             <div class="left">
               <span :class="['api-type', 'api-type-' + node.method]">{{ node.method }}</span>
-              <a-tooltip placement="topLeft">
+              <a-tooltip placement="rightBottom" color="#108ee9">
                 <template #title>
                   {{ node.name }}
                 </template>
@@ -491,7 +491,7 @@ function removeApiById(id) {
 function onDoubleClick(node) {
   let findIndex = expandedKeys.value.findIndex(f => f == node.id)
   if (findIndex > -1) {
-    expandedKeys.value.splice(findIndex,1)
+    expandedKeys.value.splice(findIndex, 1)
   } else {
     expandedKeys.value.push(node.id)
   }
@@ -520,14 +520,14 @@ function onDoubleClick(node) {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .left {
         width: 240px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
       }
-      
+
       .right {
         display: flex;
 
