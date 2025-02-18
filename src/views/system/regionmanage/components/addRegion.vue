@@ -1,5 +1,5 @@
 <template>
-  <div class="addNewContent" v-if="showModal">
+  <div class="addNewContent">
     <!-- 新增目录 -->
     <a-form
       ref="formRef"
@@ -83,7 +83,7 @@ const catalogRules: any = {
 }
 
 const fieldNames = { label: 'areaName', value: 'areaCode', }
-let regionList:any = []
+let regionList:any = ref([])
 
 const urlList = {
   add: '/api/zrzy-bdc/sys/areacode/add',
@@ -229,7 +229,7 @@ function loadRegionList() {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
-      regionList.push({'areaName': '无', 'areaCode': '0'})
+      regionList.value.push({'areaName': '无', 'areaCode': '0'})
       flattenArray(res.result)
       showModal.value = true
     } else {
@@ -240,7 +240,7 @@ function loadRegionList() {
 
 function flattenArray(arr) {
   arr.forEach(element => {
-    regionList.push({areaName: element.areaName, areaCode: element.areaCode})
+    regionList.value.push({areaName: element.areaName, areaCode: element.areaCode})
     if(element.children?.length) {
       flattenArray(element.children)
     }

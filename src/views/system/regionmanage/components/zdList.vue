@@ -2,9 +2,9 @@
   <div style="padding: 0 10px;">
     <a-space style="padding-bottom: 10px;">
       <a-button type="primary" @click="onShowModal()">
-          <template #icon><PlusOutlined /></template>
-          新增
-        </a-button>
+        <template #icon><PlusOutlined /></template>
+        新增
+      </a-button>
       <a-button type="primary" @click="loadData()">
         <template #icon><RedoOutlined /></template>
         刷新
@@ -112,6 +112,7 @@ function loadData() {
   ).then((res: any) => {
     if(res?.success) {
       dataList.value = res.result
+      pagination.value.total = res.result.length
     } else {
       message.warning(res?.message)
     }
