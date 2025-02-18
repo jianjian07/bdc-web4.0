@@ -210,11 +210,11 @@ async function edit(record) {
   formState.value.content = content
   
   // 跟之前打开一样的表就不再查询键名
-  if (formStateCopy.sourceDataSource != formState.value.sourceDataSource || formStateCopy.sourceTable != formState.value.sourceTable) {
-     sourceFields.value = await getFieldList(formState.value.sourceDataSource, formState.value.sourceTable)
+  if (formStateCopy.sourceDb != formState.value.sourceDb || formStateCopy.sourceTable != formState.value.sourceTable) {
+     sourceFields.value = await getFieldList(formState.value.sourceDb, formState.value.sourceTable)
   }
-  if (formStateCopy.targetDataSource != formState.value.targetDataSource || formStateCopy.targetTable != formState.value.targetTable) {
-    targetFields.value = await getFieldList(formState.value.targetDataSource, formState.value.targetTable)
+  if (formStateCopy.targetDb != formState.value.targetDb || formStateCopy.targetTable != formState.value.targetTable) {
+    targetFields.value = await getFieldList(formState.value.targetDb, formState.value.targetTable)
   }
   
   autoMatchFields()
@@ -332,7 +332,7 @@ async function getField(type) {
   let dbKey
   if (type == 'sourceTable') {
     tableName = formState.value.sourceTable
-    dbKey = formState.value.sourceDataSource
+    dbKey = formState.value.sourceDb
     if (tableName) {
       sourceFields.value = await getFieldList(dbKey, tableName)
     } else {
@@ -340,7 +340,7 @@ async function getField(type) {
     }
   } else {
     tableName = formState.value.targetTable
-    dbKey = formState.value.targetDataSource
+    dbKey = formState.value.targetDb
     if (tableName) {
       targetFields.value = await getFieldList(dbKey, tableName)
     } else {

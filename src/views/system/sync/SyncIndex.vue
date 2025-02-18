@@ -54,7 +54,10 @@
                <template v-else-if="column.dataIndex == 'operate'">
                   <a @click="edit(record)">编辑</a>
                   <a-divider type="vertical"/>
-                  <a @click="del(record)">删除</a>
+                  <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                  
                </template>
             </template>
         </a-table>
@@ -91,13 +94,13 @@ const columns = [
   },
   {
     title: '源表',
-    dataIndex: 'sourceTable',
-    key: 'sourceTable'
+    dataIndex: 'sourceDb',
+    key: 'sourceDb'
   },
   {
     title: '目标表',
-    dataIndex: 'targetTable',
-    key: 'targetTable'
+    dataIndex: 'targetDb',
+    key: 'targetDb'
   },
   {
     title: '操作',
@@ -113,8 +116,28 @@ let pagination = ref({
     pageSize: 10,
 })
 
+enum api {
+  list = '/api/zrzy-api/data/sync/list',
+  del = '/api/zrzy-api/data/sync/delete'
+}
+
+onMounted(() => {
+  loadData()
+})
+
+/**
+ * 加载数据
+ */
 function loadData() {
-  
+  defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      dataList.value = res.result.records
+      pagination.value.total = res.result.total
+      pagination.value.current = res.result.current
+    } else {
+      message.warning(res.message)
+    }
+  })
 }
 
 function searchData() {
@@ -126,23 +149,26 @@ function refreshData() {
 }
 
 function add() {
-  // refModal.value.add()
-  router.push({ path: '/system/syncdesign', params: { id: '123'}  })
+  router.push({ path: '/system/syncdesign' })
 }
 
 function edit(record) {
-  refModal.value.edit(record)
+  router.push({ path: '/system/syncdesign', query: { id: record.id }  })
 }
 
+/**
+ * 删除
+ * @param record
+ */
 function del(record) {
-  // defHttp.delete({ url: api.del, params: { id: record.id } }, { withToken: true }).then((res) => {
-  //   if (res && res.code == 200) {
-  //     message.success('删除成功')
-  //     loadData()
-  //   } else {
-  //     message.warning('删除失败')
-  //   }
-  // })
+  defHttp.delete({ url: api.del, params: { id: record.id } }, { withToken: true }).then((res) => {
+    if (res && res.code == 200) {
+      message.success('删除成功')
+      loadData()
+    } else {
+      message.warning('删除失败')
+    }
+  })
 }
 
 /**

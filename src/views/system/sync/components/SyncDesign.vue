@@ -23,14 +23,14 @@
           </a-row>
           <a-row>
             <a-col :md="12">
-              <a-form-item label="源数据源" name="sourceDataSource" :rules="[{ required: true, message: '请选择源数据源!' }]" :label-col="labelCol" :wrapper-col="wrapperCol">
-                <a-select v-model:value="formState.sourceDataSource" :options="dataSourceOptions" allow-clear
+              <a-form-item label="源数据源" name="sourceDb" :rules="[{ required: true, message: '请选择源数据源!' }]" :label-col="labelCol" :wrapper-col="wrapperCol">
+                <a-select v-model:value="formState.sourceDb" :options="dataSourceOptions" allow-clear
                           placeholder="请选择源数据源" show-search :dropdownMatchSelectWidth="false" @change="handleChangeDataSource('source')"></a-select>
               </a-form-item>
             </a-col>
             <a-col :md="12">
-              <a-form-item label="目标数据源" name="targetDataSource" :rules="[{ required: true, message: '请选择目标数据源!' }]" :label-col="labelCol" :wrapper-col="wrapperCol">
-                <a-select v-model:value="formState.targetDataSource" :options="dataSourceOptions" allow-clear
+              <a-form-item label="目标数据源" name="targetDb" :rules="[{ required: true, message: '请选择目标数据源!' }]" :label-col="labelCol" :wrapper-col="wrapperCol">
+                <a-select v-model:value="formState.targetDb" :options="dataSourceOptions" allow-clear
                           placeholder="请选择目标数据源" show-search :dropdownMatchSelectWidth="false" @change="handleChangeDataSource('target')"></a-select>
               </a-form-item>
             </a-col>
@@ -167,13 +167,15 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { router } from "/@/router"
 import { getDictItemsByCode } from '/@/utils/form/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
 import { SwapRightOutlined,MinusOutlined,MinusCircleOutlined,FormOutlined } from '@ant-design/icons-vue';
 import SyncModal from "/@/views/system/sync/components/SyncModal.vue"
 import { message } from "ant-design-vue"
+import { useTabsStore } from "/@/store/modules/tabs"
+import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 // 当前页
 const current = ref<number>(0);
 // 表单实例
@@ -187,9 +189,9 @@ let labelCol = { style: { width: '150px' } }
 // 内容占比
 let wrapperCol = { span: 14 }
 // 源数据源 
-let sourceDataSourceList = ref<any>([])
+let sourceDbList = ref<any>([])
 // 目标数据源
-let targetDataSourceList = ref<any>([])
+let targetDbList = ref<any>([])
 // 视图及表
 let viewTables = ref<any>({
   source: {
@@ -213,7 +215,10 @@ const items = steps.map(item => ({ key: item.title, title: item.title }));
 
 enum api {
   options = '/api/zrzy-system/sys/datasource/options',
-  getTables= '/api/zrzy-api/data/sync/getTables'
+  getTables= '/api/zrzy-api/data/sync/getTables',
+  add = '/api/zrzy-api/data/sync/add',
+  update = '/api/zrzy-api/data/sync/update',
+  info = '/api/zrzy-api/data/sync/getInfo'
 }
 
 onMounted(() => {
@@ -221,11 +226,45 @@ onMounted(() => {
   initData()
 })
 
-function initData() {
-  let id = router.currentRoute.value.params.id
+async function initData() {
+  console.log('router.currentRoute.value',router.currentRoute.value)
+  let id = router.currentRoute.value.query.id
+  console.log('idid',id)
   if (id) {
-    // todo 编辑
+    let info = await getInfoById(id)
+    if (info) {
+      console.log('info')
+      formState.value = JSON.parse(JSON.stringify(info))
+      getTables(formState.value.sourceDb, 'source')
+      getTables(formState.value.targetDb, 'target')
+      let content = formState.value.content && typeof formState.value.content == 'string' ? JSON.parse(formState.value.content) : formState.value.content
+      if (content) {
+        formState.value.viewCheckRow = content.view || []
+        formState.value.tableCheckRow = content.table || []
+        formState.value.viewCheck= content.view.map(v => v.sourceTable)
+        formState.value.tableCheck= content.table.map(v => v.sourceTable)
+      }
+      console.log('formState.value',formState.value)
+     
+    }
+    
   }
+}
+
+/**
+ * 通过id查找
+ * @param id
+ */
+function getInfoById(id) {
+  return new Promise((resolve) => {
+    defHttp.get({ url: api.info, params: { id } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        resolve(null)
+      }
+    })
+  })
 }
 
 /**
@@ -243,8 +282,18 @@ function getDataSourceOptions() {
  * 源数据源改变
  */
 function handleChangeDataSource(type) {
-  let dbKey = type == 'source' ? formState.value.sourceDataSource : formState.value.targetDataSource
-  defHttp.get({ url: api.getTables, params: { dbKey: dbKey } }, { withToken: true }).then((res) => {
+  resetRow()
+  let dbKey = type == 'source' ? formState.value.sourceDb : formState.value.targetDb
+  getTables(dbKey, type)
+}
+
+/**
+ * 获取表和试图
+ * @param dbKey
+ * @param type
+ */
+function getTables(dbKey, type) {
+   defHttp.get({ url: api.getTables, params: { dbKey: dbKey } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       if (type == 'source') {
         viewTables.value.source.view = res.result.view
@@ -269,8 +318,8 @@ function handleChangeCheckBox(type) {
     const foundRow = checkRowList.find(rowCheck => rowCheck.sourceTable === check);
     return foundRow || { 
       sourceTable: check,
-      sourceDataSource: formState.value.sourceDataSource,
-      targetDataSource: formState.value.targetDataSource
+      sourceDb: formState.value.sourceDb,
+      targetDb: formState.value.targetDb
     };
   });
   
@@ -279,6 +328,16 @@ function handleChangeCheckBox(type) {
   } else {
     formState.value.tableCheckRow = updatedRows;
   }
+}
+
+/**
+ * 更换数据源后清除数据
+ */
+function resetRow() {
+  formState.value.viewCheck = []
+  formState.value.viewCheckRow = []
+  formState.value.tableCheck = []
+  formState.value.tableCheckRow = []
 }
 
 /**
@@ -373,8 +432,43 @@ function handleModalOk(value) {
  * 完成
  */
 function handleComplete() {
-  message.success('请前往控制台查看数据')
-  console.log('formState',formState.value)
+  let obj = JSON.parse(JSON.stringify(formState.value))
+  obj.content = JSON.stringify({
+    table: obj.tableCheckRow,
+    view: obj.viewCheckRow
+  })
+  delete obj.tableCheckRow, obj.viewCheckRow, obj.tableCheck, obj.viewCheck
+  let url = formState.value.id ? api.update : api.add
+  defHttp.post({ url: url, data: obj }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      message.success('保存成功!')
+      closeCurrentTab()
+    } else {
+      message.warning(res.message)
+    }
+  })
+}
+
+/**
+ * 关闭当前标签页
+ */
+function closeCurrentTab() {
+  const tabStore = useTabsStore()
+  const { getTabsShow } = useTabsSetting()
+  if (getTabsShow.value) {
+    const currentTab = computed(() => tabStore.getCurrentTab)
+    tabStore.removeTab(currentTab.value)
+
+    if (tabStore.getCurrentTab.meta.cache) {
+      setTimeout(() => {
+        if (tabStore.getCurrentTab.fullPath == '/system/sync') {
+          router.push('/refresh')
+        }
+      }, 300)
+    }
+  } else {
+    router.push('/analysis')
+  }
 }
 </script>
 
