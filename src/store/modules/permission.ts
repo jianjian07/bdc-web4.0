@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { store } from '/@/store';
 import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE } from "../../router/routes/basic"
 import { AppRouteRecordRaw } from "../../router/types";
-import { getDataTreeList, getMenuList, getMenuListByJson, getMenuListBySysId } from "/@/api/sys/menu"
+import { getMenuList, getMenuListByJson, getMenuListBySysId } from "/@/api/sys/menu"
 import { dynamicRouter } from "/@/router/helper/routeHelper"
 import { menuModel } from "/@/api/sys/model/menuModel";
 import { IGS_INFO } from "/@/enums/cacheEnum";
@@ -74,8 +74,6 @@ export const usePermissionStore = defineStore({
                 // }
                 // let list = (await getMenuList()) as AppRouteRecordRaw[]
                 if (list != null && list.length > 0) {
-                    // const toolbar = list.find(i => i.name == '工具栏1')?.children
-                    // const menu = list.find(t => t.name == '菜单栏')?.children
                     routeList = (list) as AppRouteRecordRaw[]
                     this.setMenuList(list)
                     // this.setToolBarList(toolbar)
@@ -83,12 +81,6 @@ export const usePermissionStore = defineStore({
             }
 
             routeList = dynamicRouter(routeList)
-            // if (mock == "false") {
-            //     const igsList = (await getDataTreeList()) as IgsInfoModel[]
-            //     if (igsList != null) {
-            //         this.setIgsList(igsList)
-            //     }
-            // }
             // routes = [...routeList, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE]
             routes = [...routeList, REDIRECT_ROUTE, REFRESH_ROUTE]
             routes.push(ERROR_LOG_ROUTE);

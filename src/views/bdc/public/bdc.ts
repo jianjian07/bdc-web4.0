@@ -20,7 +20,6 @@ const userStore = useUserStore()
 
 enum api {
   configList = '/api/zrzy-dzzw/caseConfig/getCaseState',
-  getSzUserInfo = '/api/zrzy-system/api/v1/auth/singleToken',
   addQlr = '/api/zrzy-bdc/bdc/qlr/add',
   editQlr = '/api/zrzy-bdc/bdc/qlr/update'
 }

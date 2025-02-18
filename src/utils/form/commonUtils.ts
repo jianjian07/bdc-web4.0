@@ -1,6 +1,4 @@
 import { useUserStore } from '/@/store/modules/user';
-// import { casDicts } from "/@/mock/casDict"
-// import { tableDicts } from "/@/mock/tableDict"
 import { defineComponent } from "vue"
 import { validateRequired } from "/@/utils/form/validateUtil"
 import { defHttp } from '/@/utils/http/axios';

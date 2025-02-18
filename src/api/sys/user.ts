@@ -10,10 +10,9 @@ enum api {
   // getTokenApi = '/api/auth/oauth/token',
   getTokenApiTyyw = '/tyyw/auth/oauth/token',
   getTokenApi = '/api/zrzy-system/api/v1/auth/authorization',
-  getUserInfoApi = '/api/zrzy-system/sys/v1/user/getUserInfo',//旧，未使用
+  getUserInfoApi = '/api/zrzy-system/sys/v1/user/getUserInfo',
   logoutApi = '/api/zrzy-system/api/v1/auth/logOut'
   // licenseApi = '/onemap/zrzy-om-licence/licence',
-  // getDictApi = '/magicapi/zrzy-om-sjsw/magic/wlgz/dic/list',//旧，未使用
 }
 
 
@@ -105,22 +104,6 @@ export function getUserInfo() {
         resolve(null)
     }))
   })
-}
-/**
- * 获取数据字典
- */
-export function getSysDict() {
-  // return new Promise((resolve) => {
-  //   defHttp.post({ url: api.getDictApi }, { withToken: true }).then((res) => {
-  //     if (res && res.length > 0) {
-  //       resolve(res)
-  //     } else {
-  //       resolve(false)
-  //     }
-  //   }).catch(err => {
-  //     resolve(false)
-  //   })
-  // })
 }
 
 // 密码加密

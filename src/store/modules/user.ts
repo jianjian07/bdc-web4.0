@@ -4,12 +4,10 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 // import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
-import userToken from "../../../public/static/userToken.json"
 import {
   ROLES_KEY,
   TOKEN_KEY,
   USER_INFO_KEY,
-  SZ_USER_INFO_KEY,
   LAST_OPERATE_TIME,
   LOGIN_INFO_KEY,
   DB_DICT_DATA_KEY,
@@ -22,9 +20,7 @@ import {
 } from '/@/enums/cacheEnum'
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams, ThirdLoginParams } from '/@/api/sys/model/userModel';
-import { getUserInfo, licence, loginApi, getSysDict, login_tyyw, doLogout } from '/@/api/sys/user'
-// import { useI18n } from '/@/hooks/web/useI18n';
-// import { useMessage } from '/@/hooks/web/useMessage';
+import { getUserInfo, licence, loginApi, login_tyyw, doLogout } from '/@/api/sys/user'
 import { router } from '../../router';
 import { usePermissionStore } from '/@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
@@ -33,14 +29,13 @@ import { isArray } from '/@/utils/is';
 import { Modal, notification } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { createVNode } from 'vue';
-import { getCategoryDict, getDataDict, getDict, getRuleList } from "/@/api/sys/dict"
+import { getDict, getRuleList } from "/@/api/sys/dict"
 import { setCookie } from "/@/utils/sysUtil"
 // import { useGlobSetting } from '/@/hooks/setting';
 // import { useSso } from '/@/hooks/web/useSso';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
-  szUserInfo?: any;
   token?: string;
   //   roleList: RoleEnum[];
   // 数据字典,
@@ -72,8 +67,6 @@ export const useUserStore = defineStore({
   state: (): UserState => ({
     // 用户信息
     userInfo: null,
-    // sz用户信息
-    szUserInfo: null,
     // token
     token: undefined,
     // 角色列表
@@ -109,9 +102,6 @@ export const useUserStore = defineStore({
   getters: {
     getUserInfo(): UserInfo {
       return this.userInfo || getAuthCache<UserInfo>(USER_INFO_KEY) || {};
-    },
-    getSzUserInfo(): any {
-      return this.szUserInfo || getAuthCache<UserInfo>(SZ_USER_INFO_KEY) || {}
     },
     getLoginInfo(): LoginInfo {
       return this.loginInfo || getAuthCache<LoginInfo>(LOGIN_INFO_KEY) || {};
@@ -185,10 +175,6 @@ export const useUserStore = defineStore({
       console.log('this.lastUpdateTime', this.lastUpdateTime)
       setAuthCache(USER_INFO_KEY, info);
     },
-    setSzUserInfo(info: any) {
-      this.szUserInfo = info
-      setAuthCache(SZ_USER_INFO_KEY, info);
-    },
     setLoginInfo(info: LoginInfo | null) {
       this.loginInfo = info;
       setAuthCache(LOGIN_INFO_KEY, info);
@@ -240,7 +226,6 @@ export const useUserStore = defineStore({
     },
     resetState() {
       this.setUserInfo(null);
-      this.setSzUserInfo(null);
       this.setToken('');
       //   this.roleList = [];
       this.sessionTimeout = false;
@@ -433,41 +418,13 @@ export const useUserStore = defineStore({
       }
       console.log('this.getToken', this.getToken)
       const userInfo: any = await getUserInfo();
-      // 登录界面不是使用单点登录接口，此处获取深圳用户代码屏蔽
-      // const szUserInfo: any = await initEventUserInfo()
       if (userInfo) {
         this.setUserInfo(userInfo);
       }
-      getDict()
-      // // 数据字典
-      // getDataDict()
-      // // 分类字典
-      // getCategoryDict()
+      await getDict()
       // 规则
       getRuleList()
-      // if (szUserInfo) {
-      //   if (userToken.iszsEnv != '0') {
-      //     this.setToken(szUserInfo.token.access_token);
-      //     this.setSzUserInfo(szUserInfo.userInfo)
-      //   } else {
-      //     this.setSzUserInfo(szUserInfo)
-      //   }
-      // }
       return userInfo;
-    },
-    // 获取深圳用户信息
-    async getSzUserInfoAction(ssotoken: String): Promise<any | null> {
-      if (!ssotoken) {
-        return null;
-      }
-      const szUserInfo: any = await initEventUserInfo(ssotoken)
-      if (szUserInfo) {
-        // 局方单点登录增加Single 标识
-        const token = "Single " + szUserInfo.token.access_token
-        this.setToken(token);
-        this.setSzUserInfo(szUserInfo.userInfo)
-      }
-      return szUserInfo;
     },
     /**
      * 退出登录

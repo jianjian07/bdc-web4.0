@@ -6,9 +6,6 @@ export const LOCALE_KEY = 'LOCALE__';
 // user info key
 export const USER_INFO_KEY = 'USER__INFO__';
 
-// sz user info key
-export const SZ_USER_INFO_KEY = 'SZ_USER_INFO_KEY';
-
 // role info key
 export const ROLES_KEY = 'ROLES__KEY__';
 
