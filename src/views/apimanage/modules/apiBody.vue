@@ -327,7 +327,7 @@ function getFieldNameStyle(id) {
  * 解析table对象为在json中显示的字符串
  * @param item
  */
-function parseObj(item) {
+function parseObj(item, parent?: any) {
   if (!item) {
     return ''
   }
@@ -360,7 +360,9 @@ function parseObj(item) {
     case 'Double':
     case 'Float':
       let fieldValue = isCanNumber(item.fieldValue) ? Number(item.fieldValue) : -1
-      start = `"${item.fieldName}": ${fieldValue}`
+      start = (parent && parent.dataType == 'Array') 
+          ? item.fieldName ? `"${item.fieldName}": ${fieldValue}` : `${fieldValue}` 
+          :`"${item.fieldName}": ${fieldValue}` 
       break
     case 'String':
     case 'Any':
@@ -370,18 +372,24 @@ function parseObj(item) {
         start = `"`
         end = `"`
       } else {
-        start = `"${item.fieldName}":"${item.fieldValue}"`
+        start = (parent && parent.dataType == 'Array') 
+          ? item.fieldName ? `"${item.fieldName}":"${item.fieldValue}"` : `"${item.fieldValue}"` 
+          :`"${item.fieldName}":"${item.fieldValue}"` 
+        // start = `"${item.fieldName}":"${item.fieldValue}"`
       }
       break
     case 'Boolean':
       let boolean = item.fieldValue == 'true'
-      start = `"${item.fieldName}": ${boolean}`
+        start = (parent && parent.dataType == 'Array') 
+          ? item.fieldName ? `"${item.fieldName}": ${boolean}` : `${boolean}` 
+          :`"${item.fieldName}": ${boolean}` 
+      // start = `"${item.fieldName}": ${boolean}`
       break
   }
   if (item.children && item.children.length > 0) {
     str += start
     for (let i = 0; i < item.children.length; i++) {
-      str += parseObj(item.children[i])
+      str += parseObj(item.children[i], item)
       if (i !== item.children.length - 1) {
         str += ','
       }
@@ -482,7 +490,6 @@ function jsonToView(bodyStr, srcObj) {
 function processBody(content, srcObj) {
   let arr = []
   let defaultParam = {
-    parentKey: srcObj.key || '1',
     fieldName: '',
     fieldValue: '-',
     // dataType: getType(obj),
@@ -496,21 +503,45 @@ function processBody(content, srcObj) {
 
   if (Array.isArray(content)) {
     if (content[0] !== undefined) {
-      let value = content[0]
-      const simpleObject = isSimpleObject(value)
-      let param = {
-        ...defaultParam,
-        key: srcObj['']?.key || guid(),
-        fieldValue: simpleObject ? value + '' : '-',
-        dataType: srcObj['']?.dataType || getType(value),
-      }
-      if (!simpleObject) {
-        param.children = processBody(value, objToMap(srcObj['']))
-      }
-      if (param.children && param.children.length == 0) {
-        delete param.children
-      }
-      arr.push(param)
+      Object.keys(content).forEach((name, index) => {
+        const value = content[name]
+        const simpleObject = isSimpleObject(value)
+        let param = {
+          ...defaultParam,
+          parentKey: srcObj[0]?.parentKey || '1',
+          key: srcObj[index]?.key || guid(),
+          defaultValue: srcObj[index]?.defaultValue || '',
+          isMust: srcObj[index]?.isMust === true,
+          isEncrypt: srcObj[index]?.isEncrypt === true,
+          encryptType: srcObj[index]?.encryptType || '',
+          description: srcObj[index]?.description || (Array.isArray(value) || typeof value === 'object' ? '' : value),
+          fieldValue: simpleObject ? value + '' : '-',
+          dataType: getType(value),
+        }
+        if (!simpleObject) {
+          param.children = processBody(value, objToMap(srcObj[index]))
+        }
+        if (param.children && param.children.length == 0) {
+          delete param.children
+        }
+        arr.push(param)
+      })
+      
+      // let value = content[0]
+      // const simpleObject = isSimpleObject(value)
+      // let param = {
+      //   ...defaultParam,
+      //   key: srcObj['']?.key || guid(),
+      //   fieldValue: simpleObject ? value + '' : '-',
+      //   dataType: srcObj['']?.dataType || getType(value),
+      // }
+      // if (!simpleObject) {
+      //   param.children = processBody(value, objToMap(srcObj['']))
+      // }
+      // if (param.children && param.children.length == 0) {
+      //   delete param.children
+      // }
+      // arr.push(param)
 
     }
   } else {
@@ -519,13 +550,14 @@ function processBody(content, srcObj) {
       const simpleObject = isSimpleObject(value)
       let param = {
         ...defaultParam,
+        parentKey: srcObj[name]?.parentKey || '1',
         key: srcObj[name]?.key || guid(),
         fieldName: srcObj[name]?.fieldName || name,
         defaultValue: srcObj[name]?.defaultValue || '',
         isMust: srcObj[name]?.isMust === true,
         isEncrypt: srcObj[name]?.isEncrypt === true,
-        encryptType: srcObj[name]?.encryptType == '',
-        description: srcObj[name]?.description || value,
+        encryptType: srcObj[name]?.encryptType || '',
+        description: srcObj[name]?.description || ((Array.isArray(value) || typeof value === 'object') ? '' : value),
         fieldValue: simpleObject ? value + '' : '-',
         dataType: getType(value),
       }
@@ -543,7 +575,14 @@ function processBody(content, srcObj) {
 
 const objToMap = obj => {
   const map = {}
-  obj?.children?.forEach(it => map[it.fieldName] = it)
+  obj?.children?.forEach((it,index) => {
+    it.parentKey = obj.key
+    if (obj.dataType !== 'Array') {
+      map[it.fieldName] = it
+    } else {
+      map[index] = it
+    }
+  })
   return map
 }
 
