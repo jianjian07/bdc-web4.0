@@ -1,68 +1,61 @@
 <template>
-      <div class="wonder-table-form">
-        <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
-            <a-row :gutter="[0, 8]" tyle="flex">
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="子系统名称">
-                        <a-select v-model:value="formData.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions" allowClear/>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="4" :offset="0">
-                    <a-form-item style="text-align: center;">
-                        <a-space>
-                            <a-button type="primary" @click="searchData">
-                                <template #icon>
-                                    <component :is="SearchOutlined"></component>
-                                </template>查询</a-button>
-                            <a-button @click="refreshData">
-                                <template #icon>
-                                    <component :is="RedoOutlined"></component>
-                                </template>重置</a-button>
-                        </a-space>
-                    </a-form-item>
-                </a-col>
-            </a-row>
-        </a-form>
-    </div>
-    <div class="wonder-table-css">
-      <div class="wonder-table-toolbar">
-        <a-space style="padding-bottom: 10px;">
-          <a-button type="primary" @click="onShowModal()">
-            <template #icon><PlusOutlined /></template>
-            新增
-          </a-button>
-          <a-button :disabled="!state.selectedRowKeys.length" @click="showDeleteConfirm">
-            <template #icon><DeleteOutlined /></template>
-            批量删除
-          </a-button>
-        </a-space>
-        <a-table 
-          bordered 
-          :data-source="dataList"
-          :columns="columns"
-          :pagination="pagination"
-          @change="handleTableChange"
-          :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
-          :row-key="record => record.id"
-          size="small"
-        >
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.dataIndex === 'operation'">
-              <a @click="onShowModal(record, 'edit')">编辑</a>
-              <a-divider type="vertical" />
-              <a-popconfirm
-                title="确定删除？"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="onDelete(record.id)"
-              >
-              <a style="color:#ff4d4f">删除</a>
-              </a-popconfirm>
-            </template>
+  <div class="wonder-table-form">
+    <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
+      <a-row :gutter="[0, 8]" tyle="flex">
+        <a-col :span="8" :offset="0">
+          <a-form-item label="子系统名称">
+            <a-select v-model:value="formData.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions"
+              allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="4" :offset="0">
+          <a-form-item style="text-align: center;">
+            <a-space>
+              <a-button type="primary" @click="searchData">
+                <template #icon>
+                  <component :is="SearchOutlined"></component>
+                </template>查询</a-button>
+              <a-button @click="refreshData">
+                <template #icon>
+                  <component :is="RedoOutlined"></component>
+                </template>重置</a-button>
+            </a-space>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+  </div>
+  <div class="wonder-table-css">
+    <div class="wonder-table-toolbar">
+      <a-space style="padding-bottom: 10px;">
+        <a-button type="primary" @click="onShowModal()">
+          <template #icon>
+            <PlusOutlined />
           </template>
-        </a-table>
-      </div>
+          新增
+        </a-button>
+        <a-button :disabled="!state.selectedRowKeys.length" @click="showDeleteConfirm">
+          <template #icon>
+            <DeleteOutlined />
+          </template>
+          批量删除
+        </a-button>
+      </a-space>
+      <a-table bordered :data-source="dataList" :columns="columns" :pagination="pagination" @change="handleTableChange"
+        :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
+        :row-key="record => record.id" size="small">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'operation'">
+            <a @click="onShowModal(record, 'edit')">编辑</a>
+            <a-divider type="vertical" />
+            <a-popconfirm title="确定删除？" ok-text="确定" cancel-text="取消" @confirm="onDelete(record.id)">
+              <a style="color:#ff4d4f">删除</a>
+            </a-popconfirm>
+          </template>
+        </template>
+      </a-table>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -80,7 +73,7 @@ const state = reactive({
   selectedRowKeys: []
 })
 
-let formData:any = ref({
+let formData: any = ref({
   subsystemid: ''
 })
 
@@ -116,12 +109,12 @@ const columns = [
 ]
 
 // 分页
-const pagination = ref<any>({ 
+const pagination = ref<any>({
   total: 0,
   current: 1,
   pageSize: 10,
-  showSizeChanger: false, 
-  showTotal: (total: Number) => `共 ${total} 条数据` 
+  showSizeChanger: false,
+  showTotal: (total: Number) => `共 ${total} 条数据`
 })
 
 const systemOptions = ref([])
@@ -130,7 +123,7 @@ const urlList = {
   queryList: '/api/zrzy-bdc/sys/sysSubArea/list',
   delete: '/api/zrzy-bdc/sys/sysSubArea/delete/',
   deleteBatch: '/api/zrzy-bdc/sys/sysSubArea/deleteBatch',
-  systemList: '/api/zrzy-bdc/sys/sysSubsystem/list'
+  systemList: '/api/zrzy-system/sys/sysSubsystem/list'
 }
 
 onMounted(() => {
@@ -143,7 +136,7 @@ function loadSystemList() {
   defHttp.get(
     {
       url: urlList.systemList,
-      params: { pageSize: 1000, pageNo: 1}
+      params: { pageSize: 1000, pageNo: 1 }
     },
     { withToken: true }
   ).then((res: any) => {
@@ -171,7 +164,7 @@ function loadData() {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res?.success) {
+    if (res?.success) {
       dataList.value = res.result.records
       pagination.value.total = res.result.total
     } else {
@@ -188,14 +181,14 @@ function onShowModal(data: any = null, type: String = 'new') {
     title: `${title}`,
     width: 600,
     filePath: 'views/system/subSystem/components/addNew',
-    footerStyle: {'text-align': 'center'},
+    footerStyle: { 'text-align': 'center' },
     footer: type == 'view' ? false : true,
     formData: {
       type: type, // 新增/编辑
       itemData: data, //当前操作的数据行
     },
     onOk: async (res: any) => {
-      if(type == 'view') {
+      if (type == 'view') {
         modal.destroy()
       } else {
         modal.setConfirmLoading(true)
@@ -207,7 +200,7 @@ function onShowModal(data: any = null, type: String = 'new') {
         }
         modal.setConfirmLoading(false)
       }
-      
+
     },
     onCancel: () => {
       modal.close()
@@ -223,7 +216,7 @@ function onDelete(id: any) {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res && res.success) {
+    if (res && res.success) {
       message.success('删除成功！')
       loadData()
     } else {
@@ -236,7 +229,7 @@ function onSelectChange(selectedRowKeys: any) {
   state.selectedRowKeys = selectedRowKeys
 }
 
-function handleTableChange(pag:any) {
+function handleTableChange(pag: any) {
   pagination.value.current = pag.current
   pagination.value.pageSize = pag.pageSize
   loadData()
@@ -269,7 +262,7 @@ function onDeleteBatch() {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res && res.success) {
+    if (res && res.success) {
       message.success('删除成功！')
       loadData()
     } else {

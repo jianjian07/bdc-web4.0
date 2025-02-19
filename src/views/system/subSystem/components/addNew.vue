@@ -1,41 +1,19 @@
 <template>
   <div class="addNewContent">
     <!-- 新增目录 -->
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :label-col="{ span: 6 }"
-      :wrapper-col="{ span: 16 }"
-      :rules="formRules"
-    >
-      <a-form-item
-        label="子系统名称"
-        ref="subsystemid"
-        name="subsystemid"
-      >
-        <a-select v-model:value="formState.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions" @change="onSystemChange" allowClear/>
+    <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }" :rules="formRules">
+      <a-form-item label="子系统名称" ref="subsystemid" name="subsystemid">
+        <a-select v-model:value="formState.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions"
+          @change="onSystemChange" allowClear />
       </a-form-item>
-      <a-form-item
-        label="子系统"
-        ref="subsystemname"
-        name="subsystemname"
-        v-show="false"
-      >
+      <a-form-item label="子系统" ref="subsystemname" name="subsystemname" v-show="false">
         <a-input v-model:value="formState.subsystemname" />
       </a-form-item>
-      <a-form-item
-        label="行政区名称"                   
-        ref="areaCode"
-        name="areaCode"
-      >
-        <a-cascader v-model:value="showCode" :fieldNames="regionFieldNames" :options="regionOptions" @change="onRegionChange" change-on-select allowClear/>
+      <a-form-item label="行政区名称" ref="areaCode" name="areaCode">
+        <a-cascader v-model:value="showCode" :fieldNames="regionFieldNames" :options="regionOptions"
+          @change="onRegionChange" change-on-select allowClear />
       </a-form-item>
-      <a-form-item
-        label="行政区"                   
-        ref="areaName"
-        name="areaName"
-        v-show="false"
-      >
+      <a-form-item label="行政区" ref="areaName" name="areaName" v-show="false">
         <a-input v-model:value="formState.areaName" />
       </a-form-item>
     </a-form>
@@ -62,7 +40,7 @@ const formState = reactive({
   areaCode: ''
 });
 
-const showCode:any = ref([])
+const showCode: any = ref([])
 
 const formRules: any = {
   subsystemname: [
@@ -77,7 +55,7 @@ const urlList = {
   add: '/api/zrzy-bdc/sys/sysSubArea/add',
   edit: '/api/zrzy-bdc/sys/sysSubArea/edit',
   regionList: '/api/zrzy-bdc/sys/areacode/queryAreaTree',
-  systemList: '/api/zrzy-bdc/sys/sysSubsystem/list'
+  systemList: '/api/zrzy-system/sys/sysSubsystem/list'
 }
 
 const regionFieldNames = { label: 'areaName', value: 'areaCode', }
@@ -87,7 +65,7 @@ const systemOptions = ref([])
 const regionOptions = ref([])
 
 watch(() => props.formData, (val) => {
-  if(val.type == 'edit') {
+  if (val.type == 'edit') {
     formState.subsystemname = val.itemData.subsystemname
     formState.subsystemid = val.itemData.subsystemid
     formState.areaName = val.itemData.areaName
@@ -124,7 +102,7 @@ function loadSystemList() {
   defHttp.get(
     {
       url: urlList.systemList,
-      params: { pageSize: 1000, pageNo: 1}
+      params: { pageSize: 1000, pageNo: 1 }
     },
     { withToken: true }
   ).then((res: any) => {
@@ -149,11 +127,11 @@ function onRegionChange(value, selectedOptions) {
 }
 
 function setShowCode(code: any) {
-  let codeList:any = []
+  let codeList: any = []
   if (Number(code) % 100 !== 0) {
-    codeList = [Math.floor(Number(code)/10000) + '0000', Math.floor(Number(code)/100) + '00', code]
+    codeList = [Math.floor(Number(code) / 10000) + '0000', Math.floor(Number(code) / 100) + '00', code]
   } else if (Number(code) % 10000 !== 0) {
-    codeList = [Math.floor(Number(code)/10000) + '0000', code]
+    codeList = [Math.floor(Number(code) / 10000) + '0000', code]
   } else {
     codeList = [code]
   }
@@ -172,23 +150,23 @@ const onSubmit = () => {
         defHttp[method](
           {
             url: url,
-            data: { ...props.formData?.itemData, ...formState}
+            data: { ...props.formData?.itemData, ...formState }
           },
           { withToken: true }
         ).then((res: any) => {
-          if(res?.success) {
+          if (res?.success) {
             if (props.formData.type == 'edit') {
               message.success('修改成功！')
             } else {
               message.success('新增成功！')
-            } 
+            }
             return resolve(true)
           } else {
             message.warning(res?.message || '操作失败！')
             return reject()
           }
         })
-      }).catch((error:any) => {
+      }).catch((error: any) => {
         console.log('error', error);
       });
   })
@@ -200,5 +178,4 @@ defineExpose({
 
 </script>
 
-<style scoped lang="less">
-</style>
+<style scoped lang="less"></style>

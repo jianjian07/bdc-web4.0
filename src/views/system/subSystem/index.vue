@@ -1,51 +1,55 @@
 <template>
   <div class="cc-container">
-      <div style="display: flex; flex-direction: column; height: 100%">
-          <div style="line-height: 3em; background-color: #fff;padding: 10px 10px;">
-            <a-alert type="info" :show-icon="true">
-              <template #message>
-                  当前选择：
-                  <span style="font-weight: 600;">
-                      {{ selectSystem?.name }}
-                  </span>
-                  <span @click="cancelSelect" v-if="selectSystem?.name" style="color:#1890ff;padding-left: 10px; cursor: pointer;">
-                    取消选择
-                  </span>
-              </template>
-            </a-alert>
-          </div>
-          <div class="systemList" style="margin-top: 8px;padding-top: 10px; padding-right: 20px; line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); min-width: 450px; overflow: auto">
-            <a-tree :tree-data="systemTree" @select="onSelectSystem" :selected-keys="selectKeys" style="width: 100%" block-node>
-              <template #title="{ dataRef }">
-                <div class="customTitle">
-                  <div class="text-ellipsis">
-                    {{ dataRef.name }}
-                  </div>
-                  <div v-show="false" class="oprBtn">
-                    <a-button style="margin-right: 5px" size="small" @click.stop="editSystem(dataRef)"
-                      :icon="h(EditOutlined)"></a-button>
-                    <a-popconfirm placement="topRight" title="确定删除该子系统？" ok-text="确定" cancel-text="取消" @confirm="deleteSystem(dataRef)">
-                      <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
-                    </a-popconfirm>
-                  </div>
-                </div>
-              </template>
-            </a-tree>
-          </div>
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div style="line-height: 3em; background-color: #fff;padding: 10px 10px;">
+        <a-alert type="info" :show-icon="true">
+          <template #message>
+            当前选择：
+            <span style="font-weight: 600;">
+              {{ selectSystem?.name }}
+            </span>
+            <span @click="cancelSelect" v-if="selectSystem?.name"
+              style="color:#1890ff;padding-left: 10px; cursor: pointer;">
+              取消选择
+            </span>
+          </template>
+        </a-alert>
       </div>
+      <div class="systemList"
+        style="margin-top: 8px;padding-top: 10px; padding-right: 20px; line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); min-width: 450px; overflow: auto">
+        <a-tree :tree-data="systemTree" @select="onSelectSystem" :selected-keys="selectKeys" style="width: 100%"
+          block-node>
+          <template #title="{ dataRef }">
+            <div class="customTitle">
+              <div class="text-ellipsis">
+                {{ dataRef.name }}
+              </div>
+              <div v-show="false" class="oprBtn">
+                <a-button style="margin-right: 5px" size="small" @click.stop="editSystem(dataRef)"
+                  :icon="h(EditOutlined)"></a-button>
+                <a-popconfirm placement="topRight" title="确定删除该子系统？" ok-text="确定" cancel-text="取消"
+                  @confirm="deleteSystem(dataRef)">
+                  <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
+                </a-popconfirm>
+              </div>
+            </div>
+          </template>
+        </a-tree>
+      </div>
+    </div>
 
-      <div class="userTabContent" style="height: 100%">
-          <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
-              <a-tab-pane key="1" tab="行政区划">
-                  <RegionList v-if="selectSystem" :selectSystem="selectSystem" />
-                  <a-empty v-else>
-                    <template #description>
-                      请先选择一个子系统
-                    </template>
-                  </a-empty>
-              </a-tab-pane>
-          </a-tabs>
-      </div>
+    <div class="userTabContent" style="height: 100%">
+      <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
+        <a-tab-pane key="1" tab="行政区划">
+          <RegionList v-if="selectSystem" :selectSystem="selectSystem" />
+          <a-empty v-else>
+            <template #description>
+              请先选择一个子系统
+            </template>
+          </a-empty>
+        </a-tab-pane>
+      </a-tabs>
+    </div>
 
   </div>
 </template>
@@ -59,7 +63,7 @@ import RegionList from "/@/views/system/subSystem/components/regionList.vue"
 const activeKey = ref('1');
 
 const urlList = {
-  systemList: '/api/zrzy-bdc/sys/sysSubsystem/list'
+  systemList: '/api/zrzy-system/sys/sysSubsystem/list'
 }
 
 let systemTree: any = ref([])
@@ -73,7 +77,7 @@ function loadSystemList() {
   defHttp.get(
     {
       url: urlList.systemList,
-      params: { pageSize: 1000, pageNo: 1}
+      params: { pageSize: 1000, pageNo: 1 }
     },
     { withToken: true }
   ).then((res: any) => {
@@ -132,7 +136,8 @@ function cancelSelect() {
 .userTabContent {
   width: 100%;
   background-color: #fff;
-  margin-left:8px;
+  margin-left: 8px;
+
   :deep(.ant-tabs-content) {
     height: 100%;
   }
