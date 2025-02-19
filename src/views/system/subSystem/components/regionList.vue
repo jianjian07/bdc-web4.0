@@ -175,7 +175,7 @@ function loadRegionList() {
 
 function setData(data) {
   for(let i=0; i< data.length; i++) {
-    data[i].disableCheckbox = !data[i].disableCheckbox
+    data[i].disableCheckbox = false
     if(data[i].children) {
       setData(data[i].children)
     }
@@ -206,7 +206,6 @@ function loadZDGSData() {
       } else {
         checkKeys.value = []
       }
-      console.log('checkKeys', checkKeys.value)
     } else {
       message.warning(res?.message)
     }
