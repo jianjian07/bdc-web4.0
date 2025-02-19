@@ -31,7 +31,7 @@
                             v-model:value="editableData[record.id0][column.dataIndex]" style="margin: -5px 0" />
                         <a-select v-once v-else-if="column.componentType == 'select'"
                             v-model:value="editableData[record.id0][column.dataIndex]"
-                            :options="getDictItemsByCode(column.dict)"
+                            :options="getDictItemsByCode(column.dict)" allow-clear
                             :field-names="{ label: 'labelplus', value: 'value' }"
                             style="width: 100%;margin: -5px 0" />
                         <div v-else>
