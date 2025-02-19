@@ -62,8 +62,8 @@
       <div class="right-content">
         <a-collapse v-model:activeKey="activeCollapseKey">
           <a-collapse-panel v-for="(item, index) in sysMenuList" :key="index" :header="item.title">
-            <a-tree v-model:checkedKeys="checkedKeys" :defaultExpandAll="false" :show-line="true" :tree-data="item.list"
-              check-strictly checkable>
+            <a-tree v-model:checkedKeys="checkedKeys" :fieldNames="{ children: 'list' }" :defaultExpandAll="false"
+              :show-line="true" :tree-data="item.list" check-strictly checkable>
             </a-tree>
           </a-collapse-panel>
         </a-collapse>
@@ -88,10 +88,7 @@ enum api {
   listRoleApi = '/api/zrzy-system/role/list',//角色列表
   deleteRoleApi = '/api/zrzy-system/role/removeById',//删除角色
 }
-let sysMenuList = ref([{
-  title: "规划实施业务管理系统",
-  list: []
-}])
+let sysMenuList = ref([])
 onMounted(() => {
   loadRole()
   loadMenu()
@@ -121,7 +118,8 @@ function onChange(pag: any, callback: any) {
 }
 function loadMenu() {
   defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
-    sysMenuList.value[0].list = res.result
+    sysMenuList.value = res.result
+    debugger
   }).catch(err => {
     console.info(err)
   })
