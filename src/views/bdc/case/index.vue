@@ -65,8 +65,8 @@ const columns = [
     },
     {
         title: '创建时间',
-        dataIndex: 'slsj',
-        key: 'slsj',
+        dataIndex: 'createTime',
+        key: 'createTime',
     },
     {
         title: '操作',
