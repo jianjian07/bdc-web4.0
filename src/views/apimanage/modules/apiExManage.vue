@@ -123,7 +123,7 @@
                   :apiType="pane.apiType"></api-ex-param>
               </div>
               <div class="api-editor-manage-interface-result">
-                <api-result :response-body="_responseBody" @clearResponseBody="clearResponseBody"></api-result>
+                <api-result :response-body="pane.responseBody" @clearResponseBody="clearResponseBody"></api-result>
               </div>
             </div>
           </div>
@@ -295,8 +295,8 @@ function dirDataChange(e, dir) {
       child.dirName = dir.name
       child.publicKey = dir.publicKey
       child.privateKey = dir.privateKey
-      child.apiKeys = dir.apiKeys,
-        child.isResultDecrypt = dir.isEncrypt
+      child.apiKeys = dir.apiKeys
+      child.isResultDecrypt = dir.isEncrypt
       child.encryptType = dir.encryptType
       return child
     })
@@ -369,37 +369,12 @@ function saveDir() {
       }
     })
   })
-
 }
-let _responseBody: any = ref()
-async function sendApi() {
-  let select = JSON.parse(JSON.stringify(props.selectItem))
 
-  let url = '/api/zrzy-api/sql/' + select.url
-
-  var params: any = {}
-  let body = JSON.parse(select.requestBody).children
-  if (body.length > 0) {
-    body.forEach(item => {
-      params[item.fieldName] = item.defaultValue
-    })
-  }
-  debugger
-  defHttp.post({ url: url, params: params, data: params }, { withToken: true }).then((res) => {
-    if (res && res.success) {
-      debugger
-      _responseBody.value = JSON.stringify(res.result)
-      message.success('请求成功')
-    } else {
-      // message.warning('请求失败')
-      _responseBody.value = '请求失败'
-    }
-  })
-}
 /**
  * 发送api
  */
-async function sendApi_bf() {
+async function sendApi() {
   let select = JSON.parse(JSON.stringify(props.selectItem))
   select = formatSelectItem(select)
   let headers = {}
@@ -431,6 +406,7 @@ async function sendApi_bf() {
       response = await sendMagicApi(sendParams)
     } else {
       // 调用通用的接口请求接口
+      response = await sendCommonApi(sendParams)
     }
     props.selectItem.responseBody = response
   } else {
@@ -512,6 +488,28 @@ function saveCommonApi(data, isSend?: any) {
 }
 
 /**
+ * 通用接口发送
+ * @param sendParams
+ */
+function sendCommonApi(sendParams) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({ url: '/api/zrzy-api/sql/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(JSON.stringify(res.result))
+        message.success('请求成功')
+      } else {
+        message.warning('请求失败')
+        resolve(res.message + '')
+      }
+    }).catch(err => {
+      console.log('err', err)
+      // responseBody.value = err + ''
+      resolve(err + '')
+    })
+  })
+}
+
+/**
  * 处理magicApi保存数据
  * @param select
  */
@@ -572,9 +570,11 @@ function sendMagicApi(sendParams) {
       headers: sendParams.headers
     }, { withToken: true }).then((res) => {
       // responseBody.value = JSON.stringify(res)
+      message.success('请求成功')
       resolve(JSON.stringify(res))
     }).catch(err => {
       console.log('err', err)
+      message.success('请求失败')
       // responseBody.value = err + ''
       resolve(err + '')
     })
