@@ -148,7 +148,7 @@ const edit = (key: string) => {
 /** 保存 **/
 const save = (key: string) => {
     let _data: any = {}
-    Object.assign(_data, editableData[key], props.nodeInfo)
+    Object.assign(_data, Object.fromEntries(Object.entries(editableData[key] || {}).map(([k, v]) => [k, v === undefined ? null : v])), props.nodeInfo);
     let _url = api.updateUrl
     if (key.includes('l')) {
         _url = api.addUrl
