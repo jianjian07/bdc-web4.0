@@ -1,13 +1,13 @@
 <template>
   <div class="cc-container">
       <div style="display: flex; flex-direction: column; height: 100%">
-          <div style="line-height: 3em; background-color: #fff;padding: 10px 20px;">
+          <div style="line-height: 3em; background-color: #fff;padding: 10px 10px;">
             <a-space style="padding-bottom: 10px;">
               <a-button type="primary" @click="addRegion()">添加区域</a-button>
               <a-button type="primary" :disabled="!selectInfo.title" @click="addRegion('child')">添加下级区域</a-button>
               <a-button type="default" :disabled="!checkedInfo.length" @click="showDeleteConfirm">批量删除区域</a-button>
             </a-space>  
-            <a-alert type="info">
+            <a-alert type="info" :show-icon="true">
               <template #message>
                   当前选择：
                   <span style="font-weight: 600;">
