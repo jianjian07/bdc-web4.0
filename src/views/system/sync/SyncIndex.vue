@@ -1,67 +1,64 @@
 <template>
   <div class="data-sync-index wonder-table-form">
-      <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
-            <a-row :gutter="[0, 8]" tyle="flex">
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="源表">
-                        <a-input v-model:value="formData.sourceTable" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="目标表">
-                        <a-input v-model:value="formData.targetTable" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="4" :offset="0">
-                    <a-form-item style="text-align: center;">
-                        <a-space>
-                            <a-button type="primary" @click="searchData">
-                                <template #icon>
-                                    <component :is="SearchOutlined"></component>
-                                </template>查询
-                            </a-button>
-                            <a-button @click="refreshData">
-                                <template #icon>
-                                    <component :is="RedoOutlined"></component>
-                                </template>重置
-                            </a-button>
-                        </a-space>
-                    </a-form-item>
-                </a-col>
-            </a-row>
-        </a-form>
+    <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
+      <a-row :gutter="[0, 8]" tyle="flex">
+        <a-col :span="8" :offset="0">
+          <a-form-item label="源表">
+            <a-input v-model:value="formData.sourceTable" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="8" :offset="0">
+          <a-form-item label="目标表">
+            <a-input v-model:value="formData.targetTable" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="4" :offset="0">
+          <a-form-item style="text-align: center;">
+            <a-space>
+              <a-button type="primary" @click="searchData">
+                <template #icon>
+                  <component :is="SearchOutlined"></component>
+                </template>查询
+              </a-button>
+              <a-button @click="refreshData">
+                <template #icon>
+                  <component :is="RedoOutlined"></component>
+                </template>重置
+              </a-button>
+            </a-space>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
   </div>
   <div class="wonder-table-css">
-        <div class="wonder-table-toolbar">
-            <a-space>
-                <a-button type="primary" @click="add">
-                    <template #icon>
-                        <plus-outlined />
-                    </template>
-                    新增
-                </a-button>
-            </a-space>
-        </div>
-        <a-table :columns="columns" 
-                 :data-source="dataList" 
-                 :pagination="pagination"
-                 @change="onChange($event, loadData)" 
-                 :row-key="record => record.id">
-            <template #bodyCell="{ column, record, index }">
-               <template v-if="column.dataIndex == 'index'">
-                  {{ index + 1 }}
-               </template>
-               <template v-else-if="column.dataIndex == 'operate'">
-                  <a @click="edit(record)">编辑</a>
-                  <a-divider type="vertical"/>
-                  <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
-                    <a>删除</a>
-                  </a-popconfirm>
-                  
-               </template>
-            </template>
-        </a-table>
-<!--    <sync-modal ref="refModal" @ok="handleModalOk"></sync-modal>-->
+    <div class="wonder-table-toolbar">
+      <a-space>
+        <a-button type="primary" @click="add">
+          <template #icon>
+            <plus-outlined />
+          </template>
+          新增
+        </a-button>
+      </a-space>
+    </div>
+    <a-table :columns="columns" :data-source="dataList" :pagination="pagination" @change="onChange($event, loadData)"
+      :row-key="record => record.id">
+      <template #bodyCell="{ column, record, index }">
+        <template v-if="column.dataIndex == 'index'">
+          {{ index + 1 }}
+        </template>
+        <template v-else-if="column.dataIndex == 'operate'">
+          <a @click="edit(record)">编辑</a>
+          <a-divider type="vertical" />
+          <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
+            <a>删除</a>
+          </a-popconfirm>
+
+        </template>
+      </template>
+    </a-table>
+    <!--    <sync-modal ref="refModal" @ok="handleModalOk"></sync-modal>-->
   </div>
 </template>
 
@@ -93,12 +90,12 @@ const columns = [
     key: 'code'
   },
   {
-    title: '源表',
+    title: '源数据库',
     dataIndex: 'sourceDb',
     key: 'sourceDb'
   },
   {
-    title: '目标表',
+    title: '目标数据库',
     dataIndex: 'targetDb',
     key: 'targetDb'
   },
@@ -111,9 +108,9 @@ const columns = [
 ]
 
 let pagination = ref({
-    total: 0,
-    current: 1,
-    pageSize: 10,
+  total: 0,
+  current: 1,
+  pageSize: 10,
 })
 
 enum api {
@@ -141,11 +138,11 @@ function loadData() {
 }
 
 function searchData() {
-  
+
 }
 
 function refreshData() {
-  
+
 }
 
 function add() {
@@ -153,7 +150,7 @@ function add() {
 }
 
 function edit(record) {
-  router.push({ path: '/system/syncdesign', query: { id: record.id }  })
+  router.push({ path: '/system/syncdesign', query: { id: record.id } })
 }
 
 /**
@@ -177,8 +174,8 @@ function del(record) {
 * @param callback 回调函数
 */
 function onChange(pag: any, callback: any) {
-    pagination.value = pag
-    callback()
+  pagination.value = pag
+  callback()
 }
 
 function handleModalOk() {
@@ -189,6 +186,6 @@ function handleModalOk() {
 <style lang="less" scoped>
 // table通用样式，保持项目内样式一致
 @import url('/@/assets/less/table.less');
-.data-sync-index {
-}
+
+.data-sync-index {}
 </style>

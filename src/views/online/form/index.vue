@@ -119,6 +119,7 @@ enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
     lockFormUrl = '/api/zrzy-form/form/lockForm',
     unlockFormUrl = '/api/zrzy-form/form/unlockForm',
+    delUrl = '/api/zrzy-form/form/delete' // 删除
 }
 const columns = [
     { title: "ID", dataIndex: "id", width: 80 },
@@ -327,8 +328,7 @@ function editData(record) {
 */
 function deleteData(record) {
     if (!record.id) return
-    let url = '/magicapi/zrzy-form/magic/form/form/delete' // 删除
-    defHttp.post({ url: url, params: { id: record.id } }, { withToken: true, joinParamsToUrl: true }).then((res) => {
+    defHttp.post({ url: Api.delUrl, params: { id: record.id } }, { withToken: true }).then((res) => {
         if (!res.message) {
             message.success('删除成功')
             loadData()
