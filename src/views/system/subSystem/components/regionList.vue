@@ -226,7 +226,7 @@ function onCheck(checkedKeys, e) {
       areaName: ele.type == '2' ? ele.parentName : ele.areaName,
       subsystemname: props.selectSystem.name,
       subsystemid: props.selectSystem.id,
-      zdgs: ele.areaCode
+      zdgs: ele.type == '2' ? ele.areaCode : '' //选择为区县，宗地归属置空
     }
   })
   if(checkStrictly.value) {
