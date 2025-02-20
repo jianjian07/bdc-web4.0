@@ -6,7 +6,7 @@ import { useUserStoreWithOut } from "/@/store/modules/user";
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN
 const BASE_ZSTP = PageEnum.BASE_ZSTP
-const BASE_EXTRA = PageEnum.BASE_EXTRA
+// const BASE_EXTRA = PageEnum.BASE_EXTRA
 const ERROR_401 = PageEnum.ERROR_401
 
 const whitePathList: PageEnum[] = [LOGIN_PATH, BASE_ZSTP, ERROR_401];
@@ -66,16 +66,16 @@ export function createPermissionGuard(router: Router) {
         return;
       }
 
-      if (BASE_EXTRA.includes(to.path)) {
-        const formData = {
-          username: "admin",
-          password: "123456",
-          goHome: false
-        };
-        await userStore.login(formData);
-        next(to.path)
-        return
-      }
+      // if (BASE_EXTRA.includes(to.path)) {
+      //   const formData = {
+      //     username: "mSkNhL7oDgrElRf0s0dNCg==",
+      //     password: "WKKzoI74dTZv3hSGGshnpg==",
+      //     goHome: false
+      //   };
+      //   await userStore.login(formData);
+      //   next(to.path)
+      //   return
+      // }
       // redirect login page
       const redirectData: { path: string; replace: boolean; query?: Recordable<string> } = {
         path: LOGIN_PATH,
