@@ -201,8 +201,18 @@ function loadZDGSData() {
     if(res?.success) {
       if( res?.result?.records?.length ) {
         checkKeys.value = res.result.records.map(ele => {
-          return ele.zdgs
+          return ele.zdgs || ele.areaCode //宗地归属为空，则返回areaCode
         }).join(',').split(',')
+
+        checkNodes.value = res.result.records.map(ele => {
+          return {
+            areaCode: ele.areaCode,
+            areaName: ele.areaName,
+            subsystemname: ele.subsystemname,
+            subsystemid: ele.subsystemid,
+            zdgs: ele.zdgs
+          }
+        })
       } else {
         checkKeys.value = []
       }
