@@ -215,6 +215,7 @@ function loadZDGSData() {
         })
       } else {
         checkKeys.value = []
+        checkNodes.value = []
       }
     } else {
       message.warning(res?.message)
