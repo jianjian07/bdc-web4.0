@@ -13,7 +13,7 @@
         ref="oldPassword"
         name="oldPassword"
       >
-        <a-input v-model:value="formState.oldPassword" />
+        <a-input-password v-model:value="formState.oldPassword" />
       </a-form-item>
       <a-form-item
         label="新密码"
