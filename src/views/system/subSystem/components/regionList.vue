@@ -185,7 +185,7 @@ function setData(data) {
 function loadZDGSData() {
   var params = {
     pageNo: 1,
-    pageSize: 1000,
+    pageSize: -1,
     order: 'desc,asc',
     column: 'id,areaCode',
     subsystemid: props.selectSystem.id

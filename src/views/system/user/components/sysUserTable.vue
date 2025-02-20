@@ -40,6 +40,8 @@
           <template v-if="column.dataIndex === 'operation'">
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
+            <a @click="changePSW(record)">修改密码</a>
+            <a-divider type="vertical" />
             <a-popconfirm :disabled="record.username == 'admin'" cancel-text="否" ok-text="是"
               @confirm="handleDel(record)">
               <template #title>
@@ -53,6 +55,7 @@
       </a-table>
     </div>
     <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" @ok="ok"></user-modal>
+    <change-password v-if="passwordOpen" :open="passwordOpen" :title="passwordTitle" :dataInfo="dataInfo" @ok="ok"></change-password>
   </div>
 </template>
 
@@ -61,8 +64,11 @@ import { computed, onMounted, reactive, ref } from "vue"
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { defHttp } from "/@/utils/http/axios"
 import UserModal from "/@/views/system/user/components/UserModal.vue"
+import changePassword from "/@/views/system/user/components/changePassword.vue"
 let drawerOpen = ref(false)
+let passwordOpen = ref(false)
 let title = ref('')
+let passwordTitle = ref('')
 let dataInfo = ref({})
 // 查询条件
 let searchForm = reactive({
@@ -190,6 +196,13 @@ function handleDel(record) {
 
 }
 
+function changePSW(record) {
+  passwordOpen.value = true
+  dataInfo.value = record
+  console.log(record)
+  passwordTitle.value = `用户【${record.realName}】修改密码`
+}
+
 /**
  * 表格变化
  * @param pagination
@@ -216,6 +229,7 @@ function reset() {
 }
 function ok() {
   drawerOpen.value = false
+  passwordOpen.value = false
 }
 </script>
 
