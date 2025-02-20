@@ -222,6 +222,7 @@ function changeType(_value: any) {
 */
 function refreshData() {
     formData.value = {
+        id: '',
         formName: '',
         code: '',
         formType: ''
