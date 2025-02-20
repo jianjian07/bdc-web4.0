@@ -84,7 +84,7 @@ function loadSystemList() {
     if (res?.success) {
       systemTree.value = res.result.records
     } else {
-      message.warning(res?.message || '未查询到行政区数据！')
+      message.warning(res?.message || '未查询到子系统数据！')
     }
   })
 }

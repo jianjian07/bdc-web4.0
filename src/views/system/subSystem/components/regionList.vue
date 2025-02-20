@@ -222,8 +222,8 @@ function onSelect(selectedKeys, e) {
 function onCheck(checkedKeys, e) {
   checkNodes.value = e.checkedNodes.map(ele => {
     return {
-      areaCode: ele.areaCode,
-      areaName: ele.areaName,
+      areaCode: ele.type == '2' ? ele.parentCode : ele.areaCode,
+      areaName: ele.type == '2' ? ele.parentName : ele.areaName,
       subsystemname: props.selectSystem.name,
       subsystemid: props.selectSystem.id,
       zdgs: ele.areaCode
