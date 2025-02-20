@@ -98,7 +98,7 @@ export const useUserStore = defineStore({
     // 上次操作时间(用于离开锁定)
     lastOperateTime: new Date().getTime(),
     // 是否锁屏
-    isLocked: 'false'
+    isLocked: false
   }),
   getters: {
     getUserInfo(): UserInfo {
