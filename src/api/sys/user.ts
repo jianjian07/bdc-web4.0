@@ -58,6 +58,7 @@ export function loginApi(params: LoginParams) {
         resolve({
           // userId: res.user_id,
           username: params.username,
+          userpwd: params.password,
           token: 'Bearer' + ' ' + res.result.access_token
         })
       } else {

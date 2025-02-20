@@ -1,5 +1,34 @@
 <script setup lang="ts">
+import { useUserStoreWithOut } from "/@/store/modules/user"
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
+import LockScreen from "/@/views/sys/lock/LockScreen.vue"
+import { onMounted, onBeforeUnmount } from "vue"
+import { router } from "/@/router"
+const userStore = useUserStoreWithOut()
+
+// 页面加载时的逻辑
+onMounted(() => {
+  let isPageReloaded = sessionStorage.getItem('isPageReloaded')
+  if (!isPageReloaded) {
+    // 第一次加载
+    sessionStorage.setItem('isPageReloaded', 'true')
+  }
+  if (!userStore.getToken) {
+    userStore.resetLockState()
+    router.replace('/login');
+  } else if (userStore.getIsLocked == 'true') {
+    if (!isPageReloaded) {
+      // 第一次加载或是新标签页打开 如果已经是被锁状态，直接跳转登录
+      userStore.resetLockState()
+      userStore.setToken('')
+      router.replace('/login');
+    } else {
+      // 刷新当前标签页时
+      userStore.lockScreen();
+    }
+  }
+});
+
 </script>
 
 <template>
@@ -9,7 +38,8 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
       fontSize: 13
     },
   }">
-    <RouterView />
+    <lock-screen v-if="userStore.getIsLocked == 'true'"></lock-screen>
+    <RouterView v-else/>
   </a-config-provider>
 </template>
 <script lang="ts">

@@ -1,36 +1,34 @@
-import type { UserInfo, LoginInfo } from '/#/store';
+import type { LoginInfo, UserInfo } from '/#/store'
 // import type { ErrorMessageMode } from '/#/axios';
-import { defineStore } from 'pinia';
-import { store } from '/@/store';
+import { defineStore } from 'pinia'
+import { store } from '/@/store'
 // import { RoleEnum } from '/@/enums/roleEnum';
-import { PageEnum } from '/@/enums/pageEnum';
+import { PageEnum } from '/@/enums/pageEnum'
 import {
-  ROLES_KEY,
+  APP_LOCAL_CACHE_KEY,
+  APP_SESSION_CACHE_KEY,
+  CATEGORY_DATA_KEY,
+  DB_DICT_DATA_KEY,
+  IGS_INFO,
+  LAST_OPERATE_TIME,
+  LOCK_STATUS,
+  LOGIN_INFO_KEY,
+  TENANT_ID,
   TOKEN_KEY,
   USER_INFO_KEY,
-  LAST_OPERATE_TIME,
-  LOGIN_INFO_KEY,
-  DB_DICT_DATA_KEY,
-  CATEGORY_DATA_KEY,
-  VALIDATE_RULE_DATA_KEY,
-  TENANT_ID,
-  IGS_INFO, 
-  APP_LOCAL_CACHE_KEY, 
-  APP_SESSION_CACHE_KEY
+  VALIDATE_RULE_DATA_KEY
 } from '/@/enums/cacheEnum'
-import { getAuthCache, setAuthCache } from '/@/utils/auth';
-import { GetUserInfoModel, LoginParams, ThirdLoginParams } from '/@/api/sys/model/userModel';
-import { getUserInfo, licence, loginApi, login_tyyw, doLogout } from '/@/api/sys/user'
-import { router } from '../../router';
-import { usePermissionStore } from '/@/store/modules/permission';
-import { RouteRecordRaw } from 'vue-router';
-import { PAGE_NOT_FOUND_ROUTE } from '../../router/routes/basic';
-import { isArray } from '/@/utils/is';
-import { Modal, notification } from 'ant-design-vue';
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { createVNode } from 'vue';
+import { getAuthCache, removeAuthCache, setAuthCache } from '/@/utils/auth'
+import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel'
+import { doLogout, getUserInfo, licence, login_tyyw, loginApi } from '/@/api/sys/user'
+import { router } from '../../router'
+import { usePermissionStore } from '/@/store/modules/permission'
+import { RouteRecordRaw } from 'vue-router'
+import { PAGE_NOT_FOUND_ROUTE } from '../../router/routes/basic'
+import { Modal, notification } from 'ant-design-vue'
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
+import { createVNode } from 'vue'
 import { getDict, getRuleList } from "/@/api/sys/dict"
-import { setCookie } from "/@/utils/sysUtil"
 // import { useGlobSetting } from '/@/hooks/setting';
 // import { useSso } from '/@/hooks/web/useSso';
 
@@ -59,7 +57,8 @@ interface UserState {
   licence?: string,
   // 是否移交（发送弹窗）
   saveFormFlag?: boolean,
-  lastOperateTime?: number 
+  lastOperateTime?: number,
+  isLocked?: string
 }
 
 export const useUserStore = defineStore({
@@ -98,6 +97,8 @@ export const useUserStore = defineStore({
     saveFormFlag: true,
     // 上次操作时间(用于离开锁定)
     lastOperateTime: new Date().getTime(),
+    // 是否锁屏
+    isLocked: 'false'
   }),
   getters: {
     getUserInfo(): UserInfo {
@@ -108,6 +109,10 @@ export const useUserStore = defineStore({
     },
     getToken(): string {
       return this.token || getAuthCache<string>(TOKEN_KEY);
+    },
+    getIsLocked(): string {
+      // 这里得直接用localstorage
+      return this.isLocked || localStorage.getItem(LOCK_STATUS)
     },
     getAllDicts(): [] {
       return this.dicts || getAuthCache(DB_DICT_DATA_KEY);
@@ -224,9 +229,27 @@ export const useUserStore = defineStore({
     setSaveFormFlag(bool: boolean) {
       this.saveFormFlag = bool
     },
+    lockScreen() {
+      this.isLocked = 'true'
+      localStorage.setItem(LOCK_STATUS, 'true')
+    },
+    unLockScreen(inputPassword: string): boolean {
+      if (inputPassword == this.getLoginInfo.userpwd) {
+        this.isLocked = 'false'
+        this.setLastOperateTime(new Date().getTime())
+        localStorage.removeItem(LOCK_STATUS)
+        return true
+      }
+      return false
+    },
+    resetLockState() {
+      this.isLocked = 'false'
+      localStorage.removeItem(LOCK_STATUS)
+    },
     resetState() {
       this.setUserInfo(null);
       this.setToken('');
+      this.resetLockState()
       //   this.roleList = [];
       this.sessionTimeout = false;
       this.menuIndex = -1
@@ -438,6 +461,7 @@ export const useUserStore = defineStore({
         }
       }
       this.setToken('');
+      this.resetLockState()
       // setAuthCache(TOKEN_KEY, null);
       this.setSessionTimeout(false);
       this.setUserInfo(null);

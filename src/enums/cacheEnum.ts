@@ -43,6 +43,8 @@ export const IGS_INFO = 'IGS_INFO'
 export const TOOLBAR_INFO = 'TOOLBAR_INFO'
 // 操作时间
 export const LAST_OPERATE_TIME = 'LAST_OPERATE_TIME'
+// 锁屏
+export const LOCK_STATUS = 'LOCK_STATUS'
 
 export enum CacheTypeEnum {
   SESSION,

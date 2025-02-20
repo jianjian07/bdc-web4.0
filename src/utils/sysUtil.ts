@@ -17,12 +17,16 @@ window.onload = function() {
     const userStore = useUserStoreWithOut();
     userStore.setLastOperateTime(new Date().getTime())
   };
+  window.document.onkeydown = function() {
+    const userStore = useUserStoreWithOut();
+    userStore.setLastOperateTime(new Date().getTime())
+  };
 };
 
 /**
  * 超时检查
  */
-async function checkTimeout() {
+async function checkTimeout_bf() {
   const userStore = useUserStoreWithOut()
   const permissionStore = usePermissionStoreWithOut()
   let currentTime = new Date().getTime() //更新当前时间
@@ -47,6 +51,23 @@ async function checkTimeout() {
     // console.log('由于长时间未操作系统, 自动退出到登录页面!')
     message.warning('由于长时间未操作系统, 自动退出到登录页面!')
     router.push(PageEnum.BASE_LOGIN)
+  }
+}
+
+/**
+ * 超时锁屏
+ */
+function checkTimeout() {
+  const userStore = useUserStoreWithOut()
+  let currentTime = new Date().getTime() //更新当前时间
+  let lastTime = userStore.getLastOperateTime
+
+  const pageList = ['/login', '/401']
+  if ((currentTime - lastTime) > timeOut) {
+    if (pageList.includes(router.currentRoute.value.path)) return; // 已是登陆页或是401时不操作
+    if (!(userStore.getIsLocked == 'true')) {
+      userStore.lockScreen()
+    }
   }
 }
 
