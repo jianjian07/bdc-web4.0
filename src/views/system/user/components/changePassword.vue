@@ -24,6 +24,9 @@ import { message } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
 import { onMounted, reactive, ref } from 'vue';
 import { encryptionAES } from '/@/utils/cipher';
+import { useUserStoreWithOut } from "/@/store/modules/user";
+
+const userStore = useUserStoreWithOut();
 
 const props = defineProps({
   open: {
@@ -43,7 +46,6 @@ const props = defineProps({
 const formRef = ref()
 let open = ref(props.open)
 const emit = defineEmits(["ok"])
-let helpinfo = ref('')
 
 const formState = reactive({
   newPassword: ''
@@ -53,17 +55,21 @@ enum api {
   update = '/api/zrzy-system/sys/v1/user/updatePasswordForAdmin'
 }
 
-onMounted(() => {
-  helpinfo.value = window?.settingConfig?.pwd_regexErrorMsg
+let helpinfo = ref('')
+let psw_regex = ref('')
 
-  console.log('helpinfo.value', helpinfo.value, window?.settingConfig)
+onMounted(() => {
+  if(userStore?.validateRuleList?.length) {
+    let pwdRule = userStore?.validateRuleList.filter(ele => ele.ruleCode == 'password')
+    helpinfo.value = pwdRule[0]?.message
+    psw_regex.value = pwdRule[0]?.content
+  }
+  
+  console.log('helpinfo.value', helpinfo.value)
 })
 
 const validateNewPassword = (rule, value, callback) => {
-  const psw_regex = window?.settingConfig?.pwd_regex;
-  let regex = new RegExp(psw_regex);
-
-  if(psw_regex && !regex.test(value)) {
+  if(psw_regex.value && !!(eval(psw_regex.value) instanceof RegExp) && !eval(psw_regex.value).test(value)) {
     callback(helpinfo)
   } else {
     callback()
@@ -81,7 +87,6 @@ const formRules: any = {
 * 保存
 */
 function onOk() {
-  console.log(formState.newPassword,encryptionAES(formState.newPassword))
   formRef.value
     .validate()
     .then(() => {
