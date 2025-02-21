@@ -71,7 +71,7 @@ let title = ref('')
 let passwordTitle = ref('')
 let dataInfo = ref({})
 // 查询条件
-let searchForm = reactive({
+let searchForm = ref({
   name: '',
   state: ''
 })
@@ -146,8 +146,8 @@ onMounted(() => {
  */
 function initData() {
   let params = {
-    userName: searchForm.name,
-    enabled: searchForm.state,
+    userName: searchForm.value.name,
+    enabled: searchForm.value.state,
     deptId: '',
     pageNo: page.value.current,
     pageSize: pagination.value.pageSize
@@ -220,7 +220,7 @@ function onTableChange(pagination, filters, sorter, { currentDataSource }) {
  * 重置
  */
 function reset() {
-  searchForm = {
+  searchForm.value = {
     name: '',
     state: ''
   }
@@ -262,6 +262,10 @@ function ok() {
           }
         }
       }
+    }
+    
+    :deep(.ant-spin-container) {
+      overflow: hidden!important;
     }
   }
 }

@@ -1,6 +1,6 @@
 import * as convert from 'xml-js';
 import { defHttp } from '/@/utils/http/axios';
-import { guid } from '../../../utils';
+import { guid } from '/@/utils/index';
 import { message } from 'ant-design-vue';
 import modal from 'ant-design-vue/es/modal';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';

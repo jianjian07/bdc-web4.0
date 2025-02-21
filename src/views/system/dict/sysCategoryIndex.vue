@@ -222,7 +222,6 @@ function addData() {
     open.value = true
 }
 function handOk(value: any) {
-    debugger
     open.value = false
     // let find = findNodeById(datalist.value, Number(dataInfo.value.parentId))
     // loadChildList(find)
@@ -235,7 +234,6 @@ function handOk(value: any) {
 function loadChildList(record) {
     let url = '/api/zrzy-bdc/sys/dict/queryByParentId'
     defHttp.get({ url: url, params: { parentId: record.id } }, { withToken: true }).then((res) => {
-        debugger
         let childList = res.result
         for (let i = 0; i < childList.length; i++) {
             if (childList[i].hasChild == "1") {

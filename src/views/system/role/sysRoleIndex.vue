@@ -13,7 +13,7 @@
             </a-button>
           </a-form-item>
           <a-form-item>
-            <a-button>
+            <a-button @click="reset">
               <template #icon></template>
               重置
             </a-button>
@@ -107,6 +107,13 @@ function loadRole() {
     console.info(err)
   })
 }
+
+function reset() {
+  pagination.value.current = 1
+  searchFormState.value.name = '' 
+  loadRole()
+}
+
 /**
 * 分页
 * @param pag
@@ -118,8 +125,11 @@ function onChange(pag: any, callback: any) {
 }
 function loadMenu() {
   defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
-    sysMenuList.value = res.result
-    debugger
+    if (res && res.success) {
+      sysMenuList.value = res.result
+    } else {
+      message.warning(res.message)
+    }
   }).catch(err => {
     console.info(err)
   })

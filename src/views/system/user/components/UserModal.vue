@@ -59,7 +59,6 @@ const props = defineProps({
     }
 })
 let isAdd = ref(false)
-debugger
 if (props.dataInfo.id == undefined) {
     isAdd.value = true
 }
