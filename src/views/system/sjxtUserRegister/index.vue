@@ -126,7 +126,7 @@ import { encryptionAES } from '/@/utils/cipher';
 import { useUserStoreWithOut } from "/@/store/modules/user";
 import { Modal } from 'ant-design-vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 const userStore = useUserStoreWithOut();
 
