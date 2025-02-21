@@ -49,7 +49,7 @@ import { PlusOutlined,FullscreenOutlined,FullscreenExitOutlined } from '@ant-des
 import { onMounted, ref, watch } from "vue"
 import SysRuleForm from "/@/views/system/rule/components/sysRuleForm.vue"
 import { defHttp } from "/@/utils/http/axios"
-import { getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+import { getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { message } from "ant-design-vue"
 
 const props = defineProps({

@@ -164,7 +164,7 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { Base64 } from 'js-base64';
 import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
-import eventBus from "/@/views/bdc/djlc/eventBus"
+import eventBus from "/@/views/online/utils/eventBus"
 
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)

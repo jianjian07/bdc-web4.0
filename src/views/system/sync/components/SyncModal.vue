@@ -77,7 +77,7 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { guid } from "/@/utils"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 let modalVisible = ref<boolean>(false)
 // 弹窗标题

@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-// import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+// import { getDictItemsByCode } from '/@/views/online/utils/commonUtils'';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 const props = defineProps({

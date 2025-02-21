@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import eventBus from "/@/views/bdc/djlc/eventBus"
+import eventBus from "/@/views/online/utils/eventBus"
 import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
 import { useRoute } from "vue-router"

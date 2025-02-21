@@ -37,7 +37,7 @@ import dayjs from "dayjs"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useUserStore } from "/@/store/modules/user"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 

@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { defineExpose, onMounted, ref } from 'vue'
-import { validateRules, setInputStatus } from "/@/utils/form/commonUtils"
+import { validateRules, setInputStatus } from "/@/views/online/utils/commonUtils"
 import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"

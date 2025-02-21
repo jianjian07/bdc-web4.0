@@ -20,14 +20,14 @@ import {
   getLabelByDictCode,
   getLabelByTreeDictCode,
   getRowSpan
-} from '/@/utils/form/commonUtils'
-import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
+} from '/@/views/online/utils/commonUtils'
+import { initTable, edit, save, cancel } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
 import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
-import eventBus from "/@/views/bdc/djlc/eventBus"
+import eventBus from "/@/views/online/utils/eventBus"
 import dayjs from 'dayjs';
 import * as bdc from '/@/views/bdc/public/bdc'
 import {
@@ -49,7 +49,7 @@ import {
     editRow, 
     saveRow, 
     cancelRow 
-} from "/@/utils/form/wonder1.0.1"
+} from "/@/views/online/utils/wonder1.0.1"
 import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props: any = defineProps({

@@ -219,7 +219,7 @@ import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
 import { Base64 } from 'js-base64';
 import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
-import eventBus from "/@/views/bdc/djlc/eventBus"
+import eventBus from "/@/views/online/utils/eventBus"
 
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)

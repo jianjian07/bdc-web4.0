@@ -68,7 +68,7 @@ import {
   DownOutlined,
   FileOutlined
 } from '@ant-design/icons-vue'
-import { findNode } from "/@/utils/form/commonUtils"
+import { findNode } from "/@/views/online/utils/commonUtils"
 import { guid } from "/@/utils"
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"

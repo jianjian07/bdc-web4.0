@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import dayjs from "dayjs"
 import { useUserStore } from "/@/store/modules/user"
 import { defHttp } from "/@/utils/http/axios"

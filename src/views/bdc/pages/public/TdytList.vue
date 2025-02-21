@@ -79,7 +79,7 @@ import { ref, watch, reactive } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from 'lodash-es';
-import { getTreeDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getTreeDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { useRoute } from "vue-router"
 
 const route = useRoute()

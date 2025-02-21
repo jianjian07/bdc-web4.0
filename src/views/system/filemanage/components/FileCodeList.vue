@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import { findNode } from "/@/utils/form/commonUtils"
+import { findNode } from "/@/views/online/utils/commonUtils"
 import { guid } from "/@/utils"
 
 const props = defineProps({

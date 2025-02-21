@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue"
 import { router } from "/@/router"
-import { getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+import { getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 // 规则目录
 // let catalog = ref([])
 // 选中项

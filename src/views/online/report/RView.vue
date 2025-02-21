@@ -8,11 +8,11 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { generateReportHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, useVNodes, getLabelByDictCode, getLabelByTreeDictCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, useVNodes, getLabelByDictCode, getLabelByTreeDictCode } from '/@/views/online/utils/commonUtils';
 import {
     initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
-} from "/@/utils/form/wonder-report"
-import { getSelectAllCheck, setSelectAllCheck, syncChange } from "/@/utils/form/wonder1.0.1"
+} from "/@/views/online/utils/wonder-report"
+import { getSelectAllCheck, setSelectAllCheck, syncChange } from "/@/views/online/utils/wonder1.0.1"
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"

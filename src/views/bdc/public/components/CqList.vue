@@ -37,9 +37,9 @@
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios";
 import { onMounted, ref, computed, reactive, watch } from "vue";
-import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, formatMultipleTreeSelectValue, useVNodes } from '/@/utils/form/commonUtils';
-import { syncChange, getSelectAllCheck, setSelectAllCheck } from "/@/utils/form/wonder1.0.1";
-import { initTableV2, onExportExcel } from "/@/utils/form/wonder-report";
+import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, formatMultipleTreeSelectValue, useVNodes } from '/@/views/online/utils/commonUtils';
+import { syncChange, getSelectAllCheck, setSelectAllCheck } from "/@/views/online/utils/wonder1.0.1";
+import { initTableV2, onExportExcel } from "/@/views/online/utils/wonder-report";
 import { message } from "ant-design-vue";
 import { emit } from "process";
 const VNodes = useVNodes();

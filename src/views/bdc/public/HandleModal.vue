@@ -73,7 +73,7 @@
 <script lang="ts" setup>
 import { TeamOutlined, UserOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import { onMounted, ref } from "vue"
-import { findNode } from "/@/utils/form/commonUtils"
+import { findNode } from "/@/views/online/utils/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useRoute } from "vue-router"

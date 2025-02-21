@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue"
 import Qlr from "/@/views/bdc/pages/qlr/Qlr.vue"
-import eventBus from "/@/views/bdc/djlc/eventBus"
+import eventBus from "/@/views/online/utils/eventBus"
 // 权利人渲染列表
 let qlrList = ref<any>([])
 // 权利人实例

@@ -66,7 +66,7 @@ import WangEditor from '/@/components/common/wangEditor.vue'
 import { cModal } from "/@/components/cModal/index"
 import dayjs from 'dayjs';
 import { useUserStore } from "/@/store/modules/user";
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 const formRef = ref()
 let formState: any = reactive({

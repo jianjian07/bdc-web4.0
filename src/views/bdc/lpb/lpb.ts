@@ -1,5 +1,5 @@
 // 单个非组合流程
-import { findNode, getDictItemsByCode, getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+import { findNode, getDictItemsByCode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 
 export function checkShowForSingle(regType, fwInfo) {
   let djdl = regType.substr(0, 2)

@@ -169,7 +169,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from "vue"
 import { router } from "/@/router"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
 import { SwapRightOutlined,MinusOutlined,MinusCircleOutlined,FormOutlined } from '@ant-design/icons-vue';
 import SyncModal from "/@/views/system/sync/components/SyncModal.vue"

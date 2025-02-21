@@ -33,7 +33,7 @@
 import { ref } from 'vue';
 import BdList from '/@/views/system/case/components/BdList.vue';
 import BtnList from '/@/views/system/case/components/BtnList.vue';
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from '/@/utils/http/axios';
 const props = defineProps({
     open: {

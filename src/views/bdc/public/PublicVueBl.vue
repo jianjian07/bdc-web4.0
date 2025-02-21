@@ -51,11 +51,11 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
 import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
-import { isJsonData } from "/@/utils/form/commonUtils"
+import { isJsonData } from "/@/views/online/utils/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
-import eventBus from "/@/views/bdc/djlc/eventBus"
-import { resetValidateInfos } from "/@/utils/form/wonder1.0.1"
+import eventBus from "/@/views/online/utils/eventBus"
+import { resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))

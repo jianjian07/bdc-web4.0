@@ -33,7 +33,7 @@
 import { ref, watch } from 'vue';
 import BdList from '/@/views/system/case/components/BdList.vue';
 import BtnList from '/@/views/system/case/components/BtnList.vue';
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { message } from 'ant-design-vue';
 const props = defineProps({
     lcid: {

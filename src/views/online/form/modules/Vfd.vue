@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { vfdToForm } from '/@/utils/form/vfd2.0';
+import { vfdToForm } from '/@/views/online/utils/vfd2.0';
 import { ref } from 'vue';
 import * as convert from 'xml-js';
 const props = defineProps({

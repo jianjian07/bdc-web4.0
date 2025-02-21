@@ -15,7 +15,7 @@
 import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { getFormInfo, resetValidateInfos } from "/@/utils/form/wonder1.0.1"
+import { getFormInfo, resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"

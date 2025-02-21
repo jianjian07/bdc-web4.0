@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getDictItemsByCode, getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+import { getDictItemsByCode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 import { onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
@@ -284,8 +284,12 @@ function handleOk() {
       apiUrl = api.edit
     }
     defHttp.post({ url: apiUrl, data: params }, { withToken: true }).then((res) => {
-      message.success(props.type + '成功')
-      emit('formOk')
+      if (!res.message) { 
+        message.success(props.type + '成功')
+        emit('formOk')
+      } else {
+        message.error(props.type + '失败')
+      }
     }).catch(err => {
       message.error(props.type + '失败')
     })

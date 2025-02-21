@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, onMounted, ref } from "vue"
-import { getDictItemsByCode } from "/@/utils/form/commonUtils"
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
 const Qlrpz = defineAsyncComponent(() => import("/@/views/system/case/components/Qlrpz.vue"))

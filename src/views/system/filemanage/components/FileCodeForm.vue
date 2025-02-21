@@ -128,13 +128,13 @@
 </template>
 
 <script lang="ts" setup>
-import { getDictItemsByCode, validateRules, setInputStatus } from '/@/utils/form/commonUtils'
+import { getDictItemsByCode, validateRules, setInputStatus } from '/@/views/online/utils/commonUtils'
 import { ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import dayjs from "dayjs"
 import { useUserStore } from "/@/store/modules/user"
-import { validateRequired } from "/@/utils/form/validateUtil"
+import { validateRequired } from "/@/views/online/utils/validateUtil"
 import { guid } from "/@/utils"
 
 const props = defineProps({
