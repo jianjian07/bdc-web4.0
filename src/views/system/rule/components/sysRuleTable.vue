@@ -246,7 +246,7 @@ function handleOk() {
  * @param ywlx
  */
 function getYwlxName(ywlx) {
-  let arr = getTreeDictItemsByCode('ywlx')
+  let arr = getTreeDictItemsByCode('ywgzlx')
   let find = findNode(arr, ywlx)
   return find ? find.label : ''
 }

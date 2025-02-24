@@ -13,7 +13,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             placeholder="请选择业务类型"
             allow-clear
-            :tree-data="getTreeDictItemsByCode('ywlx')"
+            :tree-data="getTreeDictItemsByCode('ywgzlx')"
             @change="handleChangeYwlx"
         >
         </a-tree-select>
@@ -178,7 +178,7 @@ function handleChangeYwlx(value, option) {
  * @param ywlx
  */
 function getYwlxName(ywlx) {
-  let arr = getTreeDictItemsByCode('ywlx')
+  let arr = getTreeDictItemsByCode('ywgzlx')
   let find = findNode(arr, ywlx)
   return find ? find.label : ''
 }
