@@ -31,10 +31,10 @@
           </template>
           <template v-if="column.dataIndex == 'enabled'">
             <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用"
-              @change="changeEnabled($event, record)" />
+              @change="changeEnabled($event, record)" disabled/>
           </template>
           <template v-if="column.dataIndex == 'loginLocked'">
-            <span v-if="record.loginLocked" style="color:rgb(245,34,45)">已锁定</span>
+            <span v-if="!record.enabled" style="color:rgb(245,34,45)">已锁定</span>
             <span v-else>未锁定</span>
           </template>
           <template v-if="column.dataIndex === 'operation'">
@@ -230,6 +230,7 @@ function reset() {
 function ok() {
   drawerOpen.value = false
   passwordOpen.value = false
+  initData()
 }
 </script>
 
