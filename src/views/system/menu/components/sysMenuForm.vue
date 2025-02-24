@@ -11,10 +11,20 @@
       <a-form-item label="菜单图标" v-show="formState.type != 2">
         <a-input v-model:value="formState.icon">
           <template #addonAfter>
-            <setting-outlined />
+            <setting-outlined @click="handleModal"/>
           </template>
         </a-input>
+        <a-modal v-model:open="iconShow" title="图标选择" @ok="handleIconOk">
+          <div class="icon-select-modal">
+            <div v-for="(svg, svgI) in svgs" @click="handleIcon(svg)"
+                :class="['icon-item', currentIcon == svg ? 'active' : '']">
+                <svg-icon :name="svg" width="20" height="20" color="#000000">
+                </svg-icon>
+            </div>
+          </div>
+        </a-modal>
       </a-form-item>
+      
       <a-form-item label="外联菜单" v-show="formState.type == 1">
         <a-radio-group v-model:value="formState.iframe" button-style="solid">
           <a-radio-button :value="true">是</a-radio-button>
@@ -85,7 +95,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { SettingOutlined, InfoCircleOutlined } from '@ant-design/icons-vue';
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
@@ -132,6 +142,17 @@ const rules = ref<any>({
   path: [{ required: true, message: '请输入路由地址!' }, { pattern: /^\//, message: '请填写正确的格式' }],
   component: [{ required: true, message: '请输入组件路径!' }],
   pid: [{ required: true, message: '请选择上级类目!' }]
+})
+// 是否展示图标
+let iconShow = ref<boolean>(false)
+// 当前选中的图标
+let currentIcon = ref<string>('')
+const svgs = computed(() => {
+  let modules = import.meta.glob('/src/assets/svg/*.svg')
+  return Object.keys(modules).map(k => {
+      let arr = k.split('/')
+      return arr[arr.length - 1].split('.')[0]
+  })
 })
 
 const emit = defineEmits(['formOk'])
@@ -222,6 +243,28 @@ function handleOk() {
     })
 }
 
+/**
+ * 打开弹窗
+ */
+function handleModal() {
+  currentIcon.value = JSON.parse(JSON.stringify(formState.value.icon))
+  iconShow.value = true
+}
+
+/**
+ * 选中图标
+ */
+function handleIcon(svg) {
+  currentIcon.value = svg
+}
+
+/**
+ * 确认图标
+ */
+function handleIconOk() {
+  formState.value.icon = currentIcon.value
+  iconShow.value = false
+}
 </script>
 
 <style lang="less" scoped>
@@ -232,6 +275,27 @@ function handleOk() {
 .zjmc-info {
   &:hover {
     //color: @primary-color
+  }
+}
+</style>
+<style lang="less">
+.icon-select-modal {
+  display: flex;
+  flex-wrap: wrap;
+
+  .icon-item {
+    padding: 5px;
+    border: 1px solid #f1f1f1;
+    margin: 5px;
+    cursor: pointer;
+
+    &:hover {
+        border: 1px solid #5094f9;
+    }
+
+    &.active {
+        border: 1px solid #5094f9;
+    }
   }
 }
 </style>
