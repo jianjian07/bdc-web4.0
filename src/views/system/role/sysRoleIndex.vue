@@ -275,7 +275,7 @@ function handleSave() {
     let params = {
       roleId: currentRole.value[0].id,
       // name: currentRole.value[0].name,
-      menuIds: checkedKeys.value.checked
+      menuIds: Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
     }
     defHttp.post({ url: api.saveRoleMenu, data: params }, { withToken: true }).then((res) => {
       if (res.result) {
