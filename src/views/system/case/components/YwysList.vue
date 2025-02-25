@@ -10,7 +10,7 @@
             </a-menu-item>
           </a-menu>
         </template>
-        
+
         <a-button style="margin-right: 8px"> 批量操作
           <DownOutlined />
         </a-button>
@@ -20,8 +20,8 @@
         新增
       </a-button>
     </div>
-    <a-table 
-      bordered 
+    <a-table
+      bordered
       :data-source="dataList"
       :columns="columns"
       :pagination="pagination"
@@ -99,12 +99,12 @@ const columns = [
   },
 ]
 // 分页
-const pagination = ref<any>({ 
+const pagination = ref<any>({
   total: 0,
   current: 1,
   pageSize: 100,
-  showSizeChanger: false, 
-  showTotal: (total: Number) => `共 ${total} 条数据` 
+  showSizeChanger: false,
+  showTotal: (total: Number) => `共 ${total} 条数据`
 })
 
 const urlList = {
@@ -139,7 +139,7 @@ watch(() => props.lcid, (val:any) => {
 watch(() => props.baseInfo, (val: any) => {
   // 重置数据
   dataList.value = []
-  pagination.value.total = 0 
+  pagination.value.total = 0
   if(val && val.regType) {
     pagination.value.current = 1
     loadData()
@@ -156,7 +156,7 @@ function loadData() {
   var params = {
     pageNo: pagination.value.current,
     pageSize: pagination.value.pageSize,
-    xzlcbm: props.baseInfo?.regType
+    xzlcbm: "eq "+props.baseInfo?.regType
   }
   // 获取业务约束配置列表
   defHttp.get(
@@ -222,7 +222,7 @@ function onShowModal(data: any = null, type: String = 'new') {
         }
         modal.setConfirmLoading(false)
       }
-      
+
     },
     onCancel: () => {
       modal.close()
