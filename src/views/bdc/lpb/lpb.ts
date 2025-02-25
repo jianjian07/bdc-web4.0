@@ -177,11 +177,13 @@ function checkShowForYgDy(regType, fwInfo) {
 
 // 正式查封 
 function checkShowForCfdj(regType, fwInfo) {
-  if (fwInfo.cqzt && !fwInfo.zbcfzt) {
-    return true
-  } else {
-    return false
-  }
+  // 0225 放开都允许
+  return !!fwInfo
+  // if (fwInfo.cqzt && !fwInfo.zbcfzt) {
+  //   return true
+  // } else {
+  //   return false
+  // }
 }
 // 预查封
 function checkShowForYcfdj(regType, fwInfo) {
