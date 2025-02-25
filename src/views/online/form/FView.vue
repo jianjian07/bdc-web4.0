@@ -11,8 +11,8 @@
 import { defineComponent, onBeforeUpdate, reactive, ref, useAttrs, watch } from 'vue'
 import { generateFormHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes } from '/@/utils/form/commonUtils'
-import { initTable, edit, save, cancel } from "/@/utils/form/wonder-report";
+import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes } from '/@/views/online/utils/commonUtils'
+import { initTable, edit, save, cancel } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
@@ -30,7 +30,7 @@ import {
     getSelectAllCheck,
     setSelectAllCheck,
     hideField
-} from "/@/utils/form/wonder1.0.1"
+} from "/@/views/online/utils/wonder1.0.1"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props = defineProps({
     id: {

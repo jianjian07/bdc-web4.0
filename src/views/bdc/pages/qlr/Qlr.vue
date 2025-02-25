@@ -36,7 +36,7 @@ import { cModal } from "/@/components/cModal/index"
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
-import { getDictItemsByCode } from "/@/utils/form/commonUtils";
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
 
 const route = useRoute()
 

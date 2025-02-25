@@ -4,8 +4,8 @@
       <span>业务类型</span>
     </div>
     <div class="sys-rule-tree-content">
-      <div v-if="getTreeDictItemsByCode('ywlx')?.length">
-        <a-tree v-model:selectedKeys="selectedKeys" :tree-data="getTreeDictItemsByCode('ywlx')" :fieldNames="fieldNames" :blockNode="true" @select="handleSelectTreeItem">
+      <div v-if="getTreeDictItemsByCode('ywgzlx')?.length">
+        <a-tree v-model:selectedKeys="selectedKeys" :tree-data="getTreeDictItemsByCode('ywgzlx')" :fieldNames="fieldNames" :blockNode="true" @select="handleSelectTreeItem">
         </a-tree>
       </div>
       <a-result v-else title="请先配置规则分类">
@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue"
 import { router } from "/@/router"
-import { getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+import { getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 // 规则目录
 // let catalog = ref([])
 // 选中项

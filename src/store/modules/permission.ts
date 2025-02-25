@@ -67,16 +67,14 @@ export const usePermissionStore = defineStore({
             if (this.getMenuInfo != null && this.getMenuInfo.length > 0) {
                 routeList = this.getMenuInfo
             } else {
-                // let list = (await getMenuListByJson()) as AppRouteRecordRaw[]
-                let list = (await getMenuListBySysId()) as AppRouteRecordRaw[]
-                // if (!list || list?.length == 0) {
-                //     list = (await getMenuListByJson()) as AppRouteRecordRaw[]
-                // }
-                // let list = (await getMenuList()) as AppRouteRecordRaw[]
-                if (list != null && list.length > 0) {
-                    routeList = (list) as AppRouteRecordRaw[]
-                    this.setMenuList(list)
-                    // this.setToolBarList(toolbar)
+                let menuInfo = (await getMenuListBySysId()) as AppRouteRecordRaw[]
+                if (menuInfo != null && Object.keys(menuInfo).length !== 0) {
+                    let list = menuInfo.menuList
+                        if (list != null && list.length > 0) {
+                            routeList = (list) as AppRouteRecordRaw[]
+                            this.setMenuList(list)
+                            // this.setToolBarList(toolbar)
+                        }
                 }
             }
 

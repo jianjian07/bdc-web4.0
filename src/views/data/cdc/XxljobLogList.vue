@@ -104,7 +104,7 @@ import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
-import { formatToDate, formatToDateTime } from "/@/utils/dateUtil";
+import { formatToDate, formatToDateTime } from "/@/views/online/utils/dateUtil";
 const JobLogModal = defineAsyncComponent(() => import("/@/views/data/cdc/modules/JobLogModal.vue"));
 const columns = [
     { title: "任务ID", dataIndex: "jobId", width: 80 },

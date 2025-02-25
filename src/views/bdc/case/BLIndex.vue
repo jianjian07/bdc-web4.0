@@ -127,7 +127,7 @@ function handleDelete(slbh: string, ajmc: string) {
         cancelText: '取消',
         onOk() {
             defHttp.delete(
-                { url: api.delUrl, params: { slbh: slbh } }, { withToken: true }
+                { url: api.delUrl, params: { slbh: slbh, ajlx: 2 } }, { withToken: true }
             ).then((res: any) => {
                 if (res?.success) {
                     message.success('删除成功！')

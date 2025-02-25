@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { getDictItemsByCode } from "/@/utils/form/commonUtils"
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 enum api {
     processlist = '/api/zrzy-bdc/act/process/extActProcess/list'
 }

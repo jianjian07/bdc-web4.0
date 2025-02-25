@@ -142,7 +142,7 @@ import {
   getUrl,
   removeMagicApiById
 } from "/@/views/apimanage/modules/apiUtil"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import ApiExParam from "/@/views/apimanage/modules/apiExParam.vue"
 import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"

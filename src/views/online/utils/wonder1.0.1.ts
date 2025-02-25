@@ -1,15 +1,14 @@
 /**
  * 加载表单数据
  */
-import { validateReg, validateRequired } from "/@/utils/form/validateUtil"
+import { validateReg, validateRequired } from "/@/views/online/utils/validateUtil"
 import { nextTick, reactive, ref, watch } from "vue"
 import { message, Modal } from "ant-design-vue"
-import { defHttp } from "../http/axios"
+import { defHttp } from "/@/utils/http/axios"
 import { router } from "/@/router"
-import { isJsonData } from "/@/utils/form/commonUtils"
+import { isJsonData,compareObjects } from "/@/views/online/utils/commonUtils"
 import { cloneDeep } from "lodash-es"
 import { isEmpty } from "/@/utils/is"
-import { compareObjects } from "/@/utils"
 export let validateInfos: any = reactive({})
 
 export async function getData(object1: { value: object }, formId?: number, params?: any) {

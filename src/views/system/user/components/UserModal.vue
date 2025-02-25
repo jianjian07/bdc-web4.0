@@ -32,6 +32,15 @@
             <a-form-item label="联系地址" name="address" :rules="[{ message: '请输入联系地址' }]">
                 <a-input v-model:value="dataInfo.address" />
             </a-form-item>
+            <a-form-item label="初始化状态" name="initStatus">
+                <a-select v-model:value="dataInfo.initStatus">
+                    <a-select-option :value="true">已初始化</a-select-option>
+                    <a-select-option :value="false">未初始化</a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item label="状态" name="enabled">
+                <a-switch v-model:checked="dataInfo.enabled" checked-children="启用" un-checked-children="禁用"/>
+            </a-form-item>
             <a-form-item label="排序" name="sortid">
                 <a-input-number v-model:value="dataInfo.sortid" defaultValue="0" />
             </a-form-item>
@@ -43,7 +52,7 @@
 import { message } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
 import { ref } from 'vue';
-import { getDictItemsByCode } from "/@/utils/form/commonUtils";
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
 const props = defineProps({
     open: {
         type: Boolean,
@@ -59,7 +68,6 @@ const props = defineProps({
     }
 })
 let isAdd = ref(false)
-debugger
 if (props.dataInfo.id == undefined) {
     isAdd.value = true
 }

@@ -33,7 +33,7 @@ import { useRoute } from "vue-router"
 import { onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { isJsonData } from "/@/utils/form/commonUtils"
+import { isJsonData } from "/@/views/online/utils/commonUtils"
 
 const route = useRoute()
 // 加载

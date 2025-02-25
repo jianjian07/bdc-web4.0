@@ -215,7 +215,7 @@
 import { onMounted, ref } from "vue"
 import { AuditOutlined,BookOutlined,FileOutlined } from '@ant-design/icons-vue';
 import { cModal } from "/@/components/cModal/index"
-import { getDictItemsByCode,validateRules, setInputStatus } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode,validateRules, setInputStatus } from '/@/views/online/utils/commonUtils';
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 

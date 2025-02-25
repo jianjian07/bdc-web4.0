@@ -42,7 +42,7 @@
 import { message } from 'ant-design-vue';
 import { ref } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
-import { getDictItemsByCode } from "/@/utils/form/commonUtils";
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
 const props = defineProps({
     open: {
         type: Boolean,

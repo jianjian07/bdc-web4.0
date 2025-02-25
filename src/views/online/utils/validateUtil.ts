@@ -1,4 +1,4 @@
-import { getValidateRuleByCode } from "/@/utils/form/commonUtils"
+import { getValidateRuleByCode } from "/@/views/online/utils/commonUtils"
 
 /**
  * 必填校验

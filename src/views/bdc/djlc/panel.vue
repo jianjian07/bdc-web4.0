@@ -35,7 +35,7 @@
 import { onMounted, reactive, ref, toRaw, watch } from "vue";
 import { useModelerStore } from '/@/store/modules/modeler'
 import { getBusinessObject, is, isAny } from "bpmn-js/lib/util/ModelUtil";
-import EventBus from "./eventBus";
+import EventBus from "/@/views/online/utils/eventBus";
 import { ModdleElement } from "bpmn-js/lib/features/modeling/Modeling";
 // import { ModdleElement } from "bpmn-moddle";
 const modelerStore = useModelerStore()

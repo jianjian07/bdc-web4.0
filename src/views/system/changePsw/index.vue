@@ -46,6 +46,10 @@ import { useUserStoreWithOut } from "/@/store/modules/user";
 import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 
+const userStore = useUserStoreWithOut();
+
+console.log('userStore', userStore?.validateRuleList)
+
 const formRef = ref()
 
 const formState = reactive({
@@ -54,12 +58,15 @@ const formState = reactive({
   confirmPassword: '',
 });
 
-let helpinfo = ref('新密码必须包含大小写字母和数字，且长度为8-16位！')
+let helpinfo = ref('')
+let psw_regex = ref('')
 
 onMounted(() => {
-  helpinfo.value = window?.settingConfig?.pwd_regexErrorMsg
-
-  console.log('helpinfo.value', helpinfo.value, window?.settingConfig)
+  if(userStore?.validateRuleList?.length) {
+    let pwdRule = userStore?.validateRuleList.filter(ele => ele.ruleCode == 'password')
+    helpinfo.value = pwdRule[0]?.message
+    psw_regex.value = pwdRule[0]?.content
+  }
 })
 
 const validateConfirmPassword = (rule, value, callback) => {
@@ -71,10 +78,7 @@ const validateConfirmPassword = (rule, value, callback) => {
 };
 
 const validateNewPassword = (rule, value, callback) => {
-  const psw_regex = window?.settingConfig?.pwd_regex;
-  let regex = new RegExp(psw_regex);
-
-  if(psw_regex && !regex.test(value)) {
+  if(psw_regex.value && !!(eval(psw_regex.value) instanceof RegExp) && !eval(psw_regex.value).test(value)) {
     callback(helpinfo)
   } else {
     callback()
@@ -131,7 +135,6 @@ const onSubmit = () => {
 
           setTimeout(() => {
             clearInterval(interval);
-            const userStore = useUserStoreWithOut();
             userStore.setToken(undefined)
             userStore.logout(true)
             modal.destroy();

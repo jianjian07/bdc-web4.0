@@ -66,7 +66,7 @@
 import { ref, toRaw, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 
 const formRef = ref();

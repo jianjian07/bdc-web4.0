@@ -60,7 +60,7 @@ import { message } from "ant-design-vue";
 import { DragOutlined, SettingFilled } from '@ant-design/icons-vue';
 import draggable from "vuedraggable";
 import ExportModal from '/@/components/table/ExportModal.vue'
-import { getRowSpan } from "/@/utils/form/commonUtils"
+import { getRowSpan } from "/@/views/online/utils/commonUtils"
 // let eLoading = ref<boolean>(false)
 const props = defineProps({
     // 表格数据

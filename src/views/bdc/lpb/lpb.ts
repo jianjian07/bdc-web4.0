@@ -1,5 +1,5 @@
 // 单个非组合流程
-import { findNode, getDictItemsByCode, getTreeDictItemsByCode } from "/@/utils/form/commonUtils"
+import { findNode, getDictItemsByCode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 
 export function checkShowForSingle(regType, fwInfo) {
   let djdl = regType.substr(0, 2)
@@ -177,11 +177,13 @@ function checkShowForYgDy(regType, fwInfo) {
 
 // 正式查封 
 function checkShowForCfdj(regType, fwInfo) {
-  if (fwInfo.cqzt && !fwInfo.zbcfzt) {
-    return true
-  } else {
-    return false
-  }
+  // 0225 放开都允许
+  return !!fwInfo
+  // if (fwInfo.cqzt && !fwInfo.zbcfzt) {
+  //   return true
+  // } else {
+  //   return false
+  // }
 }
 // 预查封
 function checkShowForYcfdj(regType, fwInfo) {

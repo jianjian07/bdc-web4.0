@@ -10,11 +10,11 @@
       </div>
     </div>
     <div class="sys-menu-tree-content">
-      <a-tree v-model:selectedKeys="selectedKeys" :tree-data="sysMenu" :blockNode="true" @select="handleSelectTreeItem">
+      <a-tree v-model:selectedKeys="selectedKeys" :tree-data="sysMenu" :blockNode="true" @select="handleSelectTreeItem" :fieldNames="{ key:'id'} ">
         <template #title="node">
           <div class="sys-menu-tree-title">
-            <div class="title">{{ node.title }}</div>
-            <div class="tool">
+            <div class="title">{{ node.name }}</div>
+            <div v-if="selectedKeys?.includes(node.id)" class="tool">
               <a-space :size="4">
                 <a-button type="primary" shape="circle" size="small" @click="handleDept(node)">
                   <template #icon><apartment-outlined /></template>
@@ -29,6 +29,7 @@
                 </a-popconfirm>
               </a-space>
             </div>
+            <div v-else style="width: 110px"></div>
           </div>
         </template>
       </a-tree>
@@ -37,7 +38,7 @@
       <template v-if="modalTitle !== '部门管理'">
         <a-form :model="formState" name="basic" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" autocomplete="off">
           <a-form-item label="系统名称" name="title" :rules="[{ required: true, message: '请输入系统名称!' }]">
-            <a-input v-model:value="formState.title" />
+            <a-input v-model:value="formState.name" />
           </a-form-item>
           <a-form-item label="排序" name="sortid" :rules="[{ required: true, message: '请输入排序!' }]">
             <a-input v-model:value="formState.sortid" />
@@ -57,73 +58,9 @@
 import { PlusOutlined, ApartmentOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { onMounted, ref } from "vue"
 import dept from '/@/mock/test/department.json'
-const sysMenuOld = [
-  {
-    "id": "4",
-    "pid": "0",
-    "children": [],
-    "hasChildren": null,
-    "createTime": null,
-    "title": "统一运维管理系统",
-    "key": "4",
-    "value": "4",
-    "sortid": 1,
-    "enabled": null,
-    "list": null
-  },
-  {
-    "id": "5",
-    "pid": "0",
-    "children": [],
-    "hasChildren": null,
-    "createTime": null,
-    "title": "一张图",
-    "key": "5",
-    "value": "5",
-    "sortid": 2,
-    "enabled": null,
-    "list": null
-  },
-  {
-    "id": "8",
-    "pid": "0",
-    "children": [],
-    "hasChildren": null,
-    "createTime": null,
-    "title": "数据管理系统",
-    "key": "8",
-    "value": "8",
-    "sortid": 3,
-    "enabled": null,
-    "list": null
-  },
-  {
-    "id": "9",
-    "pid": "0",
-    "children": [],
-    "hasChildren": null,
-    "createTime": null,
-    "title": "一张图演示",
-    "key": "9",
-    "value": "9",
-    "sortid": 4,
-    "enabled": null,
-    "list": null
-  }
-]
-const sysMenu = [{
-  "id": 1,
-  "pid": 0,
-  "children": [],
-  "hasChildren": null,
-  "createTime": null,
-  "title": "审批应用系统",
-  "key": 1,
-  "value": 1,
-  "sortid": 1,
-  "enabled": null,
-  "list": null
-}]
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
+let sysMenu = ref<any>([])
 
 // 选中的keys
 let selectedKeys = ref<any>()
@@ -140,10 +77,37 @@ let formState = ref<any>({})
 
 const emit = defineEmits(['update:currentSysKey'])
 
+enum api {
+  list = '/api/zrzy-system/sys/sysSubsystem/list'
+}
+
 onMounted(() => {
-  selectedKeys.value = [sysMenu[0].key]
-  emit('update:currentSysKey', selectedKeys.value[0])
+  initSysMenu()
 })
+
+/**
+ * 初始化加载系统菜单
+ */
+function initSysMenu() {
+  defHttp.get(
+    {
+      url: api.list,
+      params: { pageSize: 1000, pageNo: 1 }
+    },
+    { withToken: true }
+  ).then((res: any) => {
+    if (res?.success) {
+      sysMenu.value = res.result.records
+    } else {
+      message.warning(res.message)
+    }
+    if (sysMenu.value && sysMenu.value.length > 0) {
+       selectedKeys.value = [sysMenu.value[0].id]
+       emit('update:currentSysKey', selectedKeys.value[0])
+    }
+  })
+}
+
 /**
  * 添加系统菜单
  */
@@ -159,8 +123,8 @@ function addSysMenu() {
  * @param e
  */
 function handleSelectTreeItem(selectedKey, e) {
-  selectedKeys.value = [e.node.dataRef.key]
-  emit('update:currentSysKey', e.node.dataRef.key)
+  selectedKeys.value = [e.node.dataRef.id]
+  emit('update:currentSysKey', e.node.dataRef.id)
 }
 
 /**

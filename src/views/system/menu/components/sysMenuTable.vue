@@ -53,7 +53,7 @@
         </div>
         <div class="sys-menu-table-body">
           <a-table rowKey="id" :pagination="false" v-model:expandedRowKeys="expandedRowKeys" :columns="columns"
-            :data-source="menuList" :row-selection="rowSelection" :scroll="{ y: 300 }">
+            :data-source="menuList" :row-selection="rowSelection" :scroll="{ y: 300 }" :loading="loading">
             <template #bodyCell="{ column, text, record }">
               <template v-if="column.dataIndex === 'type'">
                 <a-tag color="orange" v-if="record.type == 0">
@@ -189,6 +189,8 @@ let expandedRowKeys = ref<any>([])
 let allParentKeys = ref<any>([])
 // 是否显示批量操作
 let showMultiply = ref<boolean>(false)
+// 加载状态
+let loading = ref<boolean>(false)
 
 enum api {
   // 菜单树
@@ -216,6 +218,7 @@ watch(() => props.currentSysKey, (newVal) => {
  */
 function getMenuData() {
   return new Promise((resolve) => {
+    loading.value = true
     let params = {
       subsystemId: props.currentSysKey,
       name: searchFormState.value.name
@@ -226,7 +229,9 @@ function getMenuData() {
       } else {
         resolve([])
       }
+      loading.value = false
     }).catch(err => {
+      loading.value = false
       resolve([])
     })
   })

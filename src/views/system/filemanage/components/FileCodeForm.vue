@@ -1,11 +1,11 @@
 <template>
   <div class="file-code-form">
     <div v-if="!selectItem" class="file-code-empty">
-       <a-empty description="请先添加或选中档案编码规则"></a-empty>
+      <a-empty description="请先添加或选中编码规则"></a-empty>
     </div>
     <template v-else>
-      <div class="file-code-form-title title-css1 title-left" >
-        <span>档案编码规则配置</span>
+      <div class="file-code-form-title title-css1 title-left">
+        <span>编码规则配置</span>
       </div>
       <div class="file-code-form-content">
         <a-spin :spinning="formSpinning" class="file-form-spin">
@@ -54,53 +54,69 @@
                       </template>
                       <template v-else-if="column.key === 'action'">
                         <a-popconfirm :disabled="column.disabled" cancel-text="取消" ok-text="确定" title="是否确定删除该项？"
-                                      @confirm="handleDelRule(record, index)">
+                          @confirm="handleDelRule(record, index)">
                           <a-button type="link">删除</a-button>
                         </a-popconfirm>
                       </template>
                       <template v-else-if="!column?.rules && column?.dict">
-                        <a-select v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" 
-                                  :placeholder="column.placeholder"  allow-clear :dropdownMatchSelectWidth="false">
-                          <a-select-option v-for="(item,index) in getDict(column.dict)" :label="item.label" :value="item.value">
+                        <a-select v-model:value="record[column.key]" style="width: 100%;"
+                          :disabled="column.disabled || getDisabled(column, record)" :placeholder="column.placeholder"
+                          allow-clear :dropdownMatchSelectWidth="false">
+                          <a-select-option v-for="(item, index) in getDict(column.dict)" :label="item.label"
+                            :value="item.value">
                             {{ item.label }}
                           </a-select-option>
                         </a-select>
                       </template>
                       <template v-else-if="column?.rules">
-                        <a-tooltip :trigger="['focus','contextmenu']" placement="top" :arrow="false" color="red">
+                        <a-tooltip :trigger="['focus', 'contextmenu']" placement="top" :arrow="false" color="red">
                           <template v-if="validateRules(column.rules, record[column.key], record)" #title>
                             <span>{{ validateRules(column.rules, record[column.key], record) }}</span>
                           </template>
                           <template v-if="column?.key == 'ruleValue' && record['ruleParam'] == 'serial_num'">
-                            <a-select v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" :status="record[column.key + 'Status']"
-                                  :placeholder="column.placeholder"  allow-clear :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)" @change="(value, option) => handleChangeValue(value, option, column, record)">
-                              <a-select-option v-for="(item,index) in getDict('serial_num_code')" :label="item.label" :value="item.value">
+                            <a-select v-model:value="record[column.key]" style="width: 100%;"
+                              :disabled="column.disabled || getDisabled(column, record)"
+                              :status="record[column.key + 'Status']" :placeholder="column.placeholder" allow-clear
+                              :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
+                              @change="(value, option) => handleChangeValue(value, option, column, record)">
+                              <a-select-option v-for="(item, index) in getDict('serial_num_code')" :label="item.label"
+                                :value="item.value">
                                 {{ item.label }}
                               </a-select-option>
                             </a-select>
                           </template>
                           <template v-else-if="column?.dict">
-                            <a-select v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)"  :status="record[column.key + 'Status']"
-                                  :placeholder="column.placeholder"  allow-clear :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)" @change="(value, option) => handleChangeValue(value, option, column, record)" >
-                              <a-select-option v-for="(item,index) in getDict(column.dict)" :label="item.label" :value="item.value">
+                            <a-select v-model:value="record[column.key]" style="width: 100%;"
+                              :disabled="column.disabled || getDisabled(column, record)"
+                              :status="record[column.key + 'Status']" :placeholder="column.placeholder" allow-clear
+                              :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
+                              @change="(value, option) => handleChangeValue(value, option, column, record)">
+                              <a-select-option v-for="(item, index) in getDict(column.dict)" :label="item.label"
+                                :value="item.value">
                                 {{ item.label }}
                               </a-select-option>
                             </a-select>
                           </template>
                           <template v-else-if="column?.key == 'orderId'">
-                            <a-input-number v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" :status="record[column.key + 'Status']" :placeholder="column.placeholder"
-                                            @focus="setInputStatus(column, record)" @change="(value) => handleChangeValue(value, null, column, record)">
+                            <a-input-number v-model:value="record[column.key]" style="width: 100%;"
+                              :disabled="column.disabled || getDisabled(column, record)"
+                              :status="record[column.key + 'Status']" :placeholder="column.placeholder"
+                              @focus="setInputStatus(column, record)"
+                              @change="(value) => handleChangeValue(value, null, column, record)">
                             </a-input-number>
                           </template>
                           <template v-else>
-                            <a-input v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" 
-                                    :placeholder="column.placeholder" @focus="setInputStatus(column, record)" @change="(value, option) => handleChangeValue(value, option, column, record)">
+                            <a-input v-model:value="record[column.key]" :status="record[column.key + 'Status']"
+                              style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)"
+                              :placeholder="column.placeholder" @focus="setInputStatus(column, record)"
+                              @change="(value, option) => handleChangeValue(value, option, column, record)">
                             </a-input>
                           </template>
                         </a-tooltip>
                       </template>
                       <template v-else>
-                        <a-input-number v-model:value="record[column.key]" style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)" :placeholder="column.placeholder">
+                        <a-input-number v-model:value="record[column.key]" style="width: 100%;"
+                          :disabled="column.disabled || getDisabled(column, record)" :placeholder="column.placeholder">
                         </a-input-number>
                       </template>
                     </template>
@@ -108,18 +124,17 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            
-             <div style="text-align: center;margin-top: 10px">
-                <a-space>
-                  <a-button type="primary" @click="handleSubmit">
-                    保存
-                  </a-button>
-                  <a-popconfirm cancel-text="取消" ok-text="确定" title="是否确定删除？"
-                                      @confirm="handleDel">
-                    <a-button >删除</a-button>
-                  </a-popconfirm>
-                </a-space>
-             </div>
+
+            <div style="text-align: center;margin-top: 10px">
+              <a-space>
+                <a-button type="primary" @click="handleSubmit">
+                  保存
+                </a-button>
+                <a-popconfirm cancel-text="取消" ok-text="确定" title="是否确定删除？" @confirm="handleDel">
+                  <a-button>删除</a-button>
+                </a-popconfirm>
+              </a-space>
+            </div>
           </a-form>
         </a-spin>
       </div>
@@ -128,13 +143,13 @@
 </template>
 
 <script lang="ts" setup>
-import { getDictItemsByCode, validateRules, setInputStatus } from '/@/utils/form/commonUtils'
+import { getDictItemsByCode, validateRules, setInputStatus } from '/@/views/online/utils/commonUtils'
 import { ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import dayjs from "dayjs"
 import { useUserStore } from "/@/store/modules/user"
-import { validateRequired } from "/@/utils/form/validateUtil"
+import { validateRequired } from "/@/views/online/utils/validateUtil"
 import { guid } from "/@/utils"
 
 const props = defineProps({
@@ -288,7 +303,7 @@ function validateRuleValue(value, record) {
   let msg = ''
   if (record?.ruleParam == 'fixed_char' || record?.ruleParam == 'serial_num') {
     if (validateRequired(value)) {
-      msg =  record.ruleParam == 'fixed_char' ? '请输入规则参数值' : '请选择规则参数值'
+      msg = record.ruleParam == 'fixed_char' ? '请输入规则参数值' : '请选择规则参数值'
     }
   }
   return msg
@@ -354,7 +369,7 @@ function getDisabled(column, record) {
  * @param index
  */
 function handleDelRule(record, index) {
-   if (record.id) {
+  if (record.id) {
     defHttp.delete({ url: api.delRuleItem, params: { id: record.id } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success('删除成功')
@@ -364,8 +379,8 @@ function handleDelRule(record, index) {
       }
     })
   } else {
-     ruleList.value.splice(index, 1)
-     message.success('删除成功')
+    ruleList.value.splice(index, 1)
+    message.success('删除成功')
   }
 }
 
@@ -447,7 +462,7 @@ function handleSubmit() {
           rule.ruleValue = rule.ruleValue || ''
           return rule
         })
-        
+
         defHttp.post({ url: api.save, data: ruleList.value }, { withToken: true }).then((res) => {
           if (res && res.success) {
             for (let i = 0; i < res.result.length; i++) {
@@ -481,8 +496,8 @@ function validateTable() {
       let ruleColumn = columns.filter((column: any) => column.rules)
       for (let j = 0; j < ruleColumn.length; j++) {
         setInputStatus(ruleColumn[j], record)
-        if (record[ruleColumn[j].key+ 'Status'] && record[ruleColumn[j].key+ 'Status'] == 'error') {
-          message.warning('请检查'+ ruleColumn[j].title + '填写')
+        if (record[ruleColumn[j].key + 'Status'] && record[ruleColumn[j].key + 'Status'] == 'error') {
+          message.warning('请检查' + ruleColumn[j].title + '填写')
           return false
         }
       }
@@ -494,11 +509,12 @@ function validateTable() {
 
 <style lang="less" scoped>
 @import url('/@/assets/less/form.less');
+
 .file-code-form {
   width: calc(100% - 300px);
   padding: 10px;
   height: 100%;
-  
+
   .file-code-empty {
     width: 100%;
     height: 100%;
@@ -506,12 +522,12 @@ function validateTable() {
     justify-content: center;
     align-items: center;
   }
-  
+
   .file-code-form-content {
     height: calc(100% - 60px);
     overflow: auto;
   }
-  
+
   .file-form-spin {
     height: 100%;
     width: 100%;
@@ -519,15 +535,15 @@ function validateTable() {
     justify-content: center;
     align-items: center;
   }
-  
+
   :deep(.ant-select-disabled) {
-    
+
     .ant-select-selector {
       background-color: rgba(0, 0, 0, 0.02) !important;
     }
-    
+
   }
-  
+
   :deep(.ant-input-number-disabled) {
     input {
       color: rgba(0, 0, 0, 0.25) !important

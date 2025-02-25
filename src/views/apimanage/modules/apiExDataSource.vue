@@ -82,7 +82,7 @@ import {
 } from '@ant-design/icons-vue'
 import CodeEditor from '/@/components/common/CodeEditor.vue'
 import { nextTick, onMounted, ref, watch } from "vue"
-import { findNode } from "/@/utils/form/commonUtils"
+import { findNode } from "/@/views/online/utils/commonUtils"
 let aa = ref('horizontal');
 const props = defineProps({
   apiData: {

@@ -20,8 +20,8 @@
     <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios";
 import { ref, reactive, onMounted, computed, onBeforeUpdate,useAttrs, watch } from "vue";
-import { getDictItemsByCode,getTreeDictItemsByCode,formatMultipleSelectValue,formatMultipleTreeSelectValue, getCasDictItemsByCode, useVNodes } from '/@/utils/form/commonUtils';
-import { getData,getDataByApi,initTable, initCTableV2, initAllCTableV2, validateInfos, validateFun, onSubmitForm, syncChange, onTableSelectClear, onTableSelectChange, onTableSelectRowChange, getSelectAllCheck, setSelectAllCheck, getAccount, hideField, getSelectJsonSetting } from "/@/utils/form/wonder1.0.1";
+import { getDictItemsByCode,getTreeDictItemsByCode,formatMultipleSelectValue,formatMultipleTreeSelectValue, getCasDictItemsByCode, useVNodes } from '/@/views/online/utils/commonUtils';
+import { getData,getDataByApi,initTable, initCTableV2, initAllCTableV2, validateInfos, validateFun, onSubmitForm, syncChange, onTableSelectClear, onTableSelectChange, onTableSelectRowChange, getSelectAllCheck, setSelectAllCheck, getAccount, hideField, getSelectJsonSetting } from "/@/views/online/utils/wonder1.0.1";
 import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';

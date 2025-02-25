@@ -13,7 +13,7 @@
             </a-button>
           </a-form-item>
           <a-form-item>
-            <a-button>
+            <a-button @click="reset">
               <template #icon></template>
               重置
             </a-button>
@@ -47,6 +47,8 @@
                 {{ index + 1 }}
               </template>
               <template v-if="column.dataIndex === 'operation'">
+                <a @click="handleLcqx(record)">流程权限</a>
+                <a-divider type="vertical" />
                 <a @click="handleDept(record)">分配</a>
                 <a-divider type="vertical" />
                 <a @click="handleEditRole(record)">编辑</a>
@@ -71,6 +73,7 @@
     </div>
     <sys-role-modal ref="roleModal"></sys-role-modal>
     <sys-role-dept-modal ref="roleDeptModal"></sys-role-dept-modal>
+    <sys-role-process-modal ref="roleProcessModal"></sys-role-process-modal>
   </div>
 </template>
 
@@ -79,8 +82,10 @@ import { PlusOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, ref } from "vue"
 import SysRoleModal from "/@/views/system/role/components/sysRoleModal.vue"
 import SysRoleDeptModal from "/@/views/system/role/components/sysRoleDeptModal.vue"
+import SysRoleProcessModal from "/@/views/system/role/components/sysRoleProcessModal.vue"
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue'
+
 enum api {
   getAllMenu = '/api/zrzy-system/menu/getAllMenu',
   getMenusByRoleId = '/api/zrzy-system/role/getMenusByRoleId',//根据角色得到配置的菜单
@@ -89,41 +94,13 @@ enum api {
   deleteRoleApi = '/api/zrzy-system/role/removeById',//删除角色
 }
 let sysMenuList = ref([])
-onMounted(() => {
-  loadRole()
-  loadMenu()
-})
 let roleList = ref([])
 let pagination = ref({
   total: 0,
   current: 1,
   pageSize: 10,
 })
-function loadRole() {
-  defHttp.get({ url: api.listRoleApi, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, name: searchFormState.value.name } }, { withToken: true }).then((res) => {
-    roleList.value = res.result.records
-    pagination.value.total = res.result.total
-  }).catch(err => {
-    console.info(err)
-  })
-}
-/**
-* 分页
-* @param pag
-* @param callback 回调函数
-*/
-function onChange(pag: any, callback: any) {
-  pagination.value = pag
-  callback()
-}
-function loadMenu() {
-  defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
-    sysMenuList.value = res.result
-    debugger
-  }).catch(err => {
-    console.info(err)
-  })
-}
+
 // 查询内容
 let searchFormState = ref<any>({})
 
@@ -135,6 +112,8 @@ let roleModal = ref()
 let roleDeptModal = ref()
 // 当前选中的折叠面板
 let activeCollapseKey = ref<any>()
+// 流程弹窗
+let roleProcessModal = ref()
 
 const checkedKeys = ref<any>([]);
 const columns = [
@@ -170,7 +149,7 @@ const columns = [
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 150,
+    width: 220,
   },
 
 ]
@@ -184,7 +163,47 @@ const rowSelection = ref({
   }
 })
 
+onMounted(() => {
+  loadRole()
+  loadMenu()
+})
 
+/**
+* 分页
+* @param pag
+* @param callback 回调函数
+*/
+function onChange(pag: any, callback: any) {
+  pagination.value = pag
+  callback()
+}
+
+function loadMenu() {
+  defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      sysMenuList.value = res.result
+    } else {
+      message.warning(res.message)
+    }
+  }).catch(err => {
+    console.info(err)
+  })
+}
+
+function reset() {
+  pagination.value.current = 1
+  searchFormState.value.name = '' 
+  loadRole()
+}
+
+function loadRole() {
+  defHttp.get({ url: api.listRoleApi, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, name: searchFormState.value.name } }, { withToken: true }).then((res) => {
+    roleList.value = res.result.records
+    pagination.value.total = res.result.total
+  }).catch(err => {
+    console.info(err)
+  })
+}
 
 /**
  * 添加角色
@@ -223,11 +242,18 @@ function handleDept(record) {
 }
 
 /**
+ * 流程权限
+ * @param record
+ */
+function handleLcqx(record) {
+  roleProcessModal.value.edit(record)
+}
+
+/**
  * 根据角色获取并设置菜单权限
  * @param role
  */
 function getRoleSysMenuKeys(roleId) {
-  let keys = [4, 5, 35]
   defHttp.get({ url: api.getMenusByRoleId, params: { roleId: roleId } }, { withToken: true }).then((res) => {
     checkedKeys.value = res.result
   }).catch(err => {
@@ -249,7 +275,7 @@ function handleSave() {
     let params = {
       roleId: currentRole.value[0].id,
       // name: currentRole.value[0].name,
-      menuIds: checkedKeys.value.checked
+      menuIds: Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
     }
     defHttp.post({ url: api.saveRoleMenu, data: params }, { withToken: true }).then((res) => {
       if (res.result) {

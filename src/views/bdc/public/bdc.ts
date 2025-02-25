@@ -6,7 +6,7 @@ import {
   setInputValue,
   setValidateInfos, updateFormDatas,
   validateInfos
-} from "/@/utils/form/wonder1.0.1"
+} from "/@/views/online/utils/wonder1.0.1"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed, nextTick } from "vue"
@@ -14,7 +14,7 @@ import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
-import eventBus from "/@/views/bdc/djlc/eventBus"
+import eventBus from "/@/views/online/utils/eventBus"
 
 const userStore = useUserStore()
 

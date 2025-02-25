@@ -66,7 +66,7 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { getDictItemsByCode } from "/@/utils/form/commonUtils";
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
 const DataSourceModal = defineAsyncComponent(() => import("./DataSourceModal.vue"));
 const columns = [
     // { title: "ID", dataIndex: "id", width: 0, ellipsis: true },

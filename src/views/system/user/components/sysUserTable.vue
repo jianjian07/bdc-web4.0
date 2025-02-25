@@ -31,10 +31,10 @@
           </template>
           <template v-if="column.dataIndex == 'enabled'">
             <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用"
-              @change="changeEnabled($event, record)" />
+              @change="changeEnabled($event, record)" disabled/>
           </template>
           <template v-if="column.dataIndex == 'loginLocked'">
-            <span v-if="record.loginLocked" style="color:rgb(245,34,45)">已锁定</span>
+            <span v-if="!record.enabled" style="color:rgb(245,34,45)">已锁定</span>
             <span v-else>未锁定</span>
           </template>
           <template v-if="column.dataIndex === 'operation'">
@@ -71,7 +71,7 @@ let title = ref('')
 let passwordTitle = ref('')
 let dataInfo = ref({})
 // 查询条件
-let searchForm = reactive({
+let searchForm = ref({
   name: '',
   state: ''
 })
@@ -117,6 +117,7 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    width: 170
   },
 ]
 
@@ -146,8 +147,8 @@ onMounted(() => {
  */
 function initData() {
   let params = {
-    userName: searchForm.name,
-    enabled: searchForm.state,
+    userName: searchForm.value.name,
+    enabled: searchForm.value.state,
     deptId: '',
     pageNo: page.value.current,
     pageSize: pagination.value.pageSize
@@ -220,7 +221,7 @@ function onTableChange(pagination, filters, sorter, { currentDataSource }) {
  * 重置
  */
 function reset() {
-  searchForm = {
+  searchForm.value = {
     name: '',
     state: ''
   }
@@ -230,6 +231,7 @@ function reset() {
 function ok() {
   drawerOpen.value = false
   passwordOpen.value = false
+  initData()
 }
 </script>
 
@@ -262,6 +264,10 @@ function ok() {
           }
         }
       }
+    }
+    
+    :deep(.ant-spin-container) {
+      overflow: hidden!important;
     }
   }
 }

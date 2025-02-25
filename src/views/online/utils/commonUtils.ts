@@ -1,6 +1,6 @@
 import { useUserStore } from '/@/store/modules/user';
 import { defineComponent } from "vue"
-import { validateRequired } from "/@/utils/form/validateUtil"
+import { validateRequired } from "/@/views/online/utils/validateUtil"
 import { defHttp } from '/@/utils/http/axios';
 
 export const getDictItemsByCode = (dictCode: string) => {
@@ -242,7 +242,7 @@ export function getLabelByDictCode(dict: any, value: any) {
  */
 export function getLabelByTreeDictCode(dict: any, value: any) {
   let find = findNode(getTreeDictItemsByCode(dict),value)
-  return find.dictName || find.label || ''
+  return find?.dictName || find?.label || ''
 }
 
 /**
@@ -271,3 +271,23 @@ export function getRowSpan(data, rowIndex, key) {
 
   return rowSpan;
 }
+
+/**对比属性**/
+/**
+ * 比较两个对象的属性值，返回变化的属性
+ * @param obj1 第一个对象
+ * @param obj2 第二个对象
+ * @returns 不同属性值组成的对象
+ */
+export function compareObjects(obj1: any, obj2: any) {
+    // 定义一个空数组用于存储不同的属性值
+    let diff: any = {}
+    for (const key in obj1) {
+        // 如果属性值不同，则将该属性和obj1和obj2的值存入diff对象
+        if (obj1[key] !== obj2[key]) {
+            diff[key] = obj2[key];
+        }
+    }
+    return diff;
+}
+/**对比属性**/

@@ -35,7 +35,7 @@ import { useTabsStore } from "/@/store/modules/tabs"
 import SubMenu from "/@/views/layouts/default/sider/subMenu.vue"
 import { useRouter } from "vue-router"
 import { PageEnum } from "/@/enums/pageEnum"
-import { findNode } from "/@/utils/form/commonUtils"
+import { findNode } from "/@/views/online/utils/commonUtils"
 
 const permissionStore = usePermissionStore()
 const tabStore = useTabsStore()

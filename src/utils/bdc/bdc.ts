@@ -36,6 +36,16 @@ export async function extractData(options: any) {
         case '0402'://续查封
         case '0404'://解查封
         case '0102,0102':
+        case '0302':
+        case '0303':
+        case '0304':
+        case '0305':
+        case '0306':
+        case '0312':
+        case '0313':
+        case '0314':
+        case '0315':
+        case '0316':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })

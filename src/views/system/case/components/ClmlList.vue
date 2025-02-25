@@ -58,7 +58,7 @@ import { ref, defineProps, watch, reactive } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 let dataList: any = ref([])
 const state = reactive({

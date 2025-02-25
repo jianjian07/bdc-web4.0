@@ -54,7 +54,7 @@ import { cloneDeep } from 'lodash-es';
 import { reactive, ref, h, watch } from 'vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import Enumerable from 'linq';
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 

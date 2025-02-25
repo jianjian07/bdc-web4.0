@@ -82,7 +82,7 @@ import ApiParam from "/@/views/apimanage/modules/apiParam.vue"
 import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { getDictItemsByCode } from '/@/utils/form/commonUtils';
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { findNodeById, getFieldValue, getUrl } from "/@/views/apimanage/modules/apiUtil"
 
 const props = defineProps({
