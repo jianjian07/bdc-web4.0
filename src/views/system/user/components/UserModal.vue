@@ -38,6 +38,11 @@
                     <a-select-option :value="false">未初始化</a-select-option>
                 </a-select>
             </a-form-item>
+            <a-form-item label="所属角色" name="roleList">
+                <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple"
+                    :options="roleListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
+                </a-select>
+            </a-form-item>
             <a-form-item label="状态" name="enabled">
                 <a-switch v-model:checked="dataInfo.enabled" checked-children="启用" un-checked-children="禁用"/>
             </a-form-item>
@@ -65,6 +70,10 @@ const props = defineProps({
     dataInfo: {
         type: Object,
         default: {}
+    },
+    roleListOption: {
+        type: Array,
+        default: []
     }
 })
 let isAdd = ref(false)

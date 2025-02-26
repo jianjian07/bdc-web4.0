@@ -54,7 +54,7 @@
         </template>
       </a-table>
     </div>
-    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" @ok="ok"></user-modal>
+    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :roleListOption="roleList" @ok="ok"></user-modal>
     <change-password v-if="passwordOpen" :open="passwordOpen" :title="passwordTitle" :dataInfo="dataInfo" @ok="ok"></change-password>
   </div>
 </template>
@@ -134,13 +134,17 @@ const pagination = computed(() => ({
 }))
 // 用户列表
 let userList = ref<any>([])
+// 角色列表
+let roleList = ref<any>([])
 
 enum api {
   list = '/api/zrzy-system/sys/v1/user/page',
-  del = '/api/zrzy-system/sys/v1/user/delete'
+  del = '/api/zrzy-system/sys/v1/user/delete',
+  roleList = '/api/zrzy-system/role/list'
 }
 
 onMounted(() => {
+  initRoleList()
   initData()
 })
 
@@ -157,7 +161,10 @@ function initData() {
   }
   defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
     if (res.code == 200) {
-      userList.value = res.result.records
+      userList.value = res.result.records.map((record) => {
+        record.roleList = record.roleList || []
+        return record
+      })
       page.value.current = res.result.current
       page.value.total = res.result.total
     } else {
@@ -165,6 +172,19 @@ function initData() {
     }
   }).catch(err => {
     userList.value = []
+  })
+}
+
+/**
+ * 加载角色列表
+ */
+function initRoleList() {
+  defHttp.get({ url: api.roleList, params: { pageNo: 1, pageSize: -1 } }, { withToken: true }).then((res) => {
+    if (res.code == 200) {
+      roleList.value = res.result.records
+    } else {
+      message.warning('加载角色列表出错')
+    }
   })
 }
 
