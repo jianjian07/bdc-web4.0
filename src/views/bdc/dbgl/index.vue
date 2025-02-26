@@ -4,12 +4,12 @@
           <a-row :gutter="[0, 8]" tyle="flex">
               <a-col :span="8" :offset="0">
                   <a-form-item label="案卷名称">
-                      <a-input v-model:value="formData.processDefinitionName" />
+                      <a-input v-model:value="formData.ajmc" />
                   </a-form-item>
               </a-col>
               <a-col :span="8" :offset="0">
-                  <a-form-item label="案卷编号">
-                      <a-input v-model:value="formData.id" />
+                  <a-form-item label="受理编号">
+                      <a-input v-model:value="formData.slbh" />
                   </a-form-item>
               </a-col>
               <a-col :span="4" :offset="0">
@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 import { message } from 'ant-design-vue';
@@ -82,14 +82,14 @@ let formData: any = ref({})
 let spinning = ref<boolean>(true);
 const columns = [
   {
-    title: '案卷编号',
+    title: '受理编号',
     align: 'center',
     width: 120,
-    dataIndex: 'processInstanceId'
+    dataIndex: 'slbh'
   },
   {
     title: '案卷名称',
-    dataIndex: 'bpmBizTitle',
+    dataIndex: 'ajmc',
     width: 200,
     align: "center",
   },
@@ -133,10 +133,15 @@ let pagination = ref({
       return `共 ${pagination.value.total} 条数据`
   }
 })
-loadData()
+
+onMounted(() => {
+  loadData()
+})
+
 function loadData() {
   spinning.value = true
-  defHttp.get({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
+  defHttp.get({ url: api.tasklist, params: { ajmc: formData.value.ajmc, slbh: formData.value.slbh, 
+      pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
       if (res.success) {
           const result = res.result
           datalist.value = result.records
