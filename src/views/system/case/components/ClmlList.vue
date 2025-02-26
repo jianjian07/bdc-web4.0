@@ -239,9 +239,7 @@ function batchDelete() {
 }
 
 function onSelectChange(selectedRowKeys: any) {
-  console.log('selectedRowKeys changed: ', selectedRowKeys);
   state.selectedRowKeys = selectedRowKeys
-
 }
 
 function handleTableChange(pag:any) {
@@ -249,6 +247,7 @@ function handleTableChange(pag:any) {
   pagination.value.pageSize = pag.pageSize
   loadData()
 }
+
 
 </script>
 
