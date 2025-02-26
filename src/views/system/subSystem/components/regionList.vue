@@ -1,56 +1,58 @@
 <template>
   <div style="display: flex; flex-direction: column; padding: 10px; max-height: 100%;">
-    <div style="display: flex;">
-      <a-input-search v-model:value="searchValue" style="margin-bottom: 8px; padding-right: 8px;" placeholder="请输入关键字查询" />
-      <a-dropdown>
-        <template #overlay>
-          <a-menu>
-            <a-menu-item key="1" @click="checkStrictly = !checkStrictly">
-              {{ checkStrictly ? '父子关联' : '取消关联'}}
-            </a-menu-item>
-            <a-menu-item key="2" @click="toggleCheck">
-              {{ checkedAll ? '取消勾选' : '全部勾选' }}
-            </a-menu-item>
-            <a-menu-item key="3" @click="toggleExpand">
-              {{ expandAll ? '合并所有' : '展开所有'}}
-            </a-menu-item>
-          </a-menu>
-        </template>
-        <a-button>
-          树操作
-          <DownOutlined />
+    <a-spin :spinning="spinning">
+      <div style="display: flex;">
+        <a-input-search v-model:value="searchValue" style="margin-bottom: 8px; padding-right: 8px;" placeholder="请输入关键字查询" />
+        <a-dropdown>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1" @click="checkStrictly = !checkStrictly">
+                {{ checkStrictly ? '父子关联' : '取消关联'}}
+              </a-menu-item>
+              <a-menu-item key="2" @click="toggleCheck">
+                {{ checkedAll ? '取消勾选' : '全部勾选' }}
+              </a-menu-item>
+              <a-menu-item key="3" @click="toggleExpand">
+                {{ expandAll ? '合并所有' : '展开所有'}}
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button>
+            树操作
+            <DownOutlined />
+          </a-button>
+        </a-dropdown>
+      </div>
+      <div class="regionList" style="flex: 1; overflow-y: auto; min-height: 200px;">
+        <a-tree
+          :expanded-keys="expandedKeys"
+          :auto-expand-parent="autoExpandParent"
+          :tree-data="gData"
+          @expand="onExpand"
+          checkable
+          @select="onSelect"
+          @check="onCheck"
+          :checkStrictly="checkStrictly"
+          :checked-keys="checkKeys"
+          :selected-keys="selectKeys"
+          :fieldNames="{key: 'areaCode', title: 'titleAndValue'}"
+        >
+          <template #title="{ titleAndValue }">
+            <span v-if="titleAndValue.indexOf(searchValue) > -1">
+              {{ titleAndValue.substring(0, titleAndValue.indexOf(searchValue)) }}
+              <span style="color: #f50">{{ searchValue }}</span>
+              {{ titleAndValue.substring(titleAndValue.indexOf(searchValue) + searchValue.length) }}
+            </span>
+            <span v-else>{{ titleAndValue }}</span>
+          </template>
+        </a-tree>
+      </div>
+      <div v-if="gData.length" style="display: flex; justify-content: center;">
+        <a-button type="primary" @click="onSave">
+          保存
         </a-button>
-      </a-dropdown>
-    </div>
-    <div class="regionList" style="flex: 1; overflow-y: auto; min-height: 200px;">
-      <a-tree
-        :expanded-keys="expandedKeys"
-        :auto-expand-parent="autoExpandParent"
-        :tree-data="gData"
-        @expand="onExpand"
-        checkable
-        @select="onSelect"
-        @check="onCheck"
-        :checkStrictly="checkStrictly"
-        :checked-keys="checkKeys"
-        :selected-keys="selectKeys"
-        :fieldNames="{key: 'areaCode', title: 'titleAndValue'}"
-      >
-        <template #title="{ titleAndValue }">
-          <span v-if="titleAndValue.indexOf(searchValue) > -1">
-            {{ titleAndValue.substring(0, titleAndValue.indexOf(searchValue)) }}
-            <span style="color: #f50">{{ searchValue }}</span>
-            {{ titleAndValue.substring(titleAndValue.indexOf(searchValue) + searchValue.length) }}
-          </span>
-          <span v-else>{{ titleAndValue }}</span>
-        </template>
-      </a-tree>
-    </div>
-    <div v-if="gData.length" style="display: flex; justify-content: center;">
-      <a-button type="primary" @click="onSave">
-        保存
-      </a-button>
-    </div>
+      </div>
+    </a-spin>
   </div>
 </template>
 <script lang="ts" setup>
@@ -79,6 +81,7 @@ let checkStrictly: any = ref(true) // 父子关联 flase 关联  true 不关联
 let expandAll: any = ref(false) // 展开所有 false 合并 true 展开
 let checkedAll: any = ref(false) // 全部勾选 false 取消 true 勾选
 
+let spinning = ref<boolean>(false)
 
 const generateList = (data: any) => {
   for (let i = 0; i < data.length; i++) {
@@ -154,6 +157,7 @@ onMounted(() => {
 
 
 function loadRegionList() {
+  spinning.value = true
   defHttp.get(
     {
       url: urlList.queryTreeAndZdgs,
@@ -170,6 +174,9 @@ function loadRegionList() {
     } else {
       message.warning(res?.message || '未查询到行政区域数据！')
     }
+    spinning.value = false
+  }).catch(err => {
+    spinning.value = false
   })
 }
 
