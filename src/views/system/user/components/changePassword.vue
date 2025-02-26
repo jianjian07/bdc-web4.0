@@ -13,7 +13,7 @@
             <a-input disabled v-model:value="dataInfo.realName" />
         </a-form-item>  
         <a-form-item ref="newPassword" label="新密码" name="newPassword" :help="helpinfo">
-              <a-input-password v-model:value="formState.newPassword" />
+              <a-input-password autocomplete="new-password" v-model:value="formState.newPassword" />
           </a-form-item>
       </a-form>
   </a-drawer>

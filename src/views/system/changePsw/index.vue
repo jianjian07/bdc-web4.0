@@ -13,7 +13,7 @@
         ref="oldPassword"
         name="oldPassword"
       >
-        <a-input-password v-model:value="formState.oldPassword" />
+        <a-input-password autocomplete="new-password" v-model:value="formState.oldPassword" />
       </a-form-item>
       <a-form-item
         label="新密码"
@@ -21,14 +21,14 @@
         name="newPassword"
         :help="helpinfo"
       >
-        <a-input-password v-model:value="formState.newPassword" />
+        <a-input-password autocomplete="new-password" v-model:value="formState.newPassword" />
       </a-form-item>
       <a-form-item
         label="确认新密码"
         ref="confirmPassword"
         name="confirmPassword"
       >
-        <a-input-password v-model:value="formState.confirmPassword" />
+        <a-input-password autocomplete="new-password" v-model:value="formState.confirmPassword" />
       </a-form-item>
     </a-form>
     <a-space style="display: flex; align-items: center; justify-content: center; width: 100%;">
