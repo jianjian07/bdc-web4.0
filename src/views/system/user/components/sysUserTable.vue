@@ -43,7 +43,7 @@
             <a @click="changePSW(record)">修改密码</a>
             <a-divider type="vertical" />
             <a-popconfirm :disabled="record.username == 'admin'" cancel-text="否" ok-text="是"
-              @confirm="handleDel(record)">
+              @confirm="handleDel(record, index)">
               <template #title>
                 <span>确认<span style="color:red">删除</span>该用户?</span>
               </template>
@@ -65,6 +65,7 @@ import { PlusOutlined } from '@ant-design/icons-vue'
 import { defHttp } from "/@/utils/http/axios"
 import UserModal from "/@/views/system/user/components/UserModal.vue"
 import changePassword from "/@/views/system/user/components/changePassword.vue"
+import { message } from "ant-design-vue"
 let drawerOpen = ref(false)
 let passwordOpen = ref(false)
 let title = ref('')
@@ -135,7 +136,8 @@ const pagination = computed(() => ({
 let userList = ref<any>([])
 
 enum api {
-  list = '/api/zrzy-system/sys/v1/user/page'
+  list = '/api/zrzy-system/sys/v1/user/page',
+  del = '/api/zrzy-system/sys/v1/user/delete'
 }
 
 onMounted(() => {
@@ -193,8 +195,17 @@ function handleEdit(record) {
  * 删除
  * @param record
  */
-function handleDel(record) {
-
+function handleDel(record, index) {
+  defHttp.post({ url: api.del, params: { id: record.id } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      userList.value.splice(index, 1)
+      message.success('删除成功!')
+    } else {
+      message.warning('删除失败!')
+    }
+  }).catch(err => {
+     message.warning('删除失败!')
+  })
 }
 
 function changePSW(record) {
