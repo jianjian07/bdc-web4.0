@@ -152,14 +152,38 @@
                             <a-button type="link">删除</a-button>
                           </a-popconfirm>
                         </template>
-                        <template v-else-if="['sxy','sxfs','sxtj'].includes(column?.key)">
+                        <template v-else-if="['sxy','sxfs'].includes(column?.key)">
                           <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
                             <template v-if="validateRules(column.rules, record[column.key])" #title>
                               <span>{{ validateRules(column.rules, record[column.key]) }}</span>
                             </template>
-                            <a-select v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" 
+                            <a-select v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" multiple
                                       :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item,index) in getDictItemsByCode(column.dict)" :label="item.label" :value="column.bz ? item.description : item.value">
+                                {{ item.label }}
+                              </a-select-option>
+                            </a-select>
+                          </a-tooltip>
+                        </template>
+                        <template v-else-if="['sxtj'].includes(column?.key)">
+                          <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
+                            <template v-if="validateRules(column.rules, record[column.key])" #title>
+                              <span>{{ validateRules(column.rules, record[column.key]) }}</span>
+                            </template>
+                            <a-tree-select v-if="getSxyLabel(record['sxy']) == '权利人类型'" 
+                                           v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" 
+                                           :disabled="column.disabled" tree-checkable
+                                           showCheckedStrategy="TreeSelect.SHOW_ALL"
+                                           :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear
+                                           @change="(value, option) => handleChangeValue(value, option, column, record)"
+                                           :tree-data="getTreeDictItemsByCode(getSxtjOptions(record['sxy']))"
+                                           treeCheckStrictly
+                            >
+                              
+                            </a-tree-select>
+                            <a-select v-else v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" mode="multiple"
+                                      :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
+                              <a-select-option v-for="(item,index) in getDictItemsByCode(getSxtjOptions(record['sxy']))" :label="item.label" :value="column.bz ? item.description : item.value">
                                 {{ item.label }}
                               </a-select-option>
                             </a-select>
@@ -215,7 +239,7 @@
 import { onMounted, ref } from "vue"
 import { AuditOutlined,BookOutlined,FileOutlined } from '@ant-design/icons-vue';
 import { cModal } from "/@/components/cModal/index"
-import { getDictItemsByCode,validateRules, setInputStatus } from '/@/views/online/utils/commonUtils';
+import { getDictItemsByCode, getTreeDictItemsByCode, validateRules, setInputStatus } from '/@/views/online/utils/commonUtils';
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 
@@ -272,8 +296,6 @@ const columns = [
     title: '筛选条件',
     dataIndex: 'sxtj',
     key: 'sxtj',
-    dict: 'sxtj',
-    bz: 0,
     placeholder: '请选择筛选条件',
     rules: [{ required: true, message: '请选择筛选条件' }]
   },
@@ -315,6 +337,46 @@ function initData() {
     }
     spinning.value = false
   })
+}
+
+/**
+ * 获取筛选域label
+ * @param sxy
+ */
+function getSxyLabel(sxy) {
+  let label = getDictItemsByCode('sxy').filter((_v: any) => _v.description == sxy)[0]?.dictName || ''
+  return label
+}
+
+/**
+ * 根据筛选域获取筛选条件
+ * @param sxy
+ */
+function getSxtjOptions(sxy) {
+  let label = getDictItemsByCode('sxy').filter((_v: any) => _v.description == sxy)[0]?.dictName || ''
+  let sxtj = ''
+  switch (label) {
+    case '是否分别持证':
+    case '是否住宅登记':
+      sxtj = 'sf'
+      break;
+    case '权利类型':
+      sxtj = 'qllx'
+      break;
+    case '权利人类型':
+      sxtj = 'qlrlx'
+      break;
+    case '房屋类型':
+      sxtj = 'fwlx'
+      break;
+    case '登记类型':
+      sxtj = 'sfdjlx'
+      break;
+    case '房屋性质':
+      sxtj = 'fwxz'
+      break;
+  }
+  return sxtj
 }
 
 /**
@@ -409,7 +471,10 @@ function loadSfxxx(sfxbh: string) {
         let rec = JSON.parse(JSON.stringify(res.result.bdcSfConfig))
         rec.sfjm = rec.sfjm ? rec.sfjm + '' : null
         rec.jmfs = rec.jmfs ? rec.jmfs + '' : null
-        sxtjxx.value = res.result.bdcSfConfigsxList
+        sxtjxx.value = res.result.bdcSfConfigsxList.map((item) => {
+          item.sxtj = item.sxtj.includes(',') ? item.sxtj.split(',') : item.sxtj
+          return item
+        })
         if (rec.djlx) {
           rec.djlx = rec.djlx.split('|')
         }
@@ -464,6 +529,8 @@ function handleSubmit() {
         _formState.sfxgyname = sfxgy.find(item => item.description == _formState.sfxgy)?.label
         let _sxtjxx = sxtjxx.value.map((item) => {
           item.sfxbh = selectedNode.value.value
+          let sxtj = JSON.parse(JSON.stringify(item.sxtj))
+          item.sxtj = Array.isArray(sxtj) ? sxtj.map(tj => tj.value ? tj.value : tj).join(',') : ''
           return item
         })
         let params = {
