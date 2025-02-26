@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div style="margin-top: 8px;line-height: 3em; background-color: #fff">
-                <CLCLB @select="onSelect"></CLCLB>
+                <CLCLB :isRoleProcess="true" @select="onSelect"></CLCLB>
             </div>
         </div>
 

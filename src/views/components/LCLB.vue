@@ -11,8 +11,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
+const props = defineProps({
+    isRoleProcess: {
+        type: Boolean,
+        default: false
+    }
+})
 enum api {
-    processlist = '/api/zrzy-bdc/act/process/extActProcess/list'
+    processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
+    roleProcesslist = '/api/zrzy-bdc/act/process/extActProcess/getRoleProcessList',
 }
 const expandedKeys = ref<string[]>(['100']);
 const selectedKeys = ref<string[]>([]);
@@ -21,7 +28,8 @@ onMounted(() => {
     loadTreeData()
 })
 function loadTreeData() {
-    defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
+    let url = props.isRoleProcess ? api.roleProcesslist : api.processlist
+    defHttp.get({ url: url }, { withToken: true }).then((res) => {
         treeData.value = res.result
         emit('setTreeData', treeData.value)
         if (res.result.length > 0) {

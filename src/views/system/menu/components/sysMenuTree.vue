@@ -10,7 +10,8 @@
       </div>
     </div>
     <div class="sys-menu-tree-content">
-      <a-tree v-model:selectedKeys="selectedKeys" :tree-data="sysMenu" :blockNode="true" @select="handleSelectTreeItem" :fieldNames="{ key:'id'} ">
+      <a-tree v-model:selectedKeys="selectedKeys" :tree-data="sysMenu" :blockNode="true" @select="handleSelectTreeItem"
+        :fieldNames="{ key: 'id' }">
         <template #title="node">
           <div class="sys-menu-tree-title">
             <div class="title">{{ node.name }}</div>
@@ -102,8 +103,8 @@ function initSysMenu() {
       message.warning(res.message)
     }
     if (sysMenu.value && sysMenu.value.length > 0) {
-       selectedKeys.value = [sysMenu.value[0].id]
-       emit('update:currentSysKey', selectedKeys.value[0])
+      selectedKeys.value = [sysMenu.value[0].id]
+      emit('update:currentSysKey', selectedKeys.value[0])
     }
   })
 }
@@ -181,7 +182,7 @@ function handleDept() {
     margin-bottom: 10px;
 
     .left {
-      font-size: 16px;
+      // font-size: 16px;
       font-weight: bold;
     }
   }
@@ -189,7 +190,8 @@ function handleDept() {
   .sys-menu-tree-content {
 
     .sys-menu-tree-title {
-      font-size: 14px;
+      // font-size: 14px;
+      padding: 5px 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
