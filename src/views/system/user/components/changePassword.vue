@@ -64,13 +64,11 @@ onMounted(() => {
     helpinfo.value = pwdRule[0]?.message
     psw_regex.value = pwdRule[0]?.content
   }
-  
-  console.log('helpinfo.value', helpinfo.value)
 })
 
 const validateNewPassword = (rule, value, callback) => {
   if(psw_regex.value && !!(eval(psw_regex.value) instanceof RegExp) && !eval(psw_regex.value).test(value)) {
-    callback(helpinfo)
+    callback(helpinfo.value)
   } else {
     callback()
   }

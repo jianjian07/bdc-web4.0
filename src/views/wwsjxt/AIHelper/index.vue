@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="questionContent">
-      <div class="questionList">
+      <div class="questionList" ref="chatContainer">
         <template v-for="(item, index) in conversationList">
           <div class="questionLeft" v-if="item.role == 'assistant'" :key="index">
             <div class="questionItem">
@@ -47,14 +47,14 @@
           <div class="questionRight" v-if="item.role == 'user'" :key="index">
             <div class="questionItem">
               <div class="content">
-                {{ item.content }}
+                <span v-html="item.content"></span>
                 <div style="text-align: right;" class="edit" @click="editText(item.content)">
                   <EditOutlined />
                   编辑
                 </div>
               </div>
               <div class="avatar">
-                <svg-icon name="mySelf"  width="40px" height="40px" ></svg-icon>
+                <svg-icon name="mySelf"  width="40px" height="40px" fill="#555555"></svg-icon>
               </div>
               
             </div>
@@ -64,12 +64,16 @@
 
       </div>
       <div class="question">
+        <div v-if="inAnswer" @click="abortRequest" class="stopRequest">
+          <svg-icon name="suspend"  width="20px" height="20px" ></svg-icon>
+          停止回答
+        </div>
         <a-textarea
           v-model:value="question"
-          placeholder="输入您的问题，按回车发送"
+          placeholder="输入您的问题，按 Ctrl+Enter 换行，按 Enter 发送"
           :auto-size="{ minRows: 3, maxRows: 10 }"
           :bordered="false"
-          @press-enter="sendQuestion"
+          @keydown="handleTextareaKey"
         />
         <div class="operate">
           <div class="list"></div>
@@ -93,11 +97,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from 'lodash-es';
 import { PlusOutlined, MessageOutlined, EditOutlined, DeleteOutlined, ShareAltOutlined, SendOutlined, CopyOutlined } from '@ant-design/icons-vue';
+import { useUserStoreWithOut } from '/@/store/modules/user';
 
 let topicList = ref([
   {
@@ -127,9 +132,26 @@ let conversationList: any = ref([
   }
 ])
 
+// 新增中止控制器
+const abortController = ref<AbortController>()
+const isStreaming = ref(false)
+let inAnswer = ref(false)
+
 const urlList = {
   znwd: '/api/zrzy-form/ai/znwd',
+  aiStream: '/api/zrzy-form/ai/call/Stream'
 }
+
+// 在原有代码基础上添加以下内容
+const chatContainer = ref<HTMLElement>();
+
+// 监听会话列表变化
+watch(conversationList, async () => {
+  await nextTick();
+  if (chatContainer.value) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+  }
+}, { deep: true, immediate: true });
 
 watch(() => currentTopic.value, (val: any) => {
   if(val && val?.id) {
@@ -176,6 +198,9 @@ function deleteTopic(item: any) {
 }
 
 function sendQuestion() {
+  // 初始化中止控制器
+  abortController.value = new AbortController()
+  isStreaming.value = true
   // 发送问题
   let currentDate = question.value
   if(!currentDate) {
@@ -187,70 +212,103 @@ function sendQuestion() {
     role: 'user',
     content: currentDate
   })
-  conversationList.value.push({
+
+  // 创建临时消息对象用于流式更新
+  const tempMessage = {
     role: 'assistant',
     content: 'AI助手正在思考中...',
     type: 'waiting'
-  })
+  }
+  conversationList.value.push(tempMessage)
 
-//   setTimeout(() => {
-//     let res = {
-//     "success": true,
-//     "message": "",
-//     "code": 200,
-//     "result": "{\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\"《不动产首次登记条例》并不是一个准确的法律法规名称。你可能是想了解关于不动产首次登记的相关规定，这在我国主要是由《中华人民共和国民法典》、《不动产登记暂行条例》等法律法规进行规定的。\\n\\n根据这些法律法规，不动产首次登记是指不动产权利第一次依法记载于不动产登记簿的行为，包括集体土地所有权，房屋等建筑物、构筑物所有权，森林、林木所有权，耕地、林地、草地等土地承包经营权，建设用地使用权，宅基地使用权，海域使用权，地役权，抵押权等的首次登记。申请人应当提交相关材料，如身份证明、权属来源证明等，并对申请材料的真实性负责。登记机构受理后会进行审核，最终将符合条件的不动产权利信息记载于不动产登记簿，完成首次登记。\\n\\n如果你有更具体的问题或者需要进一步的帮助，请随时告诉我。\"},\"finish_reason\":\"stop\",\"index\":0,\"logprobs\":null}],\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":13,\"completion_tokens\":181,\"total_tokens\":194,\"prompt_tokens_details\":{\"cached_tokens\":0}},\"created\":1740471114,\"system_fingerprint\":null,\"model\":\"qwen-plus\",\"id\":\"chatcmpl-18ae2239-b7d0-9ca3-b34e-8d3ecc57def2\"}",
-//     "timestamp": 1740471114504,
-//     "exceptionId": null
-// }
-//     if(res && res.code == 200) {
-//       const result = JSON.parse(res.result)
-//       console.log(result)
-//       conversationList.value.pop()
-//       conversationList.value.push({
-//         role: 'assistant',
-//         content: result.choices[0].message.content.replace(/\n/g, '<br>'),
-//         type: 'answer'
-//       })
-//     }
-//   }, 3000);
-//   return
+  // 使用封装的axios实例进行流式请求
   defHttp.post({
-    url: urlList.znwd,
+    url: urlList.aiStream,
     params: {
-      role: 'user',
-      content: currentDate
+      message: currentDate
+    },
+    responseType: 'text', // 指定响应类型为文本
+    // 添加中止信号
+    signal: abortController.value.signal,
+    onDownloadProgress: (progressEvent) => {
+      const chunk = progressEvent?.event?.currentTarget?.responseText.replace(/\n\ndata:/gm, '')  
+      inAnswer.value = true
+
+      if (!chunk) return
+
+      // 新增数据格式处理
+      const rawData = chunk
+        // 过滤SSE协议前缀
+        .replace(/^data:\s*/gm, '')  
+        // 移除可能存在的JSON格式标记
+        .replace(/^{.*?}\n?/g, '')
+        // 清理事件标记
+        .replace(/event:error/g, '');
+
+      // 处理分块数据（后端返回纯文本流）
+      tempMessage.content = parseMarkdown(rawData)
+      tempMessage.type = 'answer'
+      // 触发视图更新
+      conversationList.value = [...conversationList.value]
     }
   }, {
-    withToken: true
-  }).then((res: any) => {
-    if(res && res.code == 200) {
-      const result = JSON.parse(res.result)
-      console.log(result)
-      conversationList.value.pop()
-      conversationList.value.push({
-        role: 'assistant',
-        content: result.choices[0].message.content.replace(/\n/g, '<br>'),
-        type: 'answer'
-      })
-    } else {
-      message.error(res.message)
-      conversationList.value.pop()
-      conversationList.value.push({
-        role: 'assistant',
-        content: 'AI助手思考失败，请稍后再试！',
-        type: 'error'
-      })
-    }  
+    withToken: true,
+    // 覆盖默认的响应处理
+    isTransformResponse: false,
+    withTimeout: false
+  }).then(() => {
+    inAnswer.value = false
   }).catch((err: any) => {
-    message.error(err.message)
-    conversationList.value.pop()
-    conversationList.value.push({
-      role: 'assistant',
-      content: 'AI助手思考失败，请稍后再试!',
-      type: 'error'
-    })
+    if (err.name !== 'CanceledError') {
+      console.error('Stream error:', err)
+      tempMessage.content = 'AI助手思考失败，请稍后再试!'
+    }
+    inAnswer.value = false
+  }).finally(() => {
+    isStreaming.value = false
+    inAnswer.value = false
   })
 }
+
+// 中止请求方法
+function abortRequest() {
+  if (abortController.value) {
+    abortController.value.abort()
+    isStreaming.value = false
+  }
+}
+
+// 添加Markdown解析方法
+const parseMarkdown = (text: string) => {
+    // 按处理优先级排序的正则替换规则
+    return text
+      // 转义HTML特殊字符（已在前端输入时处理，此处为防御性代码）
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      // 代码块（三反引号格式）
+      .replace(/```[\s\S]*?```/g, (match) => 
+        `<pre><code>${match.replace(/```/g, '').trim()}</code></pre>`)
+      // 行内代码
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      // 标题（支持1-6级）
+      .replace(/^#+\s+(.+)$/gm, (_, text) => {
+        const level = Math.min(_.match(/#/g)?.length || 1, 6)
+        return `<h${level}>${text}</h${level}>`
+      })
+      // 无序列表
+      .replace(/^[\*\-+]\s+(.+)$/gm, '<li>$1</li>')
+      // 加粗
+      .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
+      // 斜体
+      .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
+      // 图片
+      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img alt="$1" src="$2" />')
+      // 链接
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+      // 换行保留
+      .replace(/\n/g, '<br>');
+  };
 
 // 复制文本内容到剪切板
 const copyText = (text: string) => {
@@ -267,6 +325,19 @@ const copyText = (text: string) => {
 const editText = (text: string) => {
   question.value = text
 }
+
+function handleTextareaKey(e: KeyboardEvent) {
+  // 处理 Ctrl + Enter 换行
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    question.value += '\n';
+  } else if (e.key === 'Enter') {
+    // 处理 Enter 发送
+    e.preventDefault();
+    sendQuestion();
+  }
+}
+
 </script>
 
 <style scoped lang="less">
@@ -399,6 +470,20 @@ const editText = (text: string) => {
     .question {
       border: 1px solid #d9d9d9;
       border-radius: 10px;
+      position: relative;
+    }
+
+    .stopRequest {
+      position: absolute;
+      right: 10px;
+      top: -30px;
+      cursor: pointer;
+      &:hover {
+        color: #1890ff;
+        .svg-icon {
+          fill: #1890ff !important;
+        }
+      }
     }
     .operate {
       display: flex;
