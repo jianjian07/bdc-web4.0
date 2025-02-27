@@ -35,7 +35,7 @@
                 <svg-icon name="AIHelper"  width="40px" height="40px" ></svg-icon>
               </div>
               <div class="content">
-                <span>{{ item.content }}</span>
+                <span v-html="item.content"></span>
                 <div v-if="item.type == 'answer'" class="clip" @click="copyText(item.content)">
                   <CopyOutlined />
                   复制内容
@@ -208,7 +208,7 @@ function sendQuestion() {
 //       conversationList.value.pop()
 //       conversationList.value.push({
 //         role: 'assistant',
-//         content: result.choices[0].message.content,
+//         content: result.choices[0].message.content.replace(/\n/g, '<br>'),
 //         type: 'answer'
 //       })
 //     }
@@ -229,7 +229,7 @@ function sendQuestion() {
       conversationList.value.pop()
       conversationList.value.push({
         role: 'assistant',
-        content: result.choices[0].message.content,
+        content: result.choices[0].message.content.replace(/\n/g, '<br>'),
         type: 'answer'
       })
     } else {
@@ -320,6 +320,7 @@ const editText = (text: string) => {
     .questionList {
       flex: 1;
       overflow: auto;
+      // font-size: 14px;
       .questionLeft {
         width: 100%;
         transition: background .1s ease-in-out;
@@ -334,7 +335,7 @@ const editText = (text: string) => {
           .avatar {
             position: absolute;
             left: 0;
-            top: 23px;
+            top: 18px;
             margin-left: 0;
           }
         }
@@ -342,7 +343,7 @@ const editText = (text: string) => {
           width: auto;
           padding: 10px;
           margin-left: 50px;
-          line-height: 40px;
+          line-height: 30px;
           background: #ffffff;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
           border-radius: 10px;
@@ -369,7 +370,7 @@ const editText = (text: string) => {
           .avatar {
             position: absolute;
             right: 0;
-            top: 23px;
+            top: 18px;
             margin-right: 0;
           }
         }
@@ -378,7 +379,7 @@ const editText = (text: string) => {
           width: auto;
           padding: 10px;
           margin-right: 50px;
-          line-height: 40px;
+          line-height: 30px;
           background: #EFF4FA;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
           border-radius: 10px;
