@@ -64,7 +64,7 @@
 
       </div>
       <div class="question">
-        <div v-if="inAnswer" @click="abortRequest" class="stopRequest">
+        <div v-if="inAnswer"  @click="abortRequest" class="stopRequest">
           <svg-icon name="suspend"  width="20px" height="20px" ></svg-icon>
           停止回答
         </div>
@@ -471,6 +471,7 @@ function handleTextareaKey(e: KeyboardEvent) {
       border: 1px solid #d9d9d9;
       border-radius: 10px;
       position: relative;
+      margin-top: 20px;
     }
 
     .stopRequest {
