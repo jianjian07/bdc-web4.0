@@ -19,7 +19,6 @@ export class RequestHttp {
      * 构造函数
      */
     constructor(options: AxiosOptions) {
-
         this.options = options
         // 创建一个新的axios
         this.axiosInstance = axios.create(options)
@@ -218,6 +217,13 @@ export class RequestHttp {
                 }
             }
         }
+   
+        if (config.requestOptions?.withTimeout !== undefined) {
+            if (!config.requestOptions.withTimeout) {
+                config.timeout = 0
+            }
+        }
+        
         if (config && config.headers && config.requestOptions) { // 多一步判断
             if (config.requestOptions.xAuthToken != undefined) {
                 Reflect.set(config.headers, 'x-auth-token', config.requestOptions.xAuthToken)
