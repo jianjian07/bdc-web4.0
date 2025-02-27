@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="questionContent">
-      <div class="questionList" ref="chatContainer">
+      <div class="questionList" ref="chatContainer" id="chat-area">
         <template v-for="(item, index) in conversationList">
           <div class="questionLeft" v-if="item.role == 'assistant'" :key="index">
             <div class="questionItem">
@@ -97,12 +97,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { nextTick, ref, watch } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from 'lodash-es';
 import { PlusOutlined, MessageOutlined, EditOutlined, DeleteOutlined, ShareAltOutlined, SendOutlined, CopyOutlined } from '@ant-design/icons-vue';
 import { useUserStoreWithOut } from '/@/store/modules/user';
+import { scrollOnTheEnd } from "/@/utils"
 
 let topicList = ref([
   {
@@ -149,7 +150,8 @@ const chatContainer = ref<HTMLElement>();
 watch(conversationList, async () => {
   await nextTick();
   if (chatContainer.value) {
-    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    scrollOnTheEnd('chat-area', 1000)
+    // chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
   }
 }, { deep: true, immediate: true });
 
@@ -385,12 +387,13 @@ function handleTextareaKey(e: KeyboardEvent) {
   }
   .questionContent {
     flex: 1;
-    padding: 10px;
+    //padding: 10px;
     display: flex;
     flex-direction: column;
     .questionList {
       flex: 1;
       overflow: auto;
+      padding: 10px;
       // font-size: 14px;
       .questionLeft {
         width: 100%;
@@ -471,7 +474,7 @@ function handleTextareaKey(e: KeyboardEvent) {
       border: 1px solid #d9d9d9;
       border-radius: 10px;
       position: relative;
-      margin-top: 20px;
+      margin: 20px 10px 0;
     }
 
     .stopRequest {

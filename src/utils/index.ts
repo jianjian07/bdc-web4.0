@@ -1,4 +1,5 @@
 import { isObject } from "./is"
+import { nextTick } from "vue"
 const baseApiUrl = '';
 /**
  * 深度合并
@@ -94,3 +95,33 @@ export function compareObjects(obj1: any, obj2: any) {
     return diff;
 }
 /**对比属性**/
+
+/**
+ * 流畅滑动到div底部
+ * @param id
+ * @param time
+ */
+export function scrollOnTheEnd(id, time) {
+  nextTick(() => {
+    let msg = document.getElementById(id)
+    let start = msg.scrollTop;
+    let end = msg.scrollHeight;
+    let distance = end - start;
+    let startTime = null;
+
+    function scrollStep(timestamp) {
+      if (!startTime) startTime = timestamp;
+      let progress = timestamp - startTime;
+      let scrollPos = start + distance * (progress / time)
+      msg.scrollTop = scrollPos;
+  
+      if (progress < time) { 
+        window.requestAnimationFrame(scrollStep);
+      } else {
+        msg.scrollTop = end
+      }
+    }
+
+    window.requestAnimationFrame(scrollStep);
+  })
+}
