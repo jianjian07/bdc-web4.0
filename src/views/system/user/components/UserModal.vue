@@ -38,8 +38,8 @@
                     <a-select-option :value="false">未初始化</a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="所属角色" name="roleList">
-                <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple"
+            <a-form-item label="所属角色" name="roleList" :rules="[{ required: true, message: '请选择所属角色', type: 'array' }]">
+                <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple" 
                     :options="roleListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
                 </a-select>
             </a-form-item>

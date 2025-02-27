@@ -157,7 +157,7 @@ function removeBusEvent() {
 
 function handleResize() {
   containerWidth = formContent.value?.offsetWidth;
-  leftWidth.value = containerWidth - rightWidth.value - 10; // 10px 是 split-line 的宽度
+  leftWidth.value = containerWidth - rightWidth.value - (showFilePanel.value ? 10 : 0); // 10px 是 split-line 的宽度
 }
 let slbh = route.query.slbh
 /**
