@@ -143,7 +143,6 @@ const urlList = {
   aiStream: '/api/zrzy-form/ai/call/Stream'
 }
 
-// 在原有代码基础上添加以下内容
 const chatContainer = ref<HTMLElement>();
 
 // 监听会话列表变化
@@ -468,7 +467,7 @@ function handleTextareaKey(e: KeyboardEvent) {
           width: auto;
           padding: 10px;
           margin-right: 50px;
-          line-height: 30px;
+          line-height: 1.75em;
           background: #EFF4FA;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
           border-radius: 10px;
