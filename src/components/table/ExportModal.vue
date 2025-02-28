@@ -43,7 +43,7 @@ let cColumns: any = ref([])
 function initColumns() {
     cColumns.value = []
     props.columns.forEach((element: any) => {
-        if (element.title != "操作") {
+        if (element.key != "action") {
             cColumns.value.push({
                 key: element.key == undefined ? element.id : element.key,
                 title: element.title,

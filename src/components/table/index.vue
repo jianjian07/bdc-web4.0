@@ -137,7 +137,7 @@ let checkColumn: any = ref([])
 initColumns()
 function initColumns() {
     props.columns.map((item: any) => {
-        if (item.title != "操作") {
+        if (item.key != "action") {
             checkColumn.value.push({ label: item.title, value: item.dataIndex });
             defaultOptions.value.push(item.dataIndex)
         } else {
@@ -151,7 +151,7 @@ function filterFun(value: Array<string>) {
         if (value.includes(item.dataIndex)) {
             // 当暴露值为true时，循环遍历的值会赋给filterValue
             return true
-        } else if (item.title == '操作') {
+        } else if (item.key == 'action') {
             return true
         }
         return false

@@ -433,7 +433,7 @@ export function filterFun(value: Array<string>, columns) {
         if (value.includes(item.dataIndex)) {
             // 当暴露值为true时，循环遍历的值会赋给filterValue
             return true
-        } else if (item.title == '操作') {
+        } else if (item.key == 'action') {
             return true
         }
         return false
