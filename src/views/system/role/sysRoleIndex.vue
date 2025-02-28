@@ -48,8 +48,8 @@
               </template>
               <template v-if="column.dataIndex === 'operation'">
                 <a @click="handleLcqx(record)">流程权限</a>
-                <a-divider type="vertical" />
-                <a @click="handleDept(record)">分配</a>
+                <!-- <a-divider type="vertical" />
+                <a @click="handleDept(record)">分配</a> -->
                 <a-divider type="vertical" />
                 <a @click="handleEditRole(record)">编辑</a>
                 <a-divider type="vertical" />
@@ -192,7 +192,7 @@ function loadMenu() {
 
 function reset() {
   pagination.value.current = 1
-  searchFormState.value.name = '' 
+  searchFormState.value.name = ''
   loadRole()
 }
 
