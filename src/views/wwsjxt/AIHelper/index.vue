@@ -3,12 +3,13 @@
     <div class="topicContent">
       <a-button size="large" @click="onAddNew()">
         <template #icon>
-            <plus-outlined />
+          <plus-outlined />
         </template>
         创建新会话
       </a-button>
       <div class="topicList">
-        <div class="topicItem" v-for="(item, index) in topicList" :key="index" @click="currentTopic = item" :class="currentTopic.id == item.id ? 'activeTopic' : ''">
+        <div class="topicItem" v-for="(item, index) in topicList" :key="index" @click="currentTopic = item"
+          :class="currentTopic.id == item.id ? 'activeTopic' : ''">
           <div class="itemTitle">
             <MessageOutlined />&nbsp;
             {{ item.title }}
@@ -16,9 +17,8 @@
           <div class="itemOperate">
             <a-space>
               <EditOutlined @click="editTopic(item)" />
-              <a-popconfirm title="是否确定删除该会话？" ok-text="确定" cancel-text="取消"
-                  @confirm="deleteTopic(item)">
-                  <DeleteOutlined />
+              <a-popconfirm title="是否确定删除该会话？" ok-text="确定" cancel-text="取消" @confirm="deleteTopic(item)">
+                <DeleteOutlined />
               </a-popconfirm>
               <ShareAltOutlined />
             </a-space>
@@ -32,7 +32,7 @@
           <div class="questionLeft" v-if="item.role == 'assistant'" :key="index">
             <div class="questionItem">
               <div class="avatar">
-                <svg-icon name="AIHelper"  width="40px" height="40px" ></svg-icon>
+                <svg-icon name="AIHelper" width="40px" height="40px"></svg-icon>
               </div>
               <div class="content">
                 <span v-html="item.content"></span>
@@ -54,9 +54,9 @@
                 </div>
               </div>
               <div class="avatar">
-                <svg-icon name="mySelf"  width="40px" height="40px" fill="#555555"></svg-icon>
+                <svg-icon name="mySelf" width="40px" height="40px" fill="#555555"></svg-icon>
               </div>
-              
+
             </div>
             <div style="clear: both;"></div>
           </div>
@@ -64,23 +64,23 @@
 
       </div>
       <div class="question">
-        <div v-if="inAnswer"  @click="abortRequest" class="stopRequest">
-          <svg-icon name="suspend"  width="20px" height="20px" ></svg-icon>
+        <div v-if="inAnswer" @click="abortRequest" class="stopRequest">
+          <svg-icon name="suspend" width="20px" height="20px"></svg-icon>
           停止回答
         </div>
-        <a-textarea
-          v-model:value="question"
-          placeholder="输入您的问题，按 Ctrl+Enter 换行，按 Enter 发送"
-          :auto-size="{ minRows: 3, maxRows: 10 }"
-          :bordered="false"
-          @keydown="handleTextareaKey"
-        />
+        <a-textarea v-model:value="question" placeholder="输入您的问题，按 Ctrl+Enter 换行，按 Enter 发送"
+          :auto-size="{ minRows: 3, maxRows: 10 }" :bordered="false" @keydown="handleTextareaKey" />
         <div class="operate">
           <div class="list"></div>
-          <div class="send" @click="sendQuestion">
+          <a-button class="send" shape="round" type="primary" @click="sendQuestion">
+            <template #icon>
+              <SendOutlined style="transform: rotate(-40deg); margin-top: -5px;" />
+            </template>
+          </a-button>
+          <!-- <div class="send" @click="sendQuestion">
             <SendOutlined style="transform: rotate(-45deg); margin-top: -5px;" />
             <span style="padding-left: 3px;">发送</span>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -156,7 +156,7 @@ watch(conversationList, async () => {
 }, { deep: true, immediate: true });
 
 watch(() => currentTopic.value, (val: any) => {
-  if(val && val?.id) {
+  if (val && val?.id) {
     // TODO 加载会话主题，获取之前的会话记录
   } else {
     conversationList.value = []
@@ -205,7 +205,7 @@ function sendQuestion() {
   isStreaming.value = true
   // 发送问题
   let currentDate = question.value
-  if(!currentDate) {
+  if (!currentDate) {
     message.error('请输入问题')
     return
   }
@@ -233,7 +233,7 @@ function sendQuestion() {
     // 添加中止信号
     signal: abortController.value.signal,
     onDownloadProgress: (progressEvent) => {
-      const chunk = progressEvent?.event?.currentTarget?.responseText.replace(/\n\ndata:/gm, '')  
+      const chunk = progressEvent?.event?.currentTarget?.responseText.replace(/\n\ndata:/gm, '')
       inAnswer.value = true
 
       if (!chunk) return
@@ -241,7 +241,7 @@ function sendQuestion() {
       // 新增数据格式处理
       const rawData = chunk
         // 过滤SSE协议前缀
-        .replace(/^data:\s*/gm, '')  
+        .replace(/^data:\s*/gm, '')
         // 移除可能存在的JSON格式标记
         .replace(/^{.*?}\n?/g, '')
         // 清理事件标记
@@ -282,35 +282,35 @@ function abortRequest() {
 
 // 添加Markdown解析方法
 const parseMarkdown = (text: string) => {
-    // 按处理优先级排序的正则替换规则
-    return text
-      // 转义HTML特殊字符（已在前端输入时处理，此处为防御性代码）
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      // 代码块（三反引号格式）
-      .replace(/```[\s\S]*?```/g, (match) => 
-        `<pre><code>${match.replace(/```/g, '').trim()}</code></pre>`)
-      // 行内代码
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      // 标题（支持1-6级）
-      .replace(/^#+\s+(.+)$/gm, (_, text) => {
-        const level = Math.min(_.match(/#/g)?.length || 1, 6)
-        return `<h${level}>${text}</h${level}>`
-      })
-      // 无序列表
-      .replace(/^[\*\-+]\s+(.+)$/gm, '<li>$1</li>')
-      // 加粗
-      .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
-      // 斜体
-      .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
-      // 图片
-      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img alt="$1" src="$2" />')
-      // 链接
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
-      // 换行保留
-      .replace(/\n/g, '<br>');
-  };
+  // 按处理优先级排序的正则替换规则
+  return text
+    // 转义HTML特殊字符（已在前端输入时处理，此处为防御性代码）
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    // 代码块（三反引号格式）
+    .replace(/```[\s\S]*?```/g, (match) =>
+      `<pre><code>${match.replace(/```/g, '').trim()}</code></pre>`)
+    // 行内代码
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // 标题（支持1-6级）
+    .replace(/^#+\s+(.+)$/gm, (_, text) => {
+      const level = Math.min(_.match(/#/g)?.length || 1, 6)
+      return `<h${level}>${text}</h${level}>`
+    })
+    // 无序列表
+    .replace(/^[\*\-+]\s+(.+)$/gm, '<li>$1</li>')
+    // 加粗
+    .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
+    // 斜体
+    .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
+    // 图片
+    .replace(/!\[(.*?)\]\((.*?)\)/g, '<img alt="$1" src="$2" />')
+    // 链接
+    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+    // 换行保留
+    .replace(/\n/g, '<br>');
+};
 
 // 复制文本内容到剪切板
 const copyText = (text: string) => {
@@ -347,6 +347,7 @@ function handleTextareaKey(e: KeyboardEvent) {
   display: flex;
   height: 100%;
   overflow: hidden;
+
   .topicContent {
     padding: 20px;
     background: #fff;
@@ -355,13 +356,16 @@ function handleTextareaKey(e: KeyboardEvent) {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+
     button {
       width: 100%;
     }
+
     .topicList {
       margin-top: 20px;
       overflow: auto;
       flex: 1;
+
       .topicItem {
         padding: 12px;
         border-radius: 5px;
@@ -370,30 +374,36 @@ function handleTextareaKey(e: KeyboardEvent) {
         cursor: pointer;
         display: flex;
         justify-content: space-between;
+
         .itemOperate {
           display: none;
         }
+
         &:hover {
           .itemOperate {
             display: block;
           }
         }
       }
+
       .activeTopic {
         background: #1890ff;
         color: #fff;
       }
     }
   }
+
   .questionContent {
     flex: 1;
     //padding: 10px;
     display: flex;
     flex-direction: column;
+
     .questionList {
       flex: 1;
       overflow: auto;
       padding: 10px;
+
       // font-size: 14px;
       .questionLeft {
         width: 100%;
@@ -406,6 +416,7 @@ function handleTextareaKey(e: KeyboardEvent) {
           padding: 15px 50px 15px 0;
           position: relative;
           box-sizing: border-box;
+
           .avatar {
             position: absolute;
             left: 0;
@@ -413,23 +424,26 @@ function handleTextareaKey(e: KeyboardEvent) {
             margin-left: 0;
           }
         }
+
         .content {
           width: auto;
           padding: 10px;
           margin-left: 50px;
-          line-height: 30px;
+          line-height: 1.75em;
           background: #ffffff;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
           border-radius: 10px;
           display: block;
           float: left;
         }
+
         .clip {
           color: #1890ff;
           cursor: pointer;
           margin-top: 5px;
         }
       }
+
       .questionRight {
         width: 100%;
         transition: background .1s ease-in-out;
@@ -441,6 +455,7 @@ function handleTextareaKey(e: KeyboardEvent) {
           padding: 15px 0px 15px 50px;
           position: relative;
           box-sizing: border-box;
+
           .avatar {
             position: absolute;
             right: 0;
@@ -448,7 +463,7 @@ function handleTextareaKey(e: KeyboardEvent) {
             margin-right: 0;
           }
         }
-        
+
         .content {
           width: auto;
           padding: 10px;
@@ -470,6 +485,7 @@ function handleTextareaKey(e: KeyboardEvent) {
 
       }
     }
+
     .question {
       border: 1px solid #d9d9d9;
       border-radius: 10px;
@@ -482,24 +498,29 @@ function handleTextareaKey(e: KeyboardEvent) {
       right: 10px;
       top: -30px;
       cursor: pointer;
+
       &:hover {
         color: #1890ff;
+
         .svg-icon {
           fill: #1890ff !important;
         }
       }
     }
+
     .operate {
       display: flex;
       justify-content: space-between;
       padding: 10px 20px;
+
       .send {
         display: flex;
         align-items: center;
         cursor: pointer;
-        &:hover {
-          color: #1890ff;
-        }
+
+        // &:hover {
+        //   color: #1890ff;
+        // }
       }
     }
   }
