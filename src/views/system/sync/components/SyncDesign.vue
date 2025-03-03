@@ -462,7 +462,9 @@ function closeCurrentTab() {
     if (tabStore.getCurrentTab.meta.cache) {
       setTimeout(() => {
         if (tabStore.getCurrentTab.fullPath == '/system/sync') {
-          router.push('/refresh')
+          const tabStore = useTabsStore()
+          tabStore.refreshTab()
+          // router.push('/refresh')
         }
       }, 300)
     }

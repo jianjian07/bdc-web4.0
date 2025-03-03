@@ -172,7 +172,9 @@ function closeCurrentTab() {
     tabStore.removeTab(currentTab.value)
     setTimeout(() => {
       if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
-        router.push('/refresh')
+        const tabStore = useTabsStore()
+        tabStore.refreshTab() 
+        // router.push('/refresh')
       }
     }, 300)
   } else {
@@ -462,7 +464,9 @@ function djb(slbh: string, cType: string) {
   ).then((res: any) => {
     message.success(res.message)
     // 刷新
-    router.push('/refresh')
+    const tabStore = useTabsStore()
+    tabStore.refreshTab()
+    // router.push('/refresh')
   }).catch((error: any) => {
     message.success("记载失败" + error)
   })

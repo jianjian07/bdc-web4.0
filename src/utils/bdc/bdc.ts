@@ -4,6 +4,9 @@ import { router } from "/@/router";
 import { guid } from "..";
 import { createVNode } from "vue"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
+import { useTabsStore } from "/@/store/modules/tabs"
+// 是否使用业务约束
+const checkFlag = false
 /**
  * 列表提取
  * @param options 
@@ -59,9 +62,9 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    // let check = await checkLogic(slbh, dyhList)
+    let check = checkFlag ? await checkLogic(slbh, dyhList) : true
     options.okLoading.value = false
-    if (true) {
+    if (check) {
         let _data: any =
         {
             "ywlx": ywlx,
@@ -77,7 +80,9 @@ export async function extractData(options: any) {
                 message.success('数据提取成功')
                 options.open.value = false
                 options.reload.value = guid()
-                router.push('/refresh')
+                const tabStore = useTabsStore()
+                tabStore.refreshTab()
+                // router.push('/refresh')
             }
         })
     }
@@ -94,9 +99,9 @@ export async function extractDataLpb(options: any) {
         dyhList.push({ bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
-    // let check = await checkLogic(slbh, dyhList)
+    let check = checkFlag ? await checkLogic(slbh, dyhList) : true
     options.okLoading.value = false
-    if (true) {
+    if (check) {
         let _data: any =
         {
             // "djdl": "CQ",
@@ -113,7 +118,9 @@ export async function extractDataLpb(options: any) {
                 message.success('数据提取成功')
                 options.open.value = false
                 options.reload.value = guid()
-                router.push('/refresh')
+                const tabStore = useTabsStore()
+                tabStore.refreshTab()
+                // router.push('/refresh')
             }
         })
     }
