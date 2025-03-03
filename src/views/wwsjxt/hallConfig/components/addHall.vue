@@ -1,10 +1,9 @@
 <template>
   <div class="addNewContent">
-    <!-- 新增目录 -->
+    <!-- 新增大厅 -->
     <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }" :rules="formRules">
-      <a-form-item label="大厅名称" ref="subsystemid" name="subsystemid">
-        <a-select v-model:value="formState.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions"
-          @change="onSystemChange" allowClear />
+      <a-form-item label="大厅名称" ref="dtmc" name="dtmc">
+        <a-input v-model:value="formState.dtmc" allowClear />
       </a-form-item>
       <a-form-item label="所属区" ref="areaCode" name="areaCode">
         <a-cascader v-model:value="showCode" :fieldNames="regionFieldNames" :options="regionOptions"
@@ -28,41 +27,33 @@ const props = defineProps({
 const formRef = ref()
 
 const formState = reactive({
-  subsystemname: '',
-  subsystemid: '',
-  areaName: '',
+  dtmc: '',
   areaCode: ''
 });
 
 const showCode: any = ref([])
 
 const formRules: any = {
-  subsystemname: [
-    { required: true, message: '请选择子系统名称', trigger: 'change' },
+  dtmc: [
+    { required: true, message: '请输入大厅名称', trigger: 'change' },
   ],
-  areaName: [
+  areaCode: [
     { required: true, message: '请选择行政区名称', trigger: 'change' },
   ]
 }
 
 const urlList = {
-  add: '/api/zrzy-bdc/sys/sysSubArea/add',
-  edit: '/api/zrzy-bdc/sys/sysSubArea/edit',
+  add: '/api/zrzy-wwsj/wwsj/dt/save',
   regionList: '/api/zrzy-bdc/sys/areacode/queryAreaTree',
-  systemList: '/api/zrzy-system/sys/sysSubsystem/list'
 }
 
 const regionFieldNames = { label: 'areaName', value: 'areaCode', }
-const systemFieldNames = { label: 'name', value: 'id', }
 
-const systemOptions = ref([])
 const regionOptions = ref([])
 
 watch(() => props.formData, (val) => {
   if (val.type == 'edit') {
-    formState.subsystemname = val.itemData.subsystemname
-    formState.subsystemid = val.itemData.subsystemid
-    formState.areaName = val.itemData.areaName
+    formState.dtmc = val.itemData.dtmc
     formState.areaCode = val.itemData.areaCode
     showCode.value = setShowCode(val.itemData.areaCode)
   }
@@ -72,7 +63,6 @@ watch(() => props.formData, (val) => {
 
 onMounted(() => {
   loadRegionList()
-  loadSystemList()
 })
 
 function loadRegionList() {
@@ -91,33 +81,10 @@ function loadRegionList() {
   })
 }
 
-function loadSystemList() {
-  systemOptions.value = []
-  defHttp.get(
-    {
-      url: urlList.systemList,
-      params: { pageSize: 1000, pageNo: 1 }
-    },
-    { withToken: true }
-  ).then((res: any) => {
-    if (res?.success) {
-      systemOptions.value = res.result.records
-    } else {
-      message.warning(res?.message || '未查询到行政区数据！')
-    }
-  })
-}
-
-function onSystemChange(value, selectedOptions) {
-  formState.subsystemid = selectedOptions.id
-  formState.subsystemname = selectedOptions.name
-}
-
 function onRegionChange(value, selectedOptions) {
   console.log(value, selectedOptions)
   formState.areaCode = selectedOptions[value.length - 1].areaCode
   showCode.value = value
-  formState.areaName = selectedOptions[value.length - 1].areaName
 }
 
 function setShowCode(code: any) {
@@ -138,8 +105,8 @@ const onSubmit = () => {
     formRef.value
       .validate()
       .then(() => {
-        let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
-        let method = props.formData.type == 'edit' ? 'put' : 'post'
+        let url = urlList.add
+        let method = 'post'
 
         defHttp[method](
           {

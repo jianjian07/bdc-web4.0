@@ -260,6 +260,7 @@ function sendQuestion() {
   }).then(() => {
     inAnswer.value = false
   }).catch((err: any) => {
+  console.log(err)
     if (err.name !== 'CanceledError') {
       console.error('Stream error:', err)
       tempMessage.content = 'AI助手思考失败，请稍后再试!'
@@ -419,7 +420,7 @@ function handleTextareaKey(e: KeyboardEvent) {
           .avatar {
             position: absolute;
             left: 0;
-            top: 18px;
+            top: 15px;
             margin-left: 0;
           }
         }
@@ -458,7 +459,7 @@ function handleTextareaKey(e: KeyboardEvent) {
           .avatar {
             position: absolute;
             right: 0;
-            top: 18px;
+            top: 15px;
             margin-right: 0;
           }
         }

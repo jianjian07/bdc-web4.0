@@ -11,7 +11,10 @@
       </div>
       <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
           @change="onChange($event, loadData)">
-          <template #bodyCell="{ column, record }">
+          <template #bodyCell="{ column, record, index }">
+            <template v-if="column.key === 'index'">
+              {{ pagination.current * pagination.pageSize - pagination.pageSize + index + 1 }}
+            </template>
             <template v-if="column.key === 'action'">
                 <a-space>
                     <template #split>
@@ -39,9 +42,9 @@ import { PlusOutlined } from '@ant-design/icons-vue';
 import { cModal } from '/@/components/cModal/index';
 
 const columns = [
-  { title: "序号", dataIndex: "id", align: "center", width: 80 },
-  { title: "大厅名称", dataIndex: "name", align: "center"  },
-  { title: "所属区", dataIndex: "type", align: "center" },
+  { title: "序号", key: "index", align: "center", width: 80 },
+  { title: "大厅名称", dataIndex: "dtmc", align: "center"  },
+  { title: "所属区", dataIndex: "areaCode", align: "center" },
   { title: '操作', key: 'action', align: "center", width: 200 }
 ]
 let datalist = ref([]);
@@ -54,17 +57,35 @@ let pagination = ref({
 
 const emit = defineEmits(['hallInfo'])
 
+const urlList = {
+  queryHallList: '/api/zrzy-wwsj/wwsj/dt/list', // 查询大厅列表
+  delete: '/api/zrzy-wwsj/wwsj/dt/delete'
+}
+
 onMounted(() => {
   loadData() // 初始化加载数据
 })
 
 function loadData() {
   // 加载数据
-  datalist.value = [{
-    id: 1,
-    name: '大厅1',
-    type: '区1'
-  }]
+  defHttp.get({
+    url: urlList.queryHallList,
+    params: {
+      pageNo: pagination.value.current,
+      pageSize: pagination.value.pageSize,
+    }
+  },{
+    withToken: true
+  }).then((res: any) => {
+    if(res?.success) {
+      datalist.value = res.result.records
+      pagination.value.total = res.result.total
+    } else {
+      message.warning(res?.message || '查询失败!')
+    } 
+  }).catch((err: any) => {
+    console.log(err)
+  })
 }
 
 function orderInfo(record: any) {
@@ -74,6 +95,21 @@ function orderInfo(record: any) {
 
 function deleteData(record: any) {
   // 删除数据
+  defHttp.delete({
+    url: urlList.delete,
+    params: {
+      id: record.id
+    }
+  }, {
+    withToken: true
+  }).then((res: any) => {
+    if (res?.success) {
+      message.success('删除成功!')
+      loadData()
+    } else {
+      message.warning(res?.message || '删除失败!')
+    }
+  })
 }
 
 function onChange(pag: any, callback: any) {

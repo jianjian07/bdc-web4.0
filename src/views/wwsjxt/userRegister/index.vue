@@ -13,24 +13,24 @@
     >
       <a-form-item
         label="注册用户类型"
-        ref="userType"
-        name="userType"
+        ref="zcyhlx"
+        name="zcyhlx"
       >
-        <a-select v-model:value="formState.userType" :options="getDictItemsByCode('wwsjzcyhlx')" @change="onUserTypeChange"/>
+        <a-select v-model:value="formState.zcyhlx" :options="getDictItemsByCode('wwsjzcyhlx')" @change="onUserTypeChange"/>
       </a-form-item>
       <a-form-item
         label="用户名"
-        ref="userName"
-        name="userName"
+        ref="username"
+        name="username"
       >
-        <a-input v-model:value="formState.userName" />
+        <a-input v-model:value="formState.username" placeholder="至少6个字符" />
       </a-form-item>
       <a-form-item
         label="真实姓名"
         ref="realName"
         name="realName"
-        :rules="[{ required: formState.userType == '1', message: '请输入真实姓名', trigger: 'change' }]"
-        v-if="formState.userType == '1'"
+        :rules="[{ required: formState.zcyhlx == '1', message: '请输入真实姓名', trigger: 'change' }]"
+        v-if="formState.zcyhlx == '1'"
       >
         <a-input v-model:value="formState.realName" />
       </a-form-item>
@@ -47,61 +47,67 @@
         ref="confirmPassword"
         name="confirmPassword"
       >
-        <a-input-password v-model:value="formState.confirmPassword" />
+        <a-input-password v-model:value="formState.confirmPassword" placeholder="请再次输入密码"/>
       </a-form-item>
       <a-form-item
         label="企业名称"
-        ref="bussinessName"
-        name="bussinessName"
-        v-if="formState.userType !== '1'"
+        ref="qymc"
+        name="qymc"
+        v-if="formState.zcyhlx !== '1'"
       >
-        <a-input v-model:value="formState.bussinessName" />
+        <a-input v-model:value="formState.qymc" placeholder="请输入企业名称"/>
       </a-form-item>
       <a-form-item
         label="企业性质"
-        ref="bussinessType"
-        name="bussinessType"
+        ref="qyxz"
+        name="qyxz"
+        v-if="formState.zcyhlx !== '1'"
       >
-        <a-select v-model:value="formState.bussinessType" :options="getDictItemsByCode('qyxz')"/>
+        <a-select v-model:value="formState.qyxz" :options="getDictItemsByCode('qyxz')"/>
       </a-form-item>
       <a-form-item
         label="证件类型"
-        ref="credentType"
-        name="credentType"
+        ref="zjlx"
+        name="zjlx"
       >
-        <a-select v-model:value="formState.credentType" :options="getDictItemsByCode('zjzl')"/>
+        <a-select v-model:value="formState.zjlx" :options="getDictItemsByCode('zjzl')"/>
       </a-form-item>
       <a-form-item
         label="证件号码"
-        ref="credentCode"
-        name="credentCode"
+        ref="zjhm"
+        name="zjhm"
       >
-        <a-input v-model:value="formState.credentCode" />
+        <a-input v-model:value="formState.zjhm" />
       </a-form-item>
       <a-form-item
         label="联系人"
-        ref="contact"
-        name="contact"
-        v-if="formState.userType !== '1'"
+        ref="frxm"
+        name="frxm"
+        v-if="formState.zcyhlx !== '1'"
       >
-        <a-input v-model:value="formState.contact" />
+        <a-input v-model:value="formState.frxm" />
       </a-form-item>
       <a-form-item
         label="电话号码"
-        ref="phoneNumber"
-        name="phoneNumber"
+        ref="phone"
+        name="phone"
       >
-        <a-input v-model:value="formState.phoneNumber" />
+        <a-input v-model:value="formState.phone" />
       </a-form-item>
       <a-form-item
         label="上传证明文件"
         :rules="[{ required: true, message: '请上传证明文件'}]"
       >
         <a-upload v-model:file-list="fileList" :before-upload="beforeUpload" multiple >
-          <a-button>
-            <upload-outlined></upload-outlined>
-            选择文件
-          </a-button>
+          <a-space>
+            <a-button>
+              <upload-outlined></upload-outlined>
+              选择文件
+            </a-button>
+            <a-button v-if="reUpload"  type="primary" @click.stop="uploadFile">
+              重新上传
+            </a-button> 
+          </a-space>         
           <template #itemRender="{ file }">
             <a-space>
               <span>{{ file.name }}</span>
@@ -124,7 +130,6 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { encryptionAES } from '/@/utils/cipher';
 import { useUserStoreWithOut } from "/@/store/modules/user";
-import { Modal } from 'ant-design-vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
@@ -133,24 +138,40 @@ const userStore = useUserStoreWithOut();
 const formRef = ref()
 
 let formState = reactive({
-  userType: '',
+  zcyhlx: '',
   realName: '',
-  userName: '',
+  username: '',
   password: '',
   confirmPassword: '',
-  bussinessName: '',
-  bussinessType: '',
-  credentType: '',
-  credentCode: '',
-  contact: '',
-  phoneNumber: '',
+  qymc: '',
+  qyxz: '',
+  zjlx: '',
+  zjhm: '',
+  frxm: '',
+  phone: '',
 });
 
 let helpinfo = ref('')
 let psw_regex = ref('')
-let userType = ref(2)
+let zcyhlx = ref(2)
 
 let fileList: any = ref([])
+
+let reUpload: any = ref(false)
+let currentId: any = ref('')
+
+const zjlxMap = {
+  '1': 'idCard',
+  '2': 'HMTIdCard',
+  '3': 'passport',
+  '4': 'householdRegister',
+  '5': 'officerCertificate',
+  '6': 'organizationCode',
+  '7': 'businessLicense',
+  '8': 'socialCode', 
+  '9': 'foreignerIdCard	', 
+  '99': 'otherId', 
+}
 
 onMounted(() => {
   if(userStore?.validateRuleList?.length) {
@@ -176,33 +197,68 @@ const validateNewPassword = (rule, value, callback) => {
   }
 }
 
+const validateUserName = (rule, value, callback) => {
+  defHttp.get(
+    {
+      url: urlList.checkUserName,
+      params: { userName: value }
+    },
+    { withToken: true }
+  ) .then((res: any) => {
+    if(res?.success) {
+      if(res.result) {
+        callback('该用户名已注册，请重新输入！')
+      } else {
+        callback()
+      }
+    }
+  })
+}
+
+const validateZJHM = (rule, value, callback) => {
+  let info = ''
+  let regex = ''
+  if(userStore?.validateRuleList?.length) {
+    let pwdRule = userStore?.validateRuleList.filter(ele => ele.ruleCode == zjlxMap[formState.zjlx])
+    info = pwdRule[0]?.message
+    regex = pwdRule[0]?.content
+  }
+
+  if(regex && !!(eval(regex) instanceof RegExp) && !eval(regex).test(value)) {
+    callback(info)
+  } else {
+    callback()
+  }
+}
+
 const formRules: any = {
-  userType: [
+  zcyhlx: [
     { required: true, message: '请输入注册用户类型' },
   ],
-  userName: [
-    { required: true, message: '请输入用户名' },
+  username: [
+    { required: true, message: '用户名至少6个字符', min: 6, trigger: 'change'  },
+    { validator: validateUserName, trigger: 'blur' },
   ],
   password: [
     { required: true, message: '请输入密码' },
     { validator: validateNewPassword, trigger: 'change' },
   ],
-  bussinessName: [
-    { required: userType.value == 2, message: '请输入企业名称' },
+  qymc: [
+    { required: zcyhlx.value == 2, message: '请输入企业名称' },
   ],
-  bussinessType: [
-    { required: true, message: '请选择企业性质' },
+  qyxz: [
+    { required: zcyhlx.value == 2, message: '请选择企业性质' },
   ],
-  credentType: [
+  zjlx: [
     { required: true, message: '请选择证件类型' },
   ],
-  credentCode: [
-    { required: true, message: '请输入证件号码' },
+  zjhm: [
+    { required: true, validator: validateZJHM, trigger: 'blur' },
   ],
-  contact: [
-    { required: userType.value == 2, message: '请输入联系人' },
+  frxm: [
+    { required: zcyhlx.value == 2, message: '请输入联系人' },
   ],
-  phoneNumber: [
+  phone: [
     { required: true, message: '请输入电话号码' },
   ],
   confirmPassword: [
@@ -212,7 +268,9 @@ const formRules: any = {
 }
 
 const urlList = {
-  update: '/api/zrzy-system/sys/v1/user/updatePassword'
+  add: '/api/zrzy-system/sys/wwuser/add',
+  checkUserName: '/api/zrzy-system/sys/wwuser/checkUserName', // 校验用户名是否重复
+  upload: '/api/zrzy-wwsj/wwsj/upfiles/file/uploadZczm'
 }
 
 
@@ -220,38 +278,28 @@ const onSubmit = () => {
   formRef.value
     .validate()
     .then(() => {
+      if(fileList.value.length == 0) {
+        message.warning('请选择要上传的附件材料')
+        return
+      }
       // 新增
       defHttp.post(
         {
-          url: urlList.update,
-          params: {
-            newRePassword: encryptionAES(formState.confirmPassword)
+          url: urlList.add,
+          data: {
+            ...formState,
+            password: encryptionAES(formState.password),
+            confirmPassword: encryptionAES(formState.confirmPassword)
           }
         },
         { withToken: true }
       ).then((res: any) => {
         if(res?.success) {
-
-          let secondsToGo = 2;
-          const modal = Modal.success({
-            title: `密码修改成功，${secondsToGo}秒后自动跳转登录！`,
-          });
-          const interval = setInterval(() => {
-            secondsToGo -= 1;
-            modal.update({
-              title: `密码修改成功，${secondsToGo}秒后自动跳转登录！`,
-            });
-          }, 1000);
-
-          setTimeout(() => {
-            clearInterval(interval);
-            userStore.setToken(undefined)
-            userStore.logout(true)
-            modal.destroy();
-          }, secondsToGo * 1000);
-          
+          // TODO 上传证明材料
+          currentId.value = res.result
+          uploadFile()
         } else {
-          message.warning(res?.message || '密码修改失败！')
+          message.warning(res?.message || '用户注册失败！')
         }
       })
     }).catch((error:any) => {
@@ -259,11 +307,43 @@ const onSubmit = () => {
     });
 }
 
+function uploadFile() {
+  // TODO 上传证明材料
+  const formData = new FormData()
+    const params = {
+      userId: currentId.value, // 附件目录ID
+    }
+    fileList.value.forEach((ele:any) => {
+      formData.append(`files`, ele.originFileObj);
+    })
+
+    defHttp
+      .post(
+          {
+            url: urlList.upload,
+            data: formData,
+            params: params,
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+          { withToken: true }
+      ).then((res: any) => {
+        if(res && res.success) {
+          message.success('注册成功！')
+          reUpload.value = false
+          fileList.value = []
+          onReset()
+        } else {
+          message.warning(res?.message || '证明文件上传失败！请重新上传！')
+          reUpload.value = true
+        }
+      })
+}
+
 function onReset() {
   Object.keys(formState).forEach(element => {
     formState[element] = ''
   });
-  userType.value = 2
+  zcyhlx.value = 2
 }
 
 function beforeUpload() {
@@ -276,7 +356,7 @@ function removeFile(file: any) {
 }
 
 function onUserTypeChange(value) {
-  userType.value = Number(value)
+  zcyhlx.value = Number(value)
 }
 
 </script>
