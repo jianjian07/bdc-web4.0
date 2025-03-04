@@ -275,9 +275,14 @@ const urlList = {
 
 
 const onSubmit = () => {
+
+
   formRef.value
     .validate()
-    .then(() => {
+    .then(async() => {
+      // 触发证件号码的验证
+      await formRef.value.validateField('zjhm')
+
       if(fileList.value.length == 0) {
         message.warning('请选择要上传的附件材料')
         return
@@ -308,35 +313,35 @@ const onSubmit = () => {
 }
 
 function uploadFile() {
-  // TODO 上传证明材料
+  // 上传证明材料
   const formData = new FormData()
-    const params = {
-      userId: currentId.value, // 附件目录ID
-    }
-    fileList.value.forEach((ele:any) => {
-      formData.append(`files`, ele.originFileObj);
-    })
+  const params = {
+    userId: currentId.value, // 附件目录ID
+  }
+  fileList.value.forEach((ele:any) => {
+    formData.append(`files`, ele.originFileObj);
+  })
 
-    defHttp
-      .post(
-          {
-            url: urlList.upload,
-            data: formData,
-            params: params,
-            headers: { "Content-Type": "multipart/form-data" },
-          },
-          { withToken: true }
-      ).then((res: any) => {
-        if(res && res.success) {
-          message.success('注册成功！')
-          reUpload.value = false
-          fileList.value = []
-          onReset()
-        } else {
-          message.warning(res?.message || '证明文件上传失败！请重新上传！')
-          reUpload.value = true
-        }
-      })
+  defHttp
+    .post(
+        {
+          url: urlList.upload,
+          data: formData,
+          params: params,
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+        { withToken: true }
+    ).then((res: any) => {
+      if(res && res.success) {
+        message.success('注册成功！')
+        reUpload.value = false
+        fileList.value = []
+        onReset()
+      } else {
+        message.warning(res?.message || '证明文件上传失败！请重新上传！')
+        reUpload.value = true
+      }
+    })
 }
 
 function onReset() {
