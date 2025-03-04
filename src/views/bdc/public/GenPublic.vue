@@ -19,6 +19,7 @@ import { getFormInfo, resetValidateInfos } from "/@/views/online/utils/wonder1.0
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
+import { router } from "/@/router"
 const route = useRoute();
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
@@ -73,7 +74,8 @@ function initQlrXx() {
   bdcdyh.value = props.formData.bdcdyh
   
   let taskId = route.query.taskId || props.formData.taskId
-  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { ywh: ywh.value, bdcdyh: bdcdyh.value, taskId: taskId } }, { withToken: true }).then((res) => {
+  let slbh = route.query.slbh
+  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { slbh: slbh, ywh: ywh.value, bdcdyh: bdcdyh.value, taskId: taskId } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       qlr.value = res.result.qlrModelList || []
       regType.value = res.result.regType || ''
