@@ -80,4 +80,8 @@ onMounted(() => {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #b6b7b9;
 }
+
+input[aria-hidden=true]{
+    display: none !important;
+}
 </style>
