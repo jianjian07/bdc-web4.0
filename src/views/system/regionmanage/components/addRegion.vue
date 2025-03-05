@@ -21,7 +21,7 @@
         name="parentCode"
         v-if="formData?.type !=='parent'"
       >
-        <a-select :fieldNames="fieldNames" v-model:value="regionState.parentCode" :options="regionList"/>
+        <a-tree-select :fieldNames="fieldNames" v-model:value="regionState.parentCode" :tree-data="regionList"/>
       </a-form-item>
       <a-form-item
         label="区域代码"
@@ -74,6 +74,7 @@ const props = defineProps({
 const formRef = ref()
 
 const regionState = reactive({
+  id: '',
   areaName: '',
   parentCode: '0',
   areaCode: '',
@@ -112,6 +113,7 @@ watch(() => props.selectInfo, (val) => {
     regionState.parentCode = val.parentCode
     regionState.simpleName = val.simpleName
     regionState.orderNum = val.orderNum
+    regionState.id = val.id
   }
 }, {
   immediate: true,
@@ -184,7 +186,7 @@ const addRegion = () => {
           defHttp.put(
             {
               url: urlList.edit,
-              data: params
+              data: {...params, id: regionState.id}
             },
             { withToken: true }
           ).then((res: any) => {
@@ -239,22 +241,13 @@ function loadRegionList() {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
+      regionList.value = res.result
       regionList.value.push({'areaName': '无', 'areaCode': '0'})
-      flattenArray(res.result)
       showModal.value = true
     } else {
       message.warning(res?.message || '未查询到行政区数据！')
     }
   })
-}
-
-function flattenArray(arr) {
-  arr.forEach(element => {
-    regionList.value.push({areaName: element.areaName, areaCode: element.areaCode})
-    if(element.children?.length) {
-      flattenArray(element.children)
-    }
-  });
 }
 
 
