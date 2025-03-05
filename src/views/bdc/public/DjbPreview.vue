@@ -128,7 +128,7 @@ function setUrl(id) {
     
     .djb-iframe {
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
     }
   }
 }

@@ -132,7 +132,7 @@ function setUrl(id0,name) {
     
     .djb-iframe {
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
     }
   }
 }
