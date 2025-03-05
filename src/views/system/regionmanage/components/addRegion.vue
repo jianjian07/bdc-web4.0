@@ -111,6 +111,7 @@ watch(() => props.selectInfo, (val) => {
     regionState.areaCode = val.areaCode
     regionState.parentCode = val.parentCode
     regionState.simpleName = val.simpleName
+    regionState.orderNum = val.orderNum
   }
 }, {
   immediate: true,
@@ -137,7 +138,8 @@ const addRegion = () => {
               areaCode: regionState.areaCode,
               parentCode: regionState.parentCode,
               simpleName: regionState.simpleName,
-              level: getCodeLevel(Number(regionState.areaCode))
+              level: getCodeLevel(Number(regionState.areaCode)),
+              orderNum: regionState.orderNum
             }
         // 新增时判断区域代码是否已经存在
         if(!props.selectInfo) {
