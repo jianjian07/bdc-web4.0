@@ -21,14 +21,14 @@
         name="parentCode"
         v-if="formData?.type !=='parent'"
       >
-        <a-select :disabled="true" :fieldNames="fieldNames" v-model:value="regionState.parentCode" :options="regionList"/>
+        <a-select :fieldNames="fieldNames" v-model:value="regionState.parentCode" :options="regionList"/>
       </a-form-item>
       <a-form-item
         label="区域代码"
         ref="areaCode"
         name="areaCode"
       >
-        <a-input :disabled="selectInfo" v-model:value="regionState.areaCode" />
+        <a-input v-model:value="regionState.areaCode" />
       </a-form-item>
       <a-form-item
         label="区域简称"
@@ -36,6 +36,13 @@
         name="simpleName"
       >
         <a-input v-model:value="regionState.simpleName" />
+      </a-form-item>
+      <a-form-item
+        label="排序"
+        ref="orderNum"
+        name="orderNum"
+      >
+        <a-input v-model:value="regionState.orderNum" />
       </a-form-item>
     </a-form>
     <a-space v-if='selectInfo' style="display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -70,7 +77,8 @@ const regionState = reactive({
   areaName: '',
   parentCode: '0',
   areaCode: '',
-  simpleName: ''
+  simpleName: '',
+  orderNum: ''
 });
 
 const catalogRules: any = {

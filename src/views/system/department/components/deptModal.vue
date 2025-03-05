@@ -22,7 +22,7 @@
               <a-input-number style="width: 100%;" v-model:value="dataInfo.sortid" defaultValue="0" />
           </a-form-item>
           <a-form-item label="上级部门" name="pid">
-            <a-tree-select v-model:value="dataInfo.pid" :tree-data="deptListOption" :load-data="onLoadData" :fieldNames="deptFieldNames" style="width: 100%" :dropdown-style="{ maxHeight: '500px', overflow: 'auto' }" placeholder="请选择上级部门"/>
+            <a-tree-select v-model:value="dataInfo.pid" :tree-data="deptListOption" :load-data="onLoadData" :fieldNames="deptFieldNames" style="width: 100%" allow-clear :dropdown-style="{ maxHeight: '500px', overflow: 'auto' }" placeholder="请选择上级部门"/>
           </a-form-item>
         </a-form>
     </a-drawer>
@@ -49,6 +49,8 @@ const props = defineProps({
 let isAdd = ref(false)
 if (props.dataInfo.id == undefined) {
     isAdd.value = true
+} else {
+  props.dataInfo.oldPid = props.dataInfo.pid
 }
 
 let open = ref(props.open)
@@ -83,7 +85,8 @@ function onOk() {
     defHttp.post({ url: url, data: props.dataInfo }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
           message.success("保存成功！")
-          emit("ok", { isAdd: isAdd.value, refreshParentPage: true })
+          props.dataInfo.id = res.result
+          emit("ok", { isAdd: isAdd.value, refreshParentPage: true, data: props.dataInfo })
         }
 
     }).catch(err => {
@@ -130,16 +133,6 @@ function onLoadData(treeNode: any) {
       if (res?.success) {
         if(id == 0) {
           deptListOption.value = res.result
-          deptListOption.value.unshift({
-            id: 0,
-            name: '无',
-            pid: 0,
-            areacode: '',
-            enabled: true,
-            sortid: 0,
-            createTime: '',
-            children: []
-          })
         } else {
           treeNode.dataRef.children = res.result
         }

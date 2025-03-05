@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref, watch } from "vue"
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { defHttp } from "/@/utils/http/axios"
 import UserModal from "/@/views/system/user/components/UserModal.vue"
@@ -74,7 +74,8 @@ let dataInfo = ref({})
 // 查询条件
 let searchForm = ref({
   name: '',
-  state: ''
+  state: '',
+  deptId: ''
 })
 // 列名
 const columns = [
@@ -118,7 +119,7 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
-    width: 170
+    width: 180
   },
 ]
 
@@ -136,6 +137,30 @@ const pagination = computed(() => ({
 let userList = ref<any>([])
 // 角色列表
 let roleList = ref<any>([])
+
+const props = defineProps({
+  deptInfo: {
+    type: Object,
+    default: () => {
+      return {}
+    }
+  }
+})
+
+watch(() => props.deptInfo, (newVal) => {
+  console.log('props.deptInfo', newVal)
+  if (newVal && newVal.id) {
+    // 根据id查询
+    console.log("根据id查询", newVal.id)
+    searchForm.value.deptId = newVal.id
+    initData()
+  } else {
+    // 查询所有
+    console.log("查询所有")
+    searchForm.value.deptId = ''
+    initData()
+  }
+})
 
 enum api {
   list = '/api/zrzy-system/sys/v1/user/page',
@@ -155,7 +180,7 @@ function initData() {
   let params = {
     userName: searchForm.value.name,
     enabled: searchForm.value.state,
-    deptId: '',
+    deptId: searchForm.value.deptId,
     pageNo: page.value.current,
     pageSize: pagination.value.pageSize
   }
@@ -199,7 +224,9 @@ function changeEnabled(e, record) {
 function addUser() {
   drawerOpen.value = true
   title.value = "新增用户"
-  dataInfo.value = {}
+  dataInfo.value = {
+    deptList: props.deptInfo.id ? [props.deptInfo.id] : [],
+  }
 }
 /**
  * 编辑
@@ -209,6 +236,7 @@ function handleEdit(record) {
   drawerOpen.value = true
   title.value = "编辑用户"
   dataInfo.value = record
+  console.log(dataInfo.value)
 }
 
 /**
