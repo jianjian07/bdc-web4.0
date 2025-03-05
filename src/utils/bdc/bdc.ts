@@ -60,6 +60,16 @@ export async function extractData(options: any) {
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
             }
             break;
+        case '0212':
+        case '0213':
+        case '0214':
+        case '0215':
+        case '0216':
+            for (let index = 0; index < data.length; index++) {
+                const dyh = data[index];
+                dyhList.push({ zddm: dyh.zddm, bdcqzh: dyh.bdcqzh })
+            }
+            break;
     }
     options.okLoading.value = true
     let check = checkFlag ? await checkLogic(slbh, dyhList) : true
@@ -92,11 +102,12 @@ export async function extractDataLpb(options: any) {
     const route = router.currentRoute.value;
     const { data, dtype, open, reload, regtype } = options
     const slbh = route.query.slbh?.toString()
-    let dyhList = []
-
-    for (let index = 0; index < data.length; index++) {
-        const dyh = data[index];
-        dyhList.push({ bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
+    let dyhList: any = []
+    debugger
+    let fwxxList = data.fwxxList
+    for (let index = 0; index < fwxxList.length; index++) {
+        const dyh = fwxxList[index];
+        dyhList.push({ zddm: data.zddm, bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
     let check = checkFlag ? await checkLogic(slbh, dyhList) : true
@@ -107,7 +118,7 @@ export async function extractDataLpb(options: any) {
             // "djdl": "CQ",
             "slbh": slbh,
             "ywlx": '2',
-            "lcid": "1780060462306840577",
+            "zddm": data.zddm,
             "dyhList": dyhList
         }
         defHttp.post({

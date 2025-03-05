@@ -91,11 +91,11 @@
                 :field-names="{ label: 'wlc', value: 'wlc' }"></a-select>
             </a-form-item>
           </div>
-<!--          <div style="width: 30%; margin: 0 10px">-->
-<!--            <a-form-item label="户" style="display: flex; flex-wrap: nowrap;">-->
-<!--              <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>-->
-<!--            </a-form-item>-->
-<!--          </div>-->
+          <!--          <div style="width: 30%; margin: 0 10px">-->
+          <!--            <a-form-item label="户" style="display: flex; flex-wrap: nowrap;">-->
+          <!--              <a-input style="width: 100%" v-model:value="filterLpb.hData"></a-input>-->
+          <!--            </a-form-item>-->
+          <!--          </div>-->
           <a-button type="primary" @click="handleFilterLpb">查询</a-button>
         </div>
         <template v-if="cxxData.length">
@@ -119,7 +119,8 @@
                 <td class="title">{{ cInfo.myc }}层</td>
                 <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
                   <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
-                    :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan" :key="fwInfo.wlc + '-' + fwInfo.dyh + '-' + fwIndex"
+                    :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan"
+                    :key="fwInfo.wlc + '-' + fwInfo.dyh + '-' + fwIndex"
                     :class="checkFw?.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
 
                     <div class="fw-td">
@@ -234,7 +235,7 @@
                   <span style="color: #5e8cdc">{{ getTreeDictStr(item.treeDict, checkFw[item.value]) }}</span>
                 </template>
                 <template v-else>
-                   <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
+                  <span style="color: #5e8cdc">{{ checkFw[item.value] }}</span>
                 </template>
               </a-form-item>
             </template>
@@ -360,7 +361,7 @@ const fwKeys = [
   { label: '实际层', value: 'wlc' },
   { label: '名义层', value: 'myc' },
   { label: '户号', value: 'hh' },
-  { label: '户型', value: 'hx' , dict: 'hx'},
+  { label: '户型', value: 'hx', dict: 'hx' },
   { label: '户型结构', value: 'hxjg', dict: 'hxjg' },
   { label: '房屋用途', value: 'fwyt', treeDict: 'fwyt' },
   { label: '房屋类型', value: 'fwlx', dict: 'fwlx' },
@@ -375,7 +376,7 @@ enum api {
   lpb = '/api/zrzy-bdc/bdc/lpb/lpb',
   model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel',
   dyxx = '/api/zrzy-bdc/bdc/case/getDyxxList',
-  detail= '/api/zrzy-bdc/bdc/lpb/lpbFw'
+  detail = '/api/zrzy-bdc/bdc/lpb/lpbFw'
 }
 
 const emit = defineEmits(['ok'])
@@ -406,7 +407,7 @@ function getSlsqModel() {
   defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       regType.value = res.result?.regtype || '0101'
-    } 
+    }
     initCurrentCase()
     loadList()
   })
@@ -443,18 +444,18 @@ function loadList(flag?: boolean) {
     ...zrzData.value
   }
   defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        zrzTableData.value = res.result.records
-        pagination.value.total = res.result.total
-      } else {
-        zrzTableData.value = []
-        pagination.value.total = 0
-      }
-     if (flag && zrzTableData.value.length) {
-        // 默认选中第一条
-        currentZrzInfo.value = zrzTableData.value[0]
-        loadFwxx()
-     }
+    if (res && res.success) {
+      zrzTableData.value = res.result.records
+      pagination.value.total = res.result.total
+    } else {
+      zrzTableData.value = []
+      pagination.value.total = 0
+    }
+    if (flag && zrzTableData.value.length) {
+      // 默认选中第一条
+      currentZrzInfo.value = zrzTableData.value[0]
+      loadFwxx()
+    }
   })
 }
 
@@ -473,7 +474,7 @@ async function loadFwxx(isFilter = false, initCheck = false) {
         cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
       }
       if (initCheck) {
-        initFwxxChecked(false,false, currentCase.value)
+        initFwxxChecked(false, false, currentCase.value)
       }
       lpbData.value = {
         dyhList: dyxx.value,
@@ -664,8 +665,8 @@ defineExpose({
 function handleFilterLpb() {
   const wlc = filterLpb.value.cData;
   dyxx.value = lpbData.value.dyhList;
-  cxxData.value = wlc 
-    ? lpbData.value.cxxList.filter(item => item.wlc == wlc) 
+  cxxData.value = wlc
+    ? lpbData.value.cxxList.filter(item => item.wlc == wlc)
     : lpbData.value.cxxList;
   cxx.value = [];
   nextTick(() => {
@@ -677,11 +678,15 @@ function handleFilterLpb() {
  * 提取数据
  */
 function handleOk() {
+  if (lpbData.value == undefined) {
+    message.error("请选择要提取的房源")
+    return
+  }
   const data = lpbData.value.fwList.filter(t => t.checked == true)
   if (data.length == 0) {
     message.error("请选择要提取的房源")
   } else {
-    emit('ok', { reload: true, data: data })
+    emit('ok', { reload: true, data: { fwxxList: data, zddm: currentZrzInfo.value.zddm } })
     // extractDataLpb({
     //   data: data
     // })

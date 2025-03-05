@@ -20,6 +20,15 @@
             <a-form-item label="驱动类" name="dbDriver" :rules="[{ required: true, message: '请输入驱动类' }]">
                 <a-input v-model:value="formData.dbDriver" />
             </a-form-item>
+            <a-form-item label="主机" name="hostName" :rules="[{ required: true, message: '请输入主机' }]">
+                <a-input v-model:value="formData.hostName" />
+            </a-form-item>
+            <a-form-item label="端口号" name="port" :rules="[{ required: true, message: '请输入端口号' }]">
+                <a-input v-model:value="formData.port" />
+            </a-form-item>
+            <a-form-item label="数据库" name="dbName" :rules="[{ required: true, message: '请输入数据库名' }]">
+                <a-input v-model:value="formData.dbName" />
+            </a-form-item>
             <a-form-item label="数据源地址" name="dbUrl" :rules="[{ required: true, message: '请输入数据源地址' }]">
                 <a-input v-model:value="formData.dbUrl" />
             </a-form-item>
@@ -30,6 +39,7 @@
                 <a-input-password v-model:value="formData.dbPassword" style="width: 70%;" />
                 <a-button type="link" @click="onTestConnection">测试连接</a-button>
             </a-form-item>
+
             <a-form-item label="备注" name="remark">
                 <a-textarea v-model:value="formData.remark" placeholder="输入备注" :rows="4" />
             </a-form-item>
