@@ -6,7 +6,7 @@ import { createVNode } from "vue"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 // 是否使用业务约束
-const checkFlag = false
+const checkFlag = false 
 /**
  * 列表提取
  * @param options 
@@ -120,7 +120,7 @@ export async function extractDataLpb(options: any) {
             "ywlx": '2',
             "zddm": data.zddm,
             "vtype": 2,
-            "zbm": '05003012GB30030000610',
+            "zbm": data.zbm,
             "dyhList": dyhList
         }
         defHttp.post({

@@ -425,6 +425,7 @@ function initCurrentCase() {
       if (res.result.length) {
         currentZrzInfo.value.zbm = res.result[0].zbm
         currentZrzInfo.value.zl = res.result[0].zl
+        currentZrzInfo.value.zddm = res.result[0].zddm
         zrzData.value.zddm = res.result[0].zddm
         loadFwxx(false, true)
       }
@@ -686,7 +687,7 @@ function handleOk() {
   if (data.length == 0) {
     message.error("请选择要提取的房源")
   } else {
-    emit('ok', { reload: true, data: { fwxxList: data, zddm: currentZrzInfo.value.zddm } })
+    emit('ok', { reload: true, data: { fwxxList: data, zddm: currentZrzInfo.value.zddm, zbm: currentZrzInfo.value.zbm } })
     // extractDataLpb({
     //   data: data
     // })
