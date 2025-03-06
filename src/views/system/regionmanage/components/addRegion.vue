@@ -44,6 +44,13 @@
       >
         <a-input v-model:value="regionState.orderNum" />
       </a-form-item>
+      <a-form-item
+        label="是否主行政区"
+        ref="flag"
+        name="flag"
+      >
+        <a-radio-group v-model:value="regionState.flag" :options="sfOptions" />
+      </a-form-item>
     </a-form>
     <a-space v-if='selectInfo' style="display: flex; align-items: center; justify-content: center; width: 100%;">
       <a-button type="default" @click="resetRegion()">重置</a-button>
@@ -79,8 +86,14 @@ const regionState = reactive({
   parentCode: '0',
   areaCode: '',
   simpleName: '',
-  orderNum: ''
+  orderNum: '',
+  flag: 0
 });
+
+const sfOptions = [
+  { label: '是', value: 1 },
+  { label: '否', value: 0 },
+]
 
 const catalogRules: any = {
   areaName: [
@@ -114,6 +127,7 @@ watch(() => props.selectInfo, (val) => {
     regionState.simpleName = val.simpleName
     regionState.orderNum = val.orderNum
     regionState.id = val.id
+    regionState.flag = val.flag
   }
 }, {
   immediate: true,
@@ -141,7 +155,8 @@ const addRegion = () => {
               parentCode: regionState.parentCode,
               simpleName: regionState.simpleName,
               level: getCodeLevel(Number(regionState.areaCode)),
-              orderNum: regionState.orderNum
+              orderNum: regionState.orderNum,
+              flag: regionState.flag
             }
         // 新增时判断区域代码是否已经存在
         if(!props.selectInfo) {

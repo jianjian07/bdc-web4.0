@@ -71,7 +71,7 @@ const generateList = (data: any) => {
   for (let i = 0; i < data.length; i++) {
     const node = data[i];
     const key = node.key;
-    dataList.push({ key, title: key });
+    dataList.push({ key, title: node.titleAndValue });
     if (node.children) {
       generateList(node.children);
     }
@@ -109,8 +109,18 @@ const onExpand = (keys: string[]) => {
   autoExpandParent.value = false;
 };
 
-watch(searchValue, () => {
-  queryByKey()
+watch(searchValue, (value) => {
+  const expanded = dataList
+    .map((item: any) => {
+      if (item.title.indexOf(value) > -1) {
+        return getParentKey(item.key, gData.value);
+      }
+      return null;
+    })
+    .filter((item, i, self) => item && self.indexOf(item) === i);
+  expandedKeys.value = expanded;
+  searchValue.value = value;
+  autoExpandParent.value = true;
 });
 
 watch(checkKeys, () => {
