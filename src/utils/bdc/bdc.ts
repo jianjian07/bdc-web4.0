@@ -119,6 +119,8 @@ export async function extractDataLpb(options: any) {
             "slbh": slbh,
             "ywlx": '2',
             "zddm": data.zddm,
+            "vtype": 2,
+            "zbm": '05003012GB30030000610',
             "dyhList": dyhList
         }
         defHttp.post({
