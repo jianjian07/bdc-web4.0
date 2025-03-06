@@ -24,7 +24,7 @@
         </a-dropdown>
       </div>
       <div class="regionList" style="flex: 1; overflow-y: auto; min-height: 200px;">
-        <a-tree
+        <a-tree v-if="gData.length"
           :expanded-keys="expandedKeys"
           :auto-expand-parent="autoExpandParent"
           :tree-data="gData"
@@ -46,6 +46,7 @@
             <span v-else>{{ titleAndValue }}</span>
           </template>
         </a-tree>
+        <a-empty v-else style="margin-top: 50px"></a-empty>
       </div>
       <div v-if="gData.length" style="display: flex; justify-content: center;">
         <a-button type="primary" @click="onSave">
