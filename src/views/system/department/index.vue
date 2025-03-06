@@ -191,7 +191,7 @@ function addDept() {
 function handleEdit(record) {
   drawerOpen.value = true
   title.value = "编辑部门"
-  dataInfo.value = record
+  dataInfo.value = JSON.parse(JSON.stringify(record))
 }
 
 /**
@@ -339,10 +339,25 @@ function ok(data) {
         }
       } else {
         // dataInfo直接修改，无需操作
+        dataInfo.value = data.data
+        deptList.value = setDeptList(deptList.value, data.data)
       }
     }
 
   }
+}
+
+function setDeptList(arr, node) {
+  let newData = arr.map(item => {
+    if (node.id == item.id) {
+      item = node
+    }
+    if (item.children) {
+      item.children = setDeptList(item.children, node)
+    }
+    return item
+  })
+  return newData
 }
 </script>
 

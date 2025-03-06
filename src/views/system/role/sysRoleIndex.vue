@@ -71,7 +71,7 @@
         </a-collapse>
       </div>
     </div>
-    <sys-role-modal ref="roleModal"></sys-role-modal>
+    <sys-role-modal ref="roleModal" @ok="handleOk"></sys-role-modal>
     <sys-role-dept-modal ref="roleDeptModal"></sys-role-dept-modal>
     <sys-role-process-modal ref="roleProcessModal"></sys-role-process-modal>
   </div>
@@ -226,8 +226,12 @@ function handleEditRole(record) {
  */
 function handleDelRole(id: number, index: number) {
   defHttp.post({ url: api.deleteRoleApi, params: { id: id } }, { withToken: true }).then((res) => {
-    roleList.value.splice(index, 1)
-    message.success('删除成功')
+    if (res && res.success) {
+      roleList.value.splice(index, 1)
+      message.success('删除成功')
+    } else {
+      message.warning('删除失败')
+    }
   }).catch(err => {
     console.info(err)
   })
@@ -285,6 +289,10 @@ function handleSave() {
       console.info(err)
     })
   }
+}
+
+function handleOk() {
+  loadRole()
 }
 </script>
 

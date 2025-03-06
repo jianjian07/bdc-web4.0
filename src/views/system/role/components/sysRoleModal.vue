@@ -57,6 +57,7 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['ok'])
 
 defineExpose({
   add,
@@ -69,7 +70,7 @@ defineExpose({
 function add() {
   modalVisible.value = true
   modalTitle.value = '新增'
-  formRef.value.resetFields()
+  formRef.value?.resetFields()
 }
 
 /**
@@ -79,8 +80,7 @@ function add() {
 function edit(record) {
   modalVisible.value = true
   modalTitle.value = '编辑'
-  console.log('record', record)
-  formState.value = record
+  formState.value = JSON.parse(JSON.stringify(record))
 }
 
 /**
@@ -93,8 +93,13 @@ function handleModalOk() {
       _url = api.updateRoleApi
     }
     defHttp.post({ url: _url, data: formState.value }, { withToken: true }).then((res) => {
-      message.success(modalTitle.value + '成功')
-      modalVisible.value = false
+      if (res && res.success) {
+        message.success(modalTitle.value + '成功')
+        modalVisible.value = false
+        emit('ok')
+      } else {
+        message.warning(modalTitle.value + '失败')
+      }
     }).catch(err => {
       console.info(err)
     })

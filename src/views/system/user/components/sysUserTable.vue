@@ -235,7 +235,7 @@ function addUser() {
 function handleEdit(record) {
   drawerOpen.value = true
   title.value = "编辑用户"
-  dataInfo.value = record
+  dataInfo.value = JSON.parse(JSON.stringify(record))
   console.log(dataInfo.value)
 }
 
