@@ -830,6 +830,28 @@ export function delDataBySlbhBdcdyh(slbh, bdcdyh) {
 }
 
 /**
+ * 注销其中一户
+ * @param ywh
+ * @param djlx
+ */
+export function logOffDataByYwh(ywh, djlx) {
+  return new Promise((resolve) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdc/case/delDataByYwh',
+      params: { ywh: ywh, djlx: djlx},
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        message.success('注销成功')
+        resolve(true)
+      } else {
+        message.error('注销失败')
+        resolve(false)
+      }
+    })
+  })
+}
+
+/**
  * 获取缴费单位
  * @param viewData
  * @param fields
