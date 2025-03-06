@@ -21,14 +21,14 @@
         name="parentCode"
         v-if="formData?.type !=='parent'"
       >
-        <a-select :disabled="true" :fieldNames="fieldNames" v-model:value="regionState.parentCode" :options="regionList"/>
+        <a-tree-select :fieldNames="fieldNames" v-model:value="regionState.parentCode" :tree-data="regionList"/>
       </a-form-item>
       <a-form-item
         label="区域代码"
         ref="areaCode"
         name="areaCode"
       >
-        <a-input :disabled="selectInfo" v-model:value="regionState.areaCode" />
+        <a-input v-model:value="regionState.areaCode" />
       </a-form-item>
       <a-form-item
         label="区域简称"
@@ -36,6 +36,13 @@
         name="simpleName"
       >
         <a-input v-model:value="regionState.simpleName" />
+      </a-form-item>
+      <a-form-item
+        label="排序"
+        ref="orderNum"
+        name="orderNum"
+      >
+        <a-input v-model:value="regionState.orderNum" />
       </a-form-item>
     </a-form>
     <a-space v-if='selectInfo' style="display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -67,10 +74,12 @@ const props = defineProps({
 const formRef = ref()
 
 const regionState = reactive({
+  id: '',
   areaName: '',
   parentCode: '0',
   areaCode: '',
-  simpleName: ''
+  simpleName: '',
+  orderNum: ''
 });
 
 const catalogRules: any = {
@@ -103,6 +112,8 @@ watch(() => props.selectInfo, (val) => {
     regionState.areaCode = val.areaCode
     regionState.parentCode = val.parentCode
     regionState.simpleName = val.simpleName
+    regionState.orderNum = val.orderNum
+    regionState.id = val.id
   }
 }, {
   immediate: true,
@@ -129,7 +140,8 @@ const addRegion = () => {
               areaCode: regionState.areaCode,
               parentCode: regionState.parentCode,
               simpleName: regionState.simpleName,
-              level: getCodeLevel(Number(regionState.areaCode))
+              level: getCodeLevel(Number(regionState.areaCode)),
+              orderNum: regionState.orderNum
             }
         // 新增时判断区域代码是否已经存在
         if(!props.selectInfo) {
@@ -174,7 +186,7 @@ const addRegion = () => {
           defHttp.put(
             {
               url: urlList.edit,
-              data: params
+              data: {...params, id: regionState.id}
             },
             { withToken: true }
           ).then((res: any) => {
@@ -229,22 +241,13 @@ function loadRegionList() {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
+      regionList.value = res.result
       regionList.value.push({'areaName': '无', 'areaCode': '0'})
-      flattenArray(res.result)
       showModal.value = true
     } else {
       message.warning(res?.message || '未查询到行政区数据！')
     }
   })
-}
-
-function flattenArray(arr) {
-  arr.forEach(element => {
-    regionList.value.push({areaName: element.areaName, areaCode: element.areaCode})
-    if(element.children?.length) {
-      flattenArray(element.children)
-    }
-  });
 }
 
 

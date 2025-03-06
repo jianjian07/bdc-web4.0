@@ -74,7 +74,7 @@
           <div class="list"></div>
           <a-button class="send" shape="round" type="primary" @click="sendQuestion">
             <template #icon>
-              <SendOutlined style="transform: rotate(-40deg); margin-top: -5px;" />
+              <SendOutlined style="transform: rotate(-40deg); margin-top: -3px; margin-left: 3px;" />
             </template>
           </a-button>
           <!-- <div class="send" @click="sendQuestion">

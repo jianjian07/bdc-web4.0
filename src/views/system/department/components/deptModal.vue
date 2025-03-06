@@ -22,7 +22,7 @@
               <a-input-number style="width: 100%;" v-model:value="dataInfo.sortid" defaultValue="0" />
           </a-form-item>
           <a-form-item label="上级部门" name="pid">
-            <a-tree-select v-model:value="dataInfo.pid" :tree-data="deptListOption" :load-data="onLoadData" :fieldNames="deptFieldNames" style="width: 100%" :dropdown-style="{ maxHeight: '500px', overflow: 'auto' }" placeholder="请选择上级部门"/>
+            <a-tree-select v-model:value="dataInfo.pid" :tree-data="deptListOption" :load-data="onLoadData" :fieldNames="deptFieldNames" style="width: 100%" allow-clear :dropdown-style="{ maxHeight: '500px', overflow: 'auto' }" placeholder="请选择上级部门"/>
           </a-form-item>
         </a-form>
     </a-drawer>
@@ -49,6 +49,8 @@ const props = defineProps({
 let isAdd = ref(false)
 if (props.dataInfo.id == undefined) {
     isAdd.value = true
+} else {
+  props.dataInfo.oldPid = props.dataInfo.pid
 }
 
 let open = ref(props.open)
@@ -63,13 +65,14 @@ const emit = defineEmits(["ok"])
 enum api {
   add = '/api/zrzy-system/sys/dept/saveDept',
   regionList = '/api/zrzy-bdc/sys/areacode/queryAreaTree',
-  deptList = '/api/zrzy-system/sys/dept/treeLazy'
+  deptList = '/api/zrzy-system/sys/dept/treeLazy',
+  currentBranchTree = '/api/zrzy-system/sys/dept/deptCurrentBranchTrees', // 编辑时
 }
 
 
 onMounted(() => {
   loadRegionList()
-  onLoadData({ dataRef: { id: 0 } })
+  initTree()
 })
 
 /**
@@ -83,7 +86,8 @@ function onOk() {
     defHttp.post({ url: url, data: props.dataInfo }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
           message.success("保存成功！")
-          emit("ok", { isAdd: isAdd.value, refreshParentPage: true })
+          props.dataInfo.id = res.result
+          emit("ok", { isAdd: isAdd.value, refreshParentPage: true, data: props.dataInfo })
         }
 
     }).catch(err => {
@@ -94,6 +98,18 @@ function onOk() {
 function onClose() {
   // 执行取消
   emit("ok", { isAdd: false, refreshParentPage: true })
+}
+
+/**
+ * 统一入口，根据状态选择初始化树
+ */
+ function initTree() {
+  // 编辑时存在上级部门
+  if ( props.dataInfo.pid != '0' || props.dataInfo.pid!= 0 || props.dataInfo.pid!= undefined) {
+    loadCurrentBranchTrees()
+  } else { // 新增时左侧未选择部门
+    onLoadData({ dataRef: { id: 0 }})
+  }
 }
 
 function loadRegionList() {
@@ -129,24 +145,51 @@ function onLoadData(treeNode: any) {
     }).then((res: any) => {
       if (res?.success) {
         if(id == 0) {
-          deptListOption.value = res.result
-          deptListOption.value.unshift({
-            id: 0,
-            name: '无',
-            pid: 0,
-            areacode: '',
-            enabled: true,
-            sortid: 0,
-            createTime: '',
-            children: []
+          deptListOption.value = res.result.map((item: any) => {
+            return {
+              ...item,
+              isLeaf: !item.hasChildren
+            }
           })
-        } else {
-          treeNode.dataRef.children = res.result
+        } else if(treeNode.dataRef.children.length == 0) {
+          treeNode.dataRef.children = res.result.map((item: any) => {
+            return {
+              ...item,
+              isLeaf: !item.hasChildren
+            }
+          })
         }
         resolve(res.result)
       }
     })
   });
+}
+
+/**
+ * 初始化树
+ * 编辑时
+ */
+ function loadCurrentBranchTrees() {
+  return new Promise(resolve => {
+    defHttp.post({
+      url: api.currentBranchTree,
+      data: [props.dataInfo.pid]
+    }, {
+      withToken: true
+    }).then((res: any) => {
+      if (res?.success) {
+        deptListOption.value = res.result.map((item: any) => {
+          return {
+            ...item,
+            isLeaf: !item.hasChildren
+          }
+        })
+        resolve(res.result)
+      } else {
+        message.error(res.message)  
+      }
+    })
+  })
 }
 
 
