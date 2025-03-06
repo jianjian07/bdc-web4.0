@@ -13,7 +13,7 @@
     "@bpmn-io/properties-panel": "2.2.1",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
-    "ant-design-vue": "4.2.5",
+    "ant-design-vue": "4.2.6",
     "axios": "^1.6.8",
     "bpmn-js": "13.2.0",
     "bpmn-js-bpmnlint": "0.21.0",
