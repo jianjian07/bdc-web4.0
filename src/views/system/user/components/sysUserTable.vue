@@ -25,7 +25,7 @@
     <div class="sys-user-table-body">
       <a-table :columns="columns" :data-source="userList" :pagination="pagination" :scroll="{ y: 800 }"
         @change="onTableChange" rowKey="id">
-        <template #bodyCell="{ column, text, record, index }">
+        <template #bodyCell="{ column, record, index }">
           <template v-if="column.dataIndex === 'index'">
             {{ index + 1 }}
           </template>

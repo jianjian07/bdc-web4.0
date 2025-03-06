@@ -65,13 +65,14 @@ const emit = defineEmits(["ok"])
 enum api {
   add = '/api/zrzy-system/sys/dept/saveDept',
   regionList = '/api/zrzy-bdc/sys/areacode/queryAreaTree',
-  deptList = '/api/zrzy-system/sys/dept/treeLazy'
+  deptList = '/api/zrzy-system/sys/dept/treeLazy',
+  currentBranchTree = '/api/zrzy-system/sys/dept/deptCurrentBranchTrees', // 编辑时
 }
 
 
 onMounted(() => {
   loadRegionList()
-  onLoadData({ dataRef: { id: 0 } })
+  initTree()
 })
 
 /**
@@ -97,6 +98,18 @@ function onOk() {
 function onClose() {
   // 执行取消
   emit("ok", { isAdd: false, refreshParentPage: true })
+}
+
+/**
+ * 统一入口，根据状态选择初始化树
+ */
+ function initTree() {
+  // 编辑时存在上级部门
+  if ( props.dataInfo.pid != '0' || props.dataInfo.pid!= 0 || props.dataInfo.pid!= undefined) {
+    loadCurrentBranchTrees()
+  } else { // 新增时左侧未选择部门
+    onLoadData({ dataRef: { id: 0 }})
+  }
 }
 
 function loadRegionList() {
@@ -132,14 +145,51 @@ function onLoadData(treeNode: any) {
     }).then((res: any) => {
       if (res?.success) {
         if(id == 0) {
-          deptListOption.value = res.result
-        } else {
-          treeNode.dataRef.children = res.result
+          deptListOption.value = res.result.map((item: any) => {
+            return {
+              ...item,
+              isLeaf: !item.hasChildren
+            }
+          })
+        } else if(treeNode.dataRef.children.length == 0) {
+          treeNode.dataRef.children = res.result.map((item: any) => {
+            return {
+              ...item,
+              isLeaf: !item.hasChildren
+            }
+          })
         }
         resolve(res.result)
       }
     })
   });
+}
+
+/**
+ * 初始化树
+ * 编辑时
+ */
+ function loadCurrentBranchTrees() {
+  return new Promise(resolve => {
+    defHttp.post({
+      url: api.currentBranchTree,
+      data: [props.dataInfo.pid]
+    }, {
+      withToken: true
+    }).then((res: any) => {
+      if (res?.success) {
+        deptListOption.value = res.result.map((item: any) => {
+          return {
+            ...item,
+            isLeaf: !item.hasChildren
+          }
+        })
+        resolve(res.result)
+      } else {
+        message.error(res.message)  
+      }
+    })
+  })
 }
 
 

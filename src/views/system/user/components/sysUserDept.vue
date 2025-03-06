@@ -37,7 +37,7 @@ const deptFieldNames = { title: 'name', key: 'id'}
 const emit = defineEmits(['deptInfo'])
 
 enum api {
-  deptList = '/api/zrzy-system/sys/dept/treeLazy'
+  deptList = '/api/zrzy-system/sys/dept/treeLazyForUser'
 }
 
 onMounted(() => {
@@ -54,7 +54,7 @@ function onLoadData(treeNode: any, isLazy = true) {
       url: api.deptList,
       params: {
         name: searchDept.value,
-        pid: treeNode?.dataRef?.id || '',
+        deptPid: treeNode?.dataRef?.id || '',
         isLazy: isLazy
       }
     }, {

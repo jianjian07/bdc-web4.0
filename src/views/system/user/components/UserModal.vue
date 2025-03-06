@@ -44,7 +44,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="所属部门" name="deptList" :rules="[{ required: true, message: '请选择所属部门', type: 'array' }]">
-                <a-tree-select v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadDeptData" :fieldNames="{ label: 'name', value: 'id'}" multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
+                <a-tree-select v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
             </a-form-item>
             <a-form-item label="状态" name="enabled">
                 <a-switch v-model:checked="dataInfo.enabled" checked-children="启用" un-checked-children="禁用"/>
@@ -89,13 +89,14 @@ const emit = defineEmits(["ok"])
 let deptListOption = ref<any>([])
 const formRef = ref()
 
-loadDeptData({ dataRef: { id: 0 }})
+initTree()
 
 
 enum api {
     add = '/api/zrzy-system/sys/v1/user/add',
     update = '/api/zrzy-system/sys/v1/user/update',
-    deptList = '/api/zrzy-system/sys/dept/treeLazy'
+    deptUserSelect = '/api/zrzy-system/sys/dept/treeLazyForUserSelect', // 新增时左侧未选择部门
+    currentBranchTree = '/api/zrzy-system/sys/dept/deptCurrentBranchTrees', //1、新增时左侧选择了部门 2、编辑时
 }
 /**
  * 保存
@@ -130,32 +131,84 @@ function onClose() {
     // 执行取消
     emit("ok", { isAdd: false, refreshParentPage: true })
 }
+
 /**
- * 加载部门列表
+ * 统一入口，根据状态选择初始化树
  */
- function loadDeptData(treeNode: any) {
+function initTree() {
+  // 1、新增时左侧选择了部门 2、编辑时
+  if ( props.dataInfo.deptList.length > 0) {
+    loadCurrentBranchTrees()
+  } else { // 新增时左侧未选择部门
+    loadLazyTree({ dataRef: { id: 0 }})
+  }
+}
+
+/**
+ * 初始化树
+ * 1、新增时左侧选择了部门 2、编辑时
+ */
+function loadCurrentBranchTrees() {
   return new Promise(resolve => {
-    const { id } = treeNode.dataRef;
-    defHttp.get({
-      url: api.deptList,
-      params: {
-        name: '',
-        pid: id,
-        isLazy: true
-      }
+    defHttp.post({
+      url: api.currentBranchTree,
+      data: props.dataInfo.deptList
     }, {
       withToken: true
     }).then((res: any) => {
       if (res?.success) {
-        if(id == 0) {
-          deptListOption.value = res.result
-        } else {
-          treeNode.dataRef.children = res.result
-        }
+        deptListOption.value = res.result.map((item: any) => {
+          return {
+            ...item,
+            isLeaf: !item.hasChildren
+          }
+        })
         resolve(res.result)
+      } else {
+        message.error(res.message)  
       }
     })
-  });
+  })
+}
+
+/**
+ * 懒加载
+ * 初始化树
+ * 新增时左侧未选择部门
+ */
+function loadLazyTree(treeNode: any) {
+  return new Promise(resolve => {
+    const { id } = treeNode.dataRef;
+    defHttp.get({
+      url: api.deptUserSelect,
+      params: {
+        deptPid: id,
+      }
+    },{
+      withToken: true
+    }).then((res: any) => {
+      if (res?.success) {
+        if(id == 0) {
+          deptListOption.value = res.result.map((item: any) => {
+            return {
+              ...item,
+              isLeaf: !item.hasChildren
+            }
+          })
+        } else if(treeNode.dataRef.children.length == 0) {
+          treeNode.dataRef.children = res.result.map((item: any) => {
+            return {
+              ...item,
+              isLeaf: !item.hasChildren
+            }
+          })
+        }
+        resolve(res.result)
+      } else {
+        message.error(res.message)
+      }
+    })
+  })
 }
 </script>
 
