@@ -211,26 +211,39 @@ const addRegion = () => {
             }
           })
         } else {
-          // 修改
-          defHttp.put(
+          defHttp.get(
             {
-              url: urlList.edit,
-              data: {...params, id: regionState.id}
+              url: urlList.validateKey,
+              params: { areaCode: regionState.areaCode }
             },
-            { withToken: true }
+            { withToken: true}
           ).then((res: any) => {
-            if(res?.success) {
-              if (props.selectInfo) {
-                message.success('区域修改成功！')
-                // 刷新树
-                emit('refreshList')
-              } else {
-                message.success('区域新增成功！')
-              } 
-              return resolve(true)
-            } else {
-              message.warning(res?.message)
+            if(!res.success) {
+              message.warning(res.message)
               return reject()
+            } else {
+              // 修改
+              defHttp.put(
+                {
+                  url: urlList.edit,
+                  data: {...params, id: regionState.id}
+                },
+                { withToken: true }
+              ).then((res: any) => {
+                if(res?.success) {
+                  if (props.selectInfo) {
+                    message.success('区域修改成功！')
+                    // 刷新树
+                    emit('refreshList')
+                  } else {
+                    message.success('区域新增成功！')
+                  } 
+                  return resolve(true)
+                } else {
+                  message.warning(res?.message)
+                  return reject()
+                }
+              })
             }
           })
         }
