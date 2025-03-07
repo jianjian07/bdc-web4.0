@@ -96,7 +96,9 @@ async function loadData(type?: string | undefined) {
         }
     }
     let url = '/api/zrzy-form/jmreport/query/report/folder'
-    defHttp.get({ url: url, params: { name: formData.value.name.trim(), pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: false }).then((res) => {
+    let name = formData.value.name
+    name = name ? name.trim() : name
+    defHttp.get({ url: url, params: { name: name, pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: false }).then((res) => {
         if (res.success) {
             datalist.value = res.result.records
             pagination.value.total = res.result.total
