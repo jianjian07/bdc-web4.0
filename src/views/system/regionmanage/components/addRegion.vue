@@ -21,7 +21,7 @@
         name="parentCode"
         v-if="formData?.type !=='parent'"
       >
-        <a-tree-select :fieldNames="fieldNames" v-model:value="regionState.parentCode" :tree-data="regionList"/>
+        <a-tree-select :disabled="formData?.type == 'child'" :fieldNames="fieldNames" v-model:value="regionState.parentCode" :tree-data="regionList" style="width: 100%;"/>
       </a-form-item>
       <a-form-item
         label="区域代码"
@@ -63,6 +63,7 @@
 import { defineProps, reactive, ref, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
+import { cloneDeep } from "lodash-es"
 
 const props = defineProps({
   formData: { //流程信息
@@ -117,7 +118,7 @@ const urlList = {
 const emit = defineEmits(['refreshList'])
 let showModal = ref(false)
 
-loadRegionList()
+// loadRegionList()
 
 watch(() => props.selectInfo, (val) => {
   if(val) {
@@ -136,7 +137,19 @@ watch(() => props.selectInfo, (val) => {
 
 watch(() => props.formData, (val) => {
   if(val && val.type == 'child') {
+    console.log(val)
     regionState.parentCode = val.parentNode.areaCode
+    regionList.value = cloneDeep(val.regionData)
+  }
+}, {
+  immediate: true,
+  deep: true
+})
+
+watch(() => props.regionData, (val) => {
+  if(val.length) {
+    regionList.value = cloneDeep(val)
+    regionList.value.push({areaCode: '0', areaName: '无'})
   }
 }, {
   immediate: true,
@@ -185,6 +198,7 @@ const addRegion = () => {
                     // 刷新树
                     emit('refreshList')
                   } else {
+                    showModal.value = false
                     loadRegionList()
                     message.success('区域新增成功！')
                   } 
@@ -249,6 +263,7 @@ const resetRegion = () => {
 
 function loadRegionList() {
   regionList.value = []
+  showModal.value = false
   defHttp.get(
     {
       url: urlList.queryList,
@@ -257,7 +272,7 @@ function loadRegionList() {
   ).then((res: any) => {
     if (res?.success) {
       regionList.value = res.result
-      regionList.value.push({'areaName': '无', 'areaCode': '0'})
+      // regionList.value.push({'areaName': '无', 'areaCode': '0'})
       showModal.value = true
     } else {
       message.warning(res?.message || '未查询到行政区数据！')

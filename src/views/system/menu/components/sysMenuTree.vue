@@ -93,7 +93,7 @@ function initSysMenu() {
   defHttp.get(
     {
       url: api.list,
-      params: { pageSize: 1000, pageNo: 1 }
+      params: { pageSize: 1000, pageNo: 1, column: 'sortid', order: 'asc' }
     },
     { withToken: true }
   ).then((res: any) => {
