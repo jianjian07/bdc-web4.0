@@ -7,7 +7,7 @@
             <a-input v-model:value="searchFormState.name" placeholder="请输入角色名称" />
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" @click="loadRole">
+            <a-button type="primary" @click="searchData">
               <template #icon></template>
               查询
             </a-button>
@@ -193,6 +193,11 @@ function loadMenu() {
 function reset() {
   pagination.value.current = 1
   searchFormState.value.name = ''
+  loadRole()
+}
+
+function searchData() {
+  pagination.value.current = 1
   loadRole()
 }
 

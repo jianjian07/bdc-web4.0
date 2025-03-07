@@ -13,7 +13,7 @@
           </a-select>
         </a-form-item>
         <a-space>
-          <a-button type="primary" @click="initData">查询</a-button>
+          <a-button type="primary" @click="searchData">查询</a-button>
           <a-button @click="reset">重置</a-button>
           <!-- <a-button>导出</a-button> -->
           <a-button @click="addUser">
@@ -198,6 +198,14 @@ function initData() {
   }).catch(err => {
     userList.value = []
   })
+}
+
+/**
+ * 查询
+ */
+function searchData() {
+  page.value.current = 1
+  initData()
 }
 
 /**

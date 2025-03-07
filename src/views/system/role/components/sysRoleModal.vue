@@ -71,6 +71,7 @@ function add() {
   modalVisible.value = true
   modalTitle.value = '新增'
   formRef.value?.resetFields()
+  formState.value = {}
 }
 
 /**

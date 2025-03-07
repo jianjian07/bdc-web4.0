@@ -38,12 +38,12 @@
                     <a-select-option :value="false">未初始化</a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="所属角色" name="roleList" :rules="[{ required: true, message: '请选择所属角色', type: 'array' }]">
+            <a-form-item label="所属角色" name="roleList">
                 <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple" 
                     :options="roleListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
                 </a-select>
             </a-form-item>
-            <a-form-item label="所属部门" name="deptList" :rules="[{ required: true, message: '请选择所属部门', type: 'array' }]">
+            <a-form-item label="所属部门" name="deptList">
                 <a-tree-select v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
             </a-form-item>
             <a-form-item label="状态" name="enabled">
