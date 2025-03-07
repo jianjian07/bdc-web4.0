@@ -380,10 +380,10 @@ async function sendApi() {
   let headers = {}
   let params = {}
   select.apiHeaders.forEach((header) => {
-    headers[header.fieldName] = getFieldValue(header.dataType, header.fieldValue)
+    headers[header.fieldName] = getFieldValue(header.dataType, header.fieldValue || header.defaultValue)
   })
   select.apiParameters.forEach((param) => {
-    params[param.fieldName] = getFieldValue(param.dataType, param.fieldValue)
+    params[param.fieldName] = getFieldValue(param.dataType, param.fieldValue || param.fieldValue)
   })
   let body = JSON.parse(JSON.stringify(select.jsonContent))
   let sendParams = {

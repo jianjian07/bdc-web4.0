@@ -23,6 +23,9 @@
             <template v-else-if="['fieldValue'].includes(column.dataIndex)">
               <a-input v-model:value="record[column.dataIndex]" />
             </template>
+            <template v-else-if="['defaultValue'].includes(column.dataIndex)">
+              <a-input v-model:value="record[column.dataIndex]" @change="defaultValueChange($event, record)"/>
+            </template>
             <template v-else-if="column.dataIndex == 'encryptType'">
               <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" />
             </template>
@@ -218,6 +221,16 @@ function encryptTypeChange(e, record) {
   } else {
     record.isEncrypt = false
   }
+}
+
+/**
+ * 默认值更改
+ * @param e
+ * @param record
+ */
+function defaultValueChange(e, record) {
+  let value = e.target.value
+  record.fieldValue = record.fieldValue || value
 }
 
 /**
@@ -515,7 +528,7 @@ function processBody(content, srcObj) {
           isEncrypt: srcObj[index]?.isEncrypt === true,
           encryptType: srcObj[index]?.encryptType || '',
           description: srcObj[index]?.description || (Array.isArray(value) || typeof value === 'object' ? '' : value),
-          fieldValue: simpleObject ? value + '' : '-',
+          fieldValue: simpleObject ? (value || srcObj[index]?.defaultValue) + '' : (srcObj[index]?.defaultValue || '-'),
           dataType: getType(value),
         }
         if (!simpleObject) {
@@ -558,7 +571,7 @@ function processBody(content, srcObj) {
         isEncrypt: srcObj[name]?.isEncrypt === true,
         encryptType: srcObj[name]?.encryptType || '',
         description: srcObj[name]?.description || ((Array.isArray(value) || typeof value === 'object') ? '' : value),
-        fieldValue: simpleObject ? value + '' : '-',
+        fieldValue: simpleObject ? (value || srcObj[name]?.defaultValue) + '' : srcObj[name]?.defaultValue || '-',
         dataType: getType(value),
       }
       if (!simpleObject) {
