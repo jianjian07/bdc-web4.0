@@ -380,6 +380,16 @@ export async function showFile(demoRefs: any, loading: any, params?: any) {
 }
 
 /**
+ * 审批过程按钮
+ * @param demoRefs
+ * @param loading
+ * @param params
+ */
+export async function showSpPanel(demoRefs: any, loading: any, params?: any) {
+  eventBus.emit('showSpPanel')
+}
+
+/**
  * 刷新表单列表
  * @param demoRefs
  * @param loading

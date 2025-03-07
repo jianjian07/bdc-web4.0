@@ -35,11 +35,12 @@
             <!-- <tdxx-list></tdxx-list> -->
           </div>
         </div>
-        <div v-if="showFilePanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
-        <div v-if="showFilePanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }">
-          <div style="width: 100%; height: 100%">
+        <div v-if="showFilePanel || showSpPanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
+        <div v-if="showFilePanel || showSpPanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }">
+          <div v-if="showFilePanel" style="width: 100%; height: 100%">
             <SsoFile :manage="isManage" />
           </div>
+          <approval-process v-if="showSpPanel"></approval-process>
         </div>
       </div>
     </a-spin>
@@ -56,6 +57,7 @@ import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
 import eventBus from "/@/views/online/utils/eventBus"
 import { resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
+import ApprovalProcess from "/@/views/bdc/query/ApprovalProcess.vue"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
@@ -96,6 +98,8 @@ let showQlr = ref<boolean>(true)
 let previewFile = ref<boolean>(false)
 // 展示附件模块
 let showFilePanel = ref<boolean>(false)
+// 展示审批结果模块
+let showSpPanel = ref<boolean>(false)
 // 是否默认展示管理状态
 let isManage = ref<boolean>(false)
 let startX = 0
@@ -147,17 +151,19 @@ function initBusEvent() {
   eventBus.on('onChangeQlr', onChangeQlrShow)
   eventBus.on('previewFile', onPreviewFile)
   eventBus.on('showFile', onShowFile)
+  eventBus.on('showSpPanel',onShowSpPanel)
 }
 
 function removeBusEvent() {
   eventBus.off('onChangeQlr', onChangeQlrShow)
   eventBus.off('previewFile', onPreviewFile)
   eventBus.off('showFile', onShowFile)
+  eventBus.off('showSpPanel', onShowSpPanel)
 }
 
 function handleResize() {
   containerWidth = formContent.value?.offsetWidth;
-  leftWidth.value = containerWidth - rightWidth.value - (showFilePanel.value ? 10 : 0); // 10px 是 split-line 的宽度
+  leftWidth.value = containerWidth - rightWidth.value - ((showFilePanel.value || showSpPanel.value) ? 10 : 0); // 10px 是 split-line 的宽度
 }
 let slbh = route.query.slbh
 /**
@@ -361,7 +367,23 @@ function onShowFile(manage) {
     leftWidth.value = containerWidth - 10
   }
   showFilePanel.value = !showFilePanel.value
+  showSpPanel.value = false
   isManage.value = manage
+}
+
+/**
+ * 是否展示审批过程
+ */
+function onShowSpPanel() {
+  if (!showSpPanel.value) {
+    rightWidth.value = 350
+    leftWidth.value = containerWidth - 360
+  } else {
+    rightWidth.value = 0
+    leftWidth.value = containerWidth - 10
+  }
+  showSpPanel.value = !showSpPanel.value
+  showFilePanel.value = false
 }
 
 </script>
