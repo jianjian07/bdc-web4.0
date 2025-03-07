@@ -76,6 +76,10 @@ function getLcjd() {
 .his-task-deal {
   padding: 20px;
   height: 100%;
+  
+  :deep(.ant-spin-container) {
+    padding: 10px;
+  }
 }
 
 .his-task-deal-tab {

@@ -17,7 +17,7 @@
                     <a-col :span="4" :offset="1">
                         <a-form-item style="text-align: center;">
                             <a-space>
-                                <a-button type="primary" @click="loadData">
+                                <a-button type="primary" @click="searchData">
                                     <template #icon>
                                         <component :is="SearchOutlined"></component>
                                     </template>查询</a-button>
@@ -143,9 +143,16 @@ async function loadData() {
  * 重置
 */
 function refreshData() {
+    pagination.value.current = 1
     formData.value = {}
     loadData()
 }
+
+function searchData() {
+  pagination.value.current = 1
+  loadData()
+}
+
 /**
 * 分页
 * @param pag
