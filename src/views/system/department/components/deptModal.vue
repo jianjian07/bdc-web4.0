@@ -105,7 +105,7 @@ function onClose() {
  */
  function initTree() {
   // 编辑时存在上级部门
-  if ( props.dataInfo.pid != '0' || props.dataInfo.pid!= 0 || props.dataInfo.pid!= undefined) {
+  if ( props.dataInfo.pid != '0' && props.dataInfo.pid!= 0 && props.dataInfo.pid!= undefined && props.dataInfo.pid!= '') {
     loadCurrentBranchTrees()
   } else { // 新增时左侧未选择部门
     onLoadData({ dataRef: { id: 0 }})
