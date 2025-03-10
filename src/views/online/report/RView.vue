@@ -83,6 +83,7 @@ viewData.value = {}
 let selectedValue = ref<any>([])
 let events: any = {}
 let event1: any = ref({})
+const computedEvents = <any>{}
 // 20240130验证：变量定义 名称固定formProps
 let basicInfo = ref<any>({})
 if (cBasicInfo) {
@@ -127,6 +128,9 @@ const generateVue3 = defineComponent({
     },
     props: {
         message: String,
+    },
+    computed: {
+        ...computedEvents,
     },
     setup() {
         // 脚本
@@ -229,13 +233,54 @@ const generateVue3 = defineComponent({
          * 自动生成脚本
          */
         function generateTs() {
-            for (let i = 0; i < eventScript.length; i++) {
-                const _data = eventScript[i];
-                events[_data.name] = newFunction(_data)
-                if (arrExposed.includes(_data.name)) {
-                    event1.value[_data.name] = newFunction(_data)
+             const _eventScript = eventScript.filter(t => (t.type == "Function" || t.type == "Mounted" || t.type == "Watch" || t.type == "Computed" || t.type == "BeforeValidate"));
+            for (let i = 0; i < _eventScript.length; i++) {
+                const _data = _eventScript[i];
+                if (_data.type == "Computed") {
+                    // 需要与方法分开
+                    computedEvents[_data.name] = eval(`() => { ${_data.func} }`)
+                } else {
+                    if (_data.param != "") {
+                        if (_data.isasync) {
+                            events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                            if (arrExposed.includes(_data.name)) {
+                              event1.value[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                            }
+                        } else {
+                            try {
+                                eval(`(${_data.param})=> { ${_data.func}}`)
+                                events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                                if (arrExposed.includes(_data.name)) {
+                                   event1.value[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                                }
+                            } catch (error) {
+        
+                            }
+                        }
+                    } else {
+                        if (_data.isasync) {
+                            events[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                            if (arrExposed.includes(_data.name)) {
+                               event1.value[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                            }
+                        } else {
+                            events[_data.name] = eval(`()=> { ${_data.func}}`)
+                            if (arrExposed.includes(_data.name)) {
+                              event1.value[_data.name] = eval(`()=> { ${_data.func}}`)
+                            }
+                        }
+                    }
                 }
             }
+          
+          
+            // for (let i = 0; i < eventScript.length; i++) {
+            //     const _data = eventScript[i];
+            //     events[_data.name] = newFunction(_data)
+            //     if (arrExposed.includes(_data.name)) {
+            //         event1.value[_data.name] = newFunction(_data)
+            //     }
+            // }
         }
         /**
          * 返回函数 带参数 | 不带参数
