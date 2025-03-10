@@ -41,7 +41,7 @@ const component = computed(() => {
   return defineAsyncComponent(modules[`/src/${props.filePath}.vue`]);
 });
 
-const props = defineProps({
+let props = defineProps({
   title: {
     type: String,
     default: '标题'
@@ -107,7 +107,8 @@ const footerBind = computed(() => {
 defineExpose({
   setConfirmLoading,
   show,
-  close
+  close,
+  update
 })
 
 onMounted(() => {
@@ -161,6 +162,26 @@ function show() {
  */
 function close() {
   modalVisible.value = false
+}
+
+/**
+ * 更新props
+ */
+function update(newProps) {
+  props = deepMerge({ ...props }, newProps);
+}
+
+function deepMerge(target, source) {
+  if (typeof source !== 'object' || source === null) return target;
+
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      target[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  }
+  return target;
 }
 
 /**

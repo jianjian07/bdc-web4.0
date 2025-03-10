@@ -52,6 +52,13 @@ export function cModal (options?: cModalModel) {
       instance.close()
     }
   }
+  
+  // 更新
+  function update(options?: cModalModel) {
+    if (instance) {
+      instance.update(options)
+    }
+  }
 
   // 销毁dom
   function destroy() {
@@ -65,7 +72,8 @@ export function cModal (options?: cModalModel) {
     setConfirmLoading,
     show,
     close,
-    destroy
+    destroy,
+    update
   }
 }
 
