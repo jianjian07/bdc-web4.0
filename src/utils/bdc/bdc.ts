@@ -6,7 +6,7 @@ import { createVNode, nextTick } from "vue"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 // 是否使用业务约束
-const checkFlag = false 
+const checkFlag = false
 /**
  * 列表提取
  * @param options 
@@ -90,10 +90,10 @@ export async function extractData(options: any) {
                 message.success('数据提取成功')
                 options.open.value = false
                 options.reload.value = guid()
-                nextTick(() => {
+                setTimeout(() => {
                     const tabStore = useTabsStore()
                     tabStore.refreshTab()
-                })
+                },300)
                 
                 // router.push('/refresh')
             }
@@ -134,10 +134,10 @@ export async function extractDataLpb(options: any) {
                 message.success('数据提取成功')
                 options.open.value = false
                 options.reload.value = guid()
-                nextTick(() => {
+                setTimeout(() => {
                     const tabStore = useTabsStore()
                     tabStore.refreshTab()
-                })
+                },300)
                 
                 // router.push('/refresh')
             }
