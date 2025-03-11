@@ -140,11 +140,11 @@ onMounted(() => {
  * 获取流程信息
  */
 function getTaskInfo() {
-  let taskId = route.query.taskId
+  let taskId = route.query.taskId || props.formData.taskId
   defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       let taskData = res.result
-      let slbh = route.query.slbh
+      let slbh = route.query.slbh || props.formData.slbh
       // let lcmc = formConfig.value.ajmc
       let cbsj, cbr
       if (taskData.bpmLogList.length) {
