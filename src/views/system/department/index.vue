@@ -235,7 +235,7 @@ function handleDel(record, index) {
 }
 
 function onExpand(expanded, record) {
-  if (record.hasChildren && !searchForm.value.name) {
+  if (record.hasChildren && !searchForm.value.name && expanded) {
     initData(record)
   }
 }
