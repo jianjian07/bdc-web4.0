@@ -15,6 +15,7 @@ import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import eventBus from "/@/views/online/utils/eventBus"
+import { checkLogic } from "/@/utils/bdc/bdc"
 
 const userStore = useUserStore()
 
@@ -1062,5 +1063,54 @@ export function createDah(viewData, tableName, field) {
     } else {
       message.warning(res.message)
     }
+  })
+}
+
+/**
+ * 获取构建逻辑校验参数
+ * @param wwSlbh
+ */
+export function getLogicModel(wwSlbh) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdcww/wwtobdc/getLogicCheckModel',
+      params: {
+        wwSlbh: wwSlbh
+      }
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        message.warning(res.message)
+        resolve(false)
+      }
+    })
+  })
+}
+
+/**
+ * 逻辑校验
+ * @param slbh
+ * @param bdcModels
+ */
+export async function checkLogicFun(slbh, bdcModels) {
+  return await checkLogic(slbh, bdcModels)
+}
+
+/**
+ * 外网收件提取/退件
+ * @param options
+ */
+export function handleWwsjFun(options) {
+  return new Promise((resolve, reject) => {
+    let defUrl = `/api/zrzy-bdc/bdcww/wwtobdc/${options.action}`;
+      defHttp.post( {url: defUrl, params: { wwSlbh: options.slbh, yj: options.yj,allowEdit: options.allowEdit } }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          resolve(res.result)
+        } else {
+          message.warning(res.message)
+          resolve(false)
+        }
+      })
   })
 }

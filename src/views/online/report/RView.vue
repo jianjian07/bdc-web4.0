@@ -299,14 +299,14 @@ const generateVue3 = defineComponent({
         }
     },
     mounted() {
-        if (info.isLoad == 1) {
-            execInitFun()
-        }
          // 固定了mounted的事件名
         const monunted = eventScript.filter(t => t.type == "Mounted")
         // console.log('monunted',monunted)
         if (monunted.length > 0) {
             events["initMount"]()
+        }
+        if (info.isLoad == 1) {
+            execInitFun()
         }
     }
 })
