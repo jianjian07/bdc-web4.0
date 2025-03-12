@@ -182,6 +182,7 @@ function loadMenu() {
   defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
     if (res && res.success) {
       sysMenuList.value = res.result
+      activeCollapseKey.value = sysMenuList.value.length ? 0 : -1
     } else {
       message.warning(res.message)
     }
