@@ -59,13 +59,13 @@
                 <a>取消</a>
               </a-popconfirm>
             </a-space>
-            <a-sapce v-else>
+            <a-space v-else>
               <a-button type="link" size="small" @click="edit(record.id0)" :disabled="disabled">编辑</a-button>
               <a-divider type="vertical" />
               <a-popconfirm title="确定删除?" @confirm="onDelete(index)">
                 <a-button type="link" size="small" :style="{color: disabled ? '' :'#ff4d4f'}" :disabled="disabled">删除</a-button>
               </a-popconfirm>
-            </a-sapce>
+            </a-space>
           </div>
         </template>
       </template>
