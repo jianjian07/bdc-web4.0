@@ -3,7 +3,7 @@ import { store } from '/@/store';
 import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE } from "../../router/routes/basic"
 import { AppRouteRecordRaw } from "../../router/types";
 import { getMenuList, getMenuListByJson, getMenuListBySysId } from "/@/api/sys/menu"
-import { dynamicRouter } from "/@/router/helper/routeHelper"
+import { dynamicRouter,setRouteList } from "/@/router/helper/routeHelper"
 import { menuModel } from "/@/api/sys/model/menuModel";
 import { IGS_INFO } from "/@/enums/cacheEnum";
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
@@ -77,9 +77,10 @@ export const usePermissionStore = defineStore({
                         }
                 }
             }
-
-            routeList = dynamicRouter(routeList)
+            let newRoutes = setRouteList(JSON.parse(JSON.stringify(routeList)))
+            routeList = dynamicRouter(newRoutes)
             // routes = [...routeList, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE]
+            // console.log('routeLIst',routeList)
             routes = [...routeList, REDIRECT_ROUTE, REFRESH_ROUTE]
             routes.push(ERROR_LOG_ROUTE);
             return routes

@@ -71,7 +71,8 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
           meta: {
             cache: first.cache,
             component: first.component,
-            componentName: first.componentName
+            componentName: first.componentName,
+            title: first.name
           }
         })
       }
@@ -85,7 +86,8 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
           meta: {
             cache: first.cache,
             component: first.component,
-            componentName: first.componentName
+            componentName: first.componentName,
+            title: first.name
           }
         })
       }

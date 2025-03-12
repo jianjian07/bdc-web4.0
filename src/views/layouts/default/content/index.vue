@@ -8,7 +8,7 @@
         <RouterView>
           <template #default="{ Component, route }">
             <keep-alive :include="caches">
-              <component :is="Component" :key="route.fullPath + isRouterAlive" />
+              <component :is="Component" v-if="isReload" :key="route.fullPath + isRouterAlive" />
             </keep-alive>
           </template>
         </RouterView>
@@ -18,7 +18,7 @@
 </template>
 <script lang="ts" setup>
 import { RouterView } from 'vue-router'
-import { computed, watch } from "vue"
+import { computed, nextTick, ref, watch } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { useRoute } from 'vue-router'
@@ -28,15 +28,24 @@ const tabStore = useTabsStore()
 const { getTabsShow } = useTabsSetting()
 let isRouterAlive = computed(() => tabStore.getRouterAlive)
 const fullscreen = computed(() => tabStore.getIsFullScreen)
+let isReload = ref<boolean>(true)
+
 const caches = computed(() => {
   return tabStore.getCacheTabs.map(tab => {
-    if (!tab.meta?.componentName) {
-      // 默认取组件文件名
-      const nameParts = tab.meta?.component?.split('/') ?? [];
-      tab.meta.componentName = nameParts[nameParts.length - 1] || '';
-    }
     return tab.meta.componentName
   }).filter(Boolean)
+})
+
+watch(() => tabStore.getReloadTab, (newV) => {
+ if (newV) {
+   isReload.value = false
+   nextTick(() => {
+     isReload.value = true
+     tabStore.setReloadTab(false)
+   })
+ } 
+}, {
+  deep: true
 })
 
 // router.onError((error) => {

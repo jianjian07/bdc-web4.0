@@ -5,7 +5,7 @@
     </span>
     <span v-else class="tab-action">
       <span class="tab-info">
-        {{ tabItem.name }}
+        {{ tabItem.meta.title }}
       </span>
     </span>
     <template #overlay>

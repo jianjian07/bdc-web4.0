@@ -10,7 +10,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const replaceRoute = (url: string, query: Record<string, any>) => {
-      router.replace({ path: url, query });
+      router.replace({ path: url, query, name });
     }
     return {
       replaceRoute
@@ -18,7 +18,7 @@ export default defineComponent({
   },
   beforeRouteEnter(to, from, next) {
     next((vm: any) => {
-      vm.replaceRoute(from.fullPath, from.query);
+      vm.replaceRoute(from.fullPath, from.query, from.name);
     })
   }
 })

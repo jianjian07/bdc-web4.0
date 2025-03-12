@@ -5,6 +5,7 @@ import { guid } from "..";
 import { createVNode, nextTick } from "vue"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { useTabsStore } from "/@/store/modules/tabs"
+import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 // 是否使用业务约束
 const checkFlag = false
 /**
@@ -90,12 +91,15 @@ export async function extractData(options: any) {
                 message.success('数据提取成功')
                 options.open.value = false
                 options.reload.value = guid()
-                setTimeout(() => {
-                    const tabStore = useTabsStore()
-                    tabStore.refreshTab()
-                },300)
-                
-                // router.push('/refresh')
+                nextTick(() => {
+                    const { getTabsShow } = useTabsSetting()
+                    if (getTabsShow.value) {
+                        const tabStore = useTabsStore()
+                        tabStore.refreshTab()
+                    } else {
+                        router.push('/refresh')
+                    }
+                })
             }
         })
     }
@@ -134,10 +138,15 @@ export async function extractDataLpb(options: any) {
                 message.success('数据提取成功')
                 options.open.value = false
                 options.reload.value = guid()
-                setTimeout(() => {
-                    const tabStore = useTabsStore()
-                    tabStore.refreshTab()
-                },300)
+                nextTick(() => {
+                    const { getTabsShow } = useTabsSetting()
+                    if (getTabsShow.value) {
+                        const tabStore = useTabsStore()
+                        tabStore.refreshTab()
+                    } else {
+                        router.push('/refresh')
+                    }
+                })
                 
                 // router.push('/refresh')
             }
