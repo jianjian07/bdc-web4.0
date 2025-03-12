@@ -114,9 +114,9 @@ function getRootMenuKeys() {
  */
 function handleMenuItem({ item, key, keyPath }) {
   let menu = JSON.parse(item.role)
-  // if (menu.component == 'sys/iframe/index') {
-  //   appStore.setIframeSrc(menu.extra)
-  // }
+  if (menu.iframe) {
+    appStore.setIframeSrc(menu.url)
+  }
   router.replace({ path: menu.path })
 }
 
