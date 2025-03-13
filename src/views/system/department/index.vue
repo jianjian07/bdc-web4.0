@@ -18,7 +18,8 @@
     </div>
     <div class="sys-user-table-body">
       <a-spin :spinning="loading">
-        <a-table v-if="showTable" :columns="columns" :data-source="deptList" @expand="onExpand" :auto-expand-parent="false" rowKey="id">
+        <a-table v-if="showTable" :columns="columns" :data-source="deptList" @expand="onExpand" :auto-expand-parent="false" rowKey="id" 
+                 :pagination="false" :scroll="{ y: 300 }">
           <template  #expandIcon="{ expanded, onExpand, record }">
             <span v-if="record.hasChildren && !expanded" @click="(e) => onExpand(record, e)">
               <CaretRightOutlined style="margin-right: 5px;" />
@@ -374,22 +375,30 @@ function setDeptList(arr, node) {
 
   .sys-user-table-body {
     height: calc(100% - 50px);
+    
+    :deep(.ant-table-body) {
+      overflow-y: scroll;
+      max-height: calc(100% - 50px) !important;
+    }
 
     :deep(.ant-table-wrapper) {
       height: 100%;
+    }
 
-      .ant-table {
-        height: calc(100% - 60px);
+    :deep(.ant-table) {
+      height: calc(100% - 20px);
+    }
 
-        .ant-table-container {
-          height: 100%;
+    :deep(.ant-table-container) {
+      height: 100%;
+    }
 
+    :deep(.ant-spin-container) {
+      height: 100%;
+    }
 
-          .ant-table-body {
-            height: calc(100% - 60px);
-          }
-        }
-      }
+    :deep(.ant-spin-nested-loading) {
+      height: 100%;
     }
     
     :deep(.ant-spin-container) {
