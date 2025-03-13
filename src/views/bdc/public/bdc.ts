@@ -1090,11 +1090,10 @@ export function getLogicModel(wwSlbh) {
 
 /**
  * 逻辑校验
- * @param slbh
- * @param bdcModels
+ * @param options
  */
-export async function checkLogicFun(slbh, bdcModels) {
-  return await checkLogic(slbh, bdcModels)
+export async function checkLogicFun(options) {
+  return await checkLogic(options)
 }
 
 /**

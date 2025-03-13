@@ -7,7 +7,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 // 是否使用业务约束
-const checkFlag = false
+const checkFlag = true
 /**
  * 列表提取
  * @param options 
@@ -73,7 +73,7 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic(slbh, dyhList) : true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, dyhList: dyhList}) : true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -117,7 +117,7 @@ export async function extractDataLpb(options: any) {
         dyhList.push({ zddm: data.zddm, bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic(slbh, dyhList) : true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, dyhList: dyhList }) : true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -158,14 +158,11 @@ export async function extractDataLpb(options: any) {
  * 创建案卷逻辑检查
  * @param params
  */
-export function checkLogic(slbh, bdcModels) {
+export function checkLogic(options) {
     return new Promise((resolve) => {
         defHttp.post({
             url: '/api/zrzy-logic/logic/check/checkLogic',
-            data: {
-                slbh: slbh,
-                bdcModels: bdcModels
-            }
+            data: options
         }, { withToken: true }).then((res) => {
             if (res && res.success) {
                 const checkResult = res.result
