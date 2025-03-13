@@ -350,9 +350,11 @@ function downLoadFile() {
       }
     }
 
-    /deep/ .ant-tree .ant-tree-switcher {
-      line-height: 30px;
-    }
+    :deep(.ant-tree){
+      .ant-tree-switcher {
+        line-height: 30px;
+      }
+    } 
   }
 
   .filePreview {

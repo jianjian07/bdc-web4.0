@@ -164,7 +164,7 @@ function handleAdd(entry: any) {
   flex-direction: column;
   background-color: #F9F9F9;
 
-  /deep/ .ant-card-body {
+  :deep(.ant-card-body) {
     padding: 10px 15px !important;
   }
 
@@ -393,7 +393,7 @@ function handleAdd(entry: any) {
     padding: 1px;
     border: none;
 
-    /deep/ .ant-spin-container {
+    :deep(.ant-spin-container) {
       overflow: hidden !important;
     }
 
@@ -406,11 +406,11 @@ function handleAdd(entry: any) {
       width: 50%;
       height: 50%;
 
-      /deep/ .ant-card-body {
+      :deep(.ant-card-body) {
         height: calc(100% - 45px);
       }
 
-      /deep/ .ant-card-head {
+      :deep(.ant-card-head) {
         // background-color: #ddeafe;
         min-height: 45px;
         height: 45px;
@@ -428,9 +428,6 @@ function handleAdd(entry: any) {
       padding-top: 10px;
       padding-bottom: 5px;
       width: 60%;
-      // /deep/ .ant-card-head {
-      //   background-color: #e8f0fb;
-      // }
     }
 
     .itemList:nth-of-type(2) {
@@ -438,27 +435,18 @@ function handleAdd(entry: any) {
       padding-top: 10px;
       padding-bottom: 5px;
       width: 40%;
-      // /deep/ .ant-card-head {
-      //   background-color: #e8f0fb;
-      // }
     }
 
     .itemList:nth-of-type(3) {
       padding-right: 8px;
       padding-top: 10px;
       width: 60%;
-      // /deep/ .ant-card-head {
-      //   background-color: #e8f0fb;
-      // }
     }
 
     .itemList:nth-of-type(4) {
       padding-left: 8px;
       padding-top: 10px;
       width: 40%;
-      // /deep/ .ant-card-head {
-      //   background-color: #e8f0fb;
-      // }
     }
 
     .dqList {
@@ -467,21 +455,21 @@ function handleAdd(entry: any) {
       display: flex;
       flex-direction: column;
 
-      /deep/ .ant-list-item {
+      :deep(.ant-list-item) {
         padding: 10px 0px !important;
       }
 
-      /deep/ .userTable {
+      :deep(.userTable) {
         .ant-pagination {
           margin: -25px 0 !important;
         }
       }
 
-      /deep/ .ant-table-container {
+      :deep(.ant-table-container) {
         height: 100% !important;
         overflow: hidden;
 
-        /deep/ .ant-table {
+        :deep(.ant-table) {
           height: 100%;
         }
       }

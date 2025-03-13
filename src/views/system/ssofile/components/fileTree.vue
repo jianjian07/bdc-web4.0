@@ -274,8 +274,8 @@ watch(() => props.formData, (val) => {
 
 
 onMounted(() => {
-  kkFileApi.value = window.settingConfig.kkFileDomain
-  baseApi.value = window.settingConfig.baseDomain
+  kkFileApi.value = window?.settingConfig?.kkFileDomain
+  baseApi.value = window?.settingConfig?.baseDomain
 })
 
 function loadFileList(getDefault: Boolean = true) {
@@ -658,9 +658,11 @@ function handleOrder() {
       }
     }
 
-    /deep/ .ant-tree .ant-tree-switcher {
-      line-height: 30px;
-    }
+    :deep(.ant-tree) {
+      .ant-tree-switcher {
+        line-height: 30px;
+      }
+    } 
   }
 
   .filePreview {
