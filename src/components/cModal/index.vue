@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref, defineExpose, defineProps } from "vue"
+import { computed, defineAsyncComponent, onMounted, ref } from "vue"
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 const modules = import.meta.glob('/src/**/*.vue')

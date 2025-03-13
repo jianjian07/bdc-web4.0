@@ -166,10 +166,10 @@ function showModal(record: any) {
 .scroll-container {
   overflow: hidden;
   height: 100%;
-  /deep/ .ant-list-item {
+  :deep(.ant-list-item) {
     padding: 10px 0px !important;
   }
-  /deep/ .ant-list-item-meta {
+  :deep(.ant-list-item-meta) {
     align-items: center !important;
   }
 }

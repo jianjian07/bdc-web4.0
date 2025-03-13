@@ -174,7 +174,7 @@ function closeCurrentTab() {
     setTimeout(() => {
       if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
         const tabStore = useTabsStore()
-        tabStore.refreshTab() 
+        tabStore.refreshTab()
         // router.push('/refresh')
       }
     }, 300)
@@ -428,9 +428,9 @@ export function print(params: { code: string, [key: string]: string | number }) 
 
 /**
  * 记载登记簿 支持重复记载
- * @param params 
+ * @param params
  * cType为0不生成证号
- * @returns 
+ * @returns
  */
 export function register(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
@@ -485,8 +485,8 @@ function djb(slbh: string, cType: string) {
 
 /**
  * 归档页保存
- * @param params 
- * @returns 
+ * @param params
+ * @returns
  */
 export function savaGd(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
@@ -1105,7 +1105,8 @@ export function handleWwsjFun(options) {
     let defUrl = `/api/zrzy-bdc/bdcww/wwtobdc/${options.action}`;
       defHttp.post( {url: defUrl, params: { wwSlbh: options.slbh, yj: options.yj,allowEdit: options.allowEdit } }, { withToken: true }).then((res) => {
         if (res && res.success) {
-          resolve(res.result)
+          // 退件result为null,避免后续判断问题,给个1返回值
+          resolve(res.result||1)
         } else {
           message.warning(res.message)
           resolve(false)
