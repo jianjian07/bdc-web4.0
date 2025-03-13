@@ -73,7 +73,7 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic({ slbh: slbh, dyhList: dyhList}) : true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList}) : true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -117,7 +117,7 @@ export async function extractDataLpb(options: any) {
         dyhList.push({ zddm: data.zddm, bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic({ slbh: slbh, dyhList: dyhList }) : true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }) : true
     options.okLoading.value = false
     if (check) {
         let _data: any =
