@@ -3,23 +3,18 @@ const modules = import.meta.glob('/src/views/**/*.vue');
 
 export function dynamicRouter(routeList: AppRouteModule[]) {
     const list: AppRouteModule[] = [];
-    routeList.forEach((item) => {
+    routeList.forEach(async (item) => {
         if (item.component !== "wonderform") {
             const componentName = getComponentName(item); // 使用缓存路由必须 确保 name 唯一
             let tab: any = {
                 ...item,
                 name: item.children && item.children.length ? item.title : componentName,
                 component: item.children && item.children.length ? modules[`/src/views/${item.component}.vue`] 
-                  :  () =>
-                    import(`/src/views/${item.component}.vue`).then((mod) => {
-                        mod.default.name = componentName; // 动态生成路由 需要把组件的name也同步, 不然缓存路由失效
-                        return mod;
-                    }
-                ),
+                  : () =>  getComponent(item.component, componentName),
                 meta: {
                     cache: item.cache,
                     component: item.component,
-                    componentName: componentName, // ✅ 统一 componentName
+                    componentName: componentName,
                     path: item.path,
                     iframe: item.iframe,
                     iframeUrl: item.url,
@@ -35,9 +30,30 @@ export function dynamicRouter(routeList: AppRouteModule[]) {
         }
     });
 
-    // console.log(" 最终动态路由列表:", list);
+    console.log(" 最终动态路由列表:", list);
     return list;
 }
+
+/**
+ * 动态生成路由 需要把组件的name也同步, 不然缓存路由失效
+ * @param componentPath
+ * @param componentName
+ */
+const getComponent = async (componentPath: string, componentName: string) => {
+    const importPath = `/src/views/${componentPath}.vue`;
+
+    const mod = await modules[importPath](); // 动态加载组件
+    const component = mod.default;
+
+    if (component) {
+        return {
+            ...component, // 创建一个新的对象，避免直接修改 `mod.default`
+            name: componentName, // 赋值 name，确保 keep-alive 识别
+        };
+    }
+
+    return component;
+};
 
 
 export function dynamicRouterOld(routeList: AppRouteModule[]) {
