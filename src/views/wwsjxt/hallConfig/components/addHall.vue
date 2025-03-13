@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 

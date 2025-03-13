@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h, onMounted, defineProps, watch } from 'vue';
+import { ref, h, onMounted, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { Base64 } from 'js-base64';

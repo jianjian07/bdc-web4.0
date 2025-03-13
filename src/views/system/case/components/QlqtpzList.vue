@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { ref, defineProps, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"

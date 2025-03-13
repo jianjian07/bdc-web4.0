@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, reactive, ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from "lodash-es"

@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { PlusOutlined, StopOutlined, WarningOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-import { ref, defineProps, watch, reactive } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"

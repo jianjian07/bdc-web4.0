@@ -45,7 +45,7 @@
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { defineProps, ref, watch } from "vue"
+import { ref, watch } from "vue"
 import { cModal } from "/@/components/cModal/index"
 
 const props = defineProps({

@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed, reactive, ref, onMounted, watch } from 'vue';
+import { computed, reactive, ref, onMounted, watch } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { UploadOutlined } from '@ant-design/icons-vue';
