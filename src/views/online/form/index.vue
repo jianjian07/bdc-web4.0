@@ -36,15 +36,35 @@
     </div>
     <div class="wonder-table-css">
         <div class="wonder-table-toolbar">
-            <a-button type="primary" @click="addData">
-                <template #icon>
-                    <plus-outlined />
+            <a-space>
+                <a-button type="primary" @click="addData">
+                    <template #icon>
+                        <plus-outlined />
+                    </template>
+                    新增
+                </a-button>
+                <a-button type="primary" @click="exprotJson">
+                    <template #icon>
+                        <ExportOutlined />
+                    </template>
+                    导出
+                </a-button>
+                <a-upload name="file" v-model:file-list="fileList" :headers="{ authorization: 'authorization-text' }"
+                    :showUploadList="false" :customRequest="importJson" style="margin: auto 2px;">
+                    <a-button>
+                        <upload-outlined></upload-outlined>
+                        导入
+                    </a-button>
+                </a-upload>
+            </a-space>
+            <a-alert type="info" show-icon style="margin: 5px 0px -2px;">
+                <template #message>
+                    {{ selectedAllKeys.length > 0 ? "已选中 " + selectedAllKeys.length + " 条记录" : "未选中任何数据" }}
                 </template>
-                新增
-            </a-button>
+            </a-alert>
         </div>
-        <a-table :columns="columns" :data-source="datalist" :pagination="pagination" :loading="loading"
-            @change="onChange($event, loadData)">
+        <a-table :row-selection="rowSelection" :columns="columns" rowKey="id" :data-source="datalist"
+            :pagination="pagination" :loading="loading" @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'isLocked'">
                     <a-tag :color="record.isLocked == 1 ? 'warning' : 'success'">
@@ -107,19 +127,23 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import { ref, onMounted, defineAsyncComponent, h } from "vue";
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, ExportOutlined, ImportOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { message, notification } from 'ant-design-vue';
 import { router } from "/@/router";
 import ClipboardJS from 'clipboard'
 import HistoryDrawer from './modules/HistoryDrawer.vue';
 import CVfd from './modules/Vfd.vue'
+import type { TableProps, TableColumnType } from 'ant-design-vue';
+import { formatToDate, formatToDateTime } from "../utils/dateUtil";
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
     lockFormUrl = '/api/zrzy-form/form/lockForm',
     unlockFormUrl = '/api/zrzy-form/form/unlockForm',
-    delUrl = '/api/zrzy-form/form/delete' // 删除
+    delUrl = '/api/zrzy-form/form/delete', // 删除
+    exportJson = '/api/zrzy-form/export/exportJson',
+    importJson = '/api/zrzy-form/export/importJson'
 }
 const columns = [
     { title: "ID", dataIndex: "id", width: 80 },
@@ -350,6 +374,77 @@ function handOver(val) {
     if (val.isAutoOpenDesign) {
         // design(val.data)
     }
+}
+let selectedAllKeys: any = ref()
+const rowSelection: any = {
+    onChange: (selectedRowKeys: string[]) => {
+        selectedAllKeys.value = selectedRowKeys;
+    }
+};
+/**
+ * 导出json
+ */
+function exprotJson() {
+    defHttp.get({ url: Api.exportJson, params: { ids: selectedAllKeys.value.join(',') }, responseType: "blob" }, { withToken: true }).then((res) => {
+        const title = "表单" + formatToDateTime(new Date().getTime())
+        const fileName = title + '.json'; //文件名
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(res);
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(link.href);
+
+    }).catch(err => {
+        console.info(err)
+    })
+}
+/**
+ * 导入json
+ */
+let fileList: any = ref([])
+
+// 自定义上传
+const importJson = () => {
+    if (fileList.value.length == 0) {
+        message.error('请选择文件')
+        return;
+    }
+    const fileData = new FormData()
+    fileList.value.forEach((ele: any) => {
+        fileData.append(`files`, ele.originFileObj);
+    })
+    defHttp.post(
+        {
+            url: Api.importJson,
+            data: fileData,
+            headers: { "Content-Type": "multipart/form-data" },
+        },
+        { withToken: true }
+    ).then((res: any) => {
+        if (res.success) {
+            notification.info({
+                message: '导入成功',
+                description: highlightMessage(res.message),
+                placement: 'topRight',
+                duration: 5,
+            });
+            if (res.result > 0) {
+                loadData()
+            }
+        }
+    })
+};
+// 动态生成 description，标红数字
+function highlightMessage(msg) {
+    const description = h('div', [
+        msg.split(/(\d+)/).map((part, index) =>
+            /^\d+$/.test(part) ? ( // 判断是否是数字
+                h('span', { style: { color: 'red', fontWeight: '600' }, key: index }, part)
+            ) : (
+                h('span', { key: index }, part)
+            ),
+        )]);
+    return description;
 }
 </script>
 <style lang="less" scoped>

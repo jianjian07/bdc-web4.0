@@ -122,15 +122,15 @@ function handleModalOk() {
         const time = new Date().getTime();
         const value = formatToDateTime(time);
         if (formState.value.id) {
-            url = '/magicapi/zrzy-form/magic/form/form/edit' // 编辑
+            url = '/api/zrzy-form/form/update' // 编辑
             formState.value.updateTime = value
 
         } else {
-            url = '/magicapi/zrzy-form/magic/form/form/add' // 新增
+            url = '/api/zrzy-form/form/add' // 新增
             formState.value.createTime = value
         }
         defHttp.post({ url: url, data: formState.value }, { withToken: true }).then((res) => {
-            if (!res.message) {
+            if (res.success) {
                 message.success('保存成功')
                 emit('handOver', {
                     isAutoOpenDesign: isAutoOpenDesign.value,
