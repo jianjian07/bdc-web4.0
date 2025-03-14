@@ -30,7 +30,7 @@ export function dynamicRouter(routeList: AppRouteModule[]) {
         }
     });
 
-    console.log(" 最终动态路由列表:", list);
+    // console.log(" 最终动态路由列表:", list);
     return list;
 }
 
