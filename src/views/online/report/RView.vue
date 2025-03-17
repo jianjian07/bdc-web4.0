@@ -337,6 +337,14 @@ function createCase() {
     }
 }
 
+function relateCase() {
+  if (basicInfo.value.state.selectedRowKeys.length == 0) {
+      message.warning('请选择要关联的数据')
+  } else {
+      emit('relateOk', { reload: true, data: basicInfo.value.state.selectedRowKeys })
+  }
+}
+
 
 /**
  * 刷新表格
@@ -357,6 +365,7 @@ function excuteHrefFun(funName, record) {
 }
 defineExpose({
     createCase,
+    relateCase,
     event1
 })
 </script>
