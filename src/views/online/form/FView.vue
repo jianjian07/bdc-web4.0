@@ -20,16 +20,17 @@ import { InfoCircleOutlined } from '@ant-design/icons-vue';
 import dayjs from 'dayjs';
 
 import {
-    onSubmitForm,
-    validateInfos,
-    validateFun,
-    getAccount,
-    syncChange,
-    onTableSelectClear,
-    onTableSelectRowChange,
-    getSelectAllCheck,
-    setSelectAllCheck,
-    hideField
+  onSubmitForm,
+  validateInfos,
+  validateFun,
+  getAccount,
+  syncChange,
+  onTableSelectClear,
+  onTableSelectRowChange,
+  getSelectAllCheck,
+  setSelectAllCheck,
+  hideField,
+  getMatchTag
 } from "/@/views/online/utils/wonder1.0.1"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props = defineProps({
@@ -152,7 +153,10 @@ const generateVue3 = defineComponent({
             watch,
             onSubmit,
             multipleRef,
-            getAccount
+            getAccount,
+            evaluateTagCondition,
+            getMatchTag,
+            excuteHrefFun 
         }
 
         function search() {
@@ -248,7 +252,6 @@ function handleChangeTab(key, callback?: any) {
         callback(key)
     }
 }
-
 defineExpose({
     onSubmit,
     multipleRef,

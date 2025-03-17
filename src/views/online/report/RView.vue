@@ -12,7 +12,7 @@ import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, 
 import {
     initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
 } from "/@/views/online/utils/wonder-report"
-import { getSelectAllCheck, setSelectAllCheck, syncChange } from "/@/views/online/utils/wonder1.0.1"
+import { getSelectAllCheck, setSelectAllCheck, syncChange, getMatchTag } from "/@/views/online/utils/wonder1.0.1"
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
@@ -178,7 +178,9 @@ const generateVue3 = defineComponent({
             onSelectChange,
             cModal,
             reloadTable,
-            Modal
+            Modal,
+            getMatchTag,
+            excuteHrefFun
         }
         function search() {
             paginations.value.current = 1
@@ -332,6 +334,17 @@ function createCase() {
  */
 function reloadTable() {
   execInitFun()
+}
+
+/**
+ * 执行列配置超链接方法
+ * @param funName
+ * @param record
+ */
+function excuteHrefFun(funName, record) {
+  if (events[funName]) {
+    events[funName](record)
+  }
 }
 defineExpose({
     createCase,

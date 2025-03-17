@@ -31,24 +31,26 @@ import eventBus from "/@/views/online/utils/eventBus"
 import dayjs from 'dayjs';
 import * as bdc from '/@/views/bdc/public/bdc'
 import {
-    getData,
-    getDataByApi,
-    // getInheritData,
-    onSubmitForm,
-    validateInfos,
-    validateFun,
-    getAccount,
-    syncChange,
-    onTableSelectClear,
-    onTableSelectRowChange,
-    getSelectAllCheck,
-    setSelectAllCheck,
-    hideField,
-    initCTableV2,
-    initAllCTableV2,
-    editRow, 
-    saveRow, 
-    cancelRow 
+  getData,
+  getDataByApi,
+  // getInheritData,
+  onSubmitForm,
+  validateInfos,
+  validateFun,
+  getAccount,
+  syncChange,
+  onTableSelectClear,
+  onTableSelectRowChange,
+  getSelectAllCheck,
+  setSelectAllCheck,
+  hideField,
+  initCTableV2,
+  initAllCTableV2,
+  editRow,
+  saveRow,
+  cancelRow,
+  evaluateTagCondition,
+  getMatchTag
 } from "/@/views/online/utils/wonder1.0.1"
 import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
@@ -355,7 +357,9 @@ const generateVue3 = defineComponent({
             watch,
             onSubmit,
             multipleRef,
-            getAccount
+            getAccount,
+            getMatchTag,
+            excuteHrefFun
         }
 
     },
@@ -486,6 +490,16 @@ function reloadTable() {
  */
 function getImgUrl(name) {
   return new URL(`/src/assets/images/${name}`, import.meta.url).href
+}
+
+/**
+ * 执行列配置超链接方法
+ * @param funName
+ */
+function excuteHrefFun(funName, record) {
+  if (events[funName]) {
+    events[funName](record)
+  }
 }
 
 defineExpose({

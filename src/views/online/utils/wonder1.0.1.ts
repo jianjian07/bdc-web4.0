@@ -1001,3 +1001,27 @@ export const cancelRow = (key: string, editableData) => {
     delete editableData[key];
 };
 /** 行编辑所需要代码 end **/
+
+/**
+ * tag显示逻辑
+ */
+export function evaluateTagCondition(tag, compareValue) {
+    if (tag?.condition === '=') {
+      return tag?.value == compareValue;
+    } else if (tag?.condition === '!=') {
+      return tag?.value != compareValue;
+    }
+    return false; // 默认返回 false
+}
+
+export function getMatchTag(tagList, text) {
+  const matchedTags = tagList.filter(tag =>
+    evaluateTagCondition(tag, text) && tag.color && tag.color.length
+  );
+
+  if (matchedTags.length === 0) return null;
+
+  // 优先匹配 `=` 规则的 tag
+  const exactMatch = matchedTags.find(tag => tag?.condition === "=");
+  return exactMatch || matchedTags[0]; // 如果没有 `=` 规则，则选第一个
+}
