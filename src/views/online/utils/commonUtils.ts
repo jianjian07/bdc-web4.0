@@ -291,3 +291,19 @@ export function compareObjects(obj1: any, obj2: any) {
     return diff;
 }
 /**对比属性**/
+
+/**
+ * 增加样式表
+ * @param css
+ */
+export function loadStyle(css) {
+    let style = document.createElement('style')
+    style.type = 'text/css'
+    try {
+        style.appendChild(document.createTextNode(css))
+    } catch (e) {
+        style.styleSheet.cssText = css
+    }
+    let head = document.getElementsByTagName('head')[0]
+    head.appendChild(style)
+}

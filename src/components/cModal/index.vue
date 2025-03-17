@@ -1,7 +1,7 @@
 <template>
   <a-config-provider :locale="zhCN">
     <a-modal class="commonModal" v-model:open="modalVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
-      :wrap-class-name="(fullScreen || isFullScreen) ? 'full-common-modal' : ''" :confirmLoading="confirmLoading" :maskClosable="false"
+      :wrap-class-name="(fullScreen || isFullScreen) ? `full-common-modal ${wrapClassName || ''}` : (wrapClassName || '')" :confirmLoading="confirmLoading" :maskClosable="false"
       v-bind="footerBind" :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' })">
       <template #title>
         {{ title }}
@@ -92,6 +92,10 @@ let props = defineProps({
         'text-align': 'end'
       }
     }
+  },
+  wrapClassName: {
+    type: String,
+    default: ''
   }
 })
 

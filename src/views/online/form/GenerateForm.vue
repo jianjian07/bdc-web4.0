@@ -19,7 +19,8 @@ import {
   getZjzlRuleCode,
   getLabelByDictCode,
   getLabelByTreeDictCode,
-  getRowSpan
+  getRowSpan,
+  loadStyle
 } from '/@/views/online/utils/commonUtils'
 import { initTable, edit, save, cancel } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
@@ -50,7 +51,8 @@ import {
   saveRow,
   cancelRow,
   evaluateTagCondition,
-  getMatchTag
+  getMatchTag, 
+  getFormInfo
 } from "/@/views/online/utils/wonder1.0.1"
 import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
@@ -348,6 +350,7 @@ const generateVue3 = defineComponent({
             getSelectAllCheck,
             setSelectAllCheck,
             validateFun,
+            getFormInfo,
             getImgUrl,
             validateInfos,
             cModal,
@@ -359,7 +362,8 @@ const generateVue3 = defineComponent({
             multipleRef,
             getAccount,
             getMatchTag,
-            excuteHrefFun
+            excuteHrefFun,
+            loadStyle
         }
 
     },

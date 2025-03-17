@@ -8,7 +8,15 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { generateReportHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
-import { getDictItemsByCode, getTreeDictItemsByCode, formatMultipleSelectValue, useVNodes, getLabelByDictCode, getLabelByTreeDictCode } from '/@/views/online/utils/commonUtils';
+import {
+  getDictItemsByCode,
+  getTreeDictItemsByCode,
+  formatMultipleSelectValue,
+  useVNodes,
+  getLabelByDictCode,
+  getLabelByTreeDictCode,
+  loadStyle
+} from '/@/views/online/utils/commonUtils'
 import {
     initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
 } from "/@/views/online/utils/wonder-report"
@@ -180,7 +188,8 @@ const generateVue3 = defineComponent({
             reloadTable,
             Modal,
             getMatchTag,
-            excuteHrefFun
+            excuteHrefFun,
+            loadStyle
         }
         function search() {
             paginations.value.current = 1
