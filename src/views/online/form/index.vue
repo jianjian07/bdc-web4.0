@@ -196,7 +196,6 @@ async function loadData(type?: string | undefined) {
     loading.value = true
     let url = '/api/zrzy-form/form/list'
     defHttp.post({ url: url, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { id: formData.value.id, code: formData.value.code, formName: formData.value.formName } }, { withToken: true }).then((res) => {
-        console.log("res.list", res.result)
         if (res.success) {
             datalist.value = res.result.records
             pagination.value.total = res.result.total
@@ -375,7 +374,7 @@ function handOver(val) {
         // design(val.data)
     }
 }
-let selectedAllKeys: any = ref()
+let selectedAllKeys: any = ref([])
 const rowSelection: any = {
     onChange: (selectedRowKeys: string[]) => {
         selectedAllKeys.value = selectedRowKeys;
