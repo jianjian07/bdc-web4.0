@@ -217,7 +217,7 @@ export async function relateData(options: any) {
     }
     options.okLoading.value = true
     defHttp.post({
-        url: '/api/zrzy-bdc/bdclglgx/relate',
+        url: '/api/zrzy-bdc/bdc/glgx/relate',
         data: _data
     }, { withToken: true }).then((res) => {
         if (res && res.success) {
