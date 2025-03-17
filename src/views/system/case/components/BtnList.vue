@@ -33,7 +33,8 @@
                             v-model:value="editableData[record.id0][column.dataIndex]"
                             :options="getDictItemsByCode(column.dict)" allow-clear
                             :field-names="{ label: 'labelplus', value: 'value' }"
-                            style="width: 100%;margin: -5px 0" />
+                            style="width: 100%;margin: -5px 0" @change="handleSelectChange(column, editableData[record.id0])"
+                        />
                         <div v-else>
                             {{ text }}
                         </div>
@@ -202,6 +203,20 @@ const handleAdd = () => {
     btnList.value.push(newData);
     editableData[id] = cloneDeep(newData);
 };
+
+/**
+ * 改变下拉框的值
+ * @param column
+ * @param editItem
+ */
+function handleSelectChange(column, editItem) {
+  if (column.dataIndex == 'funName') {
+    let find = getDictItemsByCode(column.dict).find(f => f.value == editItem[column.dataIndex])
+    if (find) {
+      editItem['btnName'] = find.label
+    }
+  }
+}
 </script>
 
 <style scoped lang="less">
