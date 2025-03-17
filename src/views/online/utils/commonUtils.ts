@@ -261,12 +261,10 @@ export function getRowSpan(data, rowIndex, key) {
     }
     rowSpan++;
   }
-
-  // 如果前面的行存在相同的值，rowSpan 为 0（表示应跳过合并）
-  for (let i = rowIndex - 1; i >= 0; i--) {
-    if (data[i][key] === data[rowIndex][key]) {
-      return 0; // 当前行不需要渲染
-    }
+  
+  // 只有当前行的前一行值和当前行相同时，才返回 0
+  if (rowIndex > 0 && data[rowIndex - 1][key] === data[rowIndex][key]) {
+    return 0; // 当前行不需要渲染
   }
 
   return rowSpan;
