@@ -9,13 +9,13 @@ import { defineComponent, reactive, ref } from 'vue'
 import { generateReportHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
 import {
-  getDictItemsByCode,
-  getTreeDictItemsByCode,
-  formatMultipleSelectValue,
-  useVNodes,
-  getLabelByDictCode,
-  getLabelByTreeDictCode,
-  loadStyle
+    getDictItemsByCode,
+    getTreeDictItemsByCode,
+    formatMultipleSelectValue,
+    useVNodes,
+    getLabelByDictCode,
+    getLabelByTreeDictCode,
+    loadStyle
 } from '/@/views/online/utils/commonUtils'
 import {
     initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
@@ -177,8 +177,6 @@ const generateVue3 = defineComponent({
             getTreeDictItemsByCode,
             getLabelByDictCode,
             getLabelByTreeDictCode,
-            getSelectAllCheck,
-            setSelectAllCheck,
             onExportExcel,
             onExportExcelApi,
             onCExport,
@@ -195,13 +193,13 @@ const generateVue3 = defineComponent({
             paginations.value.current = 1
             execInitFun()
         }
-        
+
         function reset() {
             viewData.value = {}
             paginations.value.current = 1
             execInitFun()
         }
-        
+
         function onCExport(_data: any) {
             let exportColumns = ref(_data)
             if (exportColumns.value.length == 0) {
@@ -238,13 +236,13 @@ const generateVue3 = defineComponent({
         }
         function onSelectChange(selectedRowKeys, selectedRows) {
             basicInfo.value.state.selectedRowKeys = selectedRowKeys;
-          
+
         }
         /**
          * 自动生成脚本
          */
         function generateTs() {
-             const _eventScript = eventScript.filter(t => (t.type == "Function" || t.type == "Mounted" || t.type == "Watch" || t.type == "Computed" || t.type == "BeforeValidate"));
+            const _eventScript = eventScript.filter(t => (t.type == "Function" || t.type == "Mounted" || t.type == "Watch" || t.type == "Computed" || t.type == "BeforeValidate"));
             for (let i = 0; i < _eventScript.length; i++) {
                 const _data = _eventScript[i];
                 if (_data.type == "Computed") {
@@ -255,36 +253,36 @@ const generateVue3 = defineComponent({
                         if (_data.isasync) {
                             events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
                             if (arrExposed.includes(_data.name)) {
-                              event1.value[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                                event1.value[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
                             }
                         } else {
                             try {
                                 eval(`(${_data.param})=> { ${_data.func}}`)
                                 events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
                                 if (arrExposed.includes(_data.name)) {
-                                   event1.value[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                                    event1.value[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
                                 }
                             } catch (error) {
-        
+
                             }
                         }
                     } else {
                         if (_data.isasync) {
                             events[_data.name] = eval(`async ()=> { ${_data.func}}`)
                             if (arrExposed.includes(_data.name)) {
-                               event1.value[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                                event1.value[_data.name] = eval(`async ()=> { ${_data.func}}`)
                             }
                         } else {
                             events[_data.name] = eval(`()=> { ${_data.func}}`)
                             if (arrExposed.includes(_data.name)) {
-                              event1.value[_data.name] = eval(`()=> { ${_data.func}}`)
+                                event1.value[_data.name] = eval(`()=> { ${_data.func}}`)
                             }
                         }
                     }
                 }
             }
-          
-          
+
+
             // for (let i = 0; i < eventScript.length; i++) {
             //     const _data = eventScript[i];
             //     events[_data.name] = newFunction(_data)
@@ -310,7 +308,7 @@ const generateVue3 = defineComponent({
         }
     },
     mounted() {
-         // 固定了mounted的事件名
+        // 固定了mounted的事件名
         const monunted = eventScript.filter(t => t.type == "Mounted")
         // console.log('monunted',monunted)
         if (monunted.length > 0) {
@@ -338,11 +336,11 @@ function createCase() {
 }
 
 function relateCase() {
-  if (basicInfo.value.state.selectedRowKeys.length == 0) {
-      message.warning('请选择要关联的数据')
-  } else {
-      emit('relateOk', { reload: true, data: basicInfo.value.state.selectedRowKeys })
-  }
+    if (basicInfo.value.state.selectedRowKeys.length == 0) {
+        message.warning('请选择要关联的数据')
+    } else {
+        emit('relateOk', { reload: true, data: basicInfo.value.state.selectedRowKeys })
+    }
 }
 
 
@@ -350,7 +348,7 @@ function relateCase() {
  * 刷新表格
  */
 function reloadTable() {
-  execInitFun()
+    execInitFun()
 }
 
 /**
@@ -359,9 +357,9 @@ function reloadTable() {
  * @param record
  */
 function excuteHrefFun(funName, record) {
-  if (events[funName]) {
-    events[funName](record)
-  }
+    if (events[funName]) {
+        events[funName](record)
+    }
 }
 defineExpose({
     createCase,
