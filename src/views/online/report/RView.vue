@@ -32,10 +32,14 @@ const props = defineProps({
     id: {
         type: String,
         default: "-1"
+    },
+    formData: {
+        type: Object,
+        default: {}
     }
 })
 const route = useRoute();
-let code: string = props.id;
+let code: string = props.formData.formId || props.id ; 
 if (code == "-1") {
     if (route.params.code == undefined) {
         code = route.fullPath.split('/').pop() || '-1'
@@ -335,15 +339,6 @@ function createCase() {
     }
 }
 
-function relateCase() {
-    if (basicInfo.value.state.selectedRowKeys.length == 0) {
-        message.warning('请选择要关联的数据')
-    } else {
-        emit('relateOk', { reload: true, data: basicInfo.value.state.selectedRowKeys })
-    }
-}
-
-
 /**
  * 刷新表格
  */
@@ -363,7 +358,6 @@ function excuteHrefFun(funName, record) {
 }
 defineExpose({
     createCase,
-    relateCase,
     event1
 })
 </script>

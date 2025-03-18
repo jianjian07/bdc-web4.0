@@ -81,6 +81,10 @@ const props: any = defineProps({
     formType: {
         type: String,
         default: 'form'
+    },
+    jdmc: {
+        type: String,
+        default: ''
     }
 })
 /**

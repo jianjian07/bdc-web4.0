@@ -20,13 +20,13 @@
                 <a-button type="primary" :loading="okLoading" @click="handleOk">确定</a-button>
               </template>
               <LookLpb v-if="eType == 'lpb'" ref="dataForm" @ok="onReloadLpb"></LookLpb>
-              <CRView v-else :id="formId" ref="dataForm" @ok="onReload" @relateOk="onRelate"></CRView>
+              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>
             </a-drawer>
           </div>
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
               <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"
-                :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">
+                :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setRef" :reload="reload">
               </component>
             </template>
             <template v-if="qlr && showQlr">
@@ -124,13 +124,9 @@ const component = (path: string) => {
     return null
   }
 }
-// 是否是关联列表
-let isRelateList = ref<boolean>(false)
-
 // 配置按钮调用的方法 
 const publicVueFun = {
-  openList,
-  relateLd
+  openList
 }
 
 enum api {
@@ -230,18 +226,6 @@ function openList(demoRefs, spinning, params?: any) {
   open.value = true
 }
 
-/**
- * 林地关联
- * @param demoRefs
- * @param spinning
- * @param params
- */
-function relateLd(demoRefs, spinning, params?: any) {
-  const { reportId } = params
-  formId.value = reportId != undefined ? reportId : ''
-  open.value = true
-  isRelateList.value = true
-}
 
 // ref实例
 let dataForm = ref()
@@ -253,11 +237,7 @@ function handleOk() {
     if (dataForm.value.handleOk != undefined) {
       dataForm.value.handleOk()
     } else {
-      if (isRelateList.value) {
-        dataForm.value.$.exposed.relateCase()
-      } else {
-        dataForm.value.$.exposed.createCase()
-      }
+      dataForm.value.$.exposed.createCase()
     }
   }
 }
@@ -266,7 +246,6 @@ function handleOk() {
  */
 function onClose() {
   open.value = false
-  isRelateList.value = false
 }
 let reload = ref("")
 /**
@@ -291,17 +270,6 @@ function onReloadLpb(obj: any) {
 }
 /**数据提取 end */
 
-/**
- * 关联林地列表
- * @param obj
- */
-function onRelate(obj: any) {
-  obj.okLoading = okLoading
-  obj.open = open
-  obj.reload = reload
-  obj.isRelateList = isRelateList
-  relateData(obj)
-}
 /**
  * 获取dom
  */

@@ -1114,3 +1114,44 @@ export function handleWwsjFun(options) {
       })
   })
 }
+
+/**
+ * 关联数据
+ * @param options
+ */
+export async function relateData(options: any) {
+    return new Promise((resolve, reject) => {
+      const route = router.currentRoute.value;
+      const { data } = options
+      const slbh = route.query.slbh?.toString()
+      let dyhList: any = []
+      for (let index = 0; index < data.length; index++) {
+          const dyh = data[index];
+          dyhList.push({ bdcdyh: dyh.bdcdyh, ywh: dyh.ywh, bdcqzh: dyh.bdcqzh })
+      }
+       let _data: any = {
+          "slbh": slbh,
+          "dyhList": dyhList
+      }
+      defHttp.post({
+          url: '/api/zrzy-bdc/bdc/glgx/relate',
+          data: _data
+      }, { withToken: true }).then((res) => {
+          if (res && res.success) {
+              resolve(true)
+              message.success('数据关联成功')
+              nextTick(() => {
+                  const { getTabsShow } = useTabsSetting()
+                  if (getTabsShow.value) {
+                      const tabStore = useTabsStore()
+                      tabStore.refreshTab()
+                  } else {
+                      router.push('/refresh')
+                  }
+              })
+          } else {
+            resolve(false)
+          }
+      })
+    })
+}
