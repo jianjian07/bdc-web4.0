@@ -40,7 +40,7 @@ export function initTable(viewData, dataSource, reportInfo, paginations, loading
                 // resolve(result)
                 dataSource.value = data.isPage ? result.records : result
                 // console.log('dataSource.value', dataSource.value)
-                paginations.value.total = result.total
+                paginations.value.total = data.isPage ? result.total : result.length
             }
             loading.value = false
             resolve(true)
@@ -82,7 +82,7 @@ export function initTableV2(options: any) {
                 // resolve(result)
                 dataSource.value = data.isPage ? result.records : result
                 // console.log('dataSource.value', dataSource.value)
-                paginations.value.total = result.total
+                paginations.value.total = data.isPage ? result.total : result.length
             }
             loading.value = false
             resolve(true)

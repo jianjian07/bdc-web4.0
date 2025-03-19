@@ -106,7 +106,7 @@ const props = defineProps({
         type: String,
     }
 })
-let paginations = ref(props.pagination)
+let paginations = ref(props.pagination && props.pagination.pageSize ? props.pagination : false)
 // let visible = ref(false)
 let filterColumns: any = ref([])
 filterColumns.value = props.columns
@@ -199,6 +199,9 @@ watch(
  * @param sorter 
  */
 function handleTableChange(pagination, filters, sorter) {
+    console.log('pagination',pagination)
+  console.log('props.pagination',props.pagination)
+  
     emit('change', { pagination: pagination, sorter: sorter })
 }
 /**
