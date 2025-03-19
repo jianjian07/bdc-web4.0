@@ -38,7 +38,7 @@ export function initTable(viewData, dataSource, reportInfo, paginations, loading
             if (res.code == 200) {
                 const result = JSON.parse(res.result)
                 // resolve(result)
-                dataSource.value = result.records
+                dataSource.value = data.isPage ? result.records : result
                 // console.log('dataSource.value', dataSource.value)
                 paginations.value.total = result.total
             }
@@ -80,7 +80,7 @@ export function initTableV2(options: any) {
             if (res.code == 200) {
                 const result = JSON.parse(res.result)
                 // resolve(result)
-                dataSource.value = result.records
+                dataSource.value = data.isPage ? result.records : result
                 // console.log('dataSource.value', dataSource.value)
                 paginations.value.total = result.total
             }
