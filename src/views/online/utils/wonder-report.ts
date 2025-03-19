@@ -25,7 +25,7 @@ export function initTable(viewData, dataSource, reportInfo, paginations, loading
     const data = {
         searchData: searchData,
         id: reportInfo.formId,
-        "isPage": true,
+        "isPage": !!paginations.value.pageSize,
         "current": paginations.value.current,
         "size": paginations.value.pageSize
     }
@@ -64,7 +64,7 @@ export function initTableV2(options: any) {
     let data = {
         searchData: searchData,
         id: reportInfo.formId,
-        "isPage": true,
+        "isPage": !!paginations.value.pageSize,
         "current": paginations.value.current,
         "size": paginations.value.pageSize
     }
