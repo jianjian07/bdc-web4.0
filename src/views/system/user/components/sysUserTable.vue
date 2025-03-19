@@ -233,7 +233,7 @@ function addUser() {
   drawerOpen.value = true
   title.value = "新增用户"
   dataInfo.value = {
-    deptList: props.deptInfo.id ? [props.deptInfo.id] : [],
+    deptList: props.deptInfo?.id ? [props.deptInfo.id] : [],
   }
 }
 /**

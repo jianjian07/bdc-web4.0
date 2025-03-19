@@ -44,7 +44,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="所属部门" name="deptList">
-                <a-tree-select v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
+                <a-tree-select showCheckedStrategy="TreeSelect.SHOW_ALL" v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
             </a-form-item>
             <a-form-item label="状态" name="enabled">
                 <a-switch v-model:checked="dataInfo.enabled" checked-children="启用" un-checked-children="禁用"/>
@@ -137,7 +137,7 @@ function onClose() {
  */
 function initTree() {
   // 1、新增时左侧选择了部门 2、编辑时
-  if ( props.dataInfo.deptList.length > 0) {
+  if (props.dataInfo.deptList && props.dataInfo.deptList.length > 0) {
     loadCurrentBranchTrees()
   } else { // 新增时左侧未选择部门
     loadLazyTree({ dataRef: { id: 0 }})
