@@ -56,12 +56,12 @@
                         </span>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <a-space>
+                        <a-space :size="2">
                             <template #split>
                                 <a-divider type="vertical" />
                             </template>
                             <a @click="handleCase(record)">办理</a>
-
+                            <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
                             <a v-if="record.taskName == '收件'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
                         </a-space>
                     </template>
@@ -77,10 +77,12 @@ import { ref, createVNode } from 'vue';
 import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
+import { cModal } from "/@/components/cModal/index"
 enum api {
     // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
     tasklist = '/api/zrzy-bdc/act/task/list',
-    delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData"
+    delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData",
+    taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust'
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -149,6 +151,38 @@ function clear() {
 function handleCase(record: any) {
     router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
 }
+
+/**
+ * 委托
+ * @param record
+ */
+function handleEntruster(record: any) {
+  let modal = cModal({
+    title: '选择用户',
+    width: 1200,
+    filePath: 'views/bdc/task/components/UserChosen',
+    onOk: async (res: any) => {
+      if (res && res.selectedRow) {
+        let params = {
+          taskId: record.taskId,
+          taskAssigneeUserId: res.selectedRow[0].username
+        }
+        defHttp.put({ url: api.taskEntrust, params: params }, { withToken: true }).then((res) => {
+          if (res && res.success) {
+            message.success('委托成功!')
+            loadData()
+            modal.destroy()
+          } else {
+            message.warning('委托失败!')
+          }
+        })
+      } else {
+        message.warning('请先选择委托的用户!')
+      }
+    }
+  })
+}
+
 /**
  * 删除
  * @param slbh 

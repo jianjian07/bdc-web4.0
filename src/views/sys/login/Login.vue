@@ -45,8 +45,8 @@ import { message, notification } from 'ant-design-vue';
 import { encryptionAES } from '/@/utils/cipher';
 const userStore = useUserStore();
 const formData = reactive({
-    username: "admin",
-    password: "123456",
+    username: "",
+    password: "",
 });
 const loading = ref<boolean>(false);
 /**
