@@ -15,6 +15,12 @@ export interface cModalModel {
   onCancel?: Function,
   // 是否显示页脚
   footer?: boolean,
+  // 表单传参数
   formData?: object | string | number | Array<any>,
+  // footer样式
   footerStyle?: Object
+  // 是否全屏
+  isFullScreen?: boolean
+  // 弹窗class
+  wrapClassName?: string
 }
