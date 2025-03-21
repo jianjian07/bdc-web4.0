@@ -40,6 +40,7 @@
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>
+                          <a-space>
                             <a-tag color="orange" v-if="record.taskTimeStatus == 1">
                                 <template #icon>
                                     <RollbackOutlined />
@@ -53,6 +54,15 @@
                                 超时
                             </a-tag>
                             <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
+                            <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName" :color="color">
+                              <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
+                                <template #icon>
+                                  <SolutionOutlined />
+                                </template>
+                                {{ record.taskOwnerName }}
+                              </a-tag>
+                            </a-tooltip>
+                          </a-space>
                         </span>
                     </template>
                     <template v-if="column.key === 'action'">
@@ -74,7 +84,7 @@
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
 import { ref, createVNode } from 'vue';
-import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, ExclamationCircleOutlined, SolutionOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
