@@ -12,6 +12,7 @@ import {
     getDictItemsByCode,
     getTreeDictItemsByCode,
     formatMultipleSelectValue,
+    formatMultipleTreeSelectValue,
     useVNodes,
     getLabelByDictCode,
     getLabelByTreeDictCode,
@@ -132,6 +133,11 @@ let arrExposed = [];
 if (exposeds.length > 0) {
     arrExposed = exposeds[0].name.split(',')
 }
+let filterColumns: any = ref([]);
+filterColumns.value = columns.value
+function onColumnsChange(data: any) {
+    filterColumns.value = data
+}
 const emit = defineEmits(['ok', 'rowChange'])
 const generateVue3 = defineComponent({
     template: generateData.html,
@@ -185,13 +191,15 @@ const generateVue3 = defineComponent({
             onExportExcelApi,
             onCExport,
             formatMultipleSelectValue,
+            formatMultipleTreeSelectValue,
             onSelectChange,
             cModal,
             reloadTable,
             Modal,
             getMatchTag,
             excuteHrefFun,
-            loadStyle
+            loadStyle,
+            onColumnsChange
         }
         function search() {
             paginations.value.current = 1

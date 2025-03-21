@@ -8,8 +8,10 @@
           style="margin-bottom: 10px"
       />
       <a-spin :spinning="deptLoading">
-        <a-tree v-if="showTree" :defaultExpandAll="false" :fieldNames="deptFieldNames" :load-data="onLoadData" :tree-data="treeData"
-                showLine @select="onDeptSelect" v-model:expandedKeys="expandedKeys" :auto-expand-parent="autoExpandParent" blockNode>
+        <a-tree v-if="showTree" v-model:expandedKeys="expandedKeys" :auto-expand-parent="autoExpandParent" :defaultExpandAll="false"
+                :fieldNames="deptFieldNames"
+                :load-data="onLoadData" :tree-data="treeData" blockNode
+                showLine @select="onDeptSelect">
           <template #switcherIcon="{ switcherCls, data, expanded }">
             <template v-if="data.children && data.children.length">
               <PlusSquareOutlined v-if="!expanded" :class="switcherCls" style="font-size: 14px; margin: 5px;"/>
@@ -137,15 +139,43 @@ let deptInfo = ref<any>()
 // 选中的用户key
 let selectedRowKeys = ref<any>([])
 // 选中的用户key
-let selectedRow = ref<any>()
+let selectedRow = ref<any>([])
 // 列表项是否可选择
 const rowSelection = computed(() => {
   return {
-    type: 'radio',
+    type: props.formData.modeType && props.formData.modeType == 'checkbox' ? 'checkbox' : 'radio',
     selectedRowKeys: selectedRowKeys.value,
-    onChange: (keys, rows) => {
-      selectedRow.value = rows
-      selectedRowKeys.value = keys
+    onSelect(record: any, selected: any) {
+      if (props.formData.modeType && props.formData.modeType == 'checkbox') {
+        selectRow(selected, record)
+      } else {
+        selectedRowKeys.value = [record['id']]
+        selectedRow.value = [record]
+      }
+    },
+    onSelectAll(selected: any, _selectionRows: any, changeRows: any) {
+      if (selected) {
+        selectedRow.value = selectedRow.value.concat(changeRows)
+      }
+      if (!selected) {
+        let selectionRows = JSON.parse(JSON.stringify(selectedRow.value))
+        const delIndex: any = []
+        selectionRows.forEach((item: any, index: any) => {
+          changeRows.forEach((val: any) => {
+            if (item['id'] === val['id']) {
+              delIndex.push(index)
+            }
+          })
+        })
+        delIndex.forEach((item: any) => {
+          delete selectionRows[item]
+        })
+        selectionRows = selectionRows.filter((item: any) => {
+          return item !== undefined
+        })
+        selectedRow.value = selectionRows
+      }
+      selectedRowKeys.value = selectedRow.value.map((m: any) => m['id'])
     }
   }
 })
@@ -198,6 +228,18 @@ onMounted(() => {
   onLoadData()
   initData()
 })
+
+function selectRow(selected: any, record: any) {
+  if (selected) {
+    selectedRow.value.push(record)
+  } else {
+    const delIndex = selectedRow.value.findIndex((val: any) => {
+      return val['id'] === record['id']
+    })
+    selectedRow.value.splice(delIndex, 1)
+  }
+  selectedRowKeys.value = selectedRow.value.map(m => m['id'])
+}
 
 /**
  * 加载部门树

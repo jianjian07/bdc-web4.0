@@ -26,10 +26,15 @@ export function formatMultipleSelectValue(value) {
 }
 
 // 处理多选树下拉框数据
-export function formatMultipleTreeSelectValue(value, code, punctuation?: any) {
+export function formatMultipleTreeSelectValue(value, code, punctuation?: any, dictsArr?: any) {
     if (typeof value == "string") {
         punctuation = punctuation ? punctuation : ','
-        let dicts = getTreeDictItemsByCode(code)
+        let dicts:any = []
+        if (code) {
+          dicts = getTreeDictItemsByCode(code)
+        } else if (dictsArr) {
+          dicts = dictsArr || []
+        }
         let baseValue = value ? (value.includes(punctuation) ? value.split(punctuation) : [value]) : undefined
         if (baseValue) {
             return baseValue.map((base) => {
