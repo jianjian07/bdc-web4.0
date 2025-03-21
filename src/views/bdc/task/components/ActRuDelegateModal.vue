@@ -26,9 +26,9 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="委托原因">
-                  <a-input v-model:value="formState.ereason" placeholder="请输入委托原因"></a-input>
-                </a-form-item>
+               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="委托人">
+                 <a-input v-model:value="formState.ownername" readOnly></a-input>
+               </a-form-item>
               </a-col>
               <a-col :span="12">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开始时间">
@@ -50,6 +50,11 @@
                       style="width: 100%"
                       value-format="YYYY-MM-DD">
                   </a-date-picker>
+                </a-form-item>
+              </a-col>
+              <a-col :span="24">
+                <a-form-item :labelCol="labelCol2" :wrapperCol="wrapperCol2" label="委托原因">
+                  <a-input v-model:value="formState.ereason" placeholder="请输入委托原因"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="24">
@@ -127,7 +132,10 @@ onMounted(() => {
  */
 function add() {
   title.value = '新增'
-  formState.value = {}
+  formState.value = {
+    ownerid: userInfo.username,
+    ownername: userInfo.realname
+  }
   open.value = true
 }
 

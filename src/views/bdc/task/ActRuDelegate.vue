@@ -89,9 +89,14 @@ const columns = [
     width: 60
   },
   {
+    title: '委托人',
+    dataIndex: 'ownername',
+    key: 'ownername'
+  },
+  {
     title: '代理人',
-    dataIndex: 'agentid',
-    key: 'agentid'
+    dataIndex: 'agentname',
+    key: 'agentname'
   },
   {
     title: '开始时间',
