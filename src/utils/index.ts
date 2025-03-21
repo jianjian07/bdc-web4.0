@@ -125,3 +125,39 @@ export function scrollOnTheEnd(id, time) {
     window.requestAnimationFrame(scrollStep);
   })
 }
+
+/**
+ * 获取父级id
+ * @param id
+ * @param tree
+ */
+export function getParentId(id: string | number, tree: any) {
+  let parentKey
+  for (let i = 0; i < tree.length; i++) {
+    const node = tree[i]
+    if (node.children) {
+      if (node.children.some(item => item.id === id)) {
+        parentKey = node.id
+      } else if (getParentId(id, node.children)) {
+        parentKey = getParentId(id, node.children)
+      }
+    }
+  }
+  return parentKey
+}
+
+/**
+ * 获取所有的父节点数据
+ * @param data 树形数组
+ * @param arr 父节点数组
+ * @returns
+ */
+export function getAllParentKeys(data: any = [], arr: any = []) {
+  data.forEach((item: any) => {
+    if (item.children && item.children.length > 0) {
+      arr.push(item.id)
+      return getAllParentKeys(item.children, arr)
+    }
+  })
+  return arr
+}

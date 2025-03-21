@@ -1155,3 +1155,23 @@ export async function relateData(options: any) {
       })
     })
 }
+
+/**
+ * 获取部门选项
+ */
+export function getDeptOptions() {
+  return new Promise((resolve, reject) => {
+    let url = '/api/zrzy-system/sys/dept/deptTree'
+    defHttp.get({ url: url }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result || [])
+      } else {
+        resolve([])
+      }
+    })
+  })
+}
+
+export function cc() {
+  message.success('ccccc')
+}
