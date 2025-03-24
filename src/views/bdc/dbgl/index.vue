@@ -73,7 +73,7 @@ const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 
 enum api {
-  tasklist = '/api/zrzy-bdc/act/processInstance/susperviselist',
+  tasklist = '/api/zrzy-bdc/act/processInstance/susperviseAndUrgentlist',
   edit = '/api/zrzy-bdc/process/extActSupervise/edit', // 编辑
   queryByInstId = '/api/zrzy-bdc/process/extActSupervise/queryByInstId', //通过实例id查询
 }
@@ -140,7 +140,7 @@ onMounted(() => {
 
 function loadData() {
   spinning.value = true
-  defHttp.get({ url: api.tasklist, params: { ajmc: formData.value.ajmc, slbh: formData.value.slbh, 
+  defHttp.get({ url: api.tasklist, params: { ajmc: formData.value.ajmc, slbh: formData.value.slbh,
       pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
       if (res.success) {
           const result = res.result
@@ -177,7 +177,7 @@ function clear() {
 }
 /**
 * 取消督办
-* @param id 
+* @param id
 */
 function handleRestart(record) {
   let params = { ...record }
@@ -221,7 +221,7 @@ function getNowDate() {
 
 /**
 * 督办
-* @param record 
+* @param record
 */
 function handleOper(record: any) {
   let modal = cModal({

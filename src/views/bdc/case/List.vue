@@ -36,7 +36,8 @@
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'ajmc'">
                         <span>{{ record.ajmc }}</span>
-                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseRemark }}】</span>
+                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName+"督办：" +record.taskSuperviseRemark }}】</span>
+                        <span v-if="record.taskUrgent" style="color: red;">【{{  record.taskUrgentUserRealName+"加急：" +record.taskUrgentRemark }}】</span>
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>
@@ -156,7 +157,7 @@ function clear() {
 }
 /**
  * 移交
- * @param record 
+ * @param record
  */
 function handleCase(record: any) {
     router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
@@ -195,7 +196,7 @@ function handleEntruster(record: any) {
 
 /**
  * 删除
- * @param slbh 
+ * @param slbh
  */
 function handleDelete(slbh: string, ajmc: string) {
     Modal.confirm({
