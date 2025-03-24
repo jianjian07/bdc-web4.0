@@ -44,7 +44,7 @@
       </div>
       <div class="user-chosen-user-table-body">
         <a-table :columns="columns" :data-source="userList" :pagination="pagination" :row-selection="rowSelection"
-                 :scroll="{ y: 800 }" rowKey="id" @change="onTableChange">
+                 :scroll="{ y: 800 }" rowKey="id" @change="onTableChange" :customRow="customRow">
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'index'">
               {{ index + 1 }}
@@ -179,6 +179,21 @@ const rowSelection = computed(() => {
     }
   }
 })
+
+const customRow = (record) => {
+  return {
+    onClick: (event) => {
+      if (props.formData.modeType && props.formData.modeType == 'checkbox') {
+        let find =  selectedRowKeys.value?.find(f => f == record['id'])
+        let check = !find
+        selectRow(check, record)
+      } else {
+        selectedRowKeys.value = [record['id']]
+        selectedRow.value = [record]
+      }
+    }
+  }
+}
 
 const props = defineProps({
   formData: {
