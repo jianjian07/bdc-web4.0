@@ -98,7 +98,13 @@ import { nextTick, ref, watch } from "vue"
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { guid } from "/@/utils"
-import { getMagicApiInfo, removeMagicApiById } from "/@/views/apimanage/modules/apiUtil"
+import {
+  findNodeById,
+  getAllParentKeys,
+  getMagicApiInfo,
+  getParentId,
+  removeMagicApiById
+} from "/@/views/apimanage/modules/apiUtil"
 // 搜索
 let searchValue = ref<string>('')
 // 是否展开
@@ -157,6 +163,22 @@ watch(() => props.selectItem, (newVal: any) => {
   immediate: true
 })
 
+watch(() => searchValue.value, (newVal: any) => {
+  if (searchValue.value !== '') {
+    const expanded = dataList.value.map((item: any) => {
+      if (item.title.indexOf(newVal) > -1) {
+        return getParentId(item.id, props.apiTreeData)
+      }
+      return null
+    }).filter((item, i, self) => item && self.indexOf(item) === i)
+    expandedKeys.value = expanded
+    searchValue.value = newVal
+    autoExpandParent.value = true
+  } else {
+    autoExpandParent.value = false
+  }
+})
+
 /**
  * 初始化数据
  */
@@ -190,59 +212,6 @@ function generateList(data: any) {
       generateList(node.children)
     }
   }
-}
-
-/**
- * 获取父级id
- * @param id
- * @param tree
- */
-function getParentId(id: string | number, tree: any) {
-  let parentKey
-  for (let i = 0; i < tree.length; i++) {
-    const node = tree[i]
-    if (node.children) {
-      if (node.children.some(item => item.id === id)) {
-        parentKey = node.id
-      } else if (getParentId(id, node.children)) {
-        parentKey = getParentId(id, node.children)
-      }
-    }
-  }
-  return parentKey
-}
-
-/**
- * 获取所有的父节点数据
- * @param data 树形数组
- * @param arr 父节点数组
- * @returns
- */
-function getAllParentKeys(data: any = [], arr: any = []) {
-  data.forEach((item: any) => {
-    if (item.children && item.children.length > 0) {
-      arr.push(item.id)
-      return getAllParentKeys(item.children, arr)
-    }
-  })
-  return arr
-}
-
-/**
- * 根据Id找节点
- * @param arr
- * @param id
- */
-function findNodeById(arr, id) {
-  for (let i = 0; i < arr.length; i++) {
-    let node = arr[i]
-    if (node.id === id) return node
-    if (node.children && node.children.length > 0) {
-      let foundNode = findNodeById(node.children, id)
-      if (foundNode) return foundNode
-    }
-  }
-  return null
 }
 
 /**
@@ -515,6 +484,10 @@ function onDoubleClick(node) {
   .api-editor-tree-content {
     max-height: calc(100% - 90px);
     overflow: auto;
+    
+    :deep(.ant-tree-node-content-wrapper) {
+      padding: 0;
+    }
 
     .api-row-content {
       display: flex;

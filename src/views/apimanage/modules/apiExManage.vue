@@ -58,7 +58,6 @@
             <a-form-item label="接口类型">
               <a-radio-group v-model:value="pane.apiType" @change="dirDataChange($event, pane)">
                 <a-radio value="1">输出</a-radio>
-                <a-radio value="0">接入</a-radio>
               </a-radio-group>
             </a-form-item>
             <a-form-item label="目录排序">
@@ -140,7 +139,11 @@ import {
   getFieldValue,
   getMagicApiInfo,
   getUrl,
-  removeMagicApiById
+  removeMagicApiById,
+  dirDataChange, 
+  getMagicApiBody, 
+  sendCommonApi, 
+  sendMagicApi
 } from "/@/views/apimanage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import ApiExParam from "/@/views/apimanage/modules/apiExParam.vue"
@@ -279,28 +282,6 @@ function remove(targetKey: string) {
   }
 
   tabChange(activeKey.value)
-}
-
-/** 
- * 目录数据改变
- * 其子接口对应的数据也改变
- * @param e
- * @param dir
- */
-function dirDataChange(e, dir) {
-  dir.isEncrypt = dir.isEncryptCheck == true ? '1' : '0'
-  dir.encryptType = dir.isEncrypt ? dir.encryptType : ''
-  if (dir.children && dir.children.length > 0) {
-    dir.children = dir.children.map((child) => {
-      child.dirName = dir.name
-      child.publicKey = dir.publicKey
-      child.privateKey = dir.privateKey
-      child.apiKeys = dir.apiKeys
-      child.isResultDecrypt = dir.isEncrypt
-      child.encryptType = dir.encryptType
-      return child
-    })
-  }
 }
 
 /**
@@ -488,49 +469,6 @@ function saveCommonApi(data, isSend?: any) {
 }
 
 /**
- * 通用接口发送
- * @param sendParams
- */
-function sendCommonApi(sendParams) {
-  return new Promise((resolve, reject) => {
-    defHttp.post({ url: '/api/zrzy-api/sql/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        resolve(JSON.stringify(res.result))
-        message.success('请求成功')
-      } else {
-        message.warning('请求失败')
-        resolve(res.message + '')
-      }
-    }).catch(err => {
-      console.log('err', err)
-      // responseBody.value = err + ''
-      resolve(err + '')
-    })
-  })
-}
-
-/**
- * 处理magicApi保存数据
- * @param select
- */
-function getMagicApiBody(select) {
-  let definition = mapToRequestFields([JSON.parse(select.requestBody)])
-  let body = {
-    id: select.id,
-    name: select.name,
-    path: select.url,
-    groupId: "e34aa1d052c74c658d5c673e0ee52450", // 目录id 暂时先固定
-    method: select.method,
-    script: select.script,
-    requestBody: select.jsonContent,
-    requestBodyDefinition: definition.length ? definition[0] : [],
-    parameters: mapToRequestFields(select.apiParameters),
-    headers: mapToRequestFields(select.apiHeaders),
-  }
-  return body
-}
-
-/**
  * 保存magicApi
  * @param select
  * @param isSend
@@ -554,60 +492,6 @@ function saveMagicApi(body, isSend?: any) {
       }
     })
   })
-}
-
-/**
- * 执行magicApi
- */
-function sendMagicApi(sendParams) {
-  return new Promise((resolve, reject) => {
-    let path = ensureSingleSlashStart(sendParams.url)
-    let fullPath = '/api/zrzy-form/' + ensureSingleSlashStart(sendParams.groupName) + path
-    defHttp[sendParams.method.toLowerCase()]({
-      url: fullPath,
-      params: sendParams.params,
-      data: JSON.parse(sendParams.body),
-      headers: sendParams.headers
-    }, { withToken: true }).then((res) => {
-      // responseBody.value = JSON.stringify(res)
-      message.success('请求成功')
-      resolve(JSON.stringify(res))
-    }).catch(err => {
-      console.log('err', err)
-      message.success('请求失败')
-      // responseBody.value = err + ''
-      resolve(err + '')
-    })
-  })
-}
-
-
-/**
- * 替换/
- * @param str
- */
-function ensureSingleSlashStart(str) {
-  return `/${str.replace(/^\/+/, '')}`;
-}
-
-// 提取公共处理逻辑，包含递归处理 children
-function mapToRequestFields(fields) {
-  return fields.map((field) => {
-    const processedField = {
-      dataType: field.dataType,
-      defaultValue: field.defaultValue,
-      name: field.fieldName,
-      value: field.fieldValue,
-      required: field.isMust,
-      description: field.description,
-    };
-
-    if (field.children && Array.isArray(field.children)) {
-      processedField.children = mapToRequestFields(field.children);
-    }
-
-    return processedField;
-  });
 }
 
 /**

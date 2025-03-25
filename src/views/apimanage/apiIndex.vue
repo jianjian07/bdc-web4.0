@@ -24,7 +24,7 @@ let currentSelectItem = ref<any>()
 let loading = ref<boolean>(false)
 
 enum api {
-  list = '/api/zrzy-api/api/config/pages'
+  list = '/api/zrzy-api/inner/dir/list'
 }
 
 onMounted(() => {
@@ -36,65 +36,28 @@ onMounted(() => {
  */
 function initData() {
   loading.value = true
-  defHttp.get({ url: api.list, params: { pageNo: 1, pageSize: 9999 } }, { withToken: true }).then((res) => {
-    if (res.code == 200) {
-      apiList.value = res.result.records.map((item: any) => {
-        item.apiHeaders = JSON.parse(item.requestHeader)
-        item.apiParameters = JSON.parse(item.requestParam)
-        item.apiBody = JSON.parse(item.requestBody)
+  defHttp.get({ url: api.list, params: { apiType: '2' } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      let tree = res.result.map((item) => {
+        item.apiList = item.apiList.map((apiItem) => {
+          apiItem.apiHeaders = JSON.parse(apiItem.requestHeader)
+          apiItem.apiParameters = JSON.parse(apiItem.requestParam)
+          apiItem.apiBody = JSON.parse(apiItem.requestBody)
+          apiItem.apiDataSource = JSON.parse(apiItem.apiSql)
+          return apiItem
+        })
+        item.children = item.apiList
+        item.apiKeys = JSON.parse(item.encryptKey || '[]')
+        item.isEncryptCheck = item.isEncrypt == '1'
         return item
       })
+      tree = setParentId(tree)
+      apiTreeData.value = tree
     } else {
-      apiList.value = []
+      message.warning(res.message)
     }
-    initTree()
-  }).catch(err => {
     loading.value = false
-    message.warning('发生错误')
   })
-}
-
-/**
- * 初始化树结构
- */
-function initTree() {
-  let tree = setTree(apiList.value, 'apiGroupName')
-  tree = setParentId(tree)
-  apiTreeData.value = tree
-  loading.value = false
-}
-
-/**
- * 创建树结构
- */
-function setTree(list, dirName) {
-  let obj = {}
-  for (let i = 0; i < list.length; i++) {
-    for (let item in list[i]) {
-      let timestamp = new Date().getTime()
-      if (item == dirName) {
-        obj[list[i][item]] = {
-          id: list[i].apiGroupName + (timestamp + i),
-          apiGroupName: list[i].apiGroupName,
-          publicKey: list[i].publicKey,
-          privateKey: list[i].privateKey,
-          children: obj[list[i][dirName]] ? obj[list[i][dirName]].children : []
-        }
-      }
-    }
-    obj[list[i][dirName]].children.push(list[i])
-  }
-  let att = []
-  for (let item in obj) {
-    att.push({
-      id: obj[item].id,
-      apiGroupName: obj[item].apiGroupName,
-      publicKey: obj[item].publicKey,
-      privateKey: obj[item].privateKey,
-      children: obj[item].children
-    })
-  }
-  return att
 }
 
 </script>

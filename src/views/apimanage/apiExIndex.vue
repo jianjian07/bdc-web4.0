@@ -33,7 +33,7 @@ onMounted(() => {
  */
 function initData() {
   loading.value = true
-  defHttp.get({ url: api.list }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.list, params: { apiType: '1' } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       let tree = res.result.map((item) => {
         item.apiList = item.apiList.map((apiItem) => {

@@ -20,15 +20,15 @@
               style="width: 100%;"
               @select="handleSelectTreeItem">
         <template #title="node">
-          <div v-if="node.children" class="api-row-content">
+          <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
               <folder-outlined/>
-              <span v-if="node.apiGroupName.indexOf(searchValue) > -1" style="margin-left:5px">
-                {{ node.apiGroupName.substr(0, node.apiGroupName.indexOf(searchValue)) }}
+              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
+                {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
-                {{ node.apiGroupName.substr(node.apiGroupName.indexOf(searchValue) + searchValue.length) }}
+                {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
               </span>
-              <span v-else style="margin-left:5px">{{ node.apiGroupName }}</span>
+              <span v-else style="margin-left:5px">{{ node.name }}</span>
               <!--              <span style="margin-left:5px">{{ node.apiGroupName }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
@@ -47,7 +47,7 @@
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a-popconfirm title="你确定要删除该目录吗, 这会删除该目录下所有接口信息" @confirm="delDir(node)">删除</a-popconfirm>
+                      <a-popconfirm title="你确定要删除该目录吗?" @confirm="delDir(node)">删除</a-popconfirm>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -56,13 +56,18 @@
           </div>
           <div v-else class="api-row-content">
             <div class="left">
-              <span :class="['api-type', 'api-type-' + node.requestType]">{{ node.requestType }}</span>
-              <span v-if="node.apiName.indexOf(searchValue) > -1" style="margin-left:10px">
-                {{ node.apiName.substr(0, node.apiName.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ node.apiName.substr(node.apiName.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else style="margin-left:10px">{{ node.apiName }}</span>
+              <span :class="['api-type', 'api-type-' + node.method]">{{ node.method }}</span>
+              <a-tooltip placement="rightBottom" color="#108ee9">
+                <template #title>
+                  {{ node.name }}
+                </template>
+                <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
+                  {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
+                  <span style="color: #f50">{{ searchValue }}</span>
+                  {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
+                </span>
+                <span v-else style="margin-left:4px">{{ node.name }}</span>
+              </a-tooltip>
               <!--              <span style="margin-left:10px">{{ node.apiName }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
@@ -103,6 +108,13 @@ import {
 import { guid } from "/@/utils"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import {
+  findNodeById,
+  getAllParentKeys,
+  getMagicApiInfo,
+  getParentId,
+  removeMagicApiById
+} from "/@/views/apimanage/modules/apiUtil"
 // 搜索目录/接口
 let searchValue = ref<string>('')
 // 是否展开/收缩
@@ -136,8 +148,8 @@ const props = defineProps({
 const emit = defineEmits(['update:selectItem'])
 
 enum api {
-  getApiCode = '/api/zrzy-api/api/config/getNewApiCode',
-  delConfig = '/api/zrzy-api/api/config/delConfig'
+  delDir = '/api/zrzy-api/inner/dir/delete',
+  delApi = '/api/zrzy-api/inner/api/delete'
 }
 
 watch(() => props.apiTreeData, (newVal: any) => {
@@ -148,6 +160,14 @@ watch(() => props.apiTreeData, (newVal: any) => {
 
 watch(() => props.selectItem, (newVal: any) => {
   selectedKeys.value = newVal ? [newVal.id] : []
+  // 新增目录/接口后替换id
+  if (newVal && newVal.oldId) {
+    let find = findNodeById(props.apiTreeData, newVal.oldId)
+    if (find) {
+      find.id = newVal.id
+      delete newVal.oldId
+    }
+  }
 }, {
   immediate: true
 })
@@ -167,6 +187,7 @@ watch(() => searchValue.value, (newVal: any) => {
     autoExpandParent.value = false
   }
 })
+
 onMounted(() => {
   // init()
 })
@@ -192,23 +213,6 @@ function init() {
 }
 
 /**
- * 根据Id找节点
- * @param arr
- * @param id
- */
-function findNodeById(arr, id) {
-  for (let i = 0; i < arr.length; i++) {
-    let node = arr[i]
-    if (node.id === id) return node
-    if (node.children && node.children.length > 0) {
-      let foundNode = findNodeById(node.children, id)
-      if (foundNode) return foundNode
-    }
-  }
-  return null
-}
-
-/**
  * 初始化datalist
  * @param data
  */
@@ -216,48 +220,12 @@ function generateList(data: any) {
   for (let i = 0; i < data.length; i++) {
     const node = data[i]
     const id = node.id
-    let title = node.children ? node.apiGroupName : node.apiName
+    let title = node.name
     dataList.value.push({ id, title: title })
     if (node.children) {
       generateList(node.children)
     }
   }
-}
-
-/**
- * 获取父级id
- * @param id
- * @param tree
- */
-function getParentId(id: string | number, tree: any) {
-  let parentKey
-  for (let i = 0; i < tree.length; i++) {
-    const node = tree[i]
-    if (node.children) {
-      if (node.children.some(item => item.id === id)) {
-        parentKey = node.id
-      } else if (getParentId(id, node.children)) {
-        parentKey = getParentId(id, node.children)
-      }
-    }
-  }
-  return parentKey
-}
-
-/**
- * 获取所有的父节点数据
- * @param data 树形数组
- * @param arr 父节点数组
- * @returns
- */
-function getAllParentKeys(data: any = [], arr: any = []) {
-  data.forEach((item: any) => {
-    if (item.children && item.children.length > 0) {
-      arr.push(item.id)
-      return getAllParentKeys(item.children, arr)
-    }
-  })
-  return arr
 }
 
 /**
@@ -297,10 +265,17 @@ function addDir() {
   let timestamp = new Date().getTime()
   let dir = {
     id: '新建目录' + timestamp,
-    apiGroupName: '新建目录' + timestamp,
+    name: '新建目录' + timestamp,
+    code: '',
     publicKey: '',
     privateKey: '',
-    children: []
+    apiKeys: [],
+    isEncrypt: '0',
+    encryptType: '',
+    apiType: '0',
+    bz: '',
+    children: [],
+    orderNum: props.apiTreeData.length + 1
   }
   props.apiTreeData?.push(dir)
   selectedKeys.value = [dir.id]
@@ -311,40 +286,27 @@ function addDir() {
  * 删除目录
  * @param item
  */
-async function delDir(item) {
-  let promises = []
+function delDir(item) {
   if (props.apiTreeData) {
-    let findDir = props.apiTreeData.find(_data => _data.id == item.id)
-    if (findDir && findDir.children) {
-      for (let i = 0; i < findDir.children.length ; i++) {
-        let addType = typeof findDir.children[i].id == 'string' ? findDir.children[i].id.substr(0, 4) == '新增接口' : false
-        let promise
-        promise = addType ? removeApiByIdWithoutHttp() : removeApiById(findDir.children[i].id)
-        promises.push(promise)
-      }
+    if (item.children.length) {
+      message.warning('存在接口不允许直接删除目录!')
+      return
     }
-    let res = await Promise.all(promises)
-    let flag = true
-    for (let i = 0; i < res.length; i++) {
-      if (!res[i]) {
-        flag = false
-        break
-      }
-    }
-    if (flag) {
+    let addType = typeof item.id == 'string' ? item.id.substr(0, 4) == '新建目录' : false
+    if (addType) {
       removeById(props.apiTreeData, item.id)
       message.success('删除成功')
+    } else {
+      defHttp.delete({ url: api.delDir, params: { id: item.id } }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          removeById(props.apiTreeData, item.id)
+          message.success('删除成功')
+        } else {
+          message.warning('删除失败')
+        }
+      })
     }
   }
-}
-
-/**
- * 前端删除id 返回promise
- */
-function removeApiByIdWithoutHttp() {
-  return new Promise((resolve) => {
-    resolve(true)
-  })
 }
 
 function removeById(arr, id) {
@@ -370,18 +332,29 @@ function removeById(arr, id) {
  * 添加接口
  */
 async function addApi(dir) {
-  let apiCode = await getApiCode()
+  let dirType = typeof dir.id == 'string' ? dir.id.substr(0, 4) == '新建目录' : false
+  if (dirType) {
+    // 需要先保存目录
+    message.warning('需先保存目录后再添加接口')
+    return
+  }
+  let apiCode = guid()
   if (apiCode) {
     let api = {
       id: '新增接口' + apiCode,
       pid: dir.id,
-      apiCode: apiCode,
-      apiName: '新增接口',
-      apiGroupName: dir.apiGroupName,
+      code: '',
+      name: '新增接口',
+      apiType: 1,
+      dirId: dir.id,
+      dirName: dir.name,
+      dirCode: dir.code,
       publicKey: dir.publicKey,
       privateKey: dir.privateKey,
-      requestType: 'POST',
-      versionCode: 'testEnv',
+      apiKeys: dir.apiKeys,
+      method: 'POST',
+      version: 'testEnv',
+      isResultDecrypt: dir.isEncrypt,
       apiHeaders: [],
       apiParameters: [],
       apiBody: {
@@ -395,7 +368,9 @@ async function addApi(dir) {
         isEncrypt: false,
         encryptType: "",
         description: "根节点"
-      }
+      },
+      apiDataSource: [],
+      script: ''
     }
     if (props.apiTreeData) {
       let find = props.apiTreeData.find(f => f.id == dir.id)
@@ -412,23 +387,6 @@ async function addApi(dir) {
 }
 
 /**
- * 获取接口code
- */
-function getApiCode() {
-  return new Promise((resolve) => {
-    defHttp.get({ url: api.getApiCode }, { withToken: true }).then((res) => {
-      if (res.code == 200) {
-        resolve(res.result)
-      } else {
-        resolve(null)
-      }
-    }).catch(err => {
-      resolve(null)
-    })
-  })
-}
-
-/**
  * 删除接口
  * @param item
  */
@@ -440,6 +398,12 @@ async function delApi(item) {
     res = true
   } else {
     res = await removeApiById(item.id)
+    if (item.apiType == 2) {
+      let _res = await getMagicApiInfo(item.id)
+      if (_res) {
+        res = await removeMagicApiById(item.id)
+      }
+    }
   }
   if (res) {
     removeById(parent.children, item.id)
@@ -453,7 +417,7 @@ async function delApi(item) {
  */
 function removeApiById(id) {
   return new Promise((resolve) => {
-    defHttp.get({ url: api.delConfig + '/' + id }, { withToken: true }).then((res) => {
+    defHttp.delete({ url: api.delApi, params: { id: id } }, { withToken: true }).then((res) => {
       if (res.code == 200) {
         resolve(true)
       } else {
@@ -464,11 +428,21 @@ function removeApiById(id) {
     })
   })
 }
+
+function onDoubleClick(node) {
+  let findIndex = expandedKeys.value.findIndex(f => f == node.id)
+  if (findIndex > -1) {
+    expandedKeys.value.splice(findIndex, 1)
+  } else {
+    expandedKeys.value.push(node.id)
+  }
+  expandedKeys.value = Array.from(new Set(expandedKeys.value))
+}
 </script>
 
 <style lang="less" scoped>
 .api-editor-tree {
-  width: 300px;
+  width: 350px;
   height: 100%;
   padding: 10px;
   border-right: 1px solid #f9f9f9;
@@ -481,11 +455,24 @@ function removeApiById(id) {
   .api-editor-tree-content {
     max-height: calc(100% - 90px);
     overflow: auto;
+    
+    :deep(.ant-tree-node-content-wrapper) {
+      padding: 0;
+    }
+
 
     .api-row-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      
+      .left {
+        width: 240px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
 
       .right {
         display: flex;

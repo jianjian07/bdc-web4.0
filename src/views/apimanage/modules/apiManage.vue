@@ -2,35 +2,92 @@
   <div class="api-editor-manage">
     <div class="api-editor-manage-tabs">
       <a-tabs v-model:activeKey="activeKey" class="api-editor-manage-tabs-card" hide-add type="editable-card"
-              @change="tabChange" @edit="onEdit">
-        <a-tab-pane v-for="(pane) in tabList" :key="pane.id" :tab="pane.children ? pane.apiGroupName : pane.apiName"
-                    class="api-editor-manage-pane">
+        @change="tabChange" @edit="onEdit">
+        <a-tab-pane v-for="(pane) in tabList" :key="pane.id" :tab="pane.name" class="api-editor-manage-pane">
           <div v-if="pane.children" class="api-editor-manage-dir">
             <a-form-item class="flex-form-item" label="目录名称">
-              <a-input v-model:value="pane.apiGroupName" @change="dirDataChange($event, pane)"/>
-              <a-button style="margin-left: 10px" type="primary">保存目录</a-button>
+              <a-input v-model:value="pane.name" @change="dirDataChange($event, pane)" />
+              <a-button style="margin-left: 10px" type="primary" @click="saveDir">保存目录</a-button>
             </a-form-item>
-            <a-divider/>
-            <a-form-item label="目录公钥">
-              <a-input v-model:value="pane.publicKey" @change="dirDataChange($event, pane)"/>
+            <a-divider />
+            <a-form-item label="接口标识">
+              <a-input v-model:value="pane.code" @change="dirDataChange($event, pane)" />
             </a-form-item>
-            <a-form-item label="目录私钥">
-              <a-input v-model:value="pane.privateKey" @change="dirDataChange($event, pane)"/>
+            <a-form-item label="公钥私钥">
+              <div>
+                <a-button size="small" style="margin-bottom: 10px" @click="handleAddApiKeys(pane)">
+                  <template #icon>
+                    <plus-outlined style="font-size: 12px" />
+                  </template>
+                </a-button>
+                <a-table :columns="columns" :data-source="pane.apiKeys" size="small" :pagination="false" bordered>
+                  <template #bodyCell="{ column, record, index }">
+                    <div v-if="column.dataIndex == 'index'" style="text-align: center">
+                      {{ index + 1 }}
+                    </div>
+                    <div v-else-if="column.dataIndex == 'operate'" style="display: flex; justify-content: center">
+                      <a @click="del(pane, record, index)">删除</a>
+                    </div>
+                    <template v-else>
+                      <a-input v-model:value="record[column.dataIndex]"></a-input>
+                    </template>
+                  </template>
+                </a-table>
+              </div>
+
             </a-form-item>
-            <a-form-item label="是否返回解密">
-              <a-checkbox v-model:checked="pane.isResultDecryptCheck" @change="dirDataChange($event, pane)"></a-checkbox>
+            <div style="display: flex">
+              <div>
+                <a-form-item label="是否加密">
+                  <a-checkbox v-model:checked="pane.isEncryptCheck" @change="dirDataChange($event, pane)" />
+                </a-form-item>
+              </div>
+              <div style="margin-left: 20px; flex: 1" v-if="pane.isEncryptCheck">
+                <a-form-item label="加密方式">
+                  <a-select v-model:value="pane.encryptType" allow-clear :options="getDictItemsByCode('encryptType')"
+                    @change="dirDataChange($event, pane)" style="width: 100%" />
+                </a-form-item>
+              </div>
+            </div>
+            <a-form-item label="接口类型">
+              <a-radio-group v-model:value="pane.apiType" @change="dirDataChange($event, pane)">
+                <a-radio value="2">接入</a-radio>
+              </a-radio-group>
+            </a-form-item>
+            <a-form-item label="目录排序">
+              <a-input-number v-model:value="pane.orderNum" />
+            </a-form-item>
+            <a-form-item label="目录备注">
+              <a-textarea v-model:value="pane.bz" :auto-size="{ minRows: 5 }" />
             </a-form-item>
           </div>
           <div v-else class="api-editor-manage-interface">
             <div class="top">
               <a-breadcrumb class="api-editor-manage-interface-breadcrumb">
-                <a-breadcrumb-item>{{ pane.apiGroupName }}</a-breadcrumb-item>
-                <a-breadcrumb-item>{{ pane.apiName }}</a-breadcrumb-item>
+                <a-breadcrumb-item>{{ pane.dirName }}</a-breadcrumb-item>
+                <a-breadcrumb-item>
+                  <a-input v-model:value="pane.name" style="width: 400px;border: 0px;padding:0px 4px" />
+                </a-breadcrumb-item>
               </a-breadcrumb>
+              <div class="api-editor-manage-interface-options">
+                <div class="api-editor-manage-interface-header">
+                  <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px">
+                    <a-radio-group v-model:value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
+                      <a-radio-button :value="1">自定义</a-radio-button>
+                      <a-radio-button :value="2">magicapi</a-radio-button>
+                      <a-radio-button :value="3">通用接口</a-radio-button>
+                    </a-radio-group>
+                  </a-form-item>
+                  <a-form-item label="版本">
+                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
+                  </a-form-item>
+                </div>
+              </div>
+
               <div class="api-editor-manage-interface-url">
                 <a-input v-model:value="pane.url" @change="onChangeUrl">
                   <template #addonBefore>
-                    <a-select v-model:value="pane.requestType" style="width: 100px">
+                    <a-select v-model:value="pane.method" style="width: 100px">
                       <a-select-option value="POST">
                         <span class="api-type api-type-POST">POST</span>
                       </a-select-option>
@@ -45,25 +102,12 @@
                 </a-input>
                 <a-button style="margin-left:10px" type="primary" @click="sendApi">发送</a-button>
                 <a-button style="margin-left:10px" @click="saveApi(false)">保存</a-button>
-                <a-button style="margin-left:10px" @click="sendApi('test')">测试</a-button>
-              </div>
-              <div class="api-editor-manage-interface-header">
-                <a-form-item label="接口名称" style="flex: 1; margin-right: 10px; margin-bottom: 10px">
-                  <a-input v-model:value="pane.apiName"/>
-                </a-form-item>
-                <a-form-item label="接口编号"
-                             style="flex: 1; margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
-                  <a-input v-model:value="pane.apiCode"/>
-                </a-form-item>
-                <a-form-item label="版本" style="flex: 1; margin-left: 10px; margin-bottom: 10px">
-                  <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.versionCode"
-                            style="width: 170px"></a-select>
-                </a-form-item>
               </div>
             </div>
             <div class="bottom">
               <div class="api-editor-manage-interface-param">
-                <api-param :apiData="pane" v-model:activePane="activeParamPane"></api-param>
+                <api-param :apiData="pane" v-model:activePane="pane.activeParamPane"
+                  :apiType="pane.apiType"></api-param>
               </div>
               <div class="api-editor-manage-interface-result">
                 <api-result :response-body="pane.responseBody" @clearResponseBody="clearResponseBody"></api-result>
@@ -82,8 +126,19 @@ import ApiParam from "/@/views/apimanage/modules/apiParam.vue"
 import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import { PlusOutlined } from '@ant-design/icons-vue'
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
-import { findNodeById, getFieldValue, getUrl } from "/@/views/apimanage/modules/apiUtil"
+import {
+  findNodeById,
+  getFieldValue,
+  getMagicApiInfo,
+  getUrl,
+  removeMagicApiById,
+  dirDataChange,
+  getMagicApiBody,
+  sendMagicApi, 
+  sendCommonApi
+} from "/@/views/apimanage/modules/apiUtil"
 
 const props = defineProps({
   apiTreeData: {
@@ -102,15 +157,48 @@ let tabList = ref<any>([])
 let activeKey = ref<any>()
 // 实时响应
 let responseBody = ref<string>('')
-// 当前选中参数pane
-let activeParamPane = ref<string>('')
+
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+    width: 50,
+    align: 'center'
+  },
+  {
+    title: 'keyName',
+    dataIndex: 'keyName',
+    key: 'keyName',
+    width: 150
+  },
+  {
+    title: '公钥',
+    dataIndex: 'publicKey',
+    key: 'publicKey'
+  },
+  {
+    title: '私钥',
+    dataIndex: 'privateKey',
+    key: 'privateKey'
+  },
+  {
+    title: '操作',
+    dataIndex: 'operate',
+    key: 'operate',
+    align: 'center',
+    width: 60
+  }
+]
 
 const emit = defineEmits(['update:selectItem', 'load'])
 
 enum api {
-  save = '/api/zrzy-api/api/config/save',
-  invoke = '/api/zrzy-api/api/execute/invoke',
-  testInvoke = '/api/zrzy-api/api/execute/simpleInvoke'
+  addDir = '/api/zrzy-api/inner/dir/add',
+  editDir = '/api/zrzy-api/inner/dir/update',
+  saveMagicApi = '/api/zrzy-form/magic/web/resource/file/api/save?auto=1',
+  addApi = '/api/zrzy-api/inner/api/add',
+  editApi = '/api/zrzy-api/inner/api/update'
 }
 
 onMounted(() => {
@@ -187,24 +275,65 @@ function remove(targetKey: string) {
   tabChange(activeKey.value)
 }
 
+
+
 /**
- * 保存api
- * @isSend 是否是发送请求
+ * 保存接口
+ * @param isSend
  */
 function saveApi(isSend?: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
     select = formatSelectItem(select)
+    let saveRes
+    if (select.apiType == 2) {
+      saveRes = await saveCommonApi(select, true)
+      select.id = saveRes
+      let body = getMagicApiBody(JSON.parse(JSON.stringify(select)))
+      saveRes = await saveMagicApi(body, isSend)
+    } else {
+      let addType = !select.id
+      if (!addType) {
+        // 当前更新切换了接口类型, 查询是否已经保存过magicApi接口, 若保存过则删除
+        let _res = await getMagicApiInfo(select.id)
+        if (_res) {
+          await removeMagicApiById(select.id)
+        }
+      }
+      saveRes = await saveCommonApi(select, isSend)
+    }
     if (select.jsonContent) {
       delete select.jsonContent
     }
-    defHttp.post({ url: api.save, data: select }, { withToken: true }).then((res) => {
-      if (res.code == 200 && res.message == '成功') {
+    resolve(saveRes)
+  })
+}
+
+/**
+ * 通用接口保存
+ * @param isSend
+ */
+function saveCommonApi(data, isSend?: any) {
+  return new Promise((resolve, reject) => {
+    let url = data.id ? api.editApi : api.addApi
+    defHttp.post({ url: url, data: data }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
         if (!isSend) {
           message.success('保存成功')
         }
-        props.selectItem.id = res.result
-        resolve(true)
+        if (!data.id) {
+          let select = JSON.parse(JSON.stringify(props.selectItem))
+          let oldId = select.id
+          select.id = res.result.id
+          select.oldId = oldId
+          tabList.value = tabList.value.filter(pane => pane.id !== oldId)
+          tabList.value.push(select)
+          emit('update:selectItem', select)
+          select.activeParamPane = select.activeParamPane
+          resolve(select.id)
+        } else {
+          resolve(data.id)
+        }
       } else {
         if (!isSend) {
           message.warning(res.message)
@@ -219,6 +348,33 @@ function saveApi(isSend?: any) {
     })
   })
 }
+
+/**
+ * 保存magicApi
+ * @param select
+ * @param isSend
+ */
+function saveMagicApi(body, isSend?: any) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({ url: api.saveMagicApi, data: body }, { withToken: true }).then((res) => {
+      if (res) {
+        if (!res.code) {
+          if (!isSend) {
+            message.success('保存成功')
+          }
+          resolve(true)
+        } else {
+          message.warning(res.message)
+          resolve(false)
+        }
+      } else {
+        message.warning('保存失败')
+        resolve(false)
+      }
+    })
+  })
+}
+
 
 /**
  * 处理当前选中的接口参数
@@ -244,7 +400,8 @@ function formatSelectItem(select) {
   select.requestParam = JSON.stringify(select.apiParameters)
   select.requestHeader = JSON.stringify(select.apiHeaders)
   select.requestBody = JSON.stringify(select.apiBody)
-  select.isResultDecrypt = select.isResultDecrypt == undefined ? 0 : select.isResultDecrypt
+  select.apiSql = JSON.stringify(select.apiDataSource)
+  select.isResultDecrypt = select.isResultDecrypt == undefined ? '0' : select.isResultDecrypt
   let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新增接口' : false
   if (addType) {
     delete select.id
@@ -292,114 +449,114 @@ function setApiParameters() {
         return cParam
       })
       props.selectItem.apiParameters = copy
-      activeParamPane.value = 'query'
+      props.selectItem.activeParamPane = 'query'
     }
   }
+}
+
+/**
+ * 保存目录
+ */
+function saveDir() {
+  return new Promise((resolve, reject) => {
+    let select = JSON.parse(JSON.stringify(props.selectItem))
+    select.encryptKey = JSON.stringify(select.apiKeys)
+    let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新建目录' : false
+    let oldId = select.id
+    if (addType) {
+      delete select.id
+    }
+    defHttp.post({ url: addType ? api.addDir : api.editDir, data: select }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        if (addType) {
+          select.id = res.result.id
+          select.oldId = oldId
+          tabList.value = tabList.value.filter(pane => pane.id !== oldId)
+          tabList.value.push(select)
+          emit('update:selectItem', select)
+        }
+        message.success('保存成功')
+      } else {
+        message.warning('保存失败')
+      }
+    })
+  })
 }
 
 /**
  * 发送api
  */
-async function sendApi(type?: string) {
+async function sendApi() {
   let select = JSON.parse(JSON.stringify(props.selectItem))
   select = formatSelectItem(select)
   let headers = {}
   let params = {}
   select.apiHeaders.forEach((header) => {
-    headers[header.fieldName] = getFieldValue(header.dataType, header.fieldValue || header.fieldValue)
+    headers[header.fieldName] = getFieldValue(header.dataType, header.fieldValue || header.defaultValue)
   })
   select.apiParameters.forEach((param) => {
     params[param.fieldName] = getFieldValue(param.dataType, param.fieldValue || param.fieldValue)
   })
-  let body = select.jsonContent
+  let body = JSON.parse(JSON.stringify(select.jsonContent))
+  let sendParams = {
+    groupName: '/testapi', //暂时固定
+    method: select.method,
+    code: select.code,
+    url: select.url,
+    headers: headers,
+    params: params,
+    body: body,
+  }
   if (select.jsonContent) {
     delete select.jsonContent
   }
   let saveRes = await saveApi(true)
   if (saveRes) {
-    let sendParams
-    let extend = type == 'test' ? {
-      requestType: select.requestType,
-      url: select.url
-    } : {}
-    sendParams = {
-      apiCode: select.apiCode,
-      headers: headers,
-      params: params,
-      body: body,
-      ...extend
+    let response: any = ''
+    if (select.apiType == 2) {
+      // 调用magicApi的请求接口
+      response = await sendMagicApi(sendParams)
+    } else {
+      // 调用通用的接口请求接口
+      response = await sendCommonApi(sendParams)
     }
-    defHttp.post({
-      url: type == 'test' ? api.testInvoke : api.invoke, data: sendParams
-    }, { withToken: true }).then((res) => {
-      // responseBody.value = JSON.stringify(res)
-      props.selectItem.responseBody = JSON.stringify(res)
-    }).catch(err => {
-      console.log('err', err)
-      // responseBody.value = err + ''
-      props.selectItem.responseBody = err + ''
-    })
+    props.selectItem.responseBody = response
   } else {
-    // responseBody.value = '请求失败'
     props.selectItem.responseBody = '请求失败'
     message.warning('请求失败')
   }
-  // if (select.id) {
-  //   // 已经保存过,调用中转接口
-  //   defHttp.post({
-  //     url: api.invoke, data: {
-  //       apiCode: select.apiCode,
-  //       headers: headers,
-  //       params: params,
-  //       body: body
-  //     }
-  //   }, { withToken: true }).then((res) => {
-  //     responseBody.value = JSON.stringify(res)
-  //   }).catch(err => {
-  //     responseBody.value = err + ''
-  //   })
-  // }
-  // else {
-  //   // 直接前端进行接口请求
-  //   defHttp[select.requestType.toLowerCase()]({
-  //     url: select.url,
-  //     headers: headers,
-  //     params: params,
-  //     data: typeof body == "string" ? JSON.parse(body) : ''
-  //   }, { withToken: true }).then((res) => {
-  //     responseBody.value = JSON.stringify(res)
-  //   }).catch(err => {
-  //     responseBody.value = err + ''
-  //   })
-  // }
 }
 
-
+function handleChangeApiType(pane, e) {
+  let value = e.target.value
+  pane.activeParamPane = value == '2' ? 'script' : 'header'
+}
 
 /**
- * 目录数据改变
- * 其子接口对应的数据也改变
- * @param e
- * @param dir
+ * 添加公钥私钥
+ * @param pane
  */
-function dirDataChange(e, dir) {
-  dir.isResultDecrypt = dir.isResultDecryptCheck == true ? 1 : 0
-  if (dir.children && dir.children.length > 0) {
-    dir.children = dir.children.map((child) => {
-      child.apiGroupName = dir.apiGroupName
-      child.publicKey = dir.publicKey
-      child.privateKey = dir.privateKey
-      child.isResultDecrypt = dir.isResultDecrypt
-      return child
-    })
+function handleAddApiKeys(pane) {
+  if (!pane.apiKeys) {
+    pane.apiKeys = []
   }
+  pane.apiKeys.push({})
+}
+
+/**
+ * 删除公钥私钥
+ * @param record
+ * @param index
+ */
+function del(pane, record, index) {
+  pane.apiKeys.splice(index, 1)
 }
 
 </script>
 
 <style lang="less" scoped>
 .api-editor-manage {
-  width: calc(100% - 300px);
+  width: calc(100% - 350px);
   height: 100%;
   padding: 10px;
 
@@ -411,6 +568,7 @@ function dirDataChange(e, dir) {
 
       :deep(.ant-tabs-content-holder) {
         height: 100%;
+        overflow: auto;
 
         .ant-tabs-content {
           height: 100%;
@@ -433,9 +591,11 @@ function dirDataChange(e, dir) {
 
   .api-editor-manage-interface {
     height: 100%;
+    display: flex;
+    flex-direction: column;
 
     .top {
-      height: 125px;
+      // height: 125px;
 
       .api-editor-manage-interface-breadcrumb {
         margin-bottom: 10px;
@@ -443,6 +603,12 @@ function dirDataChange(e, dir) {
 
       .api-editor-manage-interface-header {
         display: flex;
+      }
+      
+      .api-editor-manage-interface-options {
+        :deep(.ant-form-item) {
+          margin-bottom: 10px;
+        }
       }
 
       .api-editor-manage-interface-url {
@@ -452,14 +618,16 @@ function dirDataChange(e, dir) {
     }
 
     .bottom {
-      height: calc(100% - 125px);
-
+      // height: calc(100% - 125px);
+      flex: auto;
+      overflow: auto;
+      
       .api-editor-manage-interface-param {
-        height: 50%;
+        height: 60%;
       }
 
       .api-editor-manage-interface-result {
-        height: 50%;
+        height: 40%;
       }
     }
   }
