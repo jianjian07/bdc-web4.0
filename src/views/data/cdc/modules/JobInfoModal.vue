@@ -39,8 +39,11 @@
                 <a-col :span="12">
                     <a-form-item v-if="jobInfo.scheduleType == 'CRON'" label="Cron" name="scheduleConf"
                         :rules="[{ required: true, message: 'Cron表达式' }]">
-                        <a-input v-model:value="jobInfo.scheduleConf" prefix="" suffix="" />
+                        <a-input v-model:value="jobInfo.scheduleConf" prefix="" suffix="" @click="openDialog" allow-clear/>
                     </a-form-item>
+                    <a-modal v-model:open="showCron" :width="700" centered class="profile-modal" title="Cron表达式" :footer="false">
+                       <Vue3CronPlusPicker @hide="closeDialog" @fill="fillValue" :expression="expression"/>
+                    </a-modal>
                     <a-form-item v-if="jobInfo.scheduleType == 'FIX_RATE'" label="固定速度" name="title"
                         :rules="[{ required: true, message: '固定速度' }]">
                         <a-input v-model:value="jobInfo.title" prefix="" suffix="" />
@@ -130,6 +133,8 @@
 import { ref, reactive } from 'vue';
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
+import { Vue3CronPlusPicker } from 'vue3-cron-plus-picker'
+import 'vue3-cron-plus-picker/style.css'
 const props = defineProps({
     open: {
         type: Boolean,
@@ -145,6 +150,11 @@ const props = defineProps({
 })
 let jobInfo = ref<any>()
 let ruleForm = ref<any>()
+// 是否显示cron
+let showCron = ref<boolean>(false)
+// cron表达式
+let expression = ref<any>('* * * * * ?')
+
 jobInfo.value = props.data
 function onClose() {
     emit('ok', { refresh: false })
@@ -176,5 +186,21 @@ function onOk() {
 }
 function onChange(value: any) {
     jobInfo.value.scheduleType = value
+}
+
+function openDialog () {
+  showCron.value = true;
+  if (jobInfo.value.scheduleConf != ""){
+    expression.value = jobInfo.value.scheduleConf
+  }
+}
+
+function closeDialog() {
+  showCron.value = false;
+}
+
+function fillValue(cronValue){
+  jobInfo.value.scheduleConf= cronValue;
+  ruleForm.value?.validateFields('scheduleConf')
 }
 </script>
