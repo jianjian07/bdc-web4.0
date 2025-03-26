@@ -41,8 +41,8 @@
                         :rules="[{ required: true, message: 'Cron表达式' }]">
                         <a-input v-model:value="jobInfo.scheduleConf" prefix="" suffix="" @click="openDialog" allow-clear/>
                     </a-form-item>
-                    <a-modal v-model:open="showCron" :width="700" centered class="profile-modal" title="Cron表达式" :footer="false">
-                       <Vue3CronPlusPicker @hide="closeDialog" @fill="fillValue" :expression="expression"/>
+                    <a-modal v-model:open="showCron" :width="500" centered :destroyOnClose="true" title="Cron表达式" @ok="handleOk">
+                      <vue3-cron v-model="expression" locale="cn"/>
                     </a-modal>
                     <a-form-item v-if="jobInfo.scheduleType == 'FIX_RATE'" label="固定速度" name="title"
                         :rules="[{ required: true, message: '固定速度' }]">
@@ -130,11 +130,10 @@
     </a-drawer>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
-import { Vue3CronPlusPicker } from 'vue3-cron-plus-picker'
-import 'vue3-cron-plus-picker/style.css'
+import Vue3Cron from 'vue3-cron-antd';
 const props = defineProps({
     open: {
         type: Boolean,
@@ -153,7 +152,7 @@ let ruleForm = ref<any>()
 // 是否显示cron
 let showCron = ref<boolean>(false)
 // cron表达式
-let expression = ref<any>('* * * * * ?')
+let expression = ref<any>('')
 
 jobInfo.value = props.data
 function onClose() {
@@ -195,12 +194,9 @@ function openDialog () {
   }
 }
 
-function closeDialog() {
-  showCron.value = false;
-}
-
-function fillValue(cronValue){
-  jobInfo.value.scheduleConf= cronValue;
+const handleOk = () => {
+  showCron.value = false
+  jobInfo.value.scheduleConf= expression.value
   ruleForm.value?.validateFields('scheduleConf')
 }
 </script>

@@ -154,9 +154,7 @@ const generateVue3 = defineComponent({
             onSubmit,
             multipleRef,
             getAccount,
-            evaluateTagCondition,
-            getMatchTag,
-            excuteHrefFun 
+            getMatchTag
         }
 
         function search() {

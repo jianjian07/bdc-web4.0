@@ -53,17 +53,6 @@ import {
     Transfer,
     Steps
 } from 'ant-design-vue';
-import { 
-    ElButton,
-    ElForm,
-    ElFormItem,
-    ElTabs,
-    ElTabPane,
-    ElSelect,
-    ElInput,
-    ElInputNumber,
-    ElRadio
-} from 'element-plus'
 
 export function registerGlobComp(app: App) {
     app.component("svg-icon", SvgIcon)
@@ -121,14 +110,4 @@ export function registerGlobComp(app: App) {
         .use(Skeleton)
         .use(Transfer)
         .use(Steps)
-        // element
-        .use(ElButton)
-        .use(ElForm)
-        .use(ElFormItem)
-        .use(ElTabs)
-        .use(ElSelect)
-        .use(ElTabPane)
-        .use(ElInput)
-        .use(ElInputNumber)
-        .use(ElRadio)
 }

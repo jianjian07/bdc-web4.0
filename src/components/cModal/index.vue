@@ -56,7 +56,7 @@ let props = defineProps({
   },
   filePath: {
     type: String,
-    default: 'components/wonderform/free/PreviewDemo'
+    default: ''
   },
   isFullScreen: {
     type: Boolean,
