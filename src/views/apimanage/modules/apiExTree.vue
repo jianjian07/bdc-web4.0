@@ -381,7 +381,7 @@ async function addApi(dir) {
       apiKeys: dir.apiKeys,
       method: 'POST',
       version: 'testEnv',
-      isResultDecrypt: dir.isEncrypt,
+      isResultDecrypt: 0,
       apiHeaders: [],
       apiParameters: [],
       apiBody: {

@@ -142,7 +142,7 @@ import {
   removeMagicApiById,
   dirDataChange, 
   getMagicApiBody, 
-  sendCommonApi, 
+  sendExCommonApi, 
   sendMagicApi
 } from "/@/views/apimanage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
@@ -387,7 +387,7 @@ async function sendApi() {
       response = await sendMagicApi(sendParams)
     } else {
       // 调用通用的接口请求接口
-      response = await sendCommonApi(sendParams)
+      response = await sendExCommonApi(sendParams)
     }
     props.selectItem.responseBody = response
   } else {
@@ -519,7 +519,7 @@ function formatSelectItem(select) {
   select.requestHeader = JSON.stringify(select.apiHeaders)
   select.requestBody = JSON.stringify(select.apiBody)
   select.apiSql = JSON.stringify(select.apiDataSource)
-  select.isResultDecrypt = select.isResultDecrypt == undefined ? '0' : select.isResultDecrypt
+  select.isResultDecrypt = select.isResultDecrypt == undefined ? 0 : select.isResultDecrypt
   let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新增接口' : false
   if (addType) {
     delete select.id

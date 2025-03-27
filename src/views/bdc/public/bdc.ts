@@ -1150,6 +1150,7 @@ export async function relateData(options: any) {
                   }
               })
           } else {
+            message.warning(res.message || '数据关联发生错误')
             resolve(false)
           }
       })

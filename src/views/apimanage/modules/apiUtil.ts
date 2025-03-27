@@ -205,7 +205,8 @@ export function dirDataChange(e, dir) {
       child.publicKey = dir.publicKey
       child.privateKey = dir.privateKey
       child.apiKeys = dir.apiKeys
-      child.isResultDecrypt = dir.isEncrypt
+      child.apiPublicParams = dir.apiPublicParams
+      // child.isResultDecrypt = dir.isEncrypt
       child.encryptType = dir.encryptType
       return child
     })
@@ -291,7 +292,7 @@ function ensureSingleSlashStart(str) {
  * 通用接口发送
  * @param sendParams
  */
-export function sendCommonApi(sendParams) {
+export function sendExCommonApi(sendParams) {
   return new Promise((resolve, reject) => {
     defHttp.post({ url: '/api/zrzy-api/sql/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
       if (res && res.success) {
@@ -306,5 +307,32 @@ export function sendCommonApi(sendParams) {
       // responseBody.value = err + ''
       resolve(err + '')
     })
+  })
+}
+
+export function sendCommonApi(sendParams) {
+  return new Promise((resolve, reject) => {
+    let data = {
+      apiCode: sendParams.code,
+      requestType: sendParams.method,
+      url: sendParams.url,
+      headers: sendParams.headers,
+      params: sendParams.params,
+      body: sendParams.params
+    }
+    defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(JSON.stringify(res.result))
+        message.success('请求成功')
+      } else {
+        message.warning('请求失败')
+        resolve(res.message + '')
+      }
+    }).catch(err => {
+      console.log('err', err)
+      // responseBody.value = err + ''
+      resolve(err + '')
+    })
+    
   })
 }

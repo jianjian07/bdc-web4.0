@@ -352,9 +352,10 @@ async function addApi(dir) {
       publicKey: dir.publicKey,
       privateKey: dir.privateKey,
       apiKeys: dir.apiKeys,
+      apiPublicParams: dir.apiPublicParams,
       method: 'POST',
       version: 'testEnv',
-      isResultDecrypt: dir.isEncrypt,
+      isResultDecrypt: 0,
       apiHeaders: [],
       apiParameters: [],
       apiBody: {

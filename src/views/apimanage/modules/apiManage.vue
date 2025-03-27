@@ -34,8 +34,8 @@
                   </template>
                 </a-table>
               </div>
-
             </a-form-item>
+            
             <div style="display: flex">
               <div>
                 <a-form-item label="是否加密">
@@ -49,6 +49,30 @@
                 </a-form-item>
               </div>
             </div>
+            
+            <a-form-item label="选项参数">
+              <div>
+                <a-button size="small" style="margin-bottom: 10px" @click="handleAddApiPublicParams(pane)">
+                  <template #icon>
+                    <plus-outlined style="font-size: 12px" />
+                  </template>
+                </a-button>
+                <a-table :columns="publicColumns" :data-source="pane.apiPublicParams" size="small" :pagination="false" bordered>
+                  <template #bodyCell="{ column, record, index }">
+                    <div v-if="column.dataIndex == 'index'" style="text-align: center">
+                      {{ index + 1 }}
+                    </div>
+                    <div v-else-if="column.dataIndex == 'operate'" style="display: flex; justify-content: center">
+                      <a @click="delPublicParams(pane, record, index)">删除</a>
+                    </div>
+                    <template v-else>
+                      <a-input v-model:value="record[column.dataIndex]"></a-input>
+                    </template>
+                  </template>
+                </a-table>
+              </div>
+            </a-form-item>
+            
             <a-form-item label="接口类型">
               <a-radio-group v-model:value="pane.apiType" @change="dirDataChange($event, pane)">
                 <a-radio value="2">接入</a-radio>
@@ -78,8 +102,17 @@
                       <a-radio-button :value="3">通用接口</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
-                  <a-form-item label="版本">
+                  <a-form-item label="版本" style="margin-right: 20px;">
                     <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
+                  </a-form-item>
+                  <a-form-item label="接口标识" style="margin-right: 20px;">
+                    <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识" @click="onClickCode(pane)"></a-input>
+                  </a-form-item>
+                  <a-form-item label="是否返回值解密">
+                    <a-radio-group v-model:value="pane.isResultDecrypt">
+                      <a-radio :value="1">是</a-radio>
+                      <a-radio :value="0">否</a-radio>
+                    </a-radio-group>
                   </a-form-item>
                 </div>
               </div>
@@ -181,6 +214,41 @@ const columns = [
     title: '私钥',
     dataIndex: 'privateKey',
     key: 'privateKey'
+  },
+  {
+    title: '操作',
+    dataIndex: 'operate',
+    key: 'operate',
+    align: 'center',
+    width: 60
+  }
+]
+
+const publicColumns = [
+    {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+    width: 50,
+    align: 'center'
+  },
+  {
+    title: 'keyName',
+    dataIndex: 'keyName',
+    key: 'keyName',
+    width: 150
+  },
+  {
+    title: 'keyValue',
+    dataIndex: 'keyValue',
+    key: 'keyValue',
+    width: 150
+  },
+  {
+    title: '备注',
+    dataIndex: 'bz',
+    key: 'bz',
+    width: 150
   },
   {
     title: '操作',
@@ -401,7 +469,7 @@ function formatSelectItem(select) {
   select.requestHeader = JSON.stringify(select.apiHeaders)
   select.requestBody = JSON.stringify(select.apiBody)
   select.apiSql = JSON.stringify(select.apiDataSource)
-  select.isResultDecrypt = select.isResultDecrypt == undefined ? '0' : select.isResultDecrypt
+  select.isResultDecrypt = select.isResultDecrypt == undefined ? 0 : select.isResultDecrypt
   let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新增接口' : false
   if (addType) {
     delete select.id
@@ -451,6 +519,8 @@ function setApiParameters() {
       props.selectItem.apiParameters = copy
       props.selectItem.activeParamPane = 'query'
     }
+    let _arr = url.split('/')
+    props.selectItem.code = _arr[_arr.length - 1]
   }
 }
 
@@ -461,6 +531,7 @@ function saveDir() {
   return new Promise((resolve, reject) => {
     let select = JSON.parse(JSON.stringify(props.selectItem))
     select.encryptKey = JSON.stringify(select.apiKeys)
+    select.publicParam = JSON.stringify(select.apiPublicParams)
     let addType = typeof select.id == 'string' ? select.id.substr(0, 4) == '新建目录' : false
     let oldId = select.id
     if (addType) {
@@ -550,6 +621,39 @@ function handleAddApiKeys(pane) {
  */
 function del(pane, record, index) {
   pane.apiKeys.splice(index, 1)
+}
+
+/**
+ * 添加选项 公共参数
+ * @param pane
+ */
+function handleAddApiPublicParams(pane) {
+  if (!pane.apiPublicParams) {
+    pane.apiPublicParams = []
+  }
+  pane.apiPublicParams.push({})
+}
+
+/**
+ * 删除选项 公共参数
+ * @param pane
+ * @param record
+ * @param index
+ */
+function delPublicParams(pane, record, index) {
+  pane.apiPublicParams.splice(index, 1)
+}
+
+/**
+ * 点击接口标识
+ * @param pane
+ */
+function onClickCode(pane) {
+  if (!pane.code) {
+    let url = pane.url
+    let _arr = url.split('/')
+    pane.code = _arr[_arr.length - 1]
+  }
 }
 
 </script>
