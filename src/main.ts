@@ -11,7 +11,6 @@ import checkTimeout from '/@/utils/sysUtil'
 import formImagining from 'form-imagining'
 import 'form-imagining/dist/style.css'
 import 'ant-design-vue/dist/reset.css';
-import 'element-plus/theme-chalk/index.css';
 import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
 // createApp(App).mount('#app')
 async function bootstrap() {
