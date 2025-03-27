@@ -22,7 +22,7 @@ import {
   getRowSpan,
   loadStyle
 } from '/@/views/online/utils/commonUtils'
-import { initTable, edit, save, cancel } from "/@/views/online/utils/wonder-report";
+import { initTable, edit, save, cancel, addNewRow } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
 import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
@@ -50,7 +50,7 @@ import {
   editRow,
   saveRow,
   cancelRow,
-  evaluateTagCondition,
+  delRow,
   getMatchTag, 
   getFormInfo
 } from "/@/views/online/utils/wonder1.0.1"
@@ -338,6 +338,7 @@ const generateVue3 = defineComponent({
             saveRow,
             editRow,
             cancelRow,
+            delRow,
             reloadTable,
             handleChangeTab,
             getDictItemsByCode,
@@ -367,7 +368,8 @@ const generateVue3 = defineComponent({
             getAccount,
             getMatchTag,
             excuteHrefFun,
-            loadStyle
+            loadStyle,
+            addNewRow
         }
 
     },

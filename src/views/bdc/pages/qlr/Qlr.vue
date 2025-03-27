@@ -329,8 +329,18 @@ function handleEdit(record) {
   })
 }
 
-function handleJtcy() {
-  
+function handleJtcy(record) {
+  let formId = 177
+  cModal({
+    title: '家庭成员',
+    width: '70vw',
+    filePath: 'views/bdc/public/GenPublic',
+    formData: {
+      formId: formId,
+      cbfbm: record.zjh
+    },
+    footer: false
+  })
 }
 
 /**

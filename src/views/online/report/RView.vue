@@ -19,7 +19,7 @@ import {
     loadStyle
 } from '/@/views/online/utils/commonUtils'
 import {
-    initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel
+  initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel, addNewRow
 } from "/@/views/online/utils/wonder-report"
 import { getSelectAllCheck, setSelectAllCheck, syncChange, getMatchTag } from "/@/views/online/utils/wonder1.0.1"
 import { getReport } from '.';
@@ -95,6 +95,7 @@ viewData.value = {}
 // 用于报表选择
 let selectedValue = ref<any>([])
 let events: any = {}
+let exposedEvents: any = {}
 let event1: any = ref({})
 const computedEvents = <any>{}
 // 20240130验证：变量定义 名称固定formProps
@@ -199,7 +200,8 @@ const generateVue3 = defineComponent({
             getMatchTag,
             excuteHrefFun,
             loadStyle,
-            onColumnsChange
+            onColumnsChange,
+            addNewRow
         }
         function search() {
             paginations.value.current = 1
@@ -265,14 +267,15 @@ const generateVue3 = defineComponent({
                         if (_data.isasync) {
                             events[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
                             if (arrExposed.includes(_data.name)) {
-                                event1.value[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                                exposedEvents[_data.name] = eval(`async (${_data.param})=> { ${_data.func}}`)
+                                
                             }
                         } else {
                             try {
                                 eval(`(${_data.param})=> { ${_data.func}}`)
                                 events[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
                                 if (arrExposed.includes(_data.name)) {
-                                    event1.value[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
+                                    exposedEvents[_data.name] = eval(`(${_data.param})=> { ${_data.func}}`)
                                 }
                             } catch (error) {
 
@@ -282,16 +285,17 @@ const generateVue3 = defineComponent({
                         if (_data.isasync) {
                             events[_data.name] = eval(`async ()=> { ${_data.func}}`)
                             if (arrExposed.includes(_data.name)) {
-                                event1.value[_data.name] = eval(`async ()=> { ${_data.func}}`)
+                                exposedEvents[_data.name] = eval(`async ()=> { ${_data.func}}`)
                             }
                         } else {
                             events[_data.name] = eval(`()=> { ${_data.func}}`)
                             if (arrExposed.includes(_data.name)) {
-                                event1.value[_data.name] = eval(`()=> { ${_data.func}}`)
+                                exposedEvents[_data.name] = eval(`()=> { ${_data.func}}`)
                             }
                         }
                     }
                 }
+                console.log('event1',exposedEvents)
             }
 
 
@@ -366,7 +370,7 @@ function excuteHrefFun(funName, record) {
 }
 defineExpose({
     createCase,
-    event1
+    exposedEvents
 })
 </script>
 <style lang="less">

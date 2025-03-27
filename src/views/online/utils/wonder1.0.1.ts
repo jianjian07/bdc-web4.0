@@ -181,34 +181,28 @@ export function initCTableV2(options: { viewData: { value: object }, pagination?
     })
 }
 
-export function getData2() {
-    // 根据当前流程获取到对应的表单
-    // viewData = res.result.ViewData
-    let viewData: any = { bdc_djzb: { 业务号: '', age: 20 }, wonder_from: { id: '2', title: '我是yefw' } }
-    return viewData;
-}
-export function saveData() {
-
-    let updateData = <any>{};
-    const all = document.getElementsByTagName('input')
-    for (let index = 0; index < all.length; index++) {
-        const node = all[index]
-        const attribute = (node as any).attributes["write-field"];
-        const _value = node.value
-        if (attribute != undefined) {
-            const writeField = attribute.nodeValue
-            const fields = writeField.split(';')
-            // 开始给更新的字段绑定值
-            for (let i = 0; i < fields.length; i++) {
-                const data = fields[i].split('.')
-                const tableName = data[0]
-                updateData[tableName] = updateData[tableName] ? updateData[tableName] : {}
-                updateData[tableName][data[1]] = _value
-            }
-        }
-    }
-    console.log(JSON.stringify(updateData))
-}
+// export function saveData() {
+//
+//     let updateData = <any>{};
+//     const all = document.getElementsByTagName('input')
+//     for (let index = 0; index < all.length; index++) {
+//         const node = all[index]
+//         const attribute = (node as any).attributes["write-field"];
+//         const _value = node.value
+//         if (attribute != undefined) {
+//             const writeField = attribute.nodeValue
+//             const fields = writeField.split(';')
+//             // 开始给更新的字段绑定值
+//             for (let i = 0; i < fields.length; i++) {
+//                 const data = fields[i].split('.')
+//                 const tableName = data[0]
+//                 updateData[tableName] = updateData[tableName] ? updateData[tableName] : {}
+//                 updateData[tableName][data[1]] = _value
+//             }
+//         }
+//     }
+//     console.log(JSON.stringify(updateData))
+// }
 
 /**
  * 通用表单校验保存
@@ -286,36 +280,6 @@ export async function getFormInfo(formDoms) {
                     validate: d.validate,
                     formId: formId
                 })
-            }
-        }
-    }
-    return res
-}
-
-/**
- * 获取表单需要更新的值
- * @param formDoms
- */
-export function getFormUpdateData(formDoms) {
-    let res: any = []
-    if (formDoms) {
-        for (let i = 0; i < formDoms.length; i++) {
-            let formId
-            let el = formDoms[i].$el ? formDoms[i].$el : null
-            if (formDoms[i].onSubmit) {
-                formId = formDoms[i].formId
-            } else if (formDoms[i].$ && formDoms[i].$.exposed && formDoms[i].$.exposed.onSubmit) {
-                formId = formDoms[i].$.exposed.formId
-            }
-            if (el && formId) {
-                let dom = el.querySelectorAll('[write-field]')
-                let data = getUpdateData(dom)
-                if (formId) {
-                    res.push({
-                        data: [data],
-                        formId: formId
-                    })
-                }
             }
         }
     }
@@ -821,24 +785,6 @@ function sum(fields: string, viewData: object) {
     }
     return sum
 }
-// export function hideField(formSetting: any, viewData: any, index: number) {
-//     let _result = false
-//     const ruleInfo = formSetting[index].ruleList[0];
-//     const { field, selectType, ruleValue } = ruleInfo;
-//     const arr = field.split(".")
-//     let compareValue = ruleValue
-//     if (selectType == "field") {
-//         const arrRuleValue = ruleValue.split(".")
-//         compareValue = viewData.value[arrRuleValue[0]][arrRuleValue[1]]
-//     }
-//     if (viewData.value != null) {
-//         const info = viewData.value[arr[0]]
-//         if (info != undefined && info[arr[1]] != undefined) {
-//             _result = info[arr[1]] === compareValue ? true : false;
-//         }
-//     }
-//     return _result
-// }
 export function hideField(formSetting: any, viewData: any, index: number) {
     // 先确定对比的值
     // 然后循环条件  根据类型拼接
@@ -929,7 +875,6 @@ let obj = reactive<any>({ obj1: {}, obj2: {} })
 export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string) => {
     // editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
     // obj.obj1[key] = cloneDeep(editableData[key])
-    
     const keyData = cloneDeep(dataSource.filter((item) => key === item[keyCol])[0]);
     // 转换字符串使能匹配上数据字典
     Object.keys(keyData).forEach(field => {
@@ -947,7 +892,15 @@ export const saveRow = (key: string, editableData, dataSource: any, keyCol, tabl
     Object.assign(dataSource.filter((item: { [keyCol]: string; }) => key == item[keyCol])[0], editableData[key]);
     obj.obj2[key] = cloneDeep(editableData[key])
     let entity = []
-    entity = compareObjects(obj.obj1[key], obj.obj2[key])
+    // 家庭成员 由于是新增时手动给cbfbm赋值,此时obj1和obj2中此字段没有差异 固没有被更新进去, 暂时屏蔽此行 直接用最新的obj2
+    // entity = compareObjects(obj.obj1[key], obj.obj2[key])
+    let saveObj = JSON.parse(JSON.stringify(obj.obj2[key]))
+    for (const key in saveObj) {
+      if (key == 'action') {
+        delete saveObj[key];
+      }
+    }
+    entity = saveObj
     if (!isEmpty(entity)) {
         let data: any = [];
         data = entity;
@@ -1000,6 +953,10 @@ function delObj(key: string, editableData) {
 export const cancelRow = (key: string, editableData) => {
     delete editableData[key];
 };
+
+export const delRow = (key: string, dataSource: any, keyCol, tableName) => {
+    
+}
 /** 行编辑所需要代码 end **/
 
 /**
