@@ -201,10 +201,13 @@ export const save = (key: string, editableData, dataSource: any, keyCol, tableNa
             if (res.code == 200) {
                 delObj(key, editableData);
                 message.info('数据更新成功');
+                // 增加更新主键
                 if (keyValue == "") {
-                    _callback && _callback(res.result)
+                    const i = dataSource.value.length;
+                    dataSource.value[i - 1][colName] = res.result[res.result]
+                    // _callback && _callback(res.result)
                 } else {
-                    _callback && _callback()
+                    // _callback && _callback()
                 }
             } else {
                 message.error('数据更新失败');
@@ -262,6 +265,10 @@ export const saveOld = (key: string, editableData, dataSource: any, reportInfo: 
 export const cancel = (key: string, editableData) => {
     delete editableData[key];
 };
+
+export const del = (key: string, dataSource: any, keyCol, tableName) => {
+    
+}
 /**
  * 新增行
  * @param columns
@@ -269,13 +276,15 @@ export const cancel = (key: string, editableData) => {
  */
 export function addNewRow(columns: any, dataSource: any) {
     let newData: any = {}
-    for (const column of columns.value) {
+    let arr = columns.value ? columns.value : columns
+    for (const column of arr) {
         const columnName = column["dataIndex"];
         if (columnName != undefined) {
             newData[columnName] = '';
         }
     }
-    dataSource.value.push(newData);
+    let data = dataSource.value ? dataSource.value : dataSource
+    data.push(newData)
 }
 /******** api模式 导出数据start **********/
 /**
