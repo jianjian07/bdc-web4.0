@@ -16,9 +16,9 @@
       <a-tab-pane key="body" tab="请求body" class="api-param-pane" forceRender>
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
-<!--      <a-tab-pane v-if="apiType != 2" key="datasource" tab="参数数据源" class="api-param-pane" forceRender>-->
-<!--        <api-data-source :apiData="apiData"></api-data-source>-->
-<!--      </a-tab-pane>-->
+      <a-tab-pane v-if="apiType != 2" key="datasource" tab="参数数据源" class="api-param-pane" forceRender>
+        <api-data-source :apiData="apiData"></api-data-source>
+      </a-tab-pane>
       <a-tab-pane key="remark" tab="接口说明" class="api-param-pane" forceRender>
         <a-textarea
             v-model:value="apiData.bz"

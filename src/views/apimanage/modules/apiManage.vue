@@ -89,8 +89,8 @@
             <div class="top">
               <a-breadcrumb class="api-editor-manage-interface-breadcrumb">
                 <a-breadcrumb-item>{{ pane.dirName }}</a-breadcrumb-item>
-                <a-breadcrumb-item>
-                  <a-input v-model:value="pane.name" style="width: 400px;border: 0px;padding:0px 4px" />
+                <a-breadcrumb-item class="breadcrumb-input-name">
+                  <a-input v-model:value="pane.name" style="border: 0; padding: 0 4px" />
                 </a-breadcrumb-item>
               </a-breadcrumb>
               <div class="api-editor-manage-interface-options">
@@ -703,6 +703,11 @@ function onClickCode(pane) {
 
       .api-editor-manage-interface-breadcrumb {
         margin-bottom: 10px;
+        
+        .breadcrumb-input-name {
+          flex: auto;
+          padding: 0 4px;
+        }
       }
 
       .api-editor-manage-interface-header {

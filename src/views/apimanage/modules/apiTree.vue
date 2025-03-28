@@ -23,12 +23,12 @@
           <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
               <folder-outlined/>
-              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
+              <span class="left-name" v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
                 {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
               </span>
-              <span v-else style="margin-left:5px">{{ node.name }}</span>
+              <span class="left-name" v-else style="margin-left:5px">{{ node.name }}</span>
               <!--              <span style="margin-left:5px">{{ node.apiGroupName }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
@@ -61,12 +61,12 @@
                 <template #title>
                   {{ node.name }}
                 </template>
-                <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
+                <span class="left-name" v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
                   {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                   <span style="color: #f50">{{ searchValue }}</span>
                   {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
                 </span>
-                <span v-else style="margin-left:4px">{{ node.name }}</span>
+                <span class="left-name" v-else style="margin-left:4px">{{ node.name }}</span>
               </a-tooltip>
               <!--              <span style="margin-left:10px">{{ node.apiName }}</span>-->
             </div>
@@ -469,9 +469,16 @@ function onDoubleClick(node) {
       
       .left {
         width: 240px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        display: flex;
+        //overflow: hidden;
+        //white-space: nowrap;
+        //text-overflow: ellipsis;
+        
+        .left-name {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
       }
 
 
