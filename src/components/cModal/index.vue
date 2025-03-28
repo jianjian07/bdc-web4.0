@@ -17,7 +17,14 @@
         </div>
       </template>
       <Suspense v-if="isFinish">
-        <component v-bind:is="component" :formData="formData" ref="link"></component>
+        <template #default>
+          <component v-bind:is="component" :formData="formData" ref="link"></component>
+        </template>
+        <template #fallback>
+          <a-spin tip="Loading...">
+            <div style="min-height: 200px"></div>
+          </a-spin>
+        </template>
       </Suspense>
     </a-modal>
   </a-config-provider>

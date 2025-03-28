@@ -59,7 +59,7 @@ import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props: any = defineProps({
     id: {
-        type: String,
+        type: [String, Number],
         default: '34'
     },
     reload: {
