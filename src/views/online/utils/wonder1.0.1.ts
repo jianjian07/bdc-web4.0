@@ -982,7 +982,7 @@ export const delRow = (key: string, dataSource: any, keyCol, tableName) => {
         } }, { withToken: true }).then((res) => {
         if (res && res.success) {
             let _dataSource = Array.isArray(dataSource) ? dataSource : dataSource?.value
-            let findIndex = _dataSource.findIndex(f => f[keyCol] !== key)
+            let findIndex = _dataSource.findIndex(f => f[keyCol] == key)
             _dataSource.splice(findIndex, 1)
             message.success('删除成功!')
         }
