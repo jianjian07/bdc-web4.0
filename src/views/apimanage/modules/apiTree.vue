@@ -272,7 +272,7 @@ function addDir() {
     apiKeys: [],
     isEncrypt: '0',
     encryptType: '',
-    apiType: '0',
+    apiType: '2',
     bz: '',
     children: [],
     orderNum: props.apiTreeData.length + 1
