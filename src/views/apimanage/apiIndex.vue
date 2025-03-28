@@ -48,6 +48,7 @@ function initData() {
         })
         item.children = item.apiList
         item.apiKeys = JSON.parse(item.encryptKey || '[]')
+        item.apiPublicParams = JSON.parse(item.publicParam || '[]')
         item.isEncryptCheck = item.isEncrypt == '1'
         return item
       })
