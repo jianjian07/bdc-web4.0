@@ -83,6 +83,7 @@ import { AppstoreAddOutlined, PlusOutlined, CloseOutlined } from '@ant-design/ic
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 import { notification, Button } from 'ant-design-vue'
 import { guid } from "/@/utils"
+import { escapeJsonString } from "/@/views/apimanage/modules/apiUtil"
 
 const props = defineProps({
   apiData: {
@@ -386,8 +387,8 @@ function parseObj(item, parent?: any) {
         end = `"`
       } else {
         start = (parent && parent.dataType == 'Array') 
-          ? item.fieldName ? `"${item.fieldName}":"${item.fieldValue}"` : `"${item.fieldValue}"` 
-          :`"${item.fieldName}":"${item.fieldValue}"` 
+          ? item.fieldName ? `"${item.fieldName}":"${escapeJsonString(item.fieldValue)}"` : `"${escapeJsonString(item.fieldValue)}"` 
+          :`"${item.fieldName}":"${escapeJsonString(item.fieldValue)}"` 
         // start = `"${item.fieldName}":"${item.fieldValue}"`
       }
       break

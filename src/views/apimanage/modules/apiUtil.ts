@@ -318,7 +318,7 @@ export function sendCommonApi(sendParams) {
       url: sendParams.url,
       headers: sendParams.headers,
       params: sendParams.params,
-      body: sendParams.params
+      body: sendParams.body
     }
     defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true }).then((res) => {
       if (res && res.success) {
@@ -335,4 +335,10 @@ export function sendCommonApi(sendParams) {
     })
     
   })
+}
+
+export function escapeJsonString(inputStr) {
+    return inputStr
+        .replace(/\\/g, "\\\\") // 先转义 `\`
+        .replace(/"/g, '\\"'); // 再转义 `"`
 }
