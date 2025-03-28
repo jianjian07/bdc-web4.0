@@ -318,7 +318,7 @@ export function sendCommonApi(sendParams) {
       url: sendParams.url,
       headers: sendParams.headers,
       params: sendParams.params,
-      body: sendParams.body
+      body: JSON.parse(sendParams.body)
     }
     defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true }).then((res) => {
       if (res && res.success) {
