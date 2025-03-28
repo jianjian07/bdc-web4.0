@@ -872,6 +872,24 @@ export async function getSelectJsonSetting(selectJsonSetting: any) {
 /** 表单表格行编辑 start **/
 let obj = reactive<any>({ obj1: {}, obj2: {} })
 
+/**
+ * 新增行
+ * @param columns
+ * @param dataSource
+ */
+export function addNewRow(columns: any, dataSource: any) {
+    let newData: any = {}
+    let arr = columns.value ? columns.value : columns
+    for (const column of arr) {
+        const columnName = column["dataIndex"];
+        if (columnName != undefined) {
+            newData[columnName] = '';
+        }
+    }
+    let data = dataSource.value ? dataSource.value : dataSource
+    data.push(newData)
+}
+
 export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string) => {
     // editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
     // obj.obj1[key] = cloneDeep(editableData[key])
@@ -910,7 +928,7 @@ export const saveRow = (key: string, editableData, dataSource: any, keyCol, tabl
         let url = '/imaginform/zrzy-form/form/report/update'
         if (keyValue == "") {
             // 执行新增的操作
-            url = '/imaginform/zrzy-form/form/report/add'
+            url = '/imaginform/zrzy-form/form/report/addRow'
         } else {
             data[colName] = keyValue;
         }
@@ -925,11 +943,11 @@ export const saveRow = (key: string, editableData, dataSource: any, keyCol, tabl
         }, { withToken: true }).then((res) => {
             if (res.code == 200) {
                 delObj(key, editableData);
-                message.info('数据更新成功');
+                message.success('数据更新成功');
                 if (keyValue == "") {
-                    _callback && _callback(res.result)
-                } else {
-                    _callback && _callback()
+                    let _dataSource = Array.isArray(dataSource) ? dataSource : dataSource?.value
+                    const i = _dataSource.length;
+                    _dataSource[i - 1][colName] = res.result[colName]
                 }
             } else {
                 message.error('数据更新失败');
@@ -955,6 +973,20 @@ export const cancelRow = (key: string, editableData) => {
 };
 
 export const delRow = (key: string, dataSource: any, keyCol, tableName) => {
+    defHttp.post({
+        url: '/imaginform/zrzy-form/form/report/deleteRow',
+        params: {
+            keyCol: keyCol,
+            tableName: tableName,
+            keyValue: key,
+        } }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+            let _dataSource = Array.isArray(dataSource) ? dataSource : dataSource?.value
+            let findIndex = _dataSource.findIndex(f => f[keyCol] !== key)
+            _dataSource.splice(findIndex, 1)
+            message.success('删除成功!')
+        }
+    })
     
 }
 /** 行编辑所需要代码 end **/

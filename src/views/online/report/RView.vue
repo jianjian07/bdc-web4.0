@@ -19,9 +19,9 @@ import {
     loadStyle
 } from '/@/views/online/utils/commonUtils'
 import {
-  initTableV2, onExportExcel, initApiTable, onExportExcelApi, edit, save, cancel, addNewRow
+  initTableV2, onExportExcel, initApiTable, onExportExcelApi
 } from "/@/views/online/utils/wonder-report"
-import { getSelectAllCheck, setSelectAllCheck, syncChange, getMatchTag } from "/@/views/online/utils/wonder1.0.1"
+import { getSelectAllCheck, setSelectAllCheck, syncChange, getMatchTag, saveRow, editRow, cancelRow, delRow, addNewRow } from "/@/views/online/utils/wonder1.0.1"
 import { getReport } from '.';
 import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
@@ -181,9 +181,11 @@ const generateVue3 = defineComponent({
             setSelectAllCheck,
             initTableV2,
             execInitFun,
-            edit,
-            save,
-            cancel,
+            saveRow, 
+            editRow, 
+            cancelRow, 
+            delRow, 
+            addNewRow,
             getDictItemsByCode,
             getTreeDictItemsByCode,
             getLabelByDictCode,
@@ -200,8 +202,7 @@ const generateVue3 = defineComponent({
             getMatchTag,
             excuteHrefFun,
             loadStyle,
-            onColumnsChange,
-            addNewRow
+            onColumnsChange
         }
         function search() {
             paginations.value.current = 1

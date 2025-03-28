@@ -12,7 +12,7 @@ import { defineComponent, onBeforeUpdate, reactive, ref, useAttrs, watch } from 
 import { generateFormHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
 import { formatMultipleSelectValue, formatMultipleTreeSelectValue, getCasDictItemsByCode, getDictItemsByCode, getTreeDictItemsByCode, useVNodes } from '/@/views/online/utils/commonUtils'
-import { initTable, edit, save, cancel } from "/@/views/online/utils/wonder-report";
+import { initTable } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
@@ -130,9 +130,6 @@ const generateVue3 = defineComponent({
             search,
             onChange,
             initTable,
-            edit,
-            save,
-            cancel,
             handleChangeTab,
             getDictItemsByCode,
             getTreeDictItemsByCode,

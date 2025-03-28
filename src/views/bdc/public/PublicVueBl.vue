@@ -20,7 +20,8 @@
                 <a-button type="primary" :loading="okLoading" @click="handleOk">确定</a-button>
               </template>
               <LookLpb v-if="eType == 'lpb'" ref="dataForm" @ok="onReloadLpb"></LookLpb>
-              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>
+              <r-view-online v-else :id="formId" ref="dataForm" @ok="onReload"></r-view-online>
+<!--              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>-->
             </a-drawer>
           </div>
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
@@ -56,6 +57,7 @@ import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
 import eventBus from "/@/views/online/utils/eventBus"
 import { resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
+import RViewOnline from "/@/views/online/report/RViewOnline.vue"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
@@ -219,7 +221,7 @@ let dataForm = ref()
 /**
  * 数据提取的保存方法
  */
-function handleOk() {
+function handleOkOld() {
   if (dataForm.value) {
     if (dataForm.value.handleOk != undefined) {
       dataForm.value.handleOk()
@@ -228,6 +230,23 @@ function handleOk() {
     }
   }
 }
+
+/**
+ * 数据提取的保存方法
+ */
+function handleOk() {
+  if (dataForm.value) {
+    if (dataForm.value.handleOk != undefined) {
+      // 楼盘表
+      dataForm.value.handleOk()
+    } else {
+      // 列表
+      let rView = dataForm.value.rView
+      rView.$.exposed.createCase()
+    }
+  }
+}
+
 /**
  * 关闭弹窗
  */

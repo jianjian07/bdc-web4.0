@@ -17,10 +17,11 @@
               :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' : 1000" @close="onClose">
               <template #extra>
                 <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
-                <a-button type="primary" :loading="okLoading" @click="handleOk">确定</a-button>
+                <a-button type="primary" :loading="okLoading" @click="handleOk1">确定</a-button>
               </template>
               <LookLpb v-if="eType == 'lpb'" ref="dataForm" @ok="onReloadLpb"></LookLpb>
-              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>
+              <r-view-online v-else :id="formId" ref="dataForm" @ok="onReload"></r-view-online>
+<!--              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>-->
             </a-drawer>
           </div>
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
@@ -51,13 +52,14 @@
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
-import { extractData, extractDataLpb, relateData } from '/@/utils/bdc/bdc'
+import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
 import eventBus from "/@/views/online/utils/eventBus"
 import { resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
 import ApprovalProcess from "/@/views/bdc/query/ApprovalProcess.vue"
+import RViewOnline from "/@/views/online/report/RViewOnline.vue"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
@@ -241,6 +243,20 @@ function handleOk() {
     }
   }
 }
+
+function handleOk1() {
+  if (dataForm.value) {
+    if (dataForm.value.handleOk != undefined) {
+      // 楼盘表
+      dataForm.value.handleOk()
+    } else {
+      // 列表
+      let rView = dataForm.value.rView
+      rView.$.exposed.createCase()
+    }
+  }
+}
+
 /**
  * 关闭弹窗
  */
@@ -341,7 +357,6 @@ function onChangeQlrShow(value) {
  * @param value
  */
 function onPreviewFile(value) {
-  console.log('vonPreviewFilealue',value)
   if (value) {
     previewFile.value = true
     if (rightWidth.value < 900) {
