@@ -10,7 +10,10 @@
       <subMenu :menu="item.children"></subMenu>
     </a-sub-menu>
     <a-menu-item :key="item.path" :role="JSON.stringify(item)" v-else>
-      <span>{{ item.name }}</span>
+      <span class="anticon" v-if="item.icon">
+        <svg-icon :name="item.icon" width="14px" height="14px" color="#fff"></svg-icon>
+      </span>
+      <span :style="item.icon ? 'margin-left:0.5rem' : ''">{{ item.name }}</span>
     </a-menu-item>
   </template>
 </template>
