@@ -55,7 +55,7 @@
     <a-space v-if='selectInfo' style="display: flex; align-items: center; justify-content: center; width: 100%;">
       <a-button type="default" @click="resetRegion()">重置</a-button>
       <a-button type="primary" @click="addRegion()">保存</a-button>
-    </a-space>  
+    </a-space>
   </div>
 </template>
 
@@ -201,7 +201,7 @@ const addRegion = () => {
                     showModal.value = false
                     loadRegionList()
                     message.success('区域新增成功！')
-                  } 
+                  }
                   return resolve(true)
                 } else {
                   message.warning(res?.message)
@@ -214,7 +214,7 @@ const addRegion = () => {
           defHttp.get(
             {
               url: urlList.validateKey,
-              params: { areaCode: regionState.areaCode }
+              params: { areaCode: regionState.areaCode, id: regionState.id }
             },
             { withToken: true}
           ).then((res: any) => {
@@ -237,7 +237,7 @@ const addRegion = () => {
                     emit('refreshList')
                   } else {
                     message.success('区域新增成功！')
-                  } 
+                  }
                   return resolve(true)
                 } else {
                   message.warning(res?.message)
