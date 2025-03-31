@@ -34,10 +34,11 @@
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开始时间">
                   <a-date-picker
                       v-model:value="formState.beginDate"
-                      format="YYYY-MM-DD"
+                      format="YYYY-MM-DD HH:mm:ss"
                       placeholder="请选择开始时间"
                       style="width: 100%"
-                      value-format="YYYY-MM-DD">
+                      :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
+                      value-format="YYYY-MM-DD HH:mm:ss">
                   </a-date-picker>
                 </a-form-item>
               </a-col>
@@ -45,10 +46,11 @@
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结束时间">
                   <a-date-picker
                       v-model:value="formState.endDate"
-                      format="YYYY-MM-DD"
+                      format="YYYY-MM-DD HH:mm:ss"
                       placeholder="请选择结束时间"
                       style="width: 100%"
-                      value-format="YYYY-MM-DD">
+                      :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
+                      value-format="YYYY-MM-DD HH:mm:ss">
                   </a-date-picker>
                 </a-form-item>
               </a-col>
@@ -146,6 +148,12 @@ function add() {
 async function edit(record) {
   title.value = '编辑'
   formState.value = JSON.parse(JSON.stringify(record))
+  if (formState.value.beginDate) {
+    formState.value.beginDate = dayjs(formState.value.beginDate).format('YYYY-MM-DD HH:mm:ss')
+  } 
+  if (formState.value.endDate) {
+    formState.value.endDate = dayjs(formState.value.endDate).format('YYYY-MM-DD HH:mm:ss')
+  }
   let list = await queryList(record)
   formState.value.actRuDelegateNodeList = list
   formState.value.list = list.map(item => item.processId)
