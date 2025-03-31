@@ -34,10 +34,11 @@
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开始时间">
                   <a-date-picker
                       v-model:value="formState.beginDate"
-                      format="YYYY-MM-DD HH:mm:ss"
+                      format="YYYY-MM-DD"
                       placeholder="请选择开始时间"
                       style="width: 100%"
-                      :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
+                      :defaultPickerValue="dayjs('00:00:00', 'HH:mm:ss')"
+                      :disabledDate="disabledStartDate"
                       value-format="YYYY-MM-DD HH:mm:ss">
                   </a-date-picker>
                 </a-form-item>
@@ -46,10 +47,11 @@
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结束时间">
                   <a-date-picker
                       v-model:value="formState.endDate"
-                      format="YYYY-MM-DD HH:mm:ss"
+                      format="YYYY-MM-DD"
                       placeholder="请选择结束时间"
                       style="width: 100%"
-                      :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
+                      :defaultPickerValue="dayjs('23:59:59', 'HH:mm:ss')"
+                      :disabledDate="disabledEndDate"
                       value-format="YYYY-MM-DD HH:mm:ss">
                   </a-date-picker>
                 </a-form-item>
@@ -149,10 +151,10 @@ async function edit(record) {
   title.value = '编辑'
   formState.value = JSON.parse(JSON.stringify(record))
   if (formState.value.beginDate) {
-    formState.value.beginDate = dayjs(formState.value.beginDate).format('YYYY-MM-DD HH:mm:ss')
+    formState.value.beginDate = dayjs(formState.value.beginDate).format('YYYY-MM-DD') + ' 00:00:00'
   } 
   if (formState.value.endDate) {
-    formState.value.endDate = dayjs(formState.value.endDate).format('YYYY-MM-DD HH:mm:ss')
+    formState.value.endDate = dayjs(formState.value.endDate).format('YYYY-MM-DD') + ' 23:59:59'
   }
   let list = await queryList(record)
   formState.value.actRuDelegateNodeList = list
@@ -292,7 +294,14 @@ function handleChooseUser() {
       }
     }
   })
+}
 
+function disabledEndDate(current) {
+  return current && current < dayjs(formState.value.beginDate)
+}
+
+function disabledStartDate(current) {
+  return current && current > dayjs(formState.value.endDate)
 }
 </script>
 
