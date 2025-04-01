@@ -105,6 +105,7 @@ function handleAdd() {
     const params = {
         // regType: '0101',
         lcid: processInfo.value.dictCode,
+        ajlx: 2
         // processKey: processInfo.value.value
     }
     // debugger
