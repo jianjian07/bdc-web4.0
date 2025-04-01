@@ -146,7 +146,7 @@ enum Api {
     importJson = '/api/zrzy-form/export/importJson'
 }
 const columns = [
-    { title: "ID", dataIndex: "id", width: 80 },
+    { title: "ID", dataIndex: "id", width: 200 },
     { title: "表单名称", dataIndex: "formName", ellipsis: true },
     { title: "表单编码", dataIndex: "code", width: 200 },
     // { title: "表单分类", dataIndex: "typeName", width: 220 },

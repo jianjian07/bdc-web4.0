@@ -71,6 +71,9 @@
                                     <a-menu-item>
                                         <a @click="preview(record)">预览</a>
                                     </a-menu-item>
+<!--                                    <a-menu-item>-->
+<!--                                        <a @click="previewTest(record)">测试预览2</a>-->
+<!--                                    </a-menu-item>-->
                                     <a-menu-item>
                                         <a @click="copyData(record)">复制</a>
                                     </a-menu-item>
@@ -99,7 +102,7 @@ import { message } from 'ant-design-vue';
 import { router } from "/@/router";
 const ReportModal = defineAsyncComponent(() => import("/@/views/online/report/ReportModal.vue"));
 const columns = [
-    { title: "ID", dataIndex: "id", width: 80 },
+    { title: "ID", dataIndex: "id", width: 200 },
     { title: "初始加载", dataIndex: "isLoad", width: 100 },
     { title: "编号", dataIndex: "code", width: 150 },
     { title: "报表标题", dataIndex: "title" },
@@ -166,6 +169,15 @@ function design(record: any) {
 function preview(record: any) {
     router.push("/online/report/view" + '/' + record.id)
 }
+
+/**
+ * 测试预览
+ * @param record
+ */
+function previewTest(record: any) {
+  router.push('/online/report/viewOnline' + '/' + record.id )
+}
+
 /**
 * 分页
 * @param pag

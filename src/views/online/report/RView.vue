@@ -71,7 +71,7 @@ let options = {
 }
 let eLoading = ref<boolean>(false)
 let editableData: any = reactive({});
-reportInfo.formId = Number.parseInt(code)
+reportInfo.formId = code.toString()
 const info = await getReport({ id: reportInfo.formId })
 const data = JSON.parse(info.content)
 const config = data.config

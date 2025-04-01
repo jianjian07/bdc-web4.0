@@ -14,7 +14,7 @@ import { defHttp } from '/@/utils/http/axios';
 
 const route = useRoute();
 const code = ref(route.params?.code.toString());
-let id = Number.parseInt(code.value)
+let id = code.value.toString()
 let show = ref(false)
 enum api {
   unlockFormUrl = '/api/zrzy-form/form/unlockForm',

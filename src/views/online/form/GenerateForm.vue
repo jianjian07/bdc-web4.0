@@ -59,7 +59,7 @@ import { useUserStore } from "/@/store/modules/user"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props: any = defineProps({
     id: {
-        type: [String, Number],
+        type: String,
         default: '34'
     },
     reload: {
@@ -116,8 +116,8 @@ let formInfo = reactive<any>({
     searchInfo: [],
 })
 let editableData: any = reactive({});
-formInfo.formId = Number.parseInt(code.value)
-let formId = Number.parseInt(code.value)
+formInfo.formId = code.value.toString()
+let formId = code.value.toString()
 let formDisabled = ref(false)
 let isSubmit = ref(true)
 // 所有校验是否通过
@@ -333,7 +333,6 @@ const generateVue3 = defineComponent({
             onChange1,
             initCTableV2,
             initTable,
-            addNewRow,
             saveRow,
             editRow,
             cancelRow,

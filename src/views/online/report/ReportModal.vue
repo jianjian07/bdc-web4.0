@@ -73,6 +73,7 @@ import { ref } from 'vue';
 import monacoEditor from '/@/components/monaco/monacoEditor.vue'
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
+import { formatToDateTime } from "/@/views/online/utils/dateUtil"
 const props = defineProps({
     open: {
         type: Boolean,
@@ -138,6 +139,10 @@ function onOk() {
     }
     reportData.value.isLoad = reportData.value.isLoad ? 1 : 0
     reportData.value.isMybatis = reportData.value.isMybatis ? 1 : 0
+    const time = new Date().getTime();
+    const value = formatToDateTime(time);
+    reportData.value.createTime = reportData.value.createTime || value
+    reportData.value.updateTime = value
     //reportData.value.isLoad = isLoad.value
     defHttp.post({ url: url, data: reportData.value }, { withToken: true }).then((res) => {
         if (res.success) {

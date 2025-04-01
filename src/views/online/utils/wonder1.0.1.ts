@@ -242,7 +242,7 @@ export function saveHandleData(formDoms: any, params?: any) {
         } else {
             let allRes: any = []
             for (let i = 0; i < _result.length; i++) {
-                const promiseRes = await updateFormDatas(_result[i])
+                const promiseRes = await updateFormDatas(_result[i], params)
                 allRes.push(promiseRes)
             }
             let status = allRes ? allRes.filter(r => r).length == _result.length : false
