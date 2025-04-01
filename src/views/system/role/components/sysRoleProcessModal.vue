@@ -23,7 +23,7 @@
 import { onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { findNode } from "/@/views/online/utils/commonUtils"
+import { findNode, getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
 // 确认loading
@@ -44,6 +44,8 @@ let expandedKeys = ref<any>([])
 let treeData = ref<any>([])
 // 当前编辑
 let currentRecord = ref<any>()
+// 当前案卷类型
+let currentAjlx = ref<string>('')
 
 enum api {
   processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
@@ -55,25 +57,43 @@ watch(() => searchName.value, (newV) => {
   onSearch()
 })
 
+watch(() => currentAjlx.value, (newVal) => {
+  if (newVal) {
+    initData()
+  }
+}, {
+  immediate: true
+})
+
 defineExpose({
   edit
 })
 
-onMounted(() => {
-  initData()
-})
+// onMounted(() => {
+//   initData()
+// })  
 
 /**
  * 加载流程列表
  */
 function initData() {
-  defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
+  if (currentAjlx.value == '1') {
+    defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
     if (res && res.success) {
       treeData.value = res.result
     } else {
       message.warning(res.message)
     }
   })
+  } else {
+    let arr = getDictItemsByCode('bllc')
+    treeData.value = arr.map((item) => {
+      item.key = item.value
+      item.title = item.label
+      return item
+    })
+  }
+  
 }
 
 /**
@@ -177,13 +197,15 @@ function handleModalOk() {
     return {
       roleId: currentRecord.value.id,
       lcid: key,
-      lcmc: node.title
+      lcmc: node.title,
+      ajlx: currentAjlx.value
     }
   })
   
   let data = {
     roleId: currentRecord.value.id,
-    list: nodes
+    list: nodes,
+    ajlx: currentAjlx.value
   }
   confirmLoading.value = true
   defHttp.post({ url: api.save, data: data }, { withToken: true }).then((res) => {
@@ -221,19 +243,18 @@ function reset() {
  * 编辑
  * @param record
  */
-function edit(record) {
+function edit(record, ajlx) {
+  currentAjlx.value = ajlx
   modalVisible.value = true
   currentRecord.value = record
-  getCheckedList(record.id)
-  console.log('rere',record)
+  getCheckedList(record.id, ajlx)
 }
-
 /**
  * 获取角色流程列表
  */
-function getCheckedList(roleId) {
+function getCheckedList(roleId, ajlx) {
   confirmLoading.value = true
-  defHttp.get({ url: api.checkList, params: { roleId } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.checkList, params: { roleId, ajlx } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       checkedKeys.value = res.result.map(m => m.lcid)
     } else {

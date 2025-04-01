@@ -51,6 +51,8 @@
                 <!-- <a-divider type="vertical" />
                 <a @click="handleDept(record)">分配</a> -->
                 <a-divider type="vertical" />
+                <a @click="handleFlcqx(record)">非流程权限</a>
+                <a-divider type="vertical" />
                 <a @click="handleEditRole(record)">编辑</a>
                 <a-divider type="vertical" />
                 <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?" @confirm="handleDelRole(record.id, index)">
@@ -149,7 +151,7 @@ const columns = [
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 220,
+    width: 260,
   },
 
 ]
@@ -256,7 +258,17 @@ function handleDept(record) {
  * @param record
  */
 function handleLcqx(record) {
-  roleProcessModal.value.edit(record)
+  // 案卷类型 1登记 2补录
+  roleProcessModal.value.edit(record, '1')
+}
+
+/**
+ * 非流程权限
+ * @param record
+ */
+function handleFlcqx(record) {
+  // 案卷类型 1登记 2补录
+  roleProcessModal.value.edit(record, '2')
 }
 
 /**
