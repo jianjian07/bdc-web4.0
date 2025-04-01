@@ -29,7 +29,7 @@ onMounted(() => {
 })
 function loadTreeData() {
     let url = props.isRoleProcess ? api.roleProcesslist : api.processlist
-    defHttp.get({ url: url }, { withToken: true }).then((res) => {
+    defHttp.get({ url: url, params: { ajlx: '1' } }, { withToken: true }).then((res) => {
         treeData.value = res.result
         emit('setTreeData', treeData.value)
         if (res.result.length > 0) {
