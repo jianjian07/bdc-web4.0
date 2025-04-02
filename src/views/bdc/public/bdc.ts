@@ -16,6 +16,7 @@ import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import eventBus from "/@/views/online/utils/eventBus"
 import { checkLogic } from "/@/utils/bdc/bdc"
+import { guid } from "/@/utils";
 
 const userStore = useUserStore()
 
@@ -1175,4 +1176,36 @@ export function getDeptOptions() {
 
 export function cc() {
   message.success('ccccc')
+}
+
+/**
+ * 创建分割合并转移登记流程
+ * @param ywlx 业务类型
+ * @param slbh 受理编号
+ * @param dyhList 待转移单元列表
+ */
+export function createFghbZy(ywlx, slbh, dyhList) {
+  return new Promise(async (resolve) => {
+    let _data: any =
+        {
+          "ywlx": ywlx,
+          "slbh": slbh,
+          "dyhList": dyhList
+        }
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdc/case/addCaseFghbzy',
+      data: _data
+    }, { withToken: true }).then((res) => {
+      if (res.success) {
+        message.success('转移成功')
+        resolve(true)
+      } else {
+        message.warning(res.message)
+        resolve(false)
+      }
+    }).catch((e) => {
+      message.error(e)
+      resolve(false)
+    })
+  })
 }

@@ -40,6 +40,7 @@ export async function extractData(options: any) {
         case '0402'://续查封
         case '0404'://解查封
         case '0102,0102':
+        case '0103,0102':
         case '0302':
         case '0303':
         case '0304':
