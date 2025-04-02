@@ -80,7 +80,7 @@ const addZDGS = () => {
         // 新增
         defHttp.post(
           {
-            url: '/api/zrzy-bdc/sys/dict/insertOrUpdate',
+            url: '/api/zrzy-system/sys/dict/insertOrUpdate',
             data: params
           },
           { withToken: true }

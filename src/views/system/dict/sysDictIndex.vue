@@ -86,9 +86,9 @@ let datalist: any = ref([]);
 let formData: any = ref([]);
 
 enum api {
-    list = '/api/zrzy-bdc/sys/dict/list',
-    copy = '/api/zrzy-bdc/sys/dict/copyDict',
-    cacheUrl = '/api/zrzy-bdc/sys/dict/setRedisDict'
+    list = '/api/zrzy-system/sys/dict/list',
+    copy = '/api/zrzy-system/sys/dict/copyDict',
+    cacheUrl = '/api/zrzy-system/sys/dict/setRedisDict'
 }
 onMounted(() => {
     loadData() // 初始化加载数据
@@ -194,7 +194,7 @@ function handOk(value: any) {
 */
 function deleteData(record: any) {
     if (!record.id) return
-    let url = '/api/zrzy-bdc/sys/dict/getChildrenCount'
+    let url = '/api/zrzy-system/sys/dict/getChildrenCount'
     defHttp.get({ url: url, params: { parentId: record.id } }, { withToken: true }).then(async (res) => {
         if (res.result > 0) {
             message.info("该字典存在子项,不能删除！")

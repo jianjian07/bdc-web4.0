@@ -53,7 +53,7 @@ const emit = defineEmits(["ok"])
  */
 function handleOk() {
     // 执行保存
-    let url = '/api/zrzy-bdc/sys/dict/insertOrUpdate'
+    let url = '/api/zrzy-system/sys/dict/insertOrUpdate'
     formData.value.delFlag = 0
     defHttp.post({ url: url, data: formData.value }, { withToken: true }).then((res) => {
         if (res.result) {

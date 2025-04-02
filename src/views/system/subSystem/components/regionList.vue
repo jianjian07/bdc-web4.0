@@ -70,9 +70,9 @@ const props = defineProps({
 })
 
 const urlList = {
-  queryTreeAndZdgs: '/api/zrzy-bdc/sys/areacode/queryAreaTreeAndZdgs',
-  queryZDGSList: '/api/zrzy-bdc/sys/sysSubArea/list',
-  save: '/api/zrzy-bdc/sys/sysSubArea/save'
+  queryTreeAndZdgs: '/api/zrzy-system/sys/areacode/queryAreaTreeAndZdgs',
+  queryZDGSList: '/api/zrzy-system/sys/sysSubArea/list',
+  save: '/api/zrzy-system/sys/sysSubArea/save'
 }
 
 let genData: any = [];

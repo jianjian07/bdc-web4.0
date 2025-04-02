@@ -120,9 +120,9 @@ const pagination = ref<any>({
 const systemOptions = ref([])
 
 const urlList = {
-  queryList: '/api/zrzy-bdc/sys/sysSubArea/list',
-  delete: '/api/zrzy-bdc/sys/sysSubArea/delete/',
-  deleteBatch: '/api/zrzy-bdc/sys/sysSubArea/deleteBatch',
+  queryList: '/api/zrzy-system/sys/sysSubArea/list',
+  delete: '/api/zrzy-system/sys/sysSubArea/delete/',
+  deleteBatch: '/api/zrzy-system/sys/sysSubArea/deleteBatch',
   systemList: '/api/zrzy-system/sys/sysSubsystem/list'
 }
 

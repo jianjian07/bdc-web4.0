@@ -119,8 +119,8 @@ const stateRules: any = {
 const labelCol = { style: { width: '130px' } };
 const wrapperCol = { span: 19 };
 const api = {
-  add: '/api/zrzy-bdc/sys/sysTzgg/add',
-  edit: '/api/zrzy-bdc/sys/sysTzgg/edit'
+  add: '/api/zrzy-system/sys/sysTzgg/add',
+  edit: '/api/zrzy-system/sys/sysTzgg/edit'
 }
 
 

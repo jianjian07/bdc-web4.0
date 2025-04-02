@@ -80,8 +80,8 @@ const pagination = ref<any>({
 })
 
 const urlList = {
-  queryList: '/api/zrzy-bdc/sys/areacode/getZdgsByArea',
-  delete: '/api/zrzy-bdc/sys/dict/deleteByIdList'
+  queryList: '/api/zrzy-system/sys/areacode/getZdgsByArea',
+  delete: '/api/zrzy-system/sys/dict/deleteByIdList'
 }
 
 const emit = defineEmits(['refreshList'])

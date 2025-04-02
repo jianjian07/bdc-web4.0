@@ -153,7 +153,7 @@ const showDeleteConfirm = () => {
 function onDelete() {
   defHttp.delete(
     {
-      url: '/api/zrzy-bdc/sys/areacode/deleteBatch',
+      url: '/api/zrzy-system/sys/areacode/deleteBatch',
       params: { areaCodes: checkedInfo.value.join(',') }
     },
     { withToken: true }

@@ -52,9 +52,9 @@ import { message } from 'ant-design-vue';
 import { DownOutlined } from '@ant-design/icons-vue';
 
 const urlList = {
-  queryTreeAndZdgs: '/api/zrzy-bdc/sys/areacode/queryAreaTreeAndZdgs',
-  queryList: '/api/zrzy-bdc/sys/areacode/queryAreaTree',
-  queryByKey: '/api/zrzy-bdc/sys/areacode/searchBy'
+  queryTreeAndZdgs: '/api/zrzy-system/sys/areacode/queryAreaTreeAndZdgs',
+  queryList: '/api/zrzy-system/sys/areacode/queryAreaTree',
+  queryByKey: '/api/zrzy-system/sys/areacode/searchBy'
 }
 
 let genData: any = [];

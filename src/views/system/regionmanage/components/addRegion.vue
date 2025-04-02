@@ -109,10 +109,10 @@ const fieldNames = { label: 'areaName', value: 'areaCode', }
 let regionList:any = ref([])
 
 const urlList = {
-  add: '/api/zrzy-bdc/sys/areacode/add',
-  edit: '/api/zrzy-bdc/sys/areacode/edit',
-  validateKey: '/api/zrzy-bdc/sys/areacode/validatorKey',
-  queryList: '/api/zrzy-bdc/sys/areacode/queryAreaTree',
+  add: '/api/zrzy-system/sys/areacode/add',
+  edit: '/api/zrzy-system/sys/areacode/edit',
+  validateKey: '/api/zrzy-system/sys/areacode/validatorKey',
+  queryList: '/api/zrzy-system/sys/areacode/queryAreaTree',
 }
 
 const emit = defineEmits(['refreshList'])

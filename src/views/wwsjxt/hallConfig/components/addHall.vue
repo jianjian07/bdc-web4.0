@@ -44,7 +44,7 @@ const formRules: any = {
 
 const urlList = {
   add: '/api/zrzy-wwsj/wwsj/dt/save',
-  regionList: '/api/zrzy-bdc/sys/areacode/queryAreaTree',
+  regionList: '/api/zrzy-system/sys/areacode/queryAreaTree',
 }
 
 const regionFieldNames = { label: 'areaName', value: 'areaCode', }

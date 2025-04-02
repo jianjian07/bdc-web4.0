@@ -64,7 +64,7 @@ const emit = defineEmits(["ok"])
 
 enum api {
   add = '/api/zrzy-system/sys/dept/saveDept',
-  regionList = '/api/zrzy-bdc/sys/areacode/queryAreaTree',
+  regionList = '/api/zrzy-system/sys/areacode/queryAreaTree',
   deptList = '/api/zrzy-system/sys/dept/treeLazy',
   currentBranchTree = '/api/zrzy-system/sys/dept/deptCurrentBranchTrees', // 编辑时
 }

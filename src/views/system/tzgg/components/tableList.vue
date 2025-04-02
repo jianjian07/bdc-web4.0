@@ -137,10 +137,10 @@ import dayjs from 'dayjs';
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 enum api {
-  tasklist = '/api/zrzy-bdc/sys/sysTzgg/list',
-  delUrl = "/api/zrzy-bdc/sys/sysTzgg/delete",
-  deleteBatch = "/api/zrzy-bdc/sys/sysTzgg/deleteBatch",
-  pubUrl = '/api/zrzy-bdc/sys/sysTzgg/edit'
+  tasklist = '/api/zrzy-system/sys/sysTzgg/list',
+  delUrl = "/api/zrzy-system/sys/sysTzgg/delete",
+  deleteBatch = "/api/zrzy-system/sys/sysTzgg/deleteBatch",
+  pubUrl = '/api/zrzy-system/sys/sysTzgg/edit'
 }
 let datalist = ref([]);
 let formData: any = ref({})

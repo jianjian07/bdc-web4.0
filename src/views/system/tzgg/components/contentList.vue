@@ -37,7 +37,7 @@ import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index"
 
 enum api {
-  tasklist = '/api/zrzy-bdc/sys/sysTzgg/list',
+  tasklist = '/api/zrzy-system/sys/sysTzgg/list',
 }
 
 let scrollRef: any = ref(null)

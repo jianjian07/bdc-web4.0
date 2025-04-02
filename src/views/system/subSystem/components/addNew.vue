@@ -52,9 +52,9 @@ const formRules: any = {
 }
 
 const urlList = {
-  add: '/api/zrzy-bdc/sys/sysSubArea/add',
-  edit: '/api/zrzy-bdc/sys/sysSubArea/edit',
-  regionList: '/api/zrzy-bdc/sys/areacode/queryAreaTree',
+  add: '/api/zrzy-system/sys/sysSubArea/add',
+  edit: '/api/zrzy-system/sys/sysSubArea/edit',
+  regionList: '/api/zrzy-system/sys/areacode/queryAreaTree',
   systemList: '/api/zrzy-system/sys/sysSubsystem/list'
 }
 
