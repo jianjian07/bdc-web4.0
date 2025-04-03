@@ -49,6 +49,11 @@ let props = defineProps({
 
 onMounted(() => {
   qlrList.value = props.qlr
+  eventBus.on('reloadQlrList', reloadQlr)
+})
+
+onBeforeUnmount(() => {
+  eventBus.off('reloadQlrList')
 })
 
 const qlrRef = (qlrxsmc) => (el) => {
@@ -74,6 +79,28 @@ function getTbxx(value) {
     }
   }
 }
+
+/**
+ * 加载权利人
+ * @param value
+ */
+function initQlrData(value) {
+  if (value) {
+    const arr = value.includes(',') ? value.split(',') : [value]
+    arr.forEach(item => qlrRefs[item]?.initData?.())
+  } else {
+    qlrList.value.forEach(({ qlrxsmc: item }) => qlrRefs[item]?.initData?.())
+  }
+}
+
+/**
+ * 刷新权利人
+ * @param qlrxsmc
+ */
+function reloadQlr(qlrxsmc?: string) {
+  initQlrData(qlrxsmc)
+}
+
 
 </script>
 

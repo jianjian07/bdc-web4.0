@@ -7,6 +7,7 @@ import {
   setValidateInfos, updateFormDatas,
   validateInfos
 } from "/@/views/online/utils/wonder1.0.1"
+import eventBus from "/@/views/online/utils/eventBus"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed, nextTick } from "vue"
@@ -14,8 +15,16 @@ import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
-import eventBus from "/@/views/online/utils/eventBus"
 import { checkLogic } from "/@/utils/bdc/bdc"
+// import { 
+//   saveFormData, 
+//   saveHandleData, 
+//   getFormInfo, 
+//   validateInfos, 
+//   setInputValue, 
+//   setValidateInfos, 
+//   updateFormDatas, 
+//   eventBus } from 'form-imagining'
 import { guid } from "/@/utils";
 
 const userStore = useUserStore()
@@ -24,6 +33,14 @@ enum api {
   configList = '/api/zrzy-dzzw/caseConfig/getCaseState',
   addQlr = '/api/zrzy-bdc/bdc/qlr/add',
   editQlr = '/api/zrzy-bdc/bdc/qlr/update'
+}
+
+/**
+ * 获取bdc项目下的图片
+ * @param name
+ */
+export function getBdcImgUrl(name) {
+  return new URL(`/src/assets/images/${name}`, import.meta.url).href
 }
 
 /**
@@ -274,7 +291,7 @@ export async function sendPlJcf(demoRefs: any, spinning: any, params?: any) {
   let saveRes: any = false
   let _result = await getFormInfo(demoRefs)
   if (_result) {
-    let find = _result.filter(r => r.formId == 77)[0]
+    let find = _result.filter(r => r.formId == '77')[0]
     if (find && find.validate) {
       let data = find.data[0].bdc_cftz
       const newQlrData = {};
@@ -324,7 +341,7 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
   let saveRes: any = false
   let _result = await getFormInfo(demoRefs)
   if (_result) {
-    let find = _result.filter(r => r.formId == 55 || r.formId == 116 || r.formId == 109 || r.formId == 117)[0]
+    let find = _result.filter(r => r.formId == '55' || r.formId == '116' || r.formId == '109' || r.formId == '117')[0]
     if (find && find.validate) {
       let qlrData = find.data[0].bdc_qlr
       const newQlrData = {};
@@ -1208,4 +1225,13 @@ export function createFghbZy(ywlx, slbh, dyhList) {
       resolve(false)
     })
   })
+}
+
+/**
+ * 刷新权利人
+ * @param qlrxsmc
+ * @description 所有都刷新不传参数,多个逗号隔开
+ */
+export function reloadQlrList(qlrxsmc?: string) {
+  eventBus.emit('reloadQlrList', qlrxsmc)
 }
