@@ -1,4 +1,3 @@
-import { LAYOUT } from '../constant';
 import { PageEnum } from '/@/enums/pageEnum';
 
 const RootRoute = [
@@ -10,28 +9,6 @@ const RootRoute = [
       title: 'Root',
     },
   },
-  // {
-  //   path: '/dashboard',
-  //   name: 'Dashboard',
-  //   component: LAYOUT,
-  //   redirect: '/dashboard/analysis',
-  //   meta: {
-  //     orderNo: 10,
-  //     icon: 'ion:grid-outline',
-  //     title: '主页',
-  //   },
-  //   children: [
-  //     {
-  //       path: 'analysis',
-  //       name: 'Analysis',
-  //       component: () => import('/@/views/dashboard/Analysis/index.vue'),
-  //       meta: {
-  //         // affix: true,
-  //         title: '分析页',
-  //       },
-  //     },
-  //   ],
-  // },
   {
     path: '/login',
     name: 'Login',
@@ -48,6 +25,14 @@ const RootRoute = [
       title: '401',
     },
   },
+  {
+    path: '/init',
+    name: 'init',
+    component: () => import('/@/views/sys/login/InitIndex.vue'),
+    meta: {
+      title: '系统初始化',
+    },
+  }
 ]
 
 export const basicRoutes = RootRoute;

@@ -9,7 +9,7 @@ const BASE_ZSTP = PageEnum.BASE_ZSTP
 // const BASE_EXTRA = PageEnum.BASE_EXTRA
 const ERROR_401 = PageEnum.ERROR_401
 
-const whitePathList: PageEnum[] = [LOGIN_PATH, BASE_ZSTP, ERROR_401];
+const whitePathList: PageEnum[] = [LOGIN_PATH, BASE_ZSTP, ERROR_401, PageEnum.BASE_INIT];
 export function createPermissionGuard(router: Router) {
   const userStore = useUserStoreWithOut();
   const permissionStore = usePermissionStoreWithOut();
@@ -116,9 +116,9 @@ export function createPermissionGuard(router: Router) {
     routes.forEach((route) => {
       router.addRoute(route as unknown as RouteRecordRaw);
     });
-    
+
     router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
-    
+
     permissionStore.setDynamicAddedRoute(true);
     // console.log('Updated Routes1:', router.getRoutes().map(route => route.path));
     if (to.name === PAGE_NOT_FOUND_ROUTE.name) {

@@ -4,7 +4,7 @@
         <a-col :span="8" :offset="7">
             <div class="login-css">
                 <h1
-                    style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.5rem + 1.8vw);line-height: 1.25;font-weight: 600;">
+                    style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.4rem + 1.8vw);line-height: 1.25;font-weight: 600;">
                     不动产登记信息管理系统
                 </h1>
                 <a-form :model="formData" layout="vertical">
@@ -29,8 +29,11 @@
                             style="letter-spacing: 0.5px;height: 40px;" :loading="loading">登录</a-button>
                     </a-form-item>
                     <div style="font-size: 12px;float: right;">
-
-                        <a @click="forgetPassword">忘记密码？</a>
+                        <a-space>
+                            <template #split>
+                                <a-divider type="vertical" />
+                            </template>
+                            <a @click="forgetPassword">忘记密码？</a> <a @click="initProject">系统初始化</a></a-space>
                     </div>
                 </a-form>
             </div>
@@ -43,6 +46,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { useUserStore } from '/@/store/modules/user';
 import { message, notification } from 'ant-design-vue';
 import { encryptionAES } from '/@/utils/cipher';
+import { router } from '/@/router';
 const userStore = useUserStore();
 const formData = reactive({
     username: "",
@@ -97,6 +101,9 @@ function handleLogin() {
  */
 function forgetPassword() {
     message.warn("尚未开放")
+}
+function initProject() {
+    router.push('/init')
 }
 </script>
 <style scoped>
