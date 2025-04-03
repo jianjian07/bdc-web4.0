@@ -437,6 +437,7 @@ function handleProcessOver(obj) {
     let nextnode = obj.nextnode
     let yjfx = obj.yjfx
     let model = {
+      slbh: route.query.slbh,
       taskId: formState.value.taskId || route.query.taskId,
       nextnode: obj.nextnode,
       nextCodeCount: '',
@@ -456,7 +457,7 @@ function handleProcessOver(obj) {
         message.success('移交成功!')
         resolve(true)
       } else {
-        message.error('移交失败')
+        message.error('移交失败：' + res.message)
         resolve(false)
       }
     }).catch(err => {
