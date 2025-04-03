@@ -5,7 +5,7 @@
                 <div style="text-align: right;padding-right: 20px;">
                     当前选中流程
                     【<span style="color:#1890ff;font-weight: 600;">
-                        {{ processInfo.dictName }}
+                        {{ processInfo.lcmc }}
                     </span>】
                 </div>
                 <div style="text-align: right;padding-right: 20px;">
@@ -96,6 +96,7 @@ let processInfo: any = ref('')
 function onSelect(process: any) {
     // debugger
     processInfo.value = process
+  
 }
 /**
  * 创建流程
@@ -104,7 +105,7 @@ function handleAdd() {
     // 跳转至创建流程页面
     const params = {
         // regType: '0101',
-        lcid: processInfo.value.dictCode,
+        lcid: processInfo.value.lcid,
         ajlx: 2
         // processKey: processInfo.value.value
     }

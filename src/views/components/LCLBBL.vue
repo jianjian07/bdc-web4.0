@@ -32,7 +32,7 @@ function loadTreeData() {
           // selectedKeys.value.push(arr[0].value)
           if (arr.length > 0) {
               const firstProcess = arr[0]
-              selectedKeys.value.push(firstProcess.key)
+              selectedKeys.value.push(firstProcess.lcid)
               emit('select', firstProcess)
           }
       }
