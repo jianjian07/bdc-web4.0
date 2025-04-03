@@ -374,7 +374,7 @@ const fwKeys = [
 enum api {
   list = '/api/zrzy-bdc/bdc/bdcZsx/getZrzListByPage',
   lpb = '/api/zrzy-bdc/bdc/lpb/lpb',
-  model = '/api/zrzy-bdc/bdc/slsq/getSlsqModel',
+  model = '/api/zrzy-bdc/bdc/bl/getCaseModel',
   dyxx = '/api/zrzy-bdc/bdc/case/getDyxxList',
   detail = '/api/zrzy-bdc/bdc/lpb/lpbFw'
 }

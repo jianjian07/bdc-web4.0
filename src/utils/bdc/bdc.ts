@@ -113,7 +113,6 @@ export async function extractDataLpb(options: any) {
     const { data, dtype, open, reload, regtype } = options
     const slbh = route.query.slbh?.toString()
     let dyhList: any = []
-    debugger
     let fwxxList = data.fwxxList
     for (let index = 0; index < fwxxList.length; index++) {
         const dyh = fwxxList[index];

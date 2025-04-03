@@ -83,6 +83,7 @@ import { getTreeDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { useRoute } from "vue-router"
 
 const route = useRoute()
+
 let dataSource: any = ref([])
 const editableData: any = reactive({});
 
@@ -166,7 +167,7 @@ const props = defineProps({
     default: ''
   },
   disabled: {
-    type: String,
+    type: Boolean,
     default: false
   }
 })

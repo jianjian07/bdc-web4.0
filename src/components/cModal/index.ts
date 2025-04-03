@@ -11,7 +11,6 @@ export function cModal (options?: cModalModel) {
   let instance: any
 
   div = document.createElement('div')
-
   // 没有传入方法时 无论点击确认或取消都会关闭弹窗
   // 这里是否需要默认关闭摧毁dom?? 默认摧毁
   if (options && !options.onCancel) {
