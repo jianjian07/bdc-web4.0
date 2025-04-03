@@ -442,7 +442,7 @@ function handleProcessOver(obj) {
       nextnode: obj.nextnode,
       nextCodeCount: '',
       reason: '',
-      processModel: yjfx == 3 ? 3 : 1,
+      processModel: yjfx == 3 ? 3 : (yjfx == 2 ? 11 : 1),
       rejectModelNode: yjfx == 3 ? nextnode : '',
       nextUserName: obj.nextnodeUserNameList,
       nextUserId: obj.nextnodeUserIdList,
