@@ -23,7 +23,10 @@
             </div> -->
             <div :class="['entryItem', 'cursorBtn', 'cursorBtn' + index]" v-for="(entry, index) in commonEntry"
               :key="entry.key" @click="handleAdd(entry)">
-              <span><svg-icon :name="entry.icon" width="30px" height="30px"></svg-icon>{{ entry.label }}</span>
+              <div class="icon-content">
+                <svg-icon :name="entry.icon" width="25%" height="30px"></svg-icon>
+                <span class="icon-label">{{ entry.label }}</span>
+              </div>
             </div>
           </div>
         </a-card>
@@ -199,10 +202,11 @@ function handleAdd(entry: any) {
           cursor: pointer;
           z-index: 1;
           position: relative;
+          
 
           span:nth-of-type(1) {
             font-weight: bold;
-            font-size: 22px;
+            font-size: 1.2vw;
           }
         }
 
@@ -250,12 +254,27 @@ function handleAdd(entry: any) {
           flex-direction: column;
           align-items: center;
 
-          span {
+          .icon-content {
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding-top: 8px;
+            align-items: center;
+            width: 90%;
+            margin: auto;
+            
+            .icon-label {
+              font-size: 1.3vw;
+              width: 75%;
+              height: 90px;
+              white-space: nowrap;
+            }
           }
+          
+          //span {
+          //  display: flex;
+          //  align-items: center;
+          //  justify-content: center;
+          //  padding-top: 8px;
+          //}
         }
       }
     }
@@ -277,8 +296,9 @@ function handleAdd(entry: any) {
           justify-content: space-around;
           align-items: center;
           color: #333;
-          font-size: 20px;
+          font-size: 1.2vw;
           cursor: pointer;
+          white-space: nowrap;
 
           .infoItem {
             background-size: 100% 100%;
@@ -301,7 +321,7 @@ function handleAdd(entry: any) {
 
             span:nth-of-type(2) {
               font-weight: bold;
-              font-size: 46px;
+              font-size: 2.5vw;
             }
           }
 
