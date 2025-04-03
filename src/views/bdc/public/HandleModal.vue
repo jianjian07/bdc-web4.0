@@ -387,7 +387,7 @@ async function handleOk() {
         nextnode: nextnode,
         nextnodeUserNameList: nextnodeUserNameList.toString(),
         nextnodeUserIdList: nextnodeUserIdList.toString(),
-        yjfx: handleUserType.value
+        yjfx: handleDirection.value
       }
       return await handleProcessOver(obj)
     } else {
@@ -418,7 +418,7 @@ async function handleOk() {
         nextnode: nextnode,
         nextnodeUserNameList: nameItems.toString(),
         nextnodeUserIdList: idItems.toString(),
-        yjFx: handleUserType.value
+        yjFx: handleDirection.value
       }
       return await handleProcessOver(obj)
     }
@@ -442,7 +442,8 @@ function handleProcessOver(obj) {
       nextnode: obj.nextnode,
       nextCodeCount: '',
       reason: '',
-      processModel: yjfx == 3 ? 3 : (yjfx == 2 ? 11 : 1),
+      processModel: yjfx == 3 ? 3 : 1,
+      yjfx: yjfx,
       rejectModelNode: yjfx == 3 ? nextnode : '',
       nextUserName: obj.nextnodeUserNameList,
       nextUserId: obj.nextnodeUserIdList,
