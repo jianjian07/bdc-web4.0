@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, onMounted, ref } from "vue"
-import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
+import { getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
 const Qlrpz = defineAsyncComponent(() => import("/@/views/system/case/components/Qlrpz.vue"))
@@ -52,21 +52,24 @@ onMounted(() => {
 })
 
 function initData() {
-  let arr = getDictItemsByCode('bllc')
+  let arr = getTreeDictItemsByCode('bllc')
   treeData.value = arr
   if (arr.length) {
-    selectedKeys.value.push(arr[0].value)
-    processInfo.value = arr[0]
-    processInfo.value.title = arr[0].label
-    processInfo.value.key = arr[0].value
+    let item = arr.children ? arr.children[0] : arr[0]
+    selectedKeys.value.push(item.value)
+    processInfo.value = item
+    processInfo.value.title = item.label
+    processInfo.value.key = item.value
   }
 }
 
 function onSelect(_selectedKeys: any, e: any) {
   const process = e.node
-  processInfo.value = process
-  processInfo.value.title = process.label
-  processInfo.value.key = process.value
+  if (!process.children) {
+    processInfo.value = process
+    processInfo.value.title = process.label
+    processInfo.value.key = process.value
+  }
 }
 /**
  * 基础配置

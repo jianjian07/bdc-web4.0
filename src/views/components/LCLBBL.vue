@@ -49,9 +49,10 @@ const emit = defineEmits(['select', 'setTreeData'])
  * @param e 
  */
 function onSelect(_selectedKeys: any, e: any) {
-    debugger
     const process = e.node
-    emit('select', process)
+    if (!process.children) {
+      emit('select', process)
+    }
 }
 </script>
 

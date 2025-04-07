@@ -47,7 +47,7 @@ const emit = defineEmits(['select', 'setTreeData'])
  */
 function onSelect(_selectedKeys: any, e: any) {
     const process = e.node
-    if (process.type == '1') {
+    if (!process.children) {
         emit('select', process)
     }
 }

@@ -5,7 +5,7 @@
       <a-input-search style="margin-bottom: 10px" v-model:value="searchName" placeholder="请输入关键字搜索" enter-button
         @search="onSearch" />
       <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys"
-        :defaultExpandAll="false" :show-icon="true" :tree-data="treeData" checkable>
+        :defaultExpandAll="false" :show-icon="true" :tree-data="treeData" checkable check-strictly>
         <template #title="{ title }">
           <span v-if="title.indexOf(searchName) > -1">
             {{ title.substr(0, title.indexOf(searchName)) }}
@@ -23,7 +23,7 @@
 import { onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { findNode, getDictItemsByCode } from "/@/views/online/utils/commonUtils"
+import { findNode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
 // 确认loading
@@ -86,13 +86,27 @@ function initData() {
     }
   })
   } else {
-    let arr = getDictItemsByCode('bllc')
-    treeData.value = arr.map((item) => {
-      item.key = item.value
-      item.title = item.label
-      return item
-    })
+    let arr = getTreeDictItemsByCode('bllc')
+    treeData.value = setBlList(arr)
   }
+}
+
+function setBlList(newArr, parentId?: any) {
+   let newData = newArr.map(item => {
+      item.title = item.label
+       if (parentId) {
+        item.pid = parentId
+      }
+      let pid = item.value
+      item.key = item.value
+     
+      if (item.children) {
+        item.children = setBlList(item.children, pid)
+      }
+      return item
+  })
+  
+  return newData
 }
 
 function setPidList(newArr, parentId?: any) {
@@ -204,7 +218,7 @@ function hasKeyWord(tree, keyword) {
  * 确认弹窗
  */
 function handleModalOk() {
-  let keys = checkedKeys.value
+  let keys = Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
   let nodes = keys.map((key) => {
     let node = findNode(treeData.value, key, 'key')
     return {
@@ -234,7 +248,6 @@ function handleModalOk() {
   }).catch(err => {
     confirmLoading.value = false
   })
-  console.log('nodes',nodes)
 }
 
 /**
