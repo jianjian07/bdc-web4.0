@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
 import { store } from '/@/store';
-import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE,REFRESH_ROUTE } from "../../router/routes/basic"
+import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE, REFRESH_ROUTE } from "../../router/routes/basic"
 import { AppRouteRecordRaw } from "../../router/types";
 import { getMenuList, getMenuListByJson, getMenuListBySysId } from "/@/api/sys/menu"
-import { dynamicRouter,setRouteList } from "/@/router/helper/routeHelper"
+import { dynamicRouter, setRouteList } from "/@/router/helper/routeHelper"
 import { menuModel } from "/@/api/sys/model/menuModel";
 import { IGS_INFO } from "/@/enums/cacheEnum";
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
@@ -13,6 +13,7 @@ interface PermissionState {
     // 是否已动态添加路由
     isDynamicAddedRoute: boolean;
     menuList: menuModel[];
+    permissionList: string[];
     toolBarInfo: toolbarModel[],
     igsInfo: IgsInfoModel[]
 }
@@ -25,6 +26,7 @@ export const usePermissionStore = defineStore({
         // 是否已动态添加路由
         isDynamicAddedRoute: false,
         menuList: [],
+        permissionList: [],
         toolBarInfo: [],
         igsInfo: []
     }),
@@ -42,6 +44,9 @@ export const usePermissionStore = defineStore({
         },
         getIgsInfo(): IgsInfoModel[] {
             return this.igsInfo.length > 0 ? this.igsInfo : getAuthCache<IgsInfoModel[]>(IGS_INFO);
+        },
+        getPermissionList(): string[] {
+            return this.permissionList;
         }
     },
     actions: {
@@ -50,6 +55,9 @@ export const usePermissionStore = defineStore({
         },
         setMenuList(list: any) {
             this.menuList = list;
+        },
+        setPermissionList(list: string[]) {
+            this.permissionList = list;
         },
         setToolBarList(list: any) {
             this.toolBarInfo = list;
@@ -67,14 +75,12 @@ export const usePermissionStore = defineStore({
             if (this.getMenuInfo != null && this.getMenuInfo.length > 0) {
                 routeList = this.getMenuInfo
             } else {
-                let menuInfo = (await getMenuListBySysId()) as AppRouteRecordRaw[]
-                if (menuInfo != null && Object.keys(menuInfo).length !== 0) {
-                    let list = menuInfo.menuList
-                        if (list != null && list.length > 0) {
-                            routeList = (list) as AppRouteRecordRaw[]
-                            this.setMenuList(list)
-                            // this.setToolBarList(toolbar)
-                        }
+                let data: any = await getMenuListBySysId()
+                let list = (data.menuList) as AppRouteRecordRaw[]
+                if (list != null && list.length > 0) {
+                    routeList = (list) as AppRouteRecordRaw[]
+                    this.setMenuList(list)
+                    this.setPermissionList(data.btnList)
                 }
             }
             let newRoutes = setRouteList(JSON.parse(JSON.stringify(routeList)))

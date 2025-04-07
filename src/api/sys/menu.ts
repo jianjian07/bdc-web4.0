@@ -11,7 +11,8 @@ import { menuModel } from "./model/menuModel";
 enum api {
     menuUrlapi = '/src/assets/sys/menu.json',
     // menuUrlApi = '/api/zrzy-system/menu/tree?subsystemId=1'
-    menuUrlApi = '/api/zrzy-system/menu/getPermissionList'
+    menuUrlApi = '/api/zrzy-system/menu/getPermissionList',
+    permissionListApi = '/api/zrzy-system/menu/getPermissionList?subsystemId=1&roleId=1'
     // menuUrlapi = '/sys/zrzy-usermanager-biz/menu/getUserMenu?subsystemName=数据管理系统',
     // allMenuUrlapi = '/api/sys/zrzy-usermanager-biz/menu/getUserMenuAll?subsystemName=数据管理系统',
 }
@@ -47,7 +48,7 @@ export function getMenuListByJson() {
 export function getMenuListBySysId() {
     return new Promise((resolve) => {
         let subsystemId = window.settingConfig.subsystemId
-        defHttp.get({ url: api.menuUrlApi + `?subsystemId=${subsystemId}` }, { withToken: true }).then((res) => {
+        defHttp.get({ url: api.permissionListApi + `?subsystemId=${subsystemId}` }, { withToken: true }).then((res) => {
             if (res.code == 200) {
                 resolve(res.result)
             } else {

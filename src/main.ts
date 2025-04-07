@@ -12,6 +12,8 @@ import formImagining from 'form-imagining'
 import 'form-imagining/dist/style.css'
 import 'ant-design-vue/dist/reset.css';
 import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
+
+import setDirectives from './directives/index'
 // createApp(App).mount('#app')
 async function bootstrap() {
     const app = createApp(App)
@@ -32,6 +34,7 @@ async function bootstrap() {
     // 定时器(长时间不操作退出)
     checkTimeout()
     app.use(formImagining)
+    app.use(setDirectives)
     app.mount('#app', true)
 }
 bootstrap()

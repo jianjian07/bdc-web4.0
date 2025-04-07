@@ -47,7 +47,7 @@
                 {{ index + 1 }}
               </template>
               <template v-if="column.dataIndex === 'operation'">
-                <a @click="handleLcqx(record)">流程权限</a>
+                <a @click="handleLcqx(record)" v-permission="'system:role:workflow'">流程权限</a>
                 <!-- <a-divider type="vertical" />
                 <a @click="handleDept(record)">分配</a> -->
                 <a-divider type="vertical" />
