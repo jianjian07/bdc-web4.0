@@ -12,7 +12,7 @@ enum api {
     menuUrlapi = '/src/assets/sys/menu.json',
     // menuUrlApi = '/api/zrzy-system/menu/tree?subsystemId=1'
     menuUrlApi = '/api/zrzy-system/menu/getPermissionList',
-    permissionListApi = '/api/zrzy-system/menu/getPermissionList?subsystemId=1&roleId=1'
+    permissionListApi = '/api/zrzy-system/menu/getPermissionList'
     // menuUrlapi = '/sys/zrzy-usermanager-biz/menu/getUserMenu?subsystemName=数据管理系统',
     // allMenuUrlapi = '/api/sys/zrzy-usermanager-biz/menu/getUserMenuAll?subsystemName=数据管理系统',
 }
