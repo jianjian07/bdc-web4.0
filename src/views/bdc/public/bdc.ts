@@ -16,14 +16,14 @@ import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import { checkLogic } from "/@/utils/bdc/bdc"
-// import { 
-//   saveFormData, 
-//   saveHandleData, 
-//   getFormInfo, 
-//   validateInfos, 
-//   setInputValue, 
-//   setValidateInfos, 
-//   updateFormDatas, 
+// import {
+//   saveFormData,
+//   saveHandleData,
+//   getFormInfo,
+//   validateInfos,
+//   setInputValue,
+//   setValidateInfos,
+//   updateFormDatas,
 //   eventBus } from 'form-imagining'
 import { guid } from "/@/utils";
 
@@ -775,7 +775,7 @@ export function validateQlbl(validateKey, qlrList, value) {
 export function delDataByYwh(ywh) {
   return new Promise((resolve) => {
     defHttp.delete({
-      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      url: '/api/zrzy-bdc/bdc/case/deleteBusinessData',
       params: { type: 2 },
       data: { ywh: ywh }
     }, { withToken: true }).then((res) => {
@@ -797,7 +797,7 @@ export function delDataByYwh(ywh) {
 export function delDataBySlbh(slbh) {
   return new Promise((resolve) => {
     defHttp.delete({
-      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      url: '/api/zrzy-bdc/bdc/case/deleteBusinessData',
       params: { type: 1 },
       data: { slbh: slbh }
     }, { withToken: true }).then((res) => {
@@ -820,7 +820,7 @@ export function delDataBySlbh(slbh) {
 export function delDataBySlbhZbm(slbh, zbm) {
   return new Promise((resolve) => {
     defHttp.delete({
-      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      url: '/api/zrzy-bdc/bdc/case/deleteBusinessData',
       params: { type: 3 },
       data: { slbh: slbh, zbm: zbm }
     }, { withToken: true }).then((res) => {
@@ -843,7 +843,7 @@ export function delDataBySlbhZbm(slbh, zbm) {
 export function delDataBySlbhBdcdyh(slbh, bdcdyh) {
   return new Promise((resolve) => {
     defHttp.delete({
-      url: '/api/zrzy-bdc/bdcdj/lcsc/deleteBusinessData',
+      url: '/api/zrzy-bdc/bdc/case/deleteBusinessData',
       params: { type: 4 },
       data: { slbh: slbh, bdcdyh: bdcdyh }
     }, { withToken: true }).then((res) => {
