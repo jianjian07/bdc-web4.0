@@ -78,6 +78,7 @@ function setTreeData(data: any) {
  * @param data 当前选中流程的基础配置
  */
 function setBaseInfo(data: any) {
+  data.prefix = data.prefix || processInfo.value.value
   baseInfo.value = data
 }
 </script>

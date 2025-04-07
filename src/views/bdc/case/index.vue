@@ -5,7 +5,7 @@
                 <div style="text-align: right;padding-right: 20px;">
                     当前选中流程
                     【<span style="color:#1890ff;font-weight: 600;">
-                        {{ processInfo.title }}
+                        {{ processInfo.lcmc }}
                     </span>】
                 </div>
                 <div style="text-align: right;padding-right: 20px;">
@@ -19,7 +19,7 @@
         </div>
 
         <div style="width: 100%;background-color: #fff;margin-left:8px;">
-            <a-table :columns="columns" :data-source="dataSource" style="width: 100%;">
+            <a-table :columns="columns" :data-source="dataSource" style="width: 100%;" :pagination="pagination" @change="onTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'action'">
                         <a-space>
@@ -37,14 +37,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h, createVNode } from "vue";
+import { ref, h, createVNode, onMounted } from "vue"
 import CLCLB from "/@/views/components/LCLB.vue"
 import { defHttp } from "/@/utils/http/axios";
 import { ArrowRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { addFlow } from "../utils/case";
 import { Modal, message } from "ant-design-vue";
 enum api {
-    getProcessList = "/api/zrzy-bdc/bdc/slsq/list",
+    getProcessList = "/api/zrzy-bdc/bdc/bl/list",
     delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData"
 }
 // 案卷编号
@@ -80,13 +80,24 @@ let pagination = ref({
     current: 1,
     pageSize: 10,
 })
-loadData()
+onMounted(() => {
+  loadData()
+})
+
 function loadData() {
     defHttp.post({ url: api.getProcessList, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, ajlx: 1 } }, { withToken: true }).then((res) => {
-        dataSource.value = res.result.records
+        if (res && res.success) {
+            dataSource.value = res.result.records
+            pagination.value.total = res.result.total
+        }
     })
 }
 let processInfo: any = ref('')
+
+function onTableChange(pag) {
+  pagination.value = pag
+  loadData()
+}
 /**
  * 选中流程事件
  * @param process 选中的流程
@@ -101,8 +112,7 @@ function handleAdd() {
     // 跳转至创建流程页面
     const params = {
         // regType: '0101',
-        lcid: processInfo.value.key,
-        processKey: processInfo.value.value
+        lcid: processInfo.value.lcid
     }
     addFlow(params)
 }

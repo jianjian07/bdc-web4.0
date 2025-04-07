@@ -1,6 +1,6 @@
 <template>
     <div style="width: 280px;padding: 10px 8px;">
-        <a-directory-tree multiple :tree-data="treeData" @select="onSelect" v-model:expandedKeys="expandedKeys"
+        <a-directory-tree multiple :tree-data="treeData" :fieldNames="props.isRoleProcess ? { children:'children', title:'lcmc', key:'lcid' } : null " @select="onSelect" v-model:expandedKeys="expandedKeys"
             v-model:selectedKeys="selectedKeys">
             <template #icon="">
             </template>
@@ -19,7 +19,7 @@ const props = defineProps({
 })
 enum api {
     processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
-    roleProcesslist = '/api/zrzy-bdc/act/process/extActProcess/getRoleProcessList',
+    roleProcesslist = '/api/zrzy-system/role/getRoleProcessList',
 }
 const expandedKeys = ref<string[]>(['100']);
 const selectedKeys = ref<string[]>([]);
@@ -34,7 +34,7 @@ function loadTreeData() {
         emit('setTreeData', treeData.value)
         if (res.result.length > 0) {
             const firstProcess = res.result[0].children[0]
-            selectedKeys.value.push(firstProcess.key)
+            selectedKeys.value.push(props.isRoleProcess ? firstProcess.lcid : firstProcess.key)
             emit('select', firstProcess)
         }
     })

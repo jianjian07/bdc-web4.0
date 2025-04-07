@@ -80,7 +80,7 @@ function initData() {
   if (currentAjlx.value == '1') {
     defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      treeData.value = res.result
+      treeData.value = setPidList(res.result)
     } else {
       message.warning(res.message)
     }
@@ -93,7 +93,20 @@ function initData() {
       return item
     })
   }
-  
+}
+
+function setPidList(newArr, parentId?: any) {
+  let newData = newArr.map(item => {
+    if (parentId) {
+      item.pid = parentId
+    }
+    let pid = item.value
+    if (item.children) {
+      item.children = setPidList(item.children, pid)
+    }
+    return item
+  })
+  return newData
 }
 
 /**
@@ -198,7 +211,8 @@ function handleModalOk() {
       roleId: currentRecord.value.id,
       lcid: key,
       lcmc: node.title,
-      ajlx: currentAjlx.value
+      ajlx: currentAjlx.value,
+      lclb: node.pid
     }
   })
   
