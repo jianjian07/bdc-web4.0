@@ -27,12 +27,12 @@
             <template v-for="(form, index) in formList">
               <template v-if="form.bdlb == '0'">
                 <component v-bind:is="generateForm" :id="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setRef" :reload="reload" >
+                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="setRef" :reload="reload" >
                 </component>
               </template>
               <template v-else>
                 <component v-bind:is="component(form.vfd)" :id="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setCRef" :reload="reload" >
+                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="setCRef" :reload="reload" >
                 </component>
               </template>
 <!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
