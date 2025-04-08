@@ -241,13 +241,16 @@ const generateVue3 = defineComponent({
          * table的change事件
          * @param data 
          */
-        function handleTableChange(data: any) {
+        function handleTableChange(data: any, callback?: any) {
             const { sorter, pagination } = data
             const { field, order } = sorter
             options.sortField = field;
             options.sortOrder = order
             paginations.value.current = pagination.current
             initTableV2(options);
+            if (callback) {
+              callback(data)
+            }
         }
         function onSelectChange(selectedRowKeys, selectedRows) {
             basicInfo.value.state.selectedRowKeys = selectedRowKeys;

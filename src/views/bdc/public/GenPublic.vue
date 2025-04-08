@@ -15,22 +15,22 @@
 import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { getFormInfo, resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
+import { resetValidateInfos } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
 import { router } from "/@/router"
 const route = useRoute();
 const generateForm = computed(() => {
-  return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
+  return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })
 let spinning = ref<boolean>(false)
 // 通用表单组件实例
 let demoRefs: any = []
 // 动态设置ref 在组件渲染后才能设置
 const setRef = (el: any) => {
-  if (el) {
-    demoRefs.push(el)
+  if (el && el.fView) {
+    demoRefs.push(el.fView)
   }
 }
 // 是否显示权利人
@@ -72,7 +72,6 @@ onMounted(() => {
 function initQlrXx() {
   ywh.value = props.formData.ywh
   bdcdyh.value = props.formData.bdcdyh
-  
   let taskId = route.query.taskId || props.formData.taskId
   let slbh = route.query.slbh
   defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { slbh: slbh, ywh: ywh.value, bdcdyh: bdcdyh.value, taskId: taskId } }, { withToken: true }).then((res) => {
@@ -119,7 +118,7 @@ async function saveData(params?: any) {
  * @param params
  */
 async function saveValidateData(params?: any) {
-  console.log('保存表单',demoRefs)
+  // console.log('保存表单',demoRefs)
   if (params) {
     params['params'] = params?.params || props.formData
     params['validateSave'] = true

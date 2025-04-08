@@ -21,14 +21,23 @@
               </template>
               <LookLpb v-if="eType == 'lpb'" ref="dataForm" @ok="onReloadLpb"></LookLpb>
               <r-view-online v-else :id="formId" ref="dataForm" @ok="onReload"></r-view-online>
-<!--              <CRView v-else :id="formId" ref="dataForm" @ok="onReload"></CRView>-->
             </a-drawer>
           </div>
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
-              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"
-                :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">
-              </component>
+              <template v-if="form.bdlb == '0'">
+                <component v-bind:is="generateForm" :id="form.formId"
+                  :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setRef" :reload="reload" >
+                </component>
+              </template>
+              <template v-else>
+                <component v-bind:is="component(form.vfd)" :id="form.formId"
+                  :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setCRef" :reload="reload" >
+                </component>
+              </template>
+<!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
+<!--                :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">-->
+<!--              </component>-->
             </template>
             <template v-if="qlr">
               <qlr-list v-show="showQlr" :qlr="qlr"></qlr-list>
@@ -55,14 +64,12 @@ import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
-import eventBus from "/@/views/online/utils/eventBus"
-import { resetValidateInfos } from "/@/views/online/utils/wonder1.0.1"
+import { resetValidateInfos, eventBus } from "form-imagining"
 import RViewOnline from "/@/views/online/report/RViewOnline.vue"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
-const CRView = defineAsyncComponent(() => import("/@/views/online/report/RView.vue"))
 const generateForm = computed(() => {
-  return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
+  return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })
 const LookLpb = defineAsyncComponent(() => import("/@/views/bdc/lpb/index.vue"))
 const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/index.vue"))
@@ -106,6 +113,12 @@ let demoRefs: any = []
 let slbh: any = ref<string>('')
 // 动态设置ref 在组件渲染后才能设置
 const setRef = (el: any) => {
+  if (el && el.fView) {
+    demoRefs.push(el.fView)
+  }
+}
+
+const setCRef = (el: any) => {
   if (el) {
     demoRefs.push(el)
   }

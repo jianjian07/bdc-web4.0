@@ -1,13 +1,4 @@
 import { useUserStore } from "/@/store/modules/user"
-import {
-  getFormInfo,
-  saveFormData,
-  saveHandleData,
-  setInputValue,
-  setValidateInfos, updateFormDatas,
-  validateInfos
-} from "/@/views/online/utils/wonder1.0.1"
-import eventBus from "/@/views/online/utils/eventBus"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed, nextTick } from "vue"
@@ -16,15 +7,15 @@ import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import { checkLogic } from "/@/utils/bdc/bdc"
-// import {
-//   saveFormData,
-//   saveHandleData,
-//   getFormInfo,
-//   validateInfos,
-//   setInputValue,
-//   setValidateInfos,
-//   updateFormDatas,
-//   eventBus } from 'form-imagining'
+import { 
+  saveFormData, 
+  saveHandleData, 
+  getFormInfo, 
+  validateInfos, 
+  setInputValue, 
+  setValidateInfos, 
+  updateFormDatas, 
+  eventBus } from 'form-imagining'
 import { guid } from "/@/utils";
 
 const userStore = useUserStore()

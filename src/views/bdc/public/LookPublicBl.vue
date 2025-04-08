@@ -16,14 +16,14 @@
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import eventBus from "/@/views/online/utils/eventBus"
+import { eventBus }  from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
 const route = useRoute();
 const generateForm = computed(() => {
-  return defineAsyncComponent(() => import("/@/views/online/form/GenerateForm.vue"))
+  return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })
 
 
@@ -37,8 +37,8 @@ let showQlr = ref<boolean>(true)
 let demoRefs: any = []
 // 动态设置ref 在组件渲染后才能设置
 const setRef = (el: any) => {
-  if (el) {
-    demoRefs.push(el)
+  if (el && el.fView) {
+    demoRefs.push(el.fView)
   }
 }
 
