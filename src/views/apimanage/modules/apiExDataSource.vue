@@ -8,7 +8,7 @@
         </template>
       </a-button>
       <div class="api-ex-data-source-tree">
-        <template v-if="apiData.apiDataSource.length">
+        <template v-if="apiData?.apiDataSource.length">
           <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys" 
                   v-model:expandedKeys="expandedRowKeys" :fieldNames="{ children:'children', key: 'id' }"
             :blockNode="true" @select="handleSelectTreeItem">
@@ -99,7 +99,7 @@ let selectedNode = ref<any>()
 let expandedRowKeys = ref<any[]>([])
 
 onMounted(() => {
-  if (props.apiData.apiDataSource.length) {
+  if (props.apiData?.apiDataSource?.length) {
     selectedNode.value = props.apiData.apiDataSource[0]
     selectedKeys.value = [props.apiData.apiDataSource[0].id]
   }

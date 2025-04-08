@@ -78,7 +78,7 @@
               <div class="api-editor-manage-interface-options">
                 <div class="api-editor-manage-interface-header">
                   <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px">
-                    <a-radio-group v-model:value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
+                    <a-radio-group :value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
                       <a-radio-button :value="1">自定义</a-radio-button>
                       <a-radio-button :value="2">magicapi</a-radio-button>
                       <a-radio-button :value="3">通用接口</a-radio-button>
@@ -407,18 +407,12 @@ function saveApi(isSend?: any) {
     let saveRes
     if (select.apiType == 2) {
       saveRes = await saveCommonApi(select, true)
-      select.id = saveRes
-      let body = getMagicApiBody(JSON.parse(JSON.stringify(select)))
-      saveRes = await saveMagicApi(body, isSend)
-    } else {
-      let addType = !select.id
-      if (!addType) {
-        // 当前更新切换了接口类型, 查询是否已经保存过magicApi接口, 若保存过则删除
-        let _res = await getMagicApiInfo(select.id)
-        if (_res) {
-          await removeMagicApiById(select.id)
-        }
+      if (saveRes) {
+        select.id = saveRes
+        let body = getMagicApiBody(JSON.parse(JSON.stringify(select)))
+        saveRes = await saveMagicApi(body, isSend)
       }
+    } else {
       saveRes = await saveCommonApi(select, isSend)
     }
     if (select.jsonContent) {
@@ -454,9 +448,7 @@ function saveCommonApi(data, isSend?: any) {
           resolve(data.id)
         }
       } else {
-        if (!isSend) {
-          message.warning(res.message)
-        }
+        message.warning(res.message)
         resolve(false)
       }
     }).catch(err => {
@@ -534,9 +526,19 @@ function formatSelectItem(select) {
   return select
 }
 
-function handleChangeApiType(pane, e) {
+async function handleChangeApiType(pane, e) {
+  let oldApiType = JSON.parse(JSON.stringify(pane.apiType))
+  let addType = typeof pane.id == 'string' ? pane.id.substr(0, 4) == '新增接口' : false
+  if (oldApiType == 2 && !addType) {
+    // 当前更新切换了接口类型, 查询是否已经保存过magicApi接口, 若保存过则删除
+    let _res = await getMagicApiInfo(pane.id)
+    if (_res) {
+      await removeMagicApiById(pane.id)
+    }
+  }
   let value = e.target.value
   pane.activeParamPane = value == '2' ? 'script' : 'header'
+  pane.apiType = value
 }
 
 /**
