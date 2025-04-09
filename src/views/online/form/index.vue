@@ -127,25 +127,20 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent, h } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, ExportOutlined, ImportOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { message, notification } from 'ant-design-vue';
+import { ref, onMounted, defineAsyncComponent } from "vue";
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, ExportOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 import { router } from "/@/router";
 import { exprotJson, importJson } from './../utils/file';
 import ClipboardJS from 'clipboard'
 import HistoryDrawer from './modules/HistoryDrawer.vue';
 import CVfd from './modules/Vfd.vue'
-import type { TableProps, TableColumnType } from 'ant-design-vue';
-import { formatToDate, formatToDateTime } from "../utils/dateUtil";
-import { uploadListProps } from "ant-design-vue/es/upload/interface";
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
     lockFormUrl = '/api/zrzy-form/form/lockForm',
     unlockFormUrl = '/api/zrzy-form/form/unlockForm',
-    delUrl = '/api/zrzy-form/form/delete', // 删除
-    exportJson = '/api/zrzy-form/export/exportJson',
-    importJson = '/api/zrzy-form/export/importJson'
+    delUrl = '/api/zrzy-form/form/delete'
 }
 const columns = [
     { title: "ID", dataIndex: "id", width: 200 },
