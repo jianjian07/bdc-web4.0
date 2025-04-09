@@ -40,7 +40,6 @@ export async function extractData(options: any) {
         case '0402'://续查封
         case '0404'://解查封
         case '0102,0102':
-        case '0103,0102':
         case '0302':
         case '0303':
         case '0304':
@@ -60,6 +59,20 @@ export async function extractData(options: any) {
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
+            }
+            break;
+        case '0103,0102':
+            // 分割合并只能选择其中一条
+            const caseData = data[0]
+            const oldBdcdyh = caseData.bdcdyh ? caseData.bdcdyh.split(',') : ['']
+            const oldCqzh = caseData.bdcqzh ? caseData.bdcqzh.split(',') : ['']
+            const oldYwh = caseData.ssywh ? caseData.ssywh.split(',') : ['']
+            for (let index = 0; index < oldBdcdyh.length; index++) {
+                dyhList.push({
+                    bdcdyh: oldBdcdyh[index],
+                    bdcqzh: oldCqzh.length > index ? oldCqzh[index] : oldCqzh[0],
+                    ssywh: oldYwh.length > index ? oldYwh[index] : oldYwh[0]
+                })
             }
             break;
         case '0212':
