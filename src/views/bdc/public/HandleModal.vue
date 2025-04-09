@@ -141,7 +141,8 @@ onMounted(() => {
  */
 function getTaskInfo() {
   let taskId = route.query.taskId || props.formData.taskId
-  defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+  let slbh = route.query.slbh 
+  defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId, slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       let taskData = res.result
       let slbh = route.query.slbh || props.formData.slbh
