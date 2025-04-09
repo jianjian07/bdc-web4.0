@@ -38,15 +38,35 @@
     </div>
     <div class="wonder-table-css">
         <div class="wonder-table-toolbar">
-            <a-button type="primary" @click="addData">
-                <template #icon>
-                    <plus-outlined />
+            <a-space>
+                <a-button type="primary" @click="addData">
+                    <template #icon>
+                        <plus-outlined />
+                    </template>
+                    新增
+                </a-button>
+                <a-button type="primary" @click="handleExprotJson">
+                    <template #icon>
+                        <ExportOutlined />
+                    </template>
+                    导出
+                </a-button>
+                <a-upload name="file" v-model:file-list="fileList" :headers="{ authorization: 'authorization-text' }"
+                    :showUploadList="false" :customRequest="handleImportJson" style="margin: auto 2px;">
+                    <a-button>
+                        <upload-outlined></upload-outlined>
+                        导入
+                    </a-button>
+                </a-upload>
+            </a-space>
+            <a-alert type="info" show-icon style="margin: 5px 0px -2px;">
+                <template #message>
+                    {{ selectedAllKeys.length > 0 ? "已选中 " + selectedAllKeys.length + " 条记录" : "未选中任何数据" }}
                 </template>
-                新增
-            </a-button>
+            </a-alert>
         </div>
-        <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-            @change="onChange($event, loadData)">
+        <a-table :row-selection="rowSelection" :columns="columns" rowKey="id" :data-source="datalist"
+            :pagination="pagination" @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'isLoad' || column.dataIndex === 'isMybatis'">
                     <a-tag :color="record[column.dataIndex] === 1 ? 'green' : 'red'" style="padding: 0 15px;">
@@ -71,9 +91,9 @@
                                     <a-menu-item>
                                         <a @click="preview(record)">预览</a>
                                     </a-menu-item>
-<!--                                    <a-menu-item>-->
-<!--                                        <a @click="previewTest(record)">测试预览2</a>-->
-<!--                                    </a-menu-item>-->
+                                    <!--                                    <a-menu-item>-->
+                                    <!--                                        <a @click="previewTest(record)">测试预览2</a>-->
+                                    <!--                                    </a-menu-item>-->
                                     <a-menu-item>
                                         <a @click="copyData(record)">复制</a>
                                     </a-menu-item>
@@ -100,6 +120,7 @@ import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
+import { exprotJson, importJson } from "../utils/file";
 const ReportModal = defineAsyncComponent(() => import("/@/views/online/report/ReportModal.vue"));
 const columns = [
     { title: "ID", dataIndex: "id", width: 200 },
@@ -155,8 +176,8 @@ function refreshData() {
  * 查询
  */
 function searchData() {
-  pagination.value.current = 1
-  loadData()
+    pagination.value.current = 1
+    loadData()
 }
 
 function design(record: any) {
@@ -175,7 +196,7 @@ function preview(record: any) {
  * @param record
  */
 function previewTest(record: any) {
-  router.push('/online/report/viewOnline' + '/' + record.id )
+    router.push('/online/report/viewOnline' + '/' + record.id)
 }
 
 /**
@@ -245,6 +266,28 @@ function copyData(record: any) {
         console.info(err)
     })
 }
+let selectedAllKeys: any = ref([])
+const rowSelection: any = {
+    onChange: (selectedRowKeys: string[]) => {
+        selectedAllKeys.value = selectedRowKeys;
+    }
+};
+/**
+ * 导出json
+ */
+function handleExprotJson() {
+    const params = { ids: selectedAllKeys.value.join(','), formType: 'report' }
+    exprotJson(params, "报表")
+}
+/**
+ * 导入json
+ */
+let fileList: any = ref([])
+
+// 自定义上传
+const handleImportJson = () => {
+    importJson(fileList.value, { formType: 'report' }, loadData)
+};
 </script>
 <style lang="less" scoped>
 // table通用样式，保持项目内样式一致

@@ -43,14 +43,14 @@
                     </template>
                     新增
                 </a-button>
-                <a-button type="primary" @click="exprotJson">
+                <a-button type="primary" @click="handleExprotJson">
                     <template #icon>
                         <ExportOutlined />
                     </template>
                     导出
                 </a-button>
                 <a-upload name="file" v-model:file-list="fileList" :headers="{ authorization: 'authorization-text' }"
-                    :showUploadList="false" :customRequest="importJson" style="margin: auto 2px;">
+                    :showUploadList="false" :customRequest="handleImportJson" style="margin: auto 2px;">
                     <a-button>
                         <upload-outlined></upload-outlined>
                         导入
@@ -131,11 +131,13 @@ import { ref, onMounted, defineAsyncComponent, h } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, ExportOutlined, ImportOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message, notification } from 'ant-design-vue';
 import { router } from "/@/router";
+import { exprotJson, importJson } from './../utils/file';
 import ClipboardJS from 'clipboard'
 import HistoryDrawer from './modules/HistoryDrawer.vue';
 import CVfd from './modules/Vfd.vue'
 import type { TableProps, TableColumnType } from 'ant-design-vue';
 import { formatToDate, formatToDateTime } from "../utils/dateUtil";
+import { uploadListProps } from "ant-design-vue/es/upload/interface";
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
@@ -383,19 +385,9 @@ const rowSelection: any = {
 /**
  * 导出json
  */
-function exprotJson() {
-    defHttp.get({ url: Api.exportJson, params: { ids: selectedAllKeys.value.join(',') }, responseType: "blob" }, { withToken: true }).then((res) => {
-        const title = "表单" + formatToDateTime(new Date().getTime())
-        const fileName = title + '.json'; //文件名
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(res);
-        link.download = fileName;
-        link.click();
-        window.URL.revokeObjectURL(link.href);
-
-    }).catch(err => {
-        console.info(err)
-    })
+function handleExprotJson() {
+    const params = { ids: selectedAllKeys.value.join(',') }
+    exprotJson(params, "表单")
 }
 /**
  * 导入json
@@ -403,48 +395,9 @@ function exprotJson() {
 let fileList: any = ref([])
 
 // 自定义上传
-const importJson = () => {
-    if (fileList.value.length == 0) {
-        message.error('请选择文件')
-        return;
-    }
-    const fileData = new FormData()
-    fileList.value.forEach((ele: any) => {
-        fileData.append(`files`, ele.originFileObj);
-    })
-    defHttp.post(
-        {
-            url: Api.importJson,
-            data: fileData,
-            headers: { "Content-Type": "multipart/form-data" },
-        },
-        { withToken: true }
-    ).then((res: any) => {
-        if (res.success) {
-            notification.info({
-                message: '导入成功',
-                description: highlightMessage(res.message),
-                placement: 'topRight',
-                duration: 5,
-            });
-            if (res.result > 0) {
-                loadData()
-            }
-        }
-    })
+const handleImportJson = () => {
+    importJson(fileList.value, { formType: 'form' }, loadData)
 };
-// 动态生成 description，标红数字
-function highlightMessage(msg) {
-    const description = h('div', [
-        msg.split(/(\d+)/).map((part, index) =>
-            /^\d+$/.test(part) ? ( // 判断是否是数字
-                h('span', { style: { color: 'red', fontWeight: '600' }, key: index }, part)
-            ) : (
-                h('span', { key: index }, part)
-            ),
-        )]);
-    return description;
-}
 </script>
 <style lang="less" scoped>
 // table通用样式，保持项目内样式一致
