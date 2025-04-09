@@ -28,7 +28,7 @@
     "codemirror": "^5.65.18",
     "codemirror-editor-vue3": "^2.8.0",
     "crypto-js": "^4.2.0",
-    "form-imagining": "0.0.89-12-cs3",
+    "form-imagining": "0.0.89-13-cs1",
     "js-base64": "^3.7.7",
     "jsencrypt": "^3.3.2",
     "jsonlint-mod-fixed": "^1.7.7",

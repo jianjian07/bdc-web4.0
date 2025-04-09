@@ -890,7 +890,7 @@ export function addNewRow(columns: any, dataSource: any) {
     data.push(newData)
 }
 
-export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string) => {
+export const editRow = (key: string, editableData: any, dataSource: any, keyCol: string, callback?: any) => {
     // editableData[key] = cloneDeep(dataSource.filter((item: { bdcqzh: string; }) => key == item[keyCol])[0]);
     // obj.obj1[key] = cloneDeep(editableData[key])
     const keyData = cloneDeep(dataSource.filter((item) => key === item[keyCol])[0]);
@@ -904,21 +904,16 @@ export const editRow = (key: string, editableData: any, dataSource: any, keyCol:
     
     editableData[key] = keyData;
     obj.obj1[key] = cloneDeep(editableData[key]);
+    if (callback) {
+        callback()
+    }
 };
 
 export const saveRow = (key: string, editableData, dataSource: any, keyCol, tableName, _callback?: any) => {
     Object.assign(dataSource.filter((item: { [keyCol]: string; }) => key == item[keyCol])[0], editableData[key]);
     obj.obj2[key] = cloneDeep(editableData[key])
     let entity = []
-    // 家庭成员 由于是新增时手动给cbfbm赋值,此时obj1和obj2中此字段没有差异 固没有被更新进去, 暂时屏蔽此行 直接用最新的obj2
-    // entity = compareObjects(obj.obj1[key], obj.obj2[key])
-    let saveObj = JSON.parse(JSON.stringify(obj.obj2[key]))
-    for (const key in saveObj) {
-      if (key == 'action') {
-        delete saveObj[key];
-      }
-    }
-    entity = saveObj
+    entity = compareObjects(obj.obj1[key], obj.obj2[key])
     if (!isEmpty(entity)) {
         let data: any = [];
         data = entity;
@@ -972,21 +967,32 @@ export const cancelRow = (key: string, editableData) => {
     delete editableData[key];
 };
 
-export const delRow = (key: string, dataSource: any, keyCol, tableName) => {
-    defHttp.post({
-        url: '/imaginform/zrzy-form/form/report/deleteRow',
-        params: {
-            keyCol: keyCol,
-            tableName: tableName,
-            keyValue: key,
-        } }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-            let _dataSource = Array.isArray(dataSource) ? dataSource : dataSource?.value
-            let findIndex = _dataSource.findIndex(f => f[keyCol] == key)
-            _dataSource.splice(findIndex, 1)
-            message.success('删除成功!')
-        }
-    })
+export const delRow = (key: string, dataSource: any, keyCol, tableName, index, callback?: any) => {
+     if (key) {
+        defHttp.post({
+            url: '/imaginform/zrzy-form/form/report/deleteRow',
+            params: {
+                keyCol: keyCol,
+                tableName: tableName,
+                keyValue: key,
+            } }, { withToken: true }).then((res) => {
+            if (res && res.success) {
+                let _dataSource = Array.isArray(dataSource) ? dataSource : dataSource?.value
+                let findIndex = _dataSource.findIndex(f => f[keyCol] == key)
+                _dataSource.splice(findIndex, 1)
+                message.success('删除成功!')
+            } else {
+                message.warning('删除失败!')
+            }
+            if (callback) {
+                callback()
+            }
+        })
+    } else {
+        let _dataSource = Array.isArray(dataSource) ? dataSource : dataSource?.value
+        _dataSource.splice(index, 1)
+        message.success('删除成功!')
+    }
     
 }
 /** 行编辑所需要代码 end **/
