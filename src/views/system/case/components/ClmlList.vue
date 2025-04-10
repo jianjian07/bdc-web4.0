@@ -88,7 +88,7 @@ const columns = [
     align: 'center',
     dataIndex: 'must',
     customRender: ({text}) => {
-      return text === 1 ? '是' : '否'
+      return text === '1' ? '是' : '否'
     }
   },
   {
@@ -96,7 +96,7 @@ const columns = [
     align: 'center',
     dataIndex: 'original',
     customRender: ({text}) => {
-      return text === 1 ? '是' : '否'
+      return text === '1' ? '是' : '否'
     }
   },
   {

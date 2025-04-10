@@ -113,7 +113,6 @@ watch(() => props.formData, (val: any) => {
     Object.keys(formState.value).forEach(key => {
       formState.value[key] = val.itemData[key]
     })
-    debugger
   } else {
     formState.value.processId = val.lcid
     formState.value.processName = val.baseInfo.lcmc
