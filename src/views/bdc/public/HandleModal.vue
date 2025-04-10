@@ -141,7 +141,7 @@ onMounted(() => {
  */
 function getTaskInfo() {
   let taskId = route.query.taskId || props.formData.taskId
-  let slbh = route.query.slbh 
+  let slbh = route.query.slbh
   defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId, slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       let taskData = res.result
@@ -459,7 +459,7 @@ function handleProcessOver(obj) {
         message.success('移交成功!')
         resolve(true)
       } else {
-        let msg = res.message || ''
+        let msg = res?.message || ''
         message.error('移交失败!' + msg)
         resolve(false)
       }
