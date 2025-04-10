@@ -191,17 +191,19 @@ function initData() {
 function getSxhParam() {
   let sxh = {}
   let item = props.qlrxx
-  let regtype = props.regType
-  switch (regtype) {
-    case '0102,0102':
-    case '0204,0102,0201':
-    case '0103,0102':
-      sxh = { sxh: item.sxh }
-      break;
-    default: 
-      break;
-  }
-  return sxh
+  // let regtype = props.regType
+  // switch (regtype) {
+  //   case '0102,0102':
+  //   case '0204,0102,0201':
+  //   case '0103,0102':
+  //     sxh = { sxh: item.sxh }
+  //     break;
+  //   default:
+  //     break;
+  // }
+  // 临时都传
+  return { sxh: item.sxh }
+  // return sxh
 }
 
 /**
