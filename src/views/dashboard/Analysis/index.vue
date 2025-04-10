@@ -82,21 +82,21 @@ let baseInfo: any = reactive([
   {
     label: '在办案卷',
     key: 'zb',
-    value: 871,
+    value: '--',
     route: '/bdc/case/list',
     icon: getUrl('images/home/bg1.png'),
     color: '#1B84FF'
   }, {
     label: '已办案卷',
     key: 'yb',
-    value: 902,
+    value: '--',
     route: '/bdc/case/list',
     icon: getUrl('images/home/bg2.png'),
     color: '#00bd9f'
   }, {
     label: '督办案卷',
     key: 'db',
-    value: 40,
+    value: '--',
     route: '/bdc/dbgl',
     icon: getUrl('images/home/bg3.png'),
     color: '#ff980d'
