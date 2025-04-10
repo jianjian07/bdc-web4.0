@@ -24,13 +24,15 @@ export function cModal (options?: cModalModel) {
       destroy()
     }
   }
-
+  // 定义弹窗中自己的动态组件加载 
+  const modules = import.meta.glob('/src/**/*.vue');
   app = createApp(CommonModal, { ...options });
+  app.provide('projModules', modules);
   registerGlobComp(app)
   app.use(router)
   app.use(formImagining)
   instance = app.mount(div);
-
+  
   // 设置弹窗loading
   function setConfirmLoading(value:boolean) {
     if (instance) {
