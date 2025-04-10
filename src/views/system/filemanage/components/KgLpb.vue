@@ -90,7 +90,7 @@ function initData() {
       ylc.value = res.result.ylc
       initChosenId()
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }
@@ -106,7 +106,7 @@ function initChosenId() {
         list.value.fmList = updateCheckedList(list.value.fmList, res.result)
       }
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }
@@ -161,7 +161,7 @@ function handleOk() {
           message.success('生成成功')
           resolve(res.result)
         } else {
-          message.warning(res.message)
+          message.warning(res?.message)
           resolve(false)
         }
       })

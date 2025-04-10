@@ -259,7 +259,7 @@ function design(record: any) {
                 record.lockedTime = new Date().toLocaleString()
                 router.push("/online/form/design" + '/' + record.id)
             } else {
-                message.error(res.message)
+                message.error(res?.message)
             }
         }).catch(_err => {
         })
@@ -274,7 +274,7 @@ function unLock(record: any) {
         if (res.success) {
             record.isLocked = 0
         } else {
-            message.error(res.message)
+            message.error(res?.message)
         }
     }).catch(_err => {
     })
@@ -354,7 +354,7 @@ function deleteData(record) {
             message.success('删除成功')
             loadData()
         } else {
-            message.error('删除失败' + res.message)
+            message.error('删除失败' + res?.message)
         }
     }).catch(err => {
         message.error('删除失败')

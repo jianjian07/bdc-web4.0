@@ -300,7 +300,7 @@ export function sendExCommonApi(sendParams) {
         message.success('请求成功')
       } else {
         message.warning('请求失败')
-        resolve(res.message + '')
+        resolve(res?.message + '')
       }
     }).catch(err => {
       console.log('err', err)
@@ -326,7 +326,7 @@ export function sendCommonApi(sendParams) {
         message.success('请求成功')
       } else {
         message.warning('请求失败')
-        resolve(res.message + '')
+        resolve(res?.message + '')
       }
     }).catch(err => {
       console.log('err', err)

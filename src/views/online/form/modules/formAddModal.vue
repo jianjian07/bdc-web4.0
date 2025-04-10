@@ -138,7 +138,7 @@ function handleModalOk() {
                 })
                 modalVisible.value = false
             } else {
-                message.error('保存失败' + res.message)
+                message.error('保存失败' + res?.message)
             }
         }).catch(err => {
             message.error('保存失败')
@@ -173,7 +173,7 @@ async function checkFormCode(_rule: any, value: string) {
                     if (res && res.code == 200) {
                         return Promise.resolve()
                     } else {
-                        return Promise.reject(res.message)
+                        return Promise.reject(res?.message)
                     }
                 }).catch(err => {
                     return Promise.reject(err)

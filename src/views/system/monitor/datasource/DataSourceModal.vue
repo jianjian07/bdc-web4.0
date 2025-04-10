@@ -113,7 +113,7 @@ function onOk() {
 }
 function onTestConnection() {
     defHttp.post({ url: api.testUrl, data: formData.value }, { withToken: true }).then((res) => {
-        message.info(res.message)
+        message.info(res?.message)
     }).catch(err => {
         console.info(err)
     })

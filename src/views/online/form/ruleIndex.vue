@@ -205,7 +205,7 @@ function deleteVerifyRule(id) {
             message.success('删除成功')
             queryRuleVerifyList()
         } else {
-            message.error('删除失败' + res.message)
+            message.error('删除失败' + res?.message)
         }
     }).catch((err => {
 
@@ -232,7 +232,7 @@ function save() {
                 message.success('保存成功')
                 queryRuleVerifyList()
             } else {
-                message.error('保存失败' + res.message)
+                message.error('保存失败' + res?.message)
             }
         }).catch((err => {
             message.error('保存失败' + err)

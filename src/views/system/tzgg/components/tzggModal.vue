@@ -291,7 +291,7 @@ const onSubmit = () => {
           { withToken: true }
         ).then((res: any) => {
           if(res?.success) {
-            message.success(res.message)
+            message.success(res?.message)
             return resolve(true)
           } else {
             message.warning(res?.message || '操作失败！')

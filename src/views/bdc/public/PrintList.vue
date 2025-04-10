@@ -71,7 +71,7 @@ function initData() {
       if (!res.message) {
         list.value = res || []
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
       }
       if (list.value.length) {
         selectedKeys.value = [list.value[0].id0]

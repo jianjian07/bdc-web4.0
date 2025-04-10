@@ -82,7 +82,7 @@ function initData() {
     if (res && res.success) {
       treeData.value = setPidList(res.result)
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
   } else {
@@ -242,7 +242,7 @@ function handleModalOk() {
       message.success('保存成功!')
       modalVisible.value = false
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     confirmLoading.value = false
   }).catch(err => {
@@ -285,7 +285,7 @@ function getCheckedList(roleId, ajlx) {
     if (res && res.success) {
       checkedKeys.value = res.result.map(m => m.lcid)
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     confirmLoading.value = false
   }).catch(err => {

@@ -186,7 +186,7 @@ function loadMenu() {
       sysMenuList.value = res.result
       activeCollapseKey.value = sysMenuList.value.length ? 0 : -1
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   }).catch(err => {
     console.info(err)

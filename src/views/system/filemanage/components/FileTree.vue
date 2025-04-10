@@ -299,7 +299,7 @@ function del(node) {
         removeByKey(parent.children, select.key)
         message.success('删除成功')
       } else {
-        message.warning('删除失败:' + res.message)
+        message.warning('删除失败:' + res?.message)
       }
     })
   }

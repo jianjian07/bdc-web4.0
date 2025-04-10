@@ -160,7 +160,7 @@ function copy(record: any) {
             message.success('复制成功')
             loadData()
         } else {
-            message.warning(res.message)
+            message.warning(res?.message)
         }
     }).catch(err => {
         message.warning('复制失败')

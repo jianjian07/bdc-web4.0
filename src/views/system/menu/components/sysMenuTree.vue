@@ -100,7 +100,7 @@ function initSysMenu() {
     if (res?.success) {
       sysMenu.value = res.result.records
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     if (sysMenu.value && sysMenu.value.length > 0) {
       selectedKeys.value = [sysMenu.value[0].id]

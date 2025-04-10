@@ -161,7 +161,7 @@ function deleteData(record: any) {
             message.success('删除成功')
             datalist.value.splice(datalist.value.indexOf(record), 1)
         } else {
-            message.error('删除失败' + res.message)
+            message.error('删除失败' + res?.message)
         }
     })
 }

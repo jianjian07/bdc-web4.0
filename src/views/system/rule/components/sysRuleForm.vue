@@ -228,7 +228,7 @@ async function checkRuleCode(_rule: any, value: string) {
           if (res && res.code == 200) {
             return Promise.resolve()
           } else {
-            return Promise.reject(res.message)
+            return Promise.reject(res?.message)
           }
         }).catch(err => {
           return Promise.reject(err)

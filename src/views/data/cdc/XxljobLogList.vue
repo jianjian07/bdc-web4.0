@@ -208,7 +208,7 @@ function kill(record: any) {
             message.success('操作成功')
             loadData()
         } else {
-            message.error('操作失败' + res.message)
+            message.error('操作失败' + res?.message)
         }
     }).catch(err => {
         message.error('操作失败' + err)
@@ -222,7 +222,7 @@ function clear(record: any) {
             message.success('操作成功')
             loadData()
         } else {
-            message.error('操作失败' + res.message)
+            message.error('操作失败' + res?.message)
         }
     }).catch(err => {
         message.error('操作失败' + err)

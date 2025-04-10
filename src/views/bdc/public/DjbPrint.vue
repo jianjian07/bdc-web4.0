@@ -69,7 +69,7 @@ function initData() {
           setUrl(list.value[0].id0, list.value[0].filename)
         }
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
       }
       spinning.value = false
     }).catch(err => {

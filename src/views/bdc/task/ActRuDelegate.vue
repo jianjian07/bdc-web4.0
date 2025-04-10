@@ -226,7 +226,7 @@ function cancelEntrust(record, state) {
   defHttp.post({ url: api.cancel, params: { id: record.id, state: state } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       initData()
-      message.success(res.message)
+      message.success(res?.message)
     } else {
       message.warning('发生错误!')
     }

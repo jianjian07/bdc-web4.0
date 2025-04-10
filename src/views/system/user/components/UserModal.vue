@@ -165,7 +165,7 @@ function loadCurrentBranchTrees() {
         })
         resolve(res.result)
       } else {
-        message.error(res.message)  
+        message.error(res?.message)  
       }
     })
   })
@@ -205,7 +205,7 @@ function loadLazyTree(treeNode: any) {
         }
         resolve(res.result)
       } else {
-        message.error(res.message)
+        message.error(res?.message)
       }
     })
   })

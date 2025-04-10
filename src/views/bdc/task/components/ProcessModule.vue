@@ -145,7 +145,7 @@ function initTableData() {
     if (res && res.success) {
       tableData.value = res.result
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     loading.value = false
   })
@@ -160,7 +160,7 @@ function getNodePositionInfoData() {
     if (res && res.success) {
       nodePositionInfo.value = res.result
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }

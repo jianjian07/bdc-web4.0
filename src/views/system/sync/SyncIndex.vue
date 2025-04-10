@@ -132,7 +132,7 @@ function loadData() {
       pagination.value.total = res.result.total
       pagination.value.current = res.result.current
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }

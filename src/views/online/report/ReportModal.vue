@@ -148,7 +148,7 @@ function onOk() {
         if (res.success) {
             message.success('保存成功')
         } else {
-            message.error(res.message)
+            message.error(res?.message)
         }
     }).catch(err => {
         message.error(err.message)

@@ -76,7 +76,7 @@ function initData() {
       maxLs.value = res.result.zs 
       maxHs.value = res.result.js
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }

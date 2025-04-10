@@ -191,7 +191,7 @@ function handleRestart(record) {
     data: params
   },{ withToken: true }).then((res: any) => {
       if (res?.success) {
-        message.success(res.message)
+        message.success(res?.message)
         loadData()
     } else {
         message.warn(res?.message || '操作失败！')

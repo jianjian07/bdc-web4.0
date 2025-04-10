@@ -32,7 +32,7 @@ function unLock() {
     if (res.success) {
       // console.log('res',res)
     } else {
-      message.error(res.message)
+      message.error(res?.message)
     }
   })
 }

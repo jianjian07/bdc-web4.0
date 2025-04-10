@@ -79,7 +79,7 @@ function initData() {
           }
         }
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
       }
        spinning.value = false
     }).catch(err => {

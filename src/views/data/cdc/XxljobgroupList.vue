@@ -157,7 +157,7 @@ function deleteData(record) {
             message.success('删除成功')
             loadData()
         } else {
-            message.error('删除失败' + res.message)
+            message.error('删除失败' + res?.message)
         }
     }).catch(err => {
         message.error('删除失败')

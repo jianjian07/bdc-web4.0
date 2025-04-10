@@ -212,7 +212,7 @@ function handleSave(isNeedMsg = true) {
           }
           resolve(true)
         } else {
-          message.success('保存失败:' + res.message)
+          message.warning('保存失败:' + res?.message)
           resolve(false)
         }
         formSpinning.value = false
@@ -237,7 +237,7 @@ async function handleCreateKg() {
       if (res && res.success) {
         message.success('生成成功!')
       } else {
-        message.warning('生成失败!' + res.message)
+        message.warning('生成失败!' + res?.message)
       }
     })
   }

@@ -333,7 +333,7 @@ function initData() {
     if (res && res.success) {
       treeData.value = addIconName(JSON.parse(JSON.stringify(res.result)) || [])
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     spinning.value = false
   })
@@ -480,7 +480,7 @@ function loadSfxxx(sfxbh: string) {
         }
         formState.value = rec
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
       }
       formSpinning.value = false
     })
@@ -543,7 +543,7 @@ function handleSubmit() {
             initData()
             loadSfxxx(selectedNode.value.value)
           } else {
-            message.warning(res.message)
+            message.warning(res?.message)
           }
         })
       }
@@ -581,7 +581,7 @@ function handleDel() {
       message.success(res.message)
       reloadData()
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }
@@ -598,7 +598,7 @@ function handleDelSxtj(record, index) {
         message.success(res.message)
         sxtjxx.value.splice(index, 1)
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
       }
     })
   } else {

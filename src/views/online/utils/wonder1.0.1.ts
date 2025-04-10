@@ -311,7 +311,7 @@ export function updateFormDatas(formRes, params?: any) {
                     if (res.code == 500) {
                         Modal.error({
                             title: '报错错误',
-                            content: res.message,
+                            content: res?.message,
                             bodyStyle: {
                                 height: '250px', overflowY: 'auto'
                             }

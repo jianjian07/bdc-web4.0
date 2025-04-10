@@ -167,7 +167,7 @@ function getTaskInfo() {
       }
       setTransTree()
     } else {
-      message.warning('获取流程数据失败:' + res.message)
+      message.warning('获取流程数据失败:' + res?.message)
     }
   })
 }
@@ -251,7 +251,7 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
         treeSpinning.value = false
       })
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   }).catch(err => {
     message.warning('请检查配置人员')

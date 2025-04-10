@@ -145,7 +145,7 @@ const save = (index: string) => {
       loadData()
       delete editableData[index];
     } else {
-      message.warning(res.message || '操作失败！')
+      message.warning(res?.message || '操作失败！')
     }
   }).catch(err => {
     message.warning(err)

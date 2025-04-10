@@ -186,7 +186,7 @@ function onLoadData(treeNode: any) {
         })
         resolve(res.result)
       } else {
-        message.error(res.message)  
+        message.error(res?.message)  
       }
     })
   })

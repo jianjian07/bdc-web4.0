@@ -83,7 +83,7 @@ function initData() {
       hisData.value = res.result
       sortByTime(hisData.value, 'djsj')
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     spinning.value = false
   })

@@ -204,7 +204,7 @@ const save = (index: string) => {
     { withToken: true }
   ).then((res: any) => {
     if(res && res.success) {
-      message.success(res.message)
+      message.success(res?.message)
       loadData()
       delete editableData[index];
     } else {
