@@ -1,7 +1,7 @@
 <template>
     <div class="qlr-list">
       <template v-for="(item, index) in qlrList">
-        <qlr :ref="qlrRef(item.qlrxsmc)" :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="disabled" :formType="formType" :regType="regType" @getTbxx="getTbxx"></qlr>
+        <qlr :ref="qlrRef(item.qlrxsmc)" :qlrxx="item" :jdmc="jdmc" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="disabled" :formType="formType" :regType="regType" @getTbxx="getTbxx" @getList="getQlrxxList"></qlr>
       </template>
     </div>
 </template>
@@ -10,6 +10,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue"
 import Qlr from "/@/views/bdc/pages/qlr/Qlr.vue"
 import { eventBus } from "form-imagining"
+import { updateQlrxxList } from "/@/views/bdc/public/bdc"
 // 权利人渲染列表
 let qlrList = ref<any>([])
 // 权利人实例
@@ -99,6 +100,21 @@ function initQlrData(value) {
  */
 function reloadQlr(qlrxsmc?: string) {
   initQlrData(qlrxsmc)
+}
+
+/**
+ * 获取权利人列表信息
+ */
+function getQlrxxList() {
+  let _obj = {}
+  for (const key in qlrRefs) {
+    let item = qlrRefs[key]
+    _obj[key] = {
+      list: item.tableData,
+      qlrlxmc: item.qlrlxmc
+    }
+  }
+  updateQlrxxList(_obj)
 }
 
 

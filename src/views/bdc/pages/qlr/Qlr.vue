@@ -16,7 +16,7 @@
                     <a-button type="link" :disabled="disabled">{{ item.name }}</a-button>
                   </a-popconfirm>
                 </template>
-                <a-button v-else type="link" :disabled="item.name == '查看' ? false :disabled" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
+                <a-button v-else type="link" :disabled="(item.name == '查看' || item.name == '家庭成员') ? false : disabled" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
                 <a-divider v-if="index !== actionBtnList.length - 1" type="vertical"/>
               </template>
             </div>
@@ -102,7 +102,7 @@ let columns = ref<any>([
 ])
 
 let tableData = ref<any[]>([])
-
+let qlrlxmc = props.qlrxx?.qlrlxmc
 let pagination = ref({
   total: 0,
   current: 1,
@@ -113,7 +113,7 @@ enum api {
   list = '/api/zrzy-bdc/bdc/qlr/list',
 }
 
-const emit = defineEmits(['getTbxx'])
+const emit = defineEmits(['getTbxx', 'getList'])
 
 // 操作栏按钮
 let actionBtnList = ref<any>([])
@@ -181,6 +181,7 @@ function initData() {
     if (res && res.success) {
       tableData.value = res.result.records
       pagination.value.total = res.result.total
+      emit('getList')
     }
   })
 }
@@ -340,7 +341,8 @@ function handleJtcy(record) {
     filePath: 'views/bdc/public/GenPublic',
     formData: {
       formId: formId,
-      cbfbm: record.zjh
+      cbfbm: record.zjh,
+      iszd: props.disabled ? '1' : '0'
     },
     footer: false
   })
@@ -366,7 +368,9 @@ function handleDel(record) {
 }
 
 defineExpose({
-  initData
+  initData,
+  tableData,
+  qlrlxmc
 })
 </script>
 

@@ -115,7 +115,7 @@ export async function extractData(options: any) {
                     }
                 })
             } else {
-                message.warning(res.message)
+                message.warning(res?.message)
             }
         })
     }
@@ -165,7 +165,7 @@ export async function extractDataLpb(options: any) {
                 
                 // router.push('/refresh')
             } else {
-                message.warning(res.message)
+                message.warning(res?.message)
             }
         })
     }

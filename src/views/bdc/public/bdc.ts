@@ -17,8 +17,11 @@ import {
   updateFormDatas, 
   eventBus } from 'form-imagining'
 import { guid } from "/@/utils";
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 
 const userStore = useUserStore()
+// 权利人信息
+let qlrxxObj = {}
 
 enum api {
   configList = '/api/zrzy-dzzw/caseConfig/getCaseState',
@@ -186,7 +189,7 @@ function closeCurrentTab() {
         tabStore.refreshTab()
         // router.push('/refresh')
       }
-    }, 300)
+    }, 500)
   } else {
     router.push('/analysis')
   }
@@ -445,26 +448,27 @@ export function register(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
-  // loading.value = true
+  loading.value = true
   defHttp.get({
     url: '/api/zrzy-bdc/bdc/register/isRegister',
     params: { slbh: slbh }
   }, { withToken: true }
   ).then((res: any) => {
+    loading.value = false
     if (res.success) {
-      djb(slbh, cType);
+      djb(slbh, cType, loading);
     } else {
       if (res.result == '-1') {
-        message.error(res.message)
+        message.error(res?.message)
       } else {
         Modal.confirm({
-          title: res.message + ",确定要重复记载吗？",
+          title: res?.message + ",确定要重复记载吗？",
           content: '受理编号：' + slbh,
           okText: '确定',
           okType: 'danger',
           cancelText: '取消',
           onOk() {
-            djb(slbh, "0");
+            djb(slbh, "0", loading);
           },
           onCancel() {
           },
@@ -472,22 +476,32 @@ export function register(demoRefs: any, loading: any, params: any) {
       }
     }
   }).catch((error: any) => {
+    loading.value = false
     message.success("记载失败" + error)
   })
 }
 //登记簿逻辑
-function djb(slbh: string, cType: string) {
+function djb(slbh: string, cType: string, loading?: any) {
+  if (loading) {
+    loading.value = true
+  }
   defHttp.post({
     url: '/api/zrzy-bdc/bdc/register/saveRegister',
     params: { slbh: slbh, cType: cType }
   }, { withToken: true }
   ).then((res: any) => {
-    message.success(res.message)
+    if (loading) {
+      loading.value = false
+    }
+    message.success(res?.message)
     // 刷新
     const tabStore = useTabsStore()
     tabStore.refreshTab()
     // router.push('/refresh')
   }).catch((error: any) => {
+    if (loading) {
+      loading.value = false
+    }
     message.success("记载失败" + error)
   })
 }
@@ -602,7 +616,7 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
         let result = manageQLQT(res.result, viewData)
         resolve(result)
       } else {
-        message.warning(res.message || '查询出错！')
+        message.warning(res?.message || '查询出错！')
         reject()
       }
     }).catch((error: any) => {
@@ -659,7 +673,7 @@ export function batchQlqt() {
         resolve(true)
         message.success('成功生成!')
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve(false)
       }
     })
@@ -708,7 +722,7 @@ export function createCard() {
       if (res && res.success) {
         resolve(res.result)
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve(false)
       }
     })
@@ -1029,7 +1043,7 @@ export function getKfOptions() {
       if (res && res.success) {
         resolve(res.result)
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve([])
       }
     })
@@ -1050,7 +1064,7 @@ export function getPjOptionsByKf(kfid) {
         if (res && res.success) {
           resolve(res.result)
         } else {
-          message.warning(res.message)
+          message.warning(res?.message)
           resolve([])
         }
       })
@@ -1070,7 +1084,7 @@ export function createDah(viewData, tableName, field) {
     if (res && res.success) {
       viewData.value[tableName][field] = res.result
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
   })
 }
@@ -1090,7 +1104,7 @@ export function getLogicModel(wwSlbh) {
       if (res && res.success) {
         resolve(res.result)
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve(false)
       }
     })
@@ -1117,7 +1131,7 @@ export function handleWwsjFun(options) {
           // 退件result为null,避免后续判断问题,给个1返回值
           resolve(res.result||1)
         } else {
-          message.warning(res.message)
+          message.warning(res?.message)
           resolve(false)
         }
       })
@@ -1159,7 +1173,7 @@ export async function relateData(options: any) {
                   }
               })
           } else {
-            message.warning(res.message || '数据关联发生错误')
+            message.warning(res?.message || '数据关联发生错误')
             resolve(false)
           }
       })
@@ -1208,7 +1222,7 @@ export function createFghbZy(ywlx, slbh, dyhList) {
         message.success('转移成功')
         resolve(true)
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve(false)
       }
     }).catch((e) => {
@@ -1225,4 +1239,40 @@ export function createFghbZy(ywlx, slbh, dyhList) {
  */
 export function reloadQlrList(qlrxsmc?: string) {
   eventBus.emit('reloadQlrList', qlrxsmc)
+}
+
+/**
+ * 更新权利人信息
+ * @param list
+ */
+export function updateQlrxxList(obj) {
+  qlrxxObj = obj
+}
+
+/**
+ * 获取权利人共有情况
+ */
+export function getQlrGyqk() {
+  let gyqk = ''
+  let usefulQlrList = []
+  for (const key in qlrxxObj) {
+    let qlrlxmc = qlrxxObj[key].qlrlxmc
+    if (['权利人','抵押权人','预告权利人','预告抵押权人'].includes(qlrlxmc)) {
+      usefulQlrList = qlrxxObj[key].list
+    }
+  }
+  if (usefulQlrList.length) {
+    let gyfs = usefulQlrList[0].gyfs
+    let gyfsLabel = getDictItemsByCode('gyfs').find(f => f.value == gyfs)?.label
+    if (gyfsLabel == '按份共有') {
+      gyqk = '按份共有: '
+      for (let i = 0; i < usefulQlrList.length; i++) {
+        gyqk += `${usefulQlrList[i].qlrmc}占${usefulQlrList[i].qlbl}`
+        gyqk += i != usefulQlrList.length - 1 ? '，' : '。'
+      }
+    } else {
+      gyqk = gyfsLabel
+    }
+  }
+  return gyqk
 }
