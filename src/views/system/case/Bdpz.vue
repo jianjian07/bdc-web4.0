@@ -38,6 +38,9 @@
                 <a-tab-pane key="6" tab="权利人配置" force-render>
                     <qlrpz v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="baseInfo"></qlrpz>
                 </a-tab-pane>
+                <a-tab-pane key="7" tab="节点配置" force-render>
+                    <node-line-list v-if="activeKey == '7'" :lcid="processInfo.key" :baseInfo="baseInfo"></node-line-list>
+                </a-tab-pane>
             </a-tabs>
         </div>
 
@@ -47,6 +50,7 @@
 <script setup lang="ts">
 import { ref, defineAsyncComponent } from "vue";
 import CLCLB from "/@/views/components/LCLB.vue"
+import NodeLineList from "/@/views/system/case/components/NodeLineList.vue"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
 const QlqtpzList = defineAsyncComponent(() => import("/@/views/system/case/components/QlqtpzList.vue"))

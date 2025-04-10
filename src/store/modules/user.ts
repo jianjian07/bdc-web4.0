@@ -82,6 +82,10 @@ export const useUserStore = defineStore({
     dataRuleList: [],
     // 其他(API)规则列表
     apiRuleList: [],
+    // 移交规则列表
+    transferRuleList: [],
+    // 线规则列表
+    lineRuleList: [],
     // session过期时间
     sessionTimeout: false,
     // 上次获取时间
@@ -131,6 +135,12 @@ export const useUserStore = defineStore({
     },
     getApiRuleList(): [] {
       return this.apiRuleList
+    },
+    getTransferRuleList(): [] {
+      return this.transferRuleList
+    },
+    getLineRuleList(): [] {
+      return this.lineRuleList
     },
     // getRoleList(): RoleEnum[] {
     //   return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
@@ -204,6 +214,12 @@ export const useUserStore = defineStore({
     },
     setApiRuleList(rules: any) {
       this.apiRuleList = rules
+    },
+    setTransferRuleList(rules: any) {
+      this.transferRuleList = rules
+    },
+    setLineRuleList(rules: any) {
+      this.lineRuleList = rules
     },
     setTenant(id: any) {
       this.tenantid = id;

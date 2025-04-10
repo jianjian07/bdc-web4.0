@@ -105,6 +105,14 @@ export function getRuleList() {
             if (sysApiRuleList) {
                 userStore.setApiRuleList(sysApiRuleList)
             }
+            let sysTransferRuleList = res.list.filter(f => f.ywlx == 'transfer')
+            if (sysTransferRuleList) {
+                userStore.setTransferRuleList(sysTransferRuleList)
+            }
+            let sysLineRuleList = res.list.filter(f => f.ywlx == 'line')
+            if (sysLineRuleList) {
+                userStore.setLineRuleList(sysLineRuleList)
+            }
         }
     })
 }

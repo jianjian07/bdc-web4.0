@@ -256,7 +256,7 @@ const rowSelection = computed(() => {
             if (props.mode == 'multiple') {
                 selectRow(selected, record)
             } else {
-                selectedValue.value = [record[props.keyName.toUpperCase()]]
+                selectedValue.value = [record[props.keyName]]
                 emit('row-change', [record])
             }
         },
