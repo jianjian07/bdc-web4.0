@@ -459,7 +459,8 @@ function handleProcessOver(obj) {
         message.success('移交成功!')
         resolve(true)
       } else {
-        message.error('移交失败：' + res.message)
+        let msg = res.message || ''
+        message.error('移交失败!' + msg)
         resolve(false)
       }
     }).catch(err => {
