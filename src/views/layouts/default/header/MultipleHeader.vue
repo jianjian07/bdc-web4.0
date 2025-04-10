@@ -103,6 +103,7 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
 })
 
 watch(() => activeKeys.value, (newVal, oldVal) => {
+  tabStore.setRouterChangeObj({ old: oldVal, new: newVal })
   if (newVal.includes('?')) {
     let params: any = getUrl(newVal)
     router.replace({ path: newVal, query: params })

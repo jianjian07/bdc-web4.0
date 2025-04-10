@@ -9,7 +9,8 @@ interface TabsState {
   isRouterAlive: boolean,
   isFullScreen: boolean,
   cacheTabList: any[],
-  reloadTab: boolean
+  reloadTab: boolean,
+  routerChangeObj: any
 }
 
 export const useTabsStore = defineStore({
@@ -26,7 +27,9 @@ export const useTabsStore = defineStore({
     // 缓存路由
     cacheTabList: [],
     // 刷新tab
-    reloadTab: false
+    reloadTab: false,
+    // 路由变化
+    routerChangeObj: null
   }),
   getters: {
     getTabList(): any {
@@ -54,6 +57,9 @@ export const useTabsStore = defineStore({
     },
     getReloadTab(): boolean {
       return this.reloadTab
+    },
+    getRouterChangeObj(): any {
+      return this.routerChangeObj
     }
   },
   actions: {
@@ -69,8 +75,16 @@ export const useTabsStore = defineStore({
       const tabIndex = this.tabList.findIndex(t => t.fullPath == tab.fullPath)
       if (tabIndex !== -1) {
         this.tabList.splice(tabIndex, 1)
-        if (this.tabActiveKey == tab.fullPath) {
-          this.tabActiveKey = this.tabList[tabIndex - 1].fullPath
+        if (this.tabActiveKey === tab.fullPath) {
+          // 旧标签页存在则跳转到旧标签页
+          const oldPath = this.routerChangeObj?.old;
+          const oldIndex = this.tabList.findIndex(f => f.fullPath === oldPath);
+        
+          const fallbackIndex = Math.max(0, tabIndex - 1)
+          const newActiveTab = (oldPath && oldIndex !== -1)
+            ? this.tabList[oldIndex].fullPath
+            : this.tabList[fallbackIndex]?.fullPath;
+          this.tabActiveKey = newActiveTab;
         }
       }
       this.setCacheTabList()
@@ -90,6 +104,9 @@ export const useTabsStore = defineStore({
     },
     setReloadTab(value) {
       this.reloadTab = value
+    },
+    setRouterChangeObj(obj) {
+      this.routerChangeObj = obj
     },
     refreshTab() {
       let find = this.cacheTabList.find(cacheTab => cacheTab.fullPath == this.getCurrentTab.fullPath)
