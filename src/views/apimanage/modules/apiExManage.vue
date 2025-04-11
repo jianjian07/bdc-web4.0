@@ -84,14 +84,17 @@
                       <a-radio-button :value="3">通用接口</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
-                  <!-- <a-form-item label="接口名称" style="margin-right: 10px">
-                    <a-input v-model:value="pane.name" style="width: 250px" />
-                  </a-form-item>
-                  <a-form-item label="接口编号" style="flex: 1; margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
-                    <a-input v-model:value="pane.code" style="width: 100px" />
-                  </a-form-item> -->
-                  <a-form-item label="版本">
+                  <a-form-item label="版本" style="margin-right: 20px;">
                     <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
+                  </a-form-item>
+                  <a-form-item label="接口标识" style="margin-right: 20px;">
+                    <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识" @click="onClickCode(pane)"></a-input>
+                  </a-form-item>
+                  <a-form-item label="是否返回值解密">
+                    <a-radio-group v-model:value="pane.isResultDecrypt">
+                      <a-radio :value="1">是</a-radio>
+                      <a-radio :value="0">否</a-radio>
+                    </a-radio-group>
                   </a-form-item>
                 </div>
               </div>
@@ -448,7 +451,7 @@ function saveCommonApi(data, isSend?: any) {
           resolve(data.id)
         }
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve(false)
       }
     }).catch(err => {
@@ -475,7 +478,7 @@ function saveMagicApi(body, isSend?: any) {
           }
           resolve(true)
         } else {
-          message.warning(res.message)
+          message.warning(res?.message)
           resolve(false)
         }
       } else {
@@ -559,6 +562,18 @@ function handleAddApiKeys(pane) {
  */
 function del(pane, record, index) {
   pane.apiKeys.splice(index, 1)
+}
+
+/**
+ * 点击接口标识
+ * @param pane
+ */
+function onClickCode(pane) {
+  if (!pane.code) {
+    let url = pane.url
+    let _arr = url.split('/')
+    pane.code = _arr[_arr.length - 1]
+  }
 }
 </script>
 

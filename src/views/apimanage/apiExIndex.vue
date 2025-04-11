@@ -51,9 +51,12 @@ function initData() {
       tree = setParentId(tree)
       apiTreeData.value = tree
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
     loading.value = false
+  }).catch(err => {
+    loading.value = false
+    message.error(err)
   })
 }
 

@@ -85,7 +85,7 @@ onMounted(() => {
 
 
 const scroll = () => {
-  scrollRef.value.scrollTo({
+  scrollRef.value?.scrollTo({
     top: top++
   })
 
@@ -98,7 +98,7 @@ const scroll = () => {
     } else {
       top = 0
       index = 0
-      scrollRef.value.scrollTo({
+      scrollRef.value?.scrollTo({
         top: 0
       })
       scrollList.value = [ ...dataList.value ]

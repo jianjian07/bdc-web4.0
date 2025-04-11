@@ -397,7 +397,7 @@ function saveCommonApi(data, isSend?: any) {
           resolve(data.id)
         }
       } else {
-        message.warning(res.message)
+        message.warning(res?.message)
         resolve(false)
       }
     }).catch(err => {
@@ -424,7 +424,7 @@ function saveMagicApi(body, isSend?: any) {
           }
           resolve(true)
         } else {
-          message.warning(res.message)
+          message.warning(res?.message)
           resolve(false)
         }
       } else {

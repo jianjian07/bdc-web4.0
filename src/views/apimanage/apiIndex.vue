@@ -14,8 +14,6 @@ import ApiManage from "/@/views/apimanage/modules/apiManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { setParentId } from "/@/views/apimanage/modules/apiUtil"
-// 接口列表
-let apiList = ref<any>([])
 // 树
 let apiTreeData = ref<any>([])
 // 当前选中数据
@@ -55,8 +53,11 @@ function initData() {
       tree = setParentId(tree)
       apiTreeData.value = tree
     } else {
-      message.warning(res.message)
+      message.warning(res?.message)
     }
+    loading.value = false
+  }).catch(err => {
+    message.error(err)
     loading.value = false
   })
 }

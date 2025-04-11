@@ -25,8 +25,6 @@ const props = defineProps({
   }
 })
 
-console.log(route.query)
-
 const cate:any = props.category || route?.query?.category
 
 </script>
