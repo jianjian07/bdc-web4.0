@@ -31,7 +31,7 @@
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="办理节点">
-            <a-select v-model:value="formData.completedNode" placeholder="待补充下拉数据" allowClear/>
+            <a-select v-model:value="formData.nodeName" placeholder="待补充下拉数据" allowClear/>
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -73,7 +73,9 @@
               <template #split>
                 <a-divider type="vertical"/>
               </template>
-              <a-button type="link" :disabled="record.recallFlag == '0'" @click="itemRecall(record)">撤回</a-button>
+              <a-popconfirm title="是否确定撤回该任务？" ok-text="确定" cancel-text="取消" @confirm="itemRecall(record)">
+                <a-button type="link" :disabled="record.recallFlag == '0'">撤回</a-button>
+              </a-popconfirm>
               <a-button type="link" :disabled="record.recallFlag == '0'" @click="itemSingleRecall(record)">单点撤回
               </a-button>
             </a-space>
@@ -91,9 +93,11 @@ import { SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils.ts";
 import dayjs from "dayjs";
+import { message } from "ant-design-vue";
 
 enum api {
   donelist = '/api/zrzy-bdc/act/task/getCaseDoneList',
+  caseDoneRecall = '/api/zrzy-bdc/act/task/caseDoneRecall',
 }
 
 let datalist = ref([]);
@@ -104,7 +108,7 @@ const columns = [
   { title: "项目名称", dataIndex: "xmmc", align: "center", key: 'xmmc' },
   { title: "案卷类型", dataIndex: "ajlx", align: "center" },
   { title: "办理时间", dataIndex: "endTime", align: "center" },
-  { title: "办理节点", dataIndex: "completedNode", align: "center" },
+  { title: "办理节点", dataIndex: "nodeName", align: "center" },
   { title: "当前在办情况", dataIndex: "currentNode", align: "center" },
   { title: '操作', key: 'action', width: 200, align: "center" }
 ]
@@ -189,7 +193,29 @@ function itemView(record: any) {
  * @param record
  */
 function itemRecall(record: any) {
-
+  const procInstId = record.procInstId
+  const endTime = record.endTime
+  const assignee = record.assignee
+  const completedDefKey = record.defKey
+  if (!procInstId || !endTime || !completedDefKey || !assignee) {
+    message.warning("请确认流程是否已办或刷新重试！")
+    return;
+  }
+  defHttp.post({
+    url: api.caseDoneRecall,
+    data: record
+  }, { withToken: true }).then(res => {
+    if (res && res.success) {
+      message.success(res.result)
+      // 刷新数据
+      pagination.value.current = 1
+      loadData()
+    } else {
+      message.warning(res.message)
+    }
+  }).catch(_err => {
+    message.error(_err)
+  })
 }
 
 /**
