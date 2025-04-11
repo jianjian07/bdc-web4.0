@@ -20,6 +20,10 @@
                                 <TagsOutlined />
                                 <span style="margin:10px;">标签页</span>
                             </a-menu-item>
+                            <a-menu-item key="3" @click="toggleBlackWhite">
+                                <SyncOutlined />
+                                <span style="margin:10px;">切换主题</span>
+                            </a-menu-item>
                             <!-- <a-menu-item key="3"><key-outlined />
                                 <span style="margin:10px;">修改密码</span>
                             </a-menu-item> -->
@@ -35,11 +39,12 @@
 <script setup lang="ts">
 import { LayoutHeader, Modal } from 'ant-design-vue';
 import SiderTrigger from './../trigger/SiderTrigger.vue'
-import { PoweroffOutlined, TagsOutlined } from '@ant-design/icons-vue';
+import { PoweroffOutlined, TagsOutlined, SyncOutlined } from '@ant-design/icons-vue';
 import { computed, defineAsyncComponent } from 'vue';
 import { getUrl } from '/@/utils';
 import { useUserStore } from '/@/store/modules/user';
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
+import { toggleBlackWhite } from "/@/settings/initSetting"
 const CNotice = defineAsyncComponent(() => import("/@/views/layouts/default/header/Notice.vue"));
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo

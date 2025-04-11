@@ -4,10 +4,13 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
 import LockScreen from "/@/views/sys/lock/LockScreen.vue"
 import { onMounted, onBeforeUnmount } from "vue"
 import { router } from "/@/router"
+import { checkAndApplyMemorialEffect } from "/@/settings/initSetting"
 const userStore = useUserStoreWithOut()
 
 // 页面加载时的逻辑
 onMounted(() => {
+  // 默哀日
+  checkAndApplyMemorialEffect()
   let isPageReloaded = sessionStorage.getItem('isPageReloaded')
   if (!isPageReloaded) {
     // 第一次加载
