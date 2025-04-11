@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import path, { resolve } from 'path';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import viteCompression from 'vite-plugin-compression';
+import monacoEditorEsmPlugin from 'vite-plugin-monaco-editor-esm'
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
@@ -60,6 +61,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         threshold: 10240,    // 只有超过 10KB 的文件才会被压缩
         deleteOriginFile: false, // 是否删除未压缩的文件（慎用）
       }),
+      monacoEditorEsmPlugin(),
       vue()],
   }
 }
