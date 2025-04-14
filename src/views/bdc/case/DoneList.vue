@@ -88,7 +88,7 @@
               <template #split>
                 <a-divider type="vertical"/>
               </template>
-              <a-popconfirm title="是否确定撤回该任务？" ok-text="确定" cancel-text="取消" @confirm="itemRecall(record)">
+              <a-popconfirm  :disabled="record.recallFlag == '0'" title="是否确定撤回该任务？" ok-text="确定" cancel-text="取消" @confirm="itemRecall(record)">
                 <a-button type="link" :disabled="record.recallFlag == '0'">撤回</a-button>
               </a-popconfirm>
             </a-space>
