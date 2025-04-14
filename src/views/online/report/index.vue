@@ -51,8 +51,9 @@
                     </template>
                     导出
                 </a-button>
-                <a-upload name="file" v-model:file-list="fileList" :headers="{ authorization: 'authorization-text' }"
-                    :showUploadList="false" :customRequest="handleImportJson" style="margin: auto 2px;">
+                <a-upload name="file" v-model:file-list="fileList" :max-count="1"
+                    :headers="{ authorization: 'authorization-text' }" :showUploadList="false"
+                    :customRequest="handleImportJson" style="margin: auto 2px;">
                     <a-button>
                         <upload-outlined></upload-outlined>
                         导入
@@ -129,6 +130,7 @@ const columns = [
     { title: "报表标题", dataIndex: "title" },
     { title: "数据来源", dataIndex: "cType" },
     { title: "MyBatis", dataIndex: "isMybatis" },
+    { title: "修改时间", dataIndex: "updateTime", width: 140 },
     { title: '操作', key: 'action', width: 180 }
 ]
 let datalist: any = ref([]);
