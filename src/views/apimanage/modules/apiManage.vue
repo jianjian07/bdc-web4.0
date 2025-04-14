@@ -35,7 +35,7 @@
                 </a-table>
               </div>
             </a-form-item>
-            
+
             <div style="display: flex">
               <div>
                 <a-form-item label="是否加密">
@@ -49,7 +49,7 @@
                 </a-form-item>
               </div>
             </div>
-            
+
             <a-form-item label="选项参数">
               <div>
                 <a-button size="small" style="margin-bottom: 10px" @click="handleAddApiPublicParams(pane)">
@@ -57,7 +57,8 @@
                     <plus-outlined style="font-size: 12px" />
                   </template>
                 </a-button>
-                <a-table :columns="publicColumns" :data-source="pane.apiPublicParams" size="small" :pagination="false" bordered>
+                <a-table :columns="publicColumns" :data-source="pane.apiPublicParams" size="small" :pagination="false"
+                  bordered>
                   <template #bodyCell="{ column, record, index }">
                     <div v-if="column.dataIndex == 'index'" style="text-align: center">
                       {{ index + 1 }}
@@ -72,7 +73,7 @@
                 </a-table>
               </div>
             </a-form-item>
-            
+
             <a-form-item label="接口类型">
               <a-radio-group v-model:value="pane.apiType" @change="dirDataChange($event, pane)">
                 <a-radio value="2">接入</a-radio>
@@ -106,7 +107,8 @@
                     <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
                   </a-form-item>
                   <a-form-item label="接口标识" style="margin-right: 20px;">
-                    <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识" @click="onClickCode(pane)"></a-input>
+                    <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识"
+                      @click="onClickCode(pane)"></a-input>
                   </a-form-item>
                   <a-form-item label="是否返回值解密">
                     <a-radio-group v-model:value="pane.isResultDecrypt">
@@ -169,7 +171,7 @@ import {
   removeMagicApiById,
   dirDataChange,
   getMagicApiBody,
-  sendMagicApi, 
+  sendMagicApi,
   sendCommonApi
 } from "/@/views/apimanage/modules/apiUtil"
 
@@ -225,7 +227,7 @@ const columns = [
 ]
 
 const publicColumns = [
-    {
+  {
     title: '序号',
     dataIndex: 'index',
     key: 'index',
@@ -569,6 +571,7 @@ async function sendApi() {
     headers: headers,
     params: params,
     body: body,
+    dparams: select.dparams
   }
   if (select.jsonContent) {
     delete select.jsonContent
@@ -705,7 +708,7 @@ function onClickCode(pane) {
 
       .api-editor-manage-interface-breadcrumb {
         margin-bottom: 10px;
-        
+
         .breadcrumb-input-name {
           flex: auto;
           padding: 0 4px;
@@ -715,7 +718,7 @@ function onClickCode(pane) {
       .api-editor-manage-interface-header {
         display: flex;
       }
-      
+
       .api-editor-manage-interface-options {
         :deep(.ant-form-item) {
           margin-bottom: 10px;
@@ -732,7 +735,7 @@ function onClickCode(pane) {
       // height: calc(100% - 125px);
       flex: auto;
       overflow: auto;
-      
+
       .api-editor-manage-interface-param {
         height: 60%;
       }

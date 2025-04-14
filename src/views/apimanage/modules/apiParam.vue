@@ -16,15 +16,16 @@
       <a-tab-pane key="body" tab="请求body" class="api-param-pane" forceRender>
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
+      <a-tab-pane key="dparam" tab="动态参数-测试接口" class="api-param-pane" forceRender>
+        <monaco-editor v-model="apiData.dparam" height="100%" language="json" style="width: 100%;overflow: auto"
+          theme="vs">
+        </monaco-editor>
+      </a-tab-pane>
       <a-tab-pane v-if="apiType != 2" key="datasource" tab="参数数据源" class="api-param-pane" forceRender>
         <api-data-source :apiData="apiData"></api-data-source>
       </a-tab-pane>
       <a-tab-pane key="remark" tab="接口说明" class="api-param-pane" forceRender>
-        <a-textarea
-            v-model:value="apiData.bz"
-            placeholder="请输入接口说明"
-            style="height: 100%"
-        />
+        <a-textarea v-model:value="apiData.bz" placeholder="请输入接口说明" style="height: 100%" />
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -37,7 +38,7 @@ import ApiQuery from "/@/views/apimanage/modules/apiQuery.vue"
 import ApiBody from "/@/views/apimanage/modules/apiBody.vue"
 import CodeEditor from '/@/components/common/CodeEditor.vue'
 import ApiDataSource from '/@/views/apimanage/modules/apiDataSource.vue'
-
+import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 // 选中tab
 let activeKey = ref<string>('header')
 
@@ -55,7 +56,6 @@ const props = defineProps({
     default: 1
   }
 })
-
 const emit = defineEmits(['update:activePane'])
 
 watch(() => props.activePane, (val: string) => {
@@ -64,7 +64,7 @@ watch(() => props.activePane, (val: string) => {
   } else {
     activeKey.value = val ? val : 'header'
   }
-},{
+}, {
   immediate: true
 })
 /**
@@ -72,7 +72,7 @@ watch(() => props.activePane, (val: string) => {
  * @param key
  */
 function tabChange(key) {
-  emit('update:activePane',key)
+  emit('update:activePane', key)
 }
 
 function getCodeValue(value) {

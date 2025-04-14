@@ -5,7 +5,7 @@ enum api {
   getMagicInfo = '/api/zrzy-form/magic/web/resource/file',
   delMagicApi = '/api/zrzy-form/magic/web/resource/delete'
 }
- 
+
 /**
  * 根据id找节点
  * @param arr
@@ -161,7 +161,7 @@ export function getAllParentKeys(data: any = [], arr: any = []) {
  */
 export function getMagicApiInfo(id) {
   return new Promise((resolve, reject) => {
-    defHttp.get({ url: api.getMagicInfo + '/' + id,  }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getMagicInfo + '/' + id, }, { withToken: true }).then((res) => {
       if (res && !res.code) {
         resolve(true)
       } else {
@@ -318,7 +318,8 @@ export function sendCommonApi(sendParams) {
       url: sendParams.url,
       headers: sendParams.headers,
       params: sendParams.params,
-      body: JSON.parse(sendParams.body)
+      body: JSON.parse(sendParams.body),
+      dparams: JSON.parse(sendParams.dparams)
     }
     defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true }).then((res) => {
       if (res && res.success) {
@@ -333,12 +334,12 @@ export function sendCommonApi(sendParams) {
       // responseBody.value = err + ''
       resolve(err + '')
     })
-    
+
   })
 }
 
 export function escapeJsonString(inputStr) {
-    return inputStr
-        .replace(/\\/g, "\\\\") // 先转义 `\`
-        .replace(/"/g, '\\"'); // 再转义 `"`
+  return inputStr
+    .replace(/\\/g, "\\\\") // 先转义 `\`
+    .replace(/"/g, '\\"'); // 再转义 `"`
 }
