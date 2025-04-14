@@ -247,6 +247,7 @@ const urlList = {
 }
 const baseApi = ref('')
 const kkFileApi = ref('')
+const proxyBaseApi = ref('')
 
 const props = defineProps({
   isManage: {
@@ -276,6 +277,7 @@ watch(() => props.formData, (val) => {
 onMounted(() => {
   kkFileApi.value = window?.settingConfig?.kkFileDomain
   baseApi.value = window?.settingConfig?.baseDomain
+  proxyBaseApi.value = window?.settingConfig?.proxyBaseDomain
 })
 
 function loadFileList(getDefault: Boolean = true) {
@@ -491,7 +493,13 @@ function previewFile(data: any) {
   }
   filePreview.value = true
   previewData.value = data
-  let encodeUrl = encodeURIComponent(Base64.encode(`${baseApi.value}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
+  let format = ''
+  if (data.title && data.title.includes('.')) {
+    let arr = data.title.split('.')
+    format = arr[arr.length - 1]
+  }
+  let base = ['jpg','png','jpeg'].includes(format) ? proxyBaseApi.value : baseApi.value
+  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
   previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
 }
 
