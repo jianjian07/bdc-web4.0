@@ -1,7 +1,7 @@
 // 导入导出
 import { h } from "vue";
 import { defHttp } from "/@/utils/http/axios";
-import { message, notification } from "ant-design-vue";
+import { Modal, message, notification } from "ant-design-vue";
 import { formatToDateTime } from "./dateUtil";
 enum Api {
     exportJson = '/api/zrzy-form/export/exportJson',
@@ -38,6 +38,23 @@ export const importJson = (fileList: any, params: any, callback: any) => {
                 if (typeof callback == 'function') {
                     callback()
                 }
+            }
+        } else {
+            if (res.result) {
+                Modal.confirm({
+                    title: res?.message,
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '取消',
+                    onOk() {
+                        params.isOk = true
+                        importJson(fileList, params, callback)
+                    },
+                    onCancel() {
+                    },
+                });
+            } else {
+                message.error("导入失败")
             }
         }
     })
