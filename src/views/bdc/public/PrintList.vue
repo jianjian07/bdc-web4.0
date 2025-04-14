@@ -104,7 +104,7 @@ function setUrl(item) {
   let params = item.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
   if (params.code) {
     const routeSlbh = route.query.slbh || props.formData.slbh // 从路由获取的 slbh
-    let domain = `${window.settingConfig.baseDomain}/zrzy-form/`
+    let domain = `${window.settingConfig.proxyBaseDomain}/zrzy-form/`
     let url = `${domain}jmreport/view/${params.code}`
     const queryParams = new URLSearchParams()
     const slbhValue = params.slbh ? params.slbh.toString() : routeSlbh

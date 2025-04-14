@@ -76,6 +76,8 @@ function initData() {
       spinning.value = false
       message.warning(err)
     })
+  } else {
+    spinning.value = false
   }
 }
 
