@@ -418,12 +418,12 @@ export function reloadTable(demoRefs: any, loading: any) {
  * @param id
  * @param token
  */
-export function print(params: { code: string, [key: string]: string | number }) {
+export async function print(params: { code: string, [key: string]: string | number }) {
   // let domain = window._CONFIG['domianURL']
   const route = router.currentRoute.value;
   const routeSlbh = route.query.slbh?.toString(); // 从路由获取的 slbh
-  let domain = `${window.settingConfig.printDomain}/zrzy-form/`
-  let url = `${domain}jmreport/view/${params.code}`
+  let domain = ''
+  let url:any = ''
   const queryParams = new URLSearchParams()
   const slbhValue = params.slbh ? params.slbh.toString() : routeSlbh
   if (slbhValue) {
@@ -434,8 +434,41 @@ export function print(params: { code: string, [key: string]: string | number }) 
       queryParams.append(key, value.toString())
     }
   })
-  url += `?${queryParams.toString()}`
-  window.open(url, '_blank')
+  
+  if (params.code.includes('.frx')) {
+    let obj = Object.fromEntries(queryParams.entries())
+    let reportName = params.code.replace(/\.frx$/, '')
+    let _data = {
+      ...obj,
+      reportName,
+      printType: 'pdf'
+    }
+    url = await getReportUrl(_data)
+  } else {
+    domain = `${window.settingConfig.baseDomain}/zrzy-form/`
+    url = `${domain}jmreport/view/${params.code}`
+    url += `?${queryParams.toString()}`
+  }
+  if (url) {
+    window.open(url, '_blank')
+  }
+}
+
+/**
+ * 获取FastReport地址
+ * @param data
+ */
+function getReportUrl(data) {
+  return new Promise((resolve) => {
+    defHttp.post({ url: '/api/zrzy-bdc/bdc/FastReport/printFastReport', data: data }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        message.warning(res?.message || '获取地址失败!')
+        resolve(false)
+      }
+    })
+  })
 }
 
 /**
