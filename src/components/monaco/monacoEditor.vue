@@ -109,5 +109,6 @@ const format = (): void => {
     width: v-bind(width);
     height: v-bind(height);
     border-radius: 2px;
+    border: 1px solid #d9d9d9;
 }
 </style>
