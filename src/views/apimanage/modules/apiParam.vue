@@ -17,7 +17,7 @@
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
       <a-tab-pane key="dparam" tab="动态参数-测试接口" class="api-param-pane" forceRender>
-        <monaco-editor v-model="apiData.dparam" height="100%" language="json" style="width: 100%;overflow: auto"
+        <monaco-editor v-model="apiData.dparams" height="100%" language="json" style="width: 100%;overflow: auto"
           theme="vs">
         </monaco-editor>
       </a-tab-pane>
