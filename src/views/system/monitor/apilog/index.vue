@@ -32,28 +32,52 @@
     <div class="wonder-table-css">
         <a-table :row-selection="rowSelection" bordered :columns="columns" rowKey="id" :data-source="datalist"
             :pagination="pagination" @change="onChange($event, loadData)">
+            <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'requestType'">
+                    <a-tag :color="record[column.dataIndex] == 'POST' ? 'orange' : 'green'">
+                        {{ record.requestType }}</a-tag>
+                </template>
+                <template v-if="column.dataIndex === 'flag'">
+                    <a-tag :color="record[column.dataIndex] == '失败' ? 'red' : 'green'">
+                        {{ record.flag }}</a-tag>
+                </template>
+                <template v-if="column.key === 'action'">
+                    <span>
+                        <a @click="handleViewLog(record)">详情</a>
+                    </span>
+                </template>
+            </template>
         </a-table>
     </div>
+    <ApiLogModal v-if="open" :open="open" :data="apiLogData" @ok="handOk" />
 </template>
-
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios"
 import dayjs from 'dayjs';
-import { ref, onMounted, defineAsyncComponent, computed } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import { ref, onMounted, defineAsyncComponent } from "vue";
+import { SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
+const ApiLogModal = defineAsyncComponent(() => import("/@/views/system/monitor/apilog/apiLogModal.vue"));
 const columns = [
+    { title: '接口名', dataIndex: "remark", ellipsis: true },
     { title: "地址", dataIndex: "url", ellipsis: true },
+    { title: '请求类型', dataIndex: "requestType", ellipsis: true, width: 80 },
+    { title: '请求头', dataIndex: "headers", ellipsis: true },
     { title: "参数", dataIndex: "params", ellipsis: true },
-    { title: '请求类型', dataIndex: "requestType", ellipsis: true },
-    { title: '创建人', dataIndex: "createBy", ellipsis: true },
-    { title: '创建时间', dataIndex: "createTime", ellipsis: true },
-    { title: '备注', dataIndex: "remark", ellipsis: true },
-    { title: '标志', dataIndex: "flag", ellipsis: true },
+    { title: '标志', dataIndex: "flag", ellipsis: true, width: 80 },
     { title: '异常信息', dataIndex: "errorMessage", ellipsis: true },
     { title: '返回结果', dataIndex: "result", ellipsis: true },
-    { title: '请求头', dataIndex: "headers", ellipsis: true }
+    { title: '请求人', dataIndex: "createBy", ellipsis: true },
+    { title: '请求时间', dataIndex: "createTime", ellipsis: true },
+    ,
+    {
+        title: '操作',
+        dataIndex: 'action',
+        key: 'action',
+        align: 'center',
+        width: 100
+    }
 ]
+let open = ref(false)
 let datalist: any = ref([]);
 let formData: any = ref([]);
 onMounted(() => {
@@ -106,32 +130,18 @@ function onChange(pag: any, callback: any) {
     pagination.value = pag
     callback()
 }
-
-let open = ref(false)
-let title = ref("")
-let selectedRowsData = [];
+let apiLogData = ref([]);
 /**
  * 对比数据
 */
-function handleCompare() {
-    if (selectedRowsData.length == 2) {
-        title.value = "数据对比"
-        open.value = true
-    } else {
-        message.success("请选择2条数据进行对比")
-    }
+function handleViewLog(record: any) {
+    apiLogData.value = record
+    open.value = true
 }
 function handOk(value: any) {
     open.value = false
 }
 
-const rowSelection = computed(() => {
-    return {
-        onChange: (selectedRowKeys: any, selectedRows: any) => {
-            selectedRowsData = selectedRows
-        },
-    }
-})
 </script>
 <style lang="less" scoped>
 // table通用样式，保持项目内样式一致
