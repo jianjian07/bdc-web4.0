@@ -98,7 +98,7 @@ const columns = [
     title: '接入业务名称',
     key: 'jrywmc',
     dataIndex: 'jrywmc',
-    width: 100
+    width: 250
   },
   {
     title: '接入业务编码',
@@ -115,12 +115,6 @@ const columns = [
       let _arr = arr.map(item => getDictItemsByCode('qllx').find(f => f.value == item)?.label)
       return _arr.join(',')
     }
-  },
-  {
-    title: '登记类型',
-    key: 'djlx',
-    dataIndex: 'djlx',
-    width: 80
   },
   {
     title: '操作',

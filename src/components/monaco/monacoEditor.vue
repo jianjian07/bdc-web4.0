@@ -1,10 +1,13 @@
 <template>
     <div ref="codeEditBox" class="codeEditBox"></div>
+    <FullscreenOutlined class="un-fullscreen-icon" v-if="!isFullscreen" @click="toggleFullscreen"/>
+    <FullscreenExitOutlined class="fullscreen-icon" v-else @click="toggleFullscreen"/>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { defineComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { editorProps } from './monacoEditorType'
+import { FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue';
 import * as monaco from 'monaco-editor'
 // import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 // import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
@@ -37,6 +40,7 @@ const emit = defineEmits(['update:modelValue', 'change', 'editor-mounted'])
 //     },
 // }
 let editor: monaco.editor.IStandaloneCodeEditor
+let isFullscreen = ref<boolean>(false)
 const codeEditBox = ref()
 const init = () => {
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -70,6 +74,18 @@ const handleLanguage = (language: string) => {
     if (model) {
         monaco.editor.setModelLanguage(model, language)
     }
+}
+
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value
+  if (codeEditBox.value) {
+    codeEditBox.value.classList.toggle('fullscreen', isFullscreen.value)
+  }
+
+  // 重新布局
+  nextTick(() => {
+    editor?.layout()
+  })
 }
 
 watch(() => props.language, newValue => {
@@ -110,5 +126,33 @@ const format = (): void => {
     height: v-bind(height);
     border-radius: 2px;
     border: 1px solid #d9d9d9;
+}
+
+.codeEditBox.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: white;
+}
+
+.un-fullscreen-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: rgba(255, 255, 255, 80%);
+  font-size: 14px;
+  z-index: 1001;
+}
+
+.fullscreen-icon {
+  position: fixed;
+  top: 2px;
+  right: 2px;
+  background-color: rgba(255, 255, 255, 80%);
+  z-index: 9999;
+  font-size: 14px;
 }
 </style>

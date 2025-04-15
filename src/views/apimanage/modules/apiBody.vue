@@ -122,13 +122,13 @@ const columns = [
   {
     title: '参数值',
     dataIndex: 'fieldValue',
-    key: 'fieldValue',
-    width: 100
+    key: 'fieldValue'
   },
   {
     title: '默认值',
     dataIndex: 'defaultValue',
-    key: 'defaultValue'
+    key: 'defaultValue',
+    width: 150
   },
   {
     title: '加密方式',
@@ -139,7 +139,8 @@ const columns = [
   {
     title: '参数描述',
     dataIndex: 'description',
-    key: 'description'
+    key: 'description',
+    width: 150
   },
   {
     title: '操作',
