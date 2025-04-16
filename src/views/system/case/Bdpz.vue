@@ -13,7 +13,8 @@
                         @click="handleAdd">创建流程</a-button>
                 </div> -->
             </div>
-            <div style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); overflow: auto">
+            <div
+                style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); overflow: auto">
                 <CLCLB @select="onSelect" @setTreeData="setTreeData"></CLCLB>
             </div>
         </div>
@@ -21,25 +22,27 @@
         <div class="userTabContent" style="height: 100%">
             <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
                 <a-tab-pane key="1" tab="基础配置">
-                    <FlowModal :lcid="processInfo.key" @setBaseInfo="setBaseInfo"/>
+                    <FlowModal :lcid="processInfo.key" @setBaseInfo="setBaseInfo" />
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="表单配置" force-render>
                     <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" />
                 </a-tab-pane>
-                <a-tab-pane key="3" tab="业务权利其他配置" force-render>
-                    <QlqtpzList v-if="activeKey == '3'" :lcid="processInfo.key" :baseInfo="baseInfo"/>
+                <a-tab-pane key="3" tab="权利其他配置" force-render>
+                    <QlqtpzList v-if="activeKey == '3'" :lcid="processInfo.key" :baseInfo="baseInfo" />
                 </a-tab-pane>
                 <a-tab-pane key="4" tab="业务约束配置" force-render>
-                    <YwysList v-if="activeKey == '4'" :lcid="processInfo.key" :baseInfo="baseInfo" :treeData="treeData"/>
+                    <YwysList v-if="activeKey == '4'" :lcid="processInfo.key" :baseInfo="baseInfo"
+                        :treeData="treeData" />
                 </a-tab-pane>
                 <a-tab-pane key="5" tab="材料目录配置" force-render>
-                    <ClmlList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="baseInfo"/>
+                    <ClmlList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="baseInfo" />
                 </a-tab-pane>
                 <a-tab-pane key="6" tab="权利人配置" force-render>
                     <qlrpz v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="baseInfo"></qlrpz>
                 </a-tab-pane>
-                <a-tab-pane key="7" tab="节点配置" force-render>
-                    <node-line-list v-if="activeKey == '7'" :lcid="processInfo.key" :baseInfo="baseInfo"></node-line-list>
+                <a-tab-pane key="7" tab="规则配置" force-render>
+                    <node-line-list v-if="activeKey == '7'" :lcid="processInfo.key"
+                        :baseInfo="baseInfo"></node-line-list>
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -66,7 +69,7 @@ let treeData: any = ref(null)
  * @param process 选中的流程
  */
 function onSelect(process: any) {
-  processInfo.value = process
+    processInfo.value = process
 }
 
 /**
@@ -74,7 +77,7 @@ function onSelect(process: any) {
  * @param process 选中的流程
  */
 function setTreeData(data: any) {
-  treeData.value = data
+    treeData.value = data
 }
 
 /**
@@ -82,8 +85,8 @@ function setTreeData(data: any) {
  * @param data 当前选中流程的基础配置
  */
 function setBaseInfo(data: any) {
-  data.prefix = data.prefix || processInfo.value.value
-  baseInfo.value = data
+    data.prefix = data.prefix || processInfo.value.value
+    baseInfo.value = data
 }
 </script>
 
@@ -95,17 +98,19 @@ function setBaseInfo(data: any) {
     height: 650px;
     background: linear-gradient(244deg, rgba(255, 255, 255, 0) 0%, rgba(24, 144, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
 }
+
 .userTabContent {
-  width: 100%;
-  background-color: #fff;
-  margin-left:8px;
-  :deep(.ant-tabs-content) {
-    height: 100%;
-  }
-  
-  :deep(.ant-tabs-content-holder) {
-    height: 100%;
-    overflow: auto;
-  }
+    width: 100%;
+    background-color: #fff;
+    margin-left: 8px;
+
+    :deep(.ant-tabs-content) {
+        height: 100%;
+    }
+
+    :deep(.ant-tabs-content-holder) {
+        height: 100%;
+        overflow: auto;
+    }
 }
 </style>
