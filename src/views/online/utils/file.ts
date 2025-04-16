@@ -62,8 +62,8 @@ export const importJson = (fileList: any, params: any, callback: any) => {
 /**
  * 导出json
  */
-export function exprotJson(params: any, title: string) {
-    defHttp.get({ url: Api.exportJson, params: params, responseType: "blob" }, { withToken: true }).then((res) => {
+export function exprotJson(params: any, title: string, url?: string) {
+    defHttp.get({ url: url || Api.exportJson, params: params, responseType: "blob" }, { withToken: true }).then((res) => {
         title = title + formatToDateTime(new Date().getTime())
         const fileName = title + '.json'; //文件名
         const link = document.createElement('a');
