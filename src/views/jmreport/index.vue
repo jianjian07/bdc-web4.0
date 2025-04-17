@@ -37,7 +37,7 @@
           </template>
           新建报表
         </a-button>
-        <a-upload v-model:file-list="fileList" :customRequest="importData"
+        <a-upload v-model:file-list="fileList" :customRequest="importData" :maxCount="1"
                   :headers="{ authorization: 'authorization-text' }" :showUploadList="false"
                   accept=".json" name="file" style="margin: auto 2px;">
           <a-button type="primary">
@@ -297,6 +297,7 @@ function importData() {
   fileList.value.forEach((ele: any) => {
     fileData.append(`files`, ele.originFileObj)
   })
+  fileList.value = []
   defHttp.post({
         url: api.importValidate,
         data: fileData,
@@ -419,6 +420,8 @@ function deleteData(record) {
   defHttp.delete({ url: url, params: { id: record.id } }, { withToken: false }).then((res) => {
     if (res.success) {
       message.success('删除成功')
+      selectedRow.value = selectedRow.value.filter(f => f.id != record.id)
+      selectedValue.value = selectedValue.value.filter(f => f != record.id)
       loadData()
     } else {
       message.error('删除失败' + res?.message)
