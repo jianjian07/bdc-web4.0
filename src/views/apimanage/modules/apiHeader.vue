@@ -20,9 +20,10 @@
               style="margin-right: 5px" @click="delRow(record, index)" />
           </div>
         </template>
-        <template v-else-if="column.dataIndex == 'encryptType'">
-          <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" />
+        <template v-else-if="column.dataIndex == 'isEncrypt'">
+          <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
         </template>
+
         <template v-else>
           <a-input v-model:value="record[column.dataIndex]" />
         </template>
@@ -72,9 +73,9 @@ const columns = [
     key: 'defaultValue'
   },
   {
-    title: '加密方式',
-    dataIndex: 'encryptType',
-    key: 'encryptType',
+    title: '是否加密',
+    dataIndex: 'isEncrypt',
+    key: 'isEncrypt',
     width: '150px'
   },
   {

@@ -24,10 +24,14 @@
               <a-input v-model:value="record[column.dataIndex]" />
             </template>
             <template v-else-if="['defaultValue'].includes(column.dataIndex)">
-              <a-input v-model:value="record[column.dataIndex]" @change="defaultValueChange($event, record)"/>
+              <a-input v-model:value="record[column.dataIndex]" @change="defaultValueChange($event, record)" />
             </template>
-            <template v-else-if="column.dataIndex == 'encryptType'">
-              <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" />
+            <template v-else-if="column.dataIndex == 'isEncrypt'">
+              <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+              <!-- <a-select v-model:value="record[column.dataIndex]" :options="getDictItemsByCode('yn')"
+                style="width: 100%">
+              </a-select>
+              <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" /> -->
             </template>
             <template v-else-if="column.dataIndex == 'operate'">
               <div class="operate-btn">
@@ -81,6 +85,7 @@
 import { nextTick, ref, watch, h, onMounted } from "vue"
 import { AppstoreAddOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { notification, Button } from 'ant-design-vue'
 import { guid } from "/@/utils"
 import { escapeJsonString } from "/@/views/apimanage/modules/apiUtil"
@@ -131,9 +136,9 @@ const columns = [
     width: 150
   },
   {
-    title: '加密方式',
-    dataIndex: 'encryptType',
-    key: 'encryptType',
+    title: '是否加密',
+    dataIndex: 'isEncrypt',
+    key: 'isEncrypt',
     width: 100
   },
   {
@@ -375,9 +380,9 @@ function parseObj(item, parent?: any) {
     case 'Double':
     case 'Float':
       let fieldValue = isCanNumber(item.fieldValue) ? Number(item.fieldValue) : -1
-      start = (parent && parent.dataType == 'Array') 
-          ? item.fieldName ? `"${item.fieldName}": ${fieldValue}` : `${fieldValue}` 
-          :`"${item.fieldName}": ${fieldValue}` 
+      start = (parent && parent.dataType == 'Array')
+        ? item.fieldName ? `"${item.fieldName}": ${fieldValue}` : `${fieldValue}`
+        : `"${item.fieldName}": ${fieldValue}`
       break
     case 'String':
     case 'Any':
@@ -387,17 +392,17 @@ function parseObj(item, parent?: any) {
         start = `"`
         end = `"`
       } else {
-        start = (parent && parent.dataType == 'Array') 
-          ? item.fieldName ? `"${item.fieldName}":"${escapeJsonString(item.fieldValue)}"` : `"${escapeJsonString(item.fieldValue)}"` 
-          :`"${item.fieldName}":"${escapeJsonString(item.fieldValue)}"` 
+        start = (parent && parent.dataType == 'Array')
+          ? item.fieldName ? `"${item.fieldName}":"${escapeJsonString(item.fieldValue)}"` : `"${escapeJsonString(item.fieldValue)}"`
+          : `"${item.fieldName}":"${escapeJsonString(item.fieldValue)}"`
         // start = `"${item.fieldName}":"${item.fieldValue}"`
       }
       break
     case 'Boolean':
       let boolean = item.fieldValue == 'true'
-        start = (parent && parent.dataType == 'Array') 
-          ? item.fieldName ? `"${item.fieldName}": ${boolean}` : `${boolean}` 
-          :`"${item.fieldName}": ${boolean}` 
+      start = (parent && parent.dataType == 'Array')
+        ? item.fieldName ? `"${item.fieldName}": ${boolean}` : `${boolean}`
+        : `"${item.fieldName}": ${boolean}`
       // start = `"${item.fieldName}": ${boolean}`
       break
   }
@@ -541,7 +546,7 @@ function processBody(content, srcObj) {
         }
         arr.push(param)
       })
-      
+
       // let value = content[0]
       // const simpleObject = isSimpleObject(value)
       // let param = {
@@ -590,7 +595,7 @@ function processBody(content, srcObj) {
 
 const objToMap = obj => {
   const map = {}
-  obj?.children?.forEach((it,index) => {
+  obj?.children?.forEach((it, index) => {
     it.parentKey = obj.key
     if (obj.dataType !== 'Array') {
       map[it.fieldName] = it
