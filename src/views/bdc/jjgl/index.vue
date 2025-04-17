@@ -34,6 +34,9 @@
           <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
               @change="onChange($event, loadData)">
               <template #bodyCell="{ column, record }">
+                  <template v-if="column.dataIndex == 'ajmc'">
+                    <a @click="itemView(record)">{{ record.ajmc }}</a>
+                  </template>
                   <template v-if="column.dataIndex === 'action'">
                       <a-space>
                         <template #split>
@@ -159,6 +162,11 @@ function searchData() {
   pagination.value.current = 1
   loadData()
 }
+
+function itemView(record: any) {
+  router.push('/task/hisTaskDeal?slbh=' + record.slbh)
+}
+
 /**
 * 分页
 * @param pag

@@ -35,7 +35,7 @@
                 @change="onChange($event, loadData)">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'ajmc'">
-                        <span>{{ record.ajmc }}</span>
+                        <a @click="itemView(record)">{{ record.ajmc }}</a>
                         <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName+"督办：" +record.taskSuperviseRemark }}】</span>
                         <span v-if="record.taskUrgent" style="color: red;">【{{  record.taskUrgentUserRealName+"加急：" +record.taskUrgentRemark }}】</span>
                     </template>
@@ -161,6 +161,14 @@ function clear() {
  */
 function handleCase(record: any) {
     router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
+}
+
+/**
+ * 查看项目信息
+ * @param record
+ */
+function itemView(record: any) {
+  router.push('/task/hisTaskDeal?slbh=' + record.slbh)
 }
 
 /**

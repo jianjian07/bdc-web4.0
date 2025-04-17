@@ -3,7 +3,7 @@
     <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="6" :offset="0">
-          <a-form-item label="项目名称">
+          <a-form-item label="案卷名称">
             <a-input v-model:value="formData.xmmc" allowClear/>
           </a-form-item>
         </a-col>
@@ -126,7 +126,7 @@ let nodeList = ref([])
 let currentLcid = ""
 const columns = [
   { title: "案卷编号", dataIndex: "slbh", align: "center" },
-  { title: "项目名称", dataIndex: "xmmc", align: "center", key: 'xmmc' },
+  { title: "案卷名称", dataIndex: "xmmc", align: "center", key: 'xmmc' },
   { title: "案卷类型", dataIndex: "ajlx", align: "center" },
   { title: "办理时间", dataIndex: "endTime", align: "center" },
   { title: "办理节点", dataIndex: "nodeName", align: "center" },
