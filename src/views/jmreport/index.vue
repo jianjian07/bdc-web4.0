@@ -416,7 +416,7 @@ function preview(record: any) {
 function deleteData(record) {
   // http://192.168.27.87:1004/zrzy-form/jmreport/delete?id=949203339267919872&token=null
   if (!record.id) return
-  let url = '/api/zrzy-form/jmreport/delete' // 删除
+  let url = '/api/zrzy-form/jmreport/deleteReportById' // 删除
   defHttp.delete({ url: url, params: { id: record.id } }, { withToken: false }).then((res) => {
     if (res.success) {
       message.success('删除成功')
