@@ -445,7 +445,7 @@ export async function print(params: { code: string, [key: string]: string | numb
     }
     url = await getReportUrl(_data)
   } else {
-    domain = `${window.settingConfig.proxyBaseDomain}/zrzy-form/`
+    domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
     url = `${domain}jmreport/view/${params.code}`
     url += `?${queryParams.toString()}`
   }

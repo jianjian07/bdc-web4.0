@@ -387,7 +387,7 @@ function addData() {
   let url = '/api/zrzy-form/jmreport/save'
   defHttp.post({ url: url }, { withToken: false }).then((res) => {
     if (res.success) {
-      window.open(`${window.settingConfig.proxyBaseDomain}/zrzy-form/jmreport/index/` + res.result.id, '_blank')
+      window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/index/` + res.result.id, '_blank')
     }
   }).catch(err => {
     console.info(err)
@@ -398,7 +398,7 @@ function addData() {
  * 编辑表单
  */
 function editData(record) {
-  window.open(`${window.settingConfig.proxyBaseDomain}/zrzy-form/jmreport/index/` + record.id, '_blank')
+  window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/index/` + record.id, '_blank')
 }
 
 /**
@@ -406,7 +406,7 @@ function editData(record) {
  * @param record
  */
 function preview(record: any) {
-  window.open(`${window.settingConfig.proxyBaseDomain}/zrzy-form/jmreport/view/` + record.id, '_blank')
+  window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/view/` + record.id, '_blank')
 }
 
 /**
