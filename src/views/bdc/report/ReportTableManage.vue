@@ -111,7 +111,7 @@ onMounted(() => {
  * 表格数据加载
  */
 async function loadData() {
-  defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, tableName: formData.value.tableName } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, tableName: formData.value.tableName?.trim() } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       const { records, total } = res.result
       datalist.value = records

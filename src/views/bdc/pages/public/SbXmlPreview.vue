@@ -1,12 +1,16 @@
 <template>
   <div class="sb-xml-preview">
-     <CodeEditor :fullScreen="false" language="xml" :value="xml" :readOnly="formData.readOnly"></CodeEditor>
+    <a-spin :spinning="loading" style="height: 100%">
+      <CodeEditor :fullScreen="false" language="xml" :value="xml" :readOnly="formData.readOnly"></CodeEditor>
+    </a-spin>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
 import CodeEditor from '/@/components/common/CodeEditor.vue'
+import { defHttp } from "/@/utils/http/axios"
+import { message } from "ant-design-vue"
 
 const props = defineProps({
     formData: {
@@ -16,13 +20,19 @@ const props = defineProps({
 })
 
 let xml = ref<string>('')
+let loading =ref<boolean>(false)
 
 enum api {
-  xyXmlByYwh = '',
-  xyXmlByDate = '',
-  sbXmlByYwh = '',
-  sbXmlByDate = ''
+  xyXmlByYw = '/api/zrzy-report/bdc/report/respondXml',
+  xyXmlByDb = '/api/zrzy-report/bdc/report/register/responseXml',
+  sbXmlByYw = '/api/zrzy-report/bdc/report/reportXml',
+  sbXmlByDb = '/api/zrzy-report/bdc/report/register/reportXml'
 }
+
+// 业务上报XML 1
+// 业务响应 2
+// 登簿上报 3
+// 登簿响应 4
 
 onMounted(()=> {
   getXml()
@@ -31,45 +41,24 @@ onMounted(()=> {
 function getXml() {
   let url = ''
   let type = props.formData.xmlType 
-  if (type == '1' && props.formData.ywh) {
-    url = api.sbXmlByYwh
-  } else if (type == '1' && props.formData.accessDate) {
-    url = api.sbXmlByDate
-  } else if (type == '2' && props.formData.ywh) {
-    url = api.xyXmlByYwh
-  } else if (type == '2' && props.formData.accessDate) {
-    url = api.xyXmlByDate
+  if (type == '1') {
+    url = api.sbXmlByYw
+  } else if (type == '2') {
+    url = api.xyXmlByYw
+  } else if (type == '3') {
+    url = api.sbXmlByDb
+  } else if (type == '4') {
+    url = api.xyXmlByDb
   }
-  console.log('')
-  
-  xml.value = `<?xml version="1.0"?><Tests> <Test TestId="0001" TestType="CMD"><Name>Convert number to string</Name><CommandLine>Examp1.EXE</CommandLine>
-    <Input>1</Input><Output>One</Output></Test><Test TestId="0002" TestType="CMD"><Name>Find succeeding characters</Name><CommandLine>Examp2.EXE</CommandLine>
-    <Input>abc</Input><Output>def</Output></Test>
-  <Test TestId="0003" TestType="GUI">
-    <Name>Convert multiple numbers to strings</Name>
-    <CommandLine>Examp2.EXE /Verbose</CommandLine>
-    <Input>123</Input>
-    <Output>One Two Three</Output>
-  </Test>
-  <Test TestId="0004" TestType="GUI">
-    <Name>Find correlated key</Name>
-    <CommandLine>Examp3.EXE</CommandLine>
-    <Input>a1</Input>
-    <Output>b1</Output>
-  </Test>
-  <Test TestId="0005" TestType="GUI">
-    <Name>Count characters</Name>
-    <CommandLine>FinalExamp.EXE</CommandLine>
-    <Input>This is a test</Input>
-    <Output>14</Output>
-  </Test>
-  <Test TestId="0006" TestType="GUI">
-    <Name>Another Test</Name>
-    <CommandLine>Examp2.EXE</CommandLine>
-    <Input>Test Input</Input>
-    <Output>10</Output>
-  </Test>
-</Tests>`
+  loading.value = true
+  defHttp.get({ url: url, params: { id: props.formData.id } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      xml.value = res.result
+    } else {
+      message.warning(res?.message)
+    }
+    loading.value = false
+  })
 }
 
 </script>
@@ -80,6 +69,15 @@ function getXml() {
   
   :deep(.full-screen-parent) {
     height: 100%;
+  }
+  
+  :deep(.ant-spin-nested-loading) {
+    height: 100%;
+
+    .ant-spin-container {
+      height: 100%;
+      overflow: auto;
+    }
   }
 }
 </style>

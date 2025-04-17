@@ -613,14 +613,14 @@ export async function setQlqtqkByYwh(viewData: any, fields: any, params: any) {
     if (fields.includes('.')) {
       let key = fields.split('.')
       if (!viewData.value[key[0]][key[1]]) {
-        let slbh = route.query.slbh
+        let slbh = ''
         let ywh = params?.ywh
         let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
         viewData.value[key[0]][key[1]] = result
       }
     } else {
       if (!viewData.value[fields]) {
-        let slbh = route.query.slbh
+        let slbh = ''
         let ywh = params?.ywh
         let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
         viewData.value[fields] = result
@@ -1308,4 +1308,40 @@ export function getQlrGyqk() {
     }
   }
   return gyqk
+}
+
+/**
+ * 批量重新上报
+ * @param ids
+ */
+export function plReport(ids) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({ url: '/api/zrzy-report/bdc/report/reReportBatch', data: ids }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        message.success('上报成功!' + res?.message)
+        resolve(true)
+      } else {
+        message.warning(res?.message || '上报失败!')
+        resolve(false)
+      }
+    })
+  })
+}
+
+/**
+ * 单个重新上报
+ * @param id
+ */
+export function reReport(id) {
+   return new Promise((resolve, reject) => {
+    defHttp.post({ url: '/api/zrzy-report/bdc/report/reReport', params: { id: id }}, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        message.success('上报成功!' + res?.message)
+        resolve(true)
+      } else {
+        message.warning(res?.message || '上报失败!')
+        resolve(false)
+      }
+    })
+  })
 }
