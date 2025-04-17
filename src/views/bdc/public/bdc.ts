@@ -613,14 +613,14 @@ export async function setQlqtqkByYwh(viewData: any, fields: any, params: any) {
     if (fields.includes('.')) {
       let key = fields.split('.')
       if (!viewData.value[key[0]][key[1]]) {
-        let slbh = ''
+        let slbh = route.query.slbh
         let ywh = params?.ywh
         let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
         viewData.value[key[0]][key[1]] = result
       }
     } else {
       if (!viewData.value[fields]) {
-        let slbh = ''
+        let slbh = route.query.slbh
         let ywh = params?.ywh
         let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
         viewData.value[fields] = result
