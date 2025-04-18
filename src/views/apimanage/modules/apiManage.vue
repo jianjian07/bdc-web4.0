@@ -31,11 +31,8 @@
                     <template v-else-if="column.dataIndex == 'privateKey' || column.dataIndex == 'publicKey'">
                       <a-textarea v-model:value="record[column.dataIndex]" :rows="1" ></a-textarea>
                     </template>
-                    <template v-else-if="column.dict">
-                      <a-select v-model:value="record[column.dataIndex]" :options="getDictItemsByCode(column.dict)"></a-select>
-                    </template>
-                    <template v-else-if="column.options">
-                       <a-select v-model:value="record[column.dataIndex]" :options="column.options"></a-select>
+                    <template v-else-if="column.dataIndex == 'status'">
+                       <a-radio-group v-model:value="record[column.dataIndex]" @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)" style="display: flex; justify-content: center" :options="column.options"></a-radio-group>
                     </template>
                     <template v-else>
                       <a-input v-model:value="record[column.dataIndex]"></a-input>
@@ -230,15 +227,15 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 100,
+    width: 140,
     options: [
       {
         label: '有效',
-        value: 1
+        value: true
       },
       {
         label: '无效',
-        value: 0
+        value: false
       }
     ]
   },
@@ -642,6 +639,21 @@ function handleAddApiKeys(pane) {
     pane.apiKeys = []
   }
   pane.apiKeys.push({})
+}
+
+/**
+ * 单选发生变化
+ * @param e
+ * @param apiKeys
+ * @param record
+ */
+function handleRadioChange(e, apiKeys, record, index) {
+  if (record.status) {
+    apiKeys = apiKeys.map((m, _i) =>{
+      m.status = _i == index ? m.status : (m.status !== undefined ? false : undefined)
+      return m
+    })
+  }
 }
 
 /**
