@@ -34,13 +34,21 @@
                     <div v-else-if="column.dataIndex == 'operate'" style="display: flex; justify-content: center">
                       <a @click="del(pane, record, index)">删除</a>
                     </div>
+                    <template v-else-if="column.dataIndex == 'privateKey' || column.dataIndex == 'publicKey'">
+                      <a-textarea v-model:value="record[column.dataIndex]"  :rows="1"></a-textarea>
+                    </template>
+                    <template v-else-if="column.dict">
+                      <a-select v-model:value="record[column.dataIndex]" :options="getDictItemsByCode(column.dict)"></a-select>
+                    </template>
+                    <template v-else-if="column.options">
+                       <a-select v-model:value="record[column.dataIndex]" :options="column.options"></a-select>
+                    </template>
                     <template v-else>
                       <a-input v-model:value="record[column.dataIndex]"></a-input>
                     </template>
                   </template>
                 </a-table>
               </div>
-
             </a-form-item>
             <div style="display: flex">
               <div>
@@ -198,6 +206,22 @@ const columns = [
     key: 'privateKey'
   },
   {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 100,
+    options: [
+      {
+        label: '有效',
+        value: 1
+      },
+      {
+        label: '无效',
+        value: 0
+      }
+    ]
+  },
+  {
     title: '操作',
     dataIndex: 'operate',
     key: 'operate',
@@ -286,7 +310,6 @@ function remove(targetKey: string) {
 
   tabChange(activeKey.value)
 }
-
 /**
  * url改变
  */
