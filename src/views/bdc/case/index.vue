@@ -68,11 +68,11 @@ const columns = [
         dataIndex: 'createTime',
         key: 'createTime',
     },
-    {
-        title: '操作',
-        with: 180,
-        key: 'action'
-    }
+    // {
+    //     title: '操作',
+    //     with: 180,
+    //     key: 'action'
+    // }
 ]
 let dataSource = ref([])
 let pagination = ref({
