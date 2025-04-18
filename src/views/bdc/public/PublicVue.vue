@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ slbh }}-{{ jdmc }}：{{ formConfig.ajmc }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl"/>
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl" :isAllFinished="isAllFinished"/>
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
@@ -26,13 +26,13 @@
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
               <template v-if="form.bdlb == '0'">
-                <component v-bind:is="generateForm" :id="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="setRef" :reload="reload" >
+                <component v-bind:is="generateForm" :id="form.formId" :key="form.formId"
+                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setRef(el, form.formId)" :reload="reload" >
                 </component>
               </template>
               <template v-else>
-                <component v-bind:is="component(form.vfd)" :id="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="setCRef" :reload="reload" >
+                <component v-bind:is="component(form.vfd)" :id="form.formId" :key="form.formId"
+                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setCRef(el, form.formId)" :reload="reload" >
                 </component>
               </template>
 <!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
@@ -68,6 +68,7 @@ import { getMultipleRef } from "/@/views/bdc/public/bdc"
 import { resetValidateInfos, eventBus } from "form-imagining"
 import ApprovalProcess from "/@/views/bdc/query/ApprovalProcess.vue"
 import RViewOnline from "/@/views/online/report/RViewOnline.vue"
+import { message } from "ant-design-vue"
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const generateForm = computed(() => {
@@ -116,18 +117,34 @@ let startX = 0
 let okLoading = ref<boolean>(false)
 // 是否批量
 let isPl = ref<boolean>(false)
-// 通用表单组件实例
-let demoRefs: any = []
-// 动态设置ref 在组件渲染后才能设置
-const setRef = (el: any) => {
-  if (el && el.fView) {
-    demoRefs.push(el.fView)
+
+// 创建响应式Map
+const demoRefsMap = ref(new Map<string, any>())
+
+const demoRefs = computed(() => {
+  const all = Array.from(demoRefsMap.value.values())
+  return getMultipleRef(all, [])
+})
+
+// 动态组件是否全部加载
+const isAllFinished = computed(() => {
+  return demoRefs.value.length === formList.value.length
+})
+
+const setRef = (el: any, formId: string) => {
+  const fView = el?.fView || el?.$?.exposed?.fView
+  if (el && fView) {
+    demoRefsMap.value.set(formId, fView)
   }
 }
 
-const setCRef = (el: any) => {
+const removeRef = (formId: string) => {
+  demoRefsMap.value.delete(formId)
+}
+
+const setCRef = (el: any, formId: string) => {
   if (el) {
-    demoRefs.push(el)
+    demoRefsMap.value.set(formId, el)
   }
 }
 
@@ -210,8 +227,11 @@ function getFormConfig() {
  * @param btn
  */
 async function handleClick(btn) {
+  if (!isAllFinished.value) {
+    message.warning('表单还未加载完毕!')
+    return
+  }
   if (btn.funName) {
-    checkDemoRefs()
     // 修正非 JSON 格式字符串
     let _publicFun = publicVueFun // 定义打包识别方法
     console.log('_publicFun', _publicFun) // 需要输出被用到一次 不然打包后eval获取不到
@@ -219,7 +239,7 @@ async function handleClick(btn) {
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
-    let _params = `(demoRefs,spinning${params ? (',' + JSON.stringify(params)) : params})`
+    let _params = `(demoRefs.value,spinning${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }
@@ -299,20 +319,6 @@ function onReloadLpb(obj: any) {
   extractDataLpb(obj)
 }
 /**数据提取 end */
-
-/**
- * 获取dom
- */
-function checkDemoRefs() {
-  if (demoRefs) {
-    let el = [...demoRefs]
-    if (el) {
-      let mulArr = getMultipleRef([el], [])
-      demoRefs = mulArr
-      demoRefs = Array.from(new Set(demoRefs))
-    }
-  }
-}
 
 /**
  * 开始拖拽

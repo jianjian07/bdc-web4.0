@@ -1,8 +1,8 @@
 <template>
   <div style="height: 100%">
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
-      <component v-bind:is="generateForm" :id="formData.formId" formType="modal"
-                :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="setRef">
+      <component v-bind:is="generateForm" :id="formData.formId" formType="modal" :key="formData.formId"
+                :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="(el) => setRef(el, formData.formId)">
      </component>
       <template v-if="showQlr">
          <qlr-list :qlr="qlr" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="formData.iszd == '1'" formType="modal" :regType="regType"></qlr-list>
@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
+import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos } from "form-imagining"
@@ -25,12 +25,26 @@ const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })
 let spinning = ref<boolean>(false)
-// 通用表单组件实例
-let demoRefs: any = []
-// 动态设置ref 在组件渲染后才能设置
-const setRef = (el: any) => {
-  if (el && el.fView) {
-    demoRefs.push(el.fView)
+// // 通用表单组件实例
+// let demoRefs: any = []
+// // 动态设置ref 在组件渲染后才能设置
+// const setRef = (el: any) => {
+//   if (el && el.fView) {
+//     demoRefs.push(el.fView)
+//   }
+// }
+// 创建响应式Map
+const demoRefsMap = ref(new Map<string, any>())
+
+const demoRefs = computed(() => {
+  const all = Array.from(demoRefsMap.value.values())
+  return getMultipleRef(all, [])
+})
+
+const setRef = (el: any, formId: string) => {
+  const fView = el?.fView || el?.$?.exposed?.fView
+  if (el && fView) {
+    demoRefsMap.value.set(formId, fView)
   }
 }
 // 是否显示权利人
@@ -102,15 +116,18 @@ function checkDemoRefs() {
 
 
 async function saveData(params?: any) {
-  console.log('保存表单',demoRefs)
+  console.log('保存表单',demoRefs.value)
   if (params) {
     params['params']  = params?.params || props.formData
   } else {
     params = { params: props.formData }
   }
   
-  checkDemoRefs()
-  return await sendSaveFun('baseSave', demoRefs, spinning, params)
+  // checkDemoRefs()
+  // 这里如果是带.value的就需要拿到.value 因为保存的内部直接处理的formDoms[i].formId
+  // eval那种形式是默认解包了 所以不需要再处理
+  const refs = demoRefs.value.map(ref => ref?.value || ref)
+  return await sendSaveFun('baseSave', refs, spinning, params)
 }
 
 /**
@@ -126,8 +143,9 @@ async function saveValidateData(params?: any) {
     params = { params: props.formData, validateSave: true }
   }
   
-  checkDemoRefs()
-  return await sendSaveFun('baseSave', demoRefs, spinning, params)
+  // checkDemoRefs()
+  const refs = demoRefs.value.map(ref => ref?.value || ref)
+  return await sendSaveFun('baseSave', refs, spinning, params)
 }
 
 async function saveQlrData(type: any, params?: any) {
@@ -137,8 +155,9 @@ async function saveQlrData(type: any, params?: any) {
     params = props.formData
   }
   
-  checkDemoRefs()
-  return await sendQlrSaveFun(type, demoRefs, spinning, params)
+  // checkDemoRefs()
+  const refs = demoRefs.value.map(ref => ref?.value || ref)
+  return await sendQlrSaveFun(type, refs, spinning, params)
 }
 
 async function savePlJcf(params?:any) {
@@ -148,8 +167,9 @@ async function savePlJcf(params?:any) {
     params = props.formData
   }
   
-  checkDemoRefs()
-  return await sendPlJcf(demoRefs, spinning, params)
+  // checkDemoRefs()
+  const refs = demoRefs.value.map(ref => ref?.value || ref)
+  return await sendPlJcf(refs, spinning, params)
 }
 
 defineExpose({

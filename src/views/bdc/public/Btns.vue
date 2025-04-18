@@ -66,6 +66,7 @@ import { computed, nextTick, onMounted, ref, watch } from "vue"
 import * as bdc from '/@/views/bdc/public/bdc'
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
+import { message } from "ant-design-vue"
 
 const props = defineProps({
   vueRefs: {
@@ -87,10 +88,13 @@ const props = defineProps({
   isPl: {
     type: Boolean,
     default: false
+  },
+  isAllFinished: {
+    type: Boolean,
+    dafault: false
   }
 })
-let vueRefs: any = []
-vueRefs = props.vueRefs
+let vueRefs: any = computed(() => { return props.vueRefs })
 // 左侧基础按钮
 let leftBtnList = ref<any>([])
 // 中侧按钮
@@ -160,24 +164,26 @@ function getMaxMiddleBtnCount() {
  * 按钮点击事件
  */
 async function handleClick(btn) {
-  if (btn.funName && bdc[btn.funName]) {
-    checkDemoRefs()
-    let _bdc: any = bdc //  定义 
-    console.log('_bdc',_bdc) // 需要输出被用到一次 不然打包后eval获取不到
-    // 修正非 JSON 格式字符串
-    let correctedBz = btn.bz
-      .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
-      .replace(/'/g, '"'); // 单引号变双引号
-    let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
-    let _params = `(vueRefs,loading${params ? (',' + JSON.stringify(params)) : params})`
-    if (btn.anwz == 'center') {
-      _params = `(${params ? JSON.stringify(params) : params})`
+  if (!props.isAllFinished) {
+    message.warning('表单还未加载完毕!')
+    return
+  } else {
+    if (btn.funName && bdc[btn.funName]) {
+      let _bdc: any = bdc //  定义 
+      console.log('_bdc',_bdc) // 需要输出被用到一次 不然打包后eval获取不到
+      // 修正非 JSON 格式字符串
+      let correctedBz = btn.bz
+        .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
+        .replace(/'/g, '"'); // 单引号变双引号
+      let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
+      let _params = `(vueRefs.value, loading${params ? (',' + JSON.stringify(params)) : params})`
+      if (btn.anwz == 'center') {
+        _params = `(${params ? JSON.stringify(params) : params})`
+      }
+      await eval(`_bdc[btn.funName]` + _params)
     }
-    await eval(`_bdc[btn.funName]` + _params)
   }
 }
-
-
 
 // 计算当前可见的按钮
 const visibleButtons = computed(() =>
@@ -229,7 +235,7 @@ function checkDemoRefs() {
       let mulArr = getMultipleRef([el], [])
       vueRefs = mulArr
       vueRefs = Array.from(new Set(vueRefs))
-      // console.log('msarr', mulArr)
+      // console.log('msarr', vueRefs)
     }
   }
 }
