@@ -44,7 +44,7 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="动态数据源" name="cType">
-                        <a-select v-model:value="reportData.dbKey" :options="dataSources" />
+                        <a-select v-model:value="reportData.dbKey" :options="dataSources" allow-clear/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="24">
