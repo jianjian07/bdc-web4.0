@@ -38,7 +38,7 @@
                       <a-textarea v-model:value="record[column.dataIndex]"  :rows="1"></a-textarea>
                     </template>
                     <template v-else-if="column.dataIndex == 'status'">
-                       <a-radio-group v-model:value="record[column.dataIndex]" @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)" style="display: flex; justify-content: center" :options="column.options"></a-radio-group>
+                       <a-checkbox v-model:checked="record[column.dataIndex]" @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)" style="display: flex; justify-content: center" :options="column.options"></a-checkbox>
                     </template>
                     <template v-else>
                       <a-input v-model:value="record[column.dataIndex]"></a-input>
@@ -206,7 +206,7 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 140,
+    width: 50,
     options: [
       {
         label: '有效',
