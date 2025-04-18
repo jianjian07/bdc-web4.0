@@ -1,10 +1,15 @@
 <template>
   <div class="report-table-manage wonder-table-form">
-    <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
+    <a-form :label-col="{ style: { width: '150px' } }" :labelWrap="true">
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :offset="0" :span="8">
           <a-form-item label="上报视图/表名">
             <a-input v-model:value="formData.tableName" allowClear/>
+          </a-form-item>
+        </a-col>
+        <a-col :offset="0" :span="2">
+          <a-form-item>
+            <a-checkbox v-model:checked="checked">转小写</a-checkbox>
           </a-form-item>
         </a-col>
         <a-col :offset="0" :span="4">
@@ -80,10 +85,12 @@ import { message } from "ant-design-vue"
 
 let formData: any = ref([])
 const columns = [
-  { title: "序号", dataIndex: "index", width: 50 },
-  { title: "上报视图/表名", dataIndex: "tableName", width: 200 },
-  { title: "关键字段名", dataIndex: "keyValue", width: 120 },
-  { title: "上报字段", dataIndex: "reportValue", ellipsis: true },
+  { title: "序号", dataIndex: "index", width: 80 },
+  { title: "上报视图/表名", dataIndex: "tableName", ellipsis: true },
+  { title: "关键字段名", dataIndex: "keyValue", width: 200 },
+  // { title: "上报字段", dataIndex: "reportValue", ellipsis: true },
+  { title: "更新人", dataIndex: "updateBy", width: 120 },
+  { title: "更新时间", dataIndex: "updateTime", width: 200 },
   { title: '操作', key: 'action', width: 150 }
 ]
 let datalist: any = ref([])
@@ -96,7 +103,7 @@ let pagination = ref({
   current: 1,
   pageSize: 10,
 })
-
+let checked = ref(true)
 enum api {
   list = '/api/zrzy-report/bdc/report/config/getFieldList',
   save = '/api/zrzy-report/bdc/report/config/saveOrUpdateField',
@@ -111,7 +118,14 @@ onMounted(() => {
  * 表格数据加载
  */
 async function loadData() {
-  defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, tableName: formData.value.tableName?.trim() } }, { withToken: true }).then((res) => {
+  let tableName = formData.value.tableName?.trim()
+  if (tableName && checked.value) {
+    tableName = tableName.toLowerCase()
+  }
+  defHttp.get({
+    url: api.list,
+    params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, tableName: tableName }
+  }, { withToken: true }).then((res) => {
     if (res && res.success) {
       const { records, total } = res.result
       datalist.value = records
