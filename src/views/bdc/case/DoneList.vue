@@ -113,7 +113,9 @@ enum api {
   donelist = '/api/zrzy-bdc/act/task/getCaseDoneList',
   caseDoneRecall = '/api/zrzy-bdc/act/task/caseDoneRecall',
   processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
-  nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list'
+  nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list',
+  isRegistered = '/api/zrzy-bdc//bdc/public/isRegistered',
+  isCertified = '/api/zrzy-bdc//bdc/public/isCertified'
 }
 
 let datalist = ref([]);
@@ -215,7 +217,7 @@ function itemView(record: any) {
  * 撤回
  * @param record
  */
-function itemRecall(record: any) {
+async function itemRecall(record: any) {
   const procInstId = record.procInstId
   const endTime = record.endTime
   const assignee = record.assignee
@@ -223,6 +225,14 @@ function itemRecall(record: any) {
   if (!procInstId || !endTime || !completedDefKey || !assignee) {
     message.warning("请确认流程是否已办或刷新重试！")
     return;
+  }
+  const currentNode = record.currentNode
+  const slbh = record.slbh
+  // 检查是否已登簿或缮证
+  const checkFlag = await checkItem(currentNode, slbh)
+  if (checkFlag) {
+    message.warning("流程已" + currentNode + "，不能撤回!")
+    return
   }
   defHttp.post({
     url: api.caseDoneRecall,
@@ -238,6 +248,35 @@ function itemRecall(record: any) {
     }
   }).catch(_err => {
     message.error(_err)
+  })
+}
+
+/**
+ * 检查是否已登簿或缮证
+ * @param record
+ */
+function checkItem(currentNode: string, slbh: string) {
+  return new Promise((resolve) => {
+    let url = ''
+    if (currentNode == '登簿' || currentNode == '记载登记簿') {
+      url = api.isRegistered
+    } else if (currentNode == '缮证' || currentNode == '发证') {
+      url = api.isCertified
+    } else {
+      resolve(false)
+      return true
+    }
+    defHttp.get({
+      url: url,
+      params: { slbh: slbh }
+    }, { withToken: true }).then(res => {
+      if (res) {
+        resolve(res.result)
+      }
+    }).catch(_err => {
+      resolve(true)
+      message.error(_err)
+    })
   })
 }
 
