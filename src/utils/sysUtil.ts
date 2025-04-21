@@ -65,8 +65,18 @@ function checkTimeout() {
   const pageList = ['/login', '/401']
   if ((currentTime - lastTime) > timeOut) {
     if (pageList.includes(router.currentRoute.value.path)) return; // 已是登陆页或是401时不操作
-    if (!(userStore.getIsLocked == 'true')) {
+    if (userStore.getLoginInfo.userpwd && !(userStore.getIsLocked == 'true')) {
       userStore.lockScreen()
+    } else {
+      if (userStore.getToken) {
+        doLogout()
+      }
+      userStore.resetState()
+      const permissionStore = usePermissionStoreWithOut()
+      permissionStore.resetState();
+      userStore.setLastOperateTime(new Date().getTime())
+      router.push(PageEnum.BASE_LOGIN)
+      message.warning('超时且用户登陆信息获取出错，退出并返回登陆页！')
     }
   }
 }
