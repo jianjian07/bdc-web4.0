@@ -93,7 +93,7 @@
 
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from "vue"
-import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { getDictItemsByCode,getLabelByDictCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index"

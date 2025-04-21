@@ -78,9 +78,9 @@
           </template>
           <template v-if="column.key === 'currentNode'">
             {{ record.currentNode }}【
-            <a-span style="color: orangered">
+            <span style="color: orangered">
               {{ record.currentAssignee }}
-            </a-span>
+            </span>
             】
           </template>
           <template v-if="column.key === 'action'">

@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
+import { resetValidateInfos, eventBus } from "form-imagining"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { eventBus } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
 import { useRoute } from "vue-router"
@@ -68,6 +68,7 @@ enum api {
 onMounted(() => {
   initBusEvent()
   getFormConfig()
+  resetValidateInfos()
 })
 
 onBeforeUnmount(() => {

@@ -564,17 +564,36 @@ export function baseGd(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   const taskId = route.query.taskId?.toString()
-  return new Promise((resolve, reject) => {
-    defHttp.get({
-      url: '/api/zrzy-bdc/bdc/process/complete',
-      params: { slbh: slbh, taskId: taskId }
-    }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
-    })
+  return new Promise( async (resolve, reject) => {
+    let validateFlag = true
+    if (params?.validate) {
+      let res = await getFormInfo(demoRefs)
+      let find = res.find(r => r.validate == false)
+      validateFlag = !find
+    }
+    if (validateFlag) {
+      Modal.confirm({
+        title: "确定要进行归档吗？",
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        async onOk() {
+          defHttp.get({
+            url: '/api/zrzy-bdc/bdc/process/complete',
+            params: { slbh: slbh, taskId: taskId }
+          }, { withToken: true }).then((res) => {
+            if (res && res.success) {
+              message.success(res?.message || '归档成功!')
+              closeCurrentTab()
+              resolve(true)
+            } else {
+              message.warning(res?.message || '归档失败!')
+              resolve(false)
+            }
+          })
+        }
+      })
+    }
   })
 }
 /**
