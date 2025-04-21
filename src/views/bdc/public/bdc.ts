@@ -65,7 +65,7 @@ export function getMultipleRef(list: any[], arr: any[]) {
       }
     }
   })
-  console.log('arr', arr)
+  // console.log('arr', arr)
   return arr
 }
 
