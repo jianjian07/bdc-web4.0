@@ -1345,3 +1345,18 @@ export function reReport(id) {
     })
   })
 }
+
+/**
+ * 复制信息
+ * @param text
+ */
+export function copyText(text: string) {
+    navigator.clipboard
+        .writeText(text)
+        .then(() => {
+            message.success("内容已复制到剪切板！");
+        })
+        .catch((error) => {
+            message.warning("操作失败： ", error);
+        });
+}
