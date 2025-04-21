@@ -8,7 +8,7 @@
         <RouterView>
           <template #default="{ Component, route }">
             <keep-alive :include="caches">
-              <component :is="Component" v-if="isReload" :key="route.fullPath + isRouterAlive" />
+              <component :is="Component" v-if="isReload" :key="`${route.fullPath}_${reloadKey}`" />
             </keep-alive>
           </template>
         </RouterView>
@@ -29,6 +29,7 @@ const { getTabsShow } = useTabsSetting()
 let isRouterAlive = computed(() => tabStore.getRouterAlive)
 const fullscreen = computed(() => tabStore.getIsFullScreen)
 let isReload = ref<boolean>(true)
+const reloadKey = ref(Date.now())
 
 const caches = computed(() => {
   return tabStore.getCacheTabs.map(tab => {
@@ -40,6 +41,7 @@ watch(() => tabStore.getReloadTab, (newV) => {
  if (newV) {
    isReload.value = false
    nextTick(() => {
+     reloadKey.value = Date.now()
      isReload.value = true
      tabStore.setReloadTab(false)
    })
@@ -56,6 +58,9 @@ watch(() => tabStore.getReloadTab, (newV) => {
 //   () => route.fullPath,
 //   (newPath, oldPath) => {
 //     console.log('路由切换:', oldPath, '->', newPath);
+//     if (!router.hasRoute(route.name ?? '')) {
+//     console.warn('当前路由不在 matcher 中:', newPath, route.name)
+//   }
 //   }
 // );
 
