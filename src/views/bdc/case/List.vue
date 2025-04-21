@@ -55,7 +55,7 @@
                                 超时
                             </a-tag>
                             <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
-                            <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName" :color="color">
+                            <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
                               <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
                                 <template #icon>
                                   <SolutionOutlined />
