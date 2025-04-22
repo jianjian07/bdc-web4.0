@@ -308,19 +308,6 @@ function onReloadLpb(obj: any) {
   extractDataLpb(obj)
 }
 /**数据提取 end */
-/**
- * 获取dom
- */
-function checkDemoRefs() {
-  if (demoRefs) {
-    let el = [...demoRefs]
-    if (el) {
-      let mulArr = getMultipleRef([el], [])
-      demoRefs = mulArr
-      demoRefs = Array.from(new Set(demoRefs))
-    }
-  }
-}
 
 /**
  * 开始拖拽

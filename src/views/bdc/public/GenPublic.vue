@@ -99,22 +99,6 @@ function initQlrXx() {
 }
 
 
-/**
- * 获取dom
- */
-function checkDemoRefs() {
-  if (demoRefs) {
-    let el = [...demoRefs]
-    if (el) {
-      let mulArr = getMultipleRef([el], [])
-      demoRefs = mulArr
-      demoRefs = Array.from(new Set(demoRefs))
-      // console.log('msarr', mulArr)
-    }
-  }
-}
-
-
 async function saveData(params?: any) {
   console.log('保存表单',demoRefs.value)
   if (params) {
