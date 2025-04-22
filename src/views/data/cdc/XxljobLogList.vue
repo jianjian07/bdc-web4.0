@@ -5,12 +5,18 @@
 
                 <a-col :span="4" :offset="0">
                     <a-form-item label="执行器">
-                        <a-select v-model:value="formData.jobGroup" allowClear />
+                        <a-select v-model:value="jobGroup" :options="jobGroupList"
+                            :field-names="{ label: 'title', value: 'id' }" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="3" :offset="0">
                     <a-form-item label="状态">
-                        <a-select v-model:value="formData.logStatus" allowClear />
+                        <a-select ref="select" v-model:value="formData.logStatus">
+                            <a-select-option value="-1">全部</a-select-option>
+                            <a-select-option value="1">成功</a-select-option>
+                            <a-select-option value="2">失败</a-select-option>
+                            <a-select-option value="3">进行中</a-select-option>
+                        </a-select>
                     </a-form-item>
                 </a-col>
                 <!-- <a-col :span="8" :offset="0">
@@ -76,6 +82,14 @@
                     <a-tag :color="record[column.dataIndex] === 200 ? 'green' : 'red'">
                         {{ record.triggerCode === 200 ? '成功' : '失败' }}</a-tag>
                 </template>
+                <template v-if="column.dataIndex === 'handleCode'">
+                    <a-tag v-if="record.handleCode === 502" color="red">
+                        失败(超时)</a-tag>
+                    <a-span v-else-if="record.handleCode === 0">
+                    </a-span>
+                    <a-tag v-else color="green">
+                        成功</a-tag>
+                </template>
                 <template v-if="column.dataIndex === 'triggerMsg'">
                     <a @click="showMes(record)">查看</a>
                 </template>
@@ -104,14 +118,15 @@ import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
-import { formatToDate, formatToDateTime } from "/@/views/online/utils/dateUtil";
+import { formatToDate } from "/@/views/online/utils/dateUtil";
 const JobLogModal = defineAsyncComponent(() => import("/@/views/data/cdc/modules/JobLogModal.vue"));
 const columns = [
     { title: "任务ID", dataIndex: "jobId", width: 80 },
     { title: "调度时间", dataIndex: "triggerTime" },
     { title: "调度结果", dataIndex: "triggerCode" },
-    { title: "执行结果", dataIndex: "triggerMsg" },
+    { title: "调度备注", dataIndex: "triggerMsg" },
     { title: "执行时间", dataIndex: "handleTime" },
+    { title: "执行结果", dataIndex: "handleCode" },
     { title: "执行备注", dataIndex: "handleMsg" },
     { title: '操作', key: 'action', width: 120 }
 ]
@@ -121,7 +136,7 @@ let datalist: any = ref([]);
 let formData: any = ref({
     jobGroup: 0,
     jobId: '',
-    logStatus: -1,
+    logStatus: '-1',
     filterTime: ''
 });
 let jobId = ref('');
@@ -136,6 +151,7 @@ let data = ref({});
 let title = ref('')
 let open = ref(false)
 onMounted(() => {
+    loadJobGroup()
     loadData() // 初始化加载数据
 })
 let pagination = ref({
@@ -147,7 +163,18 @@ let pagination = ref({
 enum Api {
     list = '/api/zrzy-api/joblog/pageList',
     killUrl = '/api/zrzy-api/joblog/logKill',
-    clearUrl = '/api/zrzy-api/joblog/clearLog'
+    clearUrl = '/api/zrzy-api/joblog/clearLog',
+    jobGroupUrl = '/api/zrzy-api/jobgroup/getAll'
+}
+let jobGroupList = ref([])
+function loadJobGroup() {
+    defHttp.post({ url: Api.jobGroupUrl }, { withToken: true, isTransformResponse: false }).then((res) => {
+        if (res.data.success) {
+            jobGroupList.value = res.data.result
+        }
+    }).catch(err => {
+        console.info(err)
+    })
 }
 /**
  * 表格数据加载
