@@ -152,7 +152,27 @@ function initOptions() {
 function initData() {
   defHttp.get({ url: api.list, params: { djlx: processInfo.value.regType } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      dataSource.value = res.result
+      const qllxMap = {
+        '100': ['9', '31', '35', '44', '33', '34', '41', '42'], // 排除
+        '102': ['9', '31', '35', '44'],                        // 保留
+        '103': ['33', '34', '41', '42'],                       // 保留
+      }
+      
+      const pid = processInfo.value.pid
+      const qllxFilter = qllxMap[pid]
+      
+      dataSource.value = res.result.filter((_r) => {
+        if (!qllxFilter) return true 
+      
+        const qllxArr = _r.qllx.split(',')
+        const hasAny = qllxFilter.some(item => qllxArr.includes(item))
+      
+        if (pid === '100') {
+          return !hasAny 
+        } else {
+          return hasAny 
+        }
+      })
     }
   }).catch(err => {
     console.info(err)
@@ -212,7 +232,25 @@ function onSelect(process: any) {
  * @param process 选中的流程
  */
 function setTreeData(data: any) {
-  treeData.value = data
+  treeData.value = setTreeList(data)
+}
+
+function setTreeList(newArr, parentId?: any, parentName?: any) {
+  let newData = newArr.map(item => {
+    if (parentId) {
+      item.pid = parentId
+    }
+    if (parentName) {
+      item.pname = parentName
+    }
+    let pid = item.value
+    let pname = item.title
+    if (item.children) {
+      item.children = setTreeList(item.children, pid, pname)
+    }
+    return item
+  })
+  return newData
 }
 
 function handleModalOk() {
