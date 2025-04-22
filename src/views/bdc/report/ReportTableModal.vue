@@ -4,12 +4,12 @@
       <a-row :gutter="24">
         <a-col :span="12">
             <a-form-item label="上报视图/表名" name="tableName" :rules="[{ required: true, message: '请选择上报视图/表名' }]">
-                <a-input v-model:value="reportData.tableName" :readOnly="title == '编辑'" prefix="" suffix="" />
+                <a-input v-model:value="reportData.tableName" :readOnly="title == '编辑'" prefix="" suffix="" placeholder="规则：rp_+xml标签名"/>
             </a-form-item>
         </a-col>
         <a-col :span="12">
             <a-form-item label="关键字段名" name="keyValue" :rules="[{ required: true, message: '请输入关键字段名' }]">
-                <a-input v-model:value="reportData.keyValue" prefix="" suffix="" />
+                <a-input v-model:value="reportData.keyValue" prefix="" suffix="" placeholder="多个用,隔开"/>
             </a-form-item>
         </a-col>
       </a-row>
