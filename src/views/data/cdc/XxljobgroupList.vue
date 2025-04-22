@@ -71,6 +71,7 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+import { get } from "http";
 const JobGropModal = defineAsyncComponent(() => import("/@/views/data/cdc/modules/JobGropModal.vue"));
 const columns = [
     { title: "任务ID", dataIndex: "id", width: 80 },
@@ -107,7 +108,7 @@ enum Api {
  * 表格数据加载
 */
 async function loadData() {
-    defHttp.post({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
+    defHttp.get({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
         if (res.status != 200) return;
         const { data, recordsTotal } = res.data
         datalist.value = data
@@ -120,7 +121,10 @@ async function loadData() {
  * 重置
 */
 function refreshData() {
-    formData.value = {}
+    formData.value = {
+        appname: '',
+        title: ''
+    }
     loadData()
 }
 /** 
