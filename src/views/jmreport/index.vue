@@ -4,7 +4,7 @@
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :offset="0" :span="6">
           <a-form-item label="报表名称">
-            <a-input v-model:value="formData.name" allowClear/>
+            <a-input v-model:value="formData.name" allowClear />
           </a-form-item>
         </a-col>
         <a-col :offset="0" :span="4">
@@ -33,15 +33,15 @@
       <a-space>
         <a-button type="primary" @click="addData">
           <template #icon>
-            <plus-outlined/>
+            <plus-outlined />
           </template>
           新建报表
         </a-button>
         <a-upload v-model:file-list="fileList" :customRequest="importData" :maxCount="1"
-                  :headers="{ authorization: 'authorization-text' }" :showUploadList="false"
-                  accept=".json" name="file" style="margin: auto 2px;">
+          :headers="{ authorization: 'authorization-text' }" :showUploadList="false" accept=".json" name="file"
+          style="margin: auto 2px;">
           <a-button type="primary">
-            <UploadOutlined/>
+            <UploadOutlined />
             导入
           </a-button>
         </a-upload>
@@ -49,14 +49,14 @@
           <template #overlay>
             <a-menu @click="handleBatchExport">
               <a-menu-item key="1">
-                <ExportOutlined/>
+                <ExportOutlined />
                 导出
               </a-menu-item>
             </a-menu>
           </template>
           <a-button>
             批量操作
-            <DownOutlined/>
+            <DownOutlined />
           </a-button>
         </a-dropdown>
       </a-space>
@@ -68,13 +68,13 @@
         </template>
       </a-alert>
     </div>
-    <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-             :row-selection="rowSelection" row-key="id" @change="onChange($event, loadData)">
+    <a-table :columns="columns" :data-source="datalist" :pagination="pagination" :row-selection="rowSelection"
+      row-key="id" @change="onChange($event, loadData)">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
           <a-space>
             <template #split>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
             </template>
             <a @click="editData(record)">编辑</a>
             <a @click="copyData(record)">复制</a>
@@ -104,12 +104,15 @@ import {
 import { message } from 'ant-design-vue'
 import { exprotJson } from "/@/views/online/utils/file"
 import { cModal } from "/@/components/cModal/index"
+import { useUserStoreWithOut } from "/@/store/modules/user"
+import { Http2ServerRequest } from "http2"
 
 
 enum Api {
   copyUrl = '/api/zrzy-form/wform/copyData',
 }
-
+const userStore = useUserStoreWithOut();
+const token = userStore.getToken
 const columns = [
   { title: "id", dataIndex: "id", width: 150 },
   { title: "报表名称", dataIndex: "name", width: 320, ellipsis: true },
@@ -193,7 +196,7 @@ async function loadData(type?: string | undefined) {
   defHttp.get({
     url: url,
     params: { name: name, pageNo: pagination.value.current, pageSize: pagination.value.pageSize }
-  }, { withToken: false }).then((res) => {
+  }, { withToken: true }).then((res) => {
     if (res.success) {
       datalist.value = res.result.records
       pagination.value.total = res.result.total
@@ -245,7 +248,7 @@ function copyData(record: any) {
   defHttp.get({
     url: '/api/zrzy-form/jmreport/reportCopy',
     params: { id: record.id }
-  }, { withToken: false }).then((res) => {
+  }, { withToken: true }).then((res) => {
     if (res.success) {
       message.success('复制成功')
       loadData()
@@ -299,10 +302,10 @@ function importData() {
   })
   fileList.value = []
   defHttp.post({
-        url: api.importValidate,
-        data: fileData,
-        headers: { "Content-Type": "multipart/form-data" }
-      }, { withToken: true }
+    url: api.importValidate,
+    data: fileData,
+    headers: { "Content-Type": "multipart/form-data" }
+  }, { withToken: true }
   ).then((res: any) => {
     if (res && res.success) {
       let modal = cModal({
@@ -386,9 +389,9 @@ function onChange(pag: any, callback: any) {
  */
 function addData() {
   let url = '/api/zrzy-form/jmreport/save'
-  defHttp.post({ url: url }, { withToken: false }).then((res) => {
+  defHttp.post({ url: url }, { withToken: true }).then((res) => {
     if (res.success) {
-      window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/index/` + res.result.id, '_blank')
+      window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/index/` + res.result.id + '?token=' + token, '_blank')
     }
   }).catch(err => {
     console.info(err)
@@ -399,7 +402,8 @@ function addData() {
  * 编辑表单
  */
 function editData(record) {
-  window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/index/` + record.id, '_blank')
+
+  window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/index/` + record.id + '?token=' + token, '_blank')
 }
 
 /**
@@ -407,7 +411,7 @@ function editData(record) {
  * @param record
  */
 function preview(record: any) {
-  window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/view/` + record.id, '_blank')
+  window.open(`${window.settingConfig.jmreportDomain}/zrzy-form/jmreport/view/` + record.id + '?token=' + token, '_blank')
 }
 
 /**
@@ -417,7 +421,7 @@ function deleteData(record) {
   // http://192.168.27.87:1004/zrzy-form/jmreport/delete?id=949203339267919872&token=null
   if (!record.id) return
   let url = '/api/zrzy-form/jmreport/deleteReportById' // 删除
-  defHttp.delete({ url: url, params: { id: record.id } }, { withToken: false }).then((res) => {
+  defHttp.delete({ url: url, params: { id: record.id } }, { withToken: true }).then((res) => {
     if (res.success) {
       message.success('删除成功')
       selectedRow.value = selectedRow.value.filter(f => f.id != record.id)
