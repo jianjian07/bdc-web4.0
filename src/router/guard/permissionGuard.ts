@@ -3,6 +3,7 @@ import { PageEnum } from "/@/enums/pageEnum";
 import { PAGE_NOT_FOUND_ROUTE } from "/@/router/routes/basic";
 import { usePermissionStoreWithOut } from "/@/store/modules/permission";
 import { useUserStoreWithOut } from "/@/store/modules/user";
+import { nextTick } from "vue"
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN
 const BASE_ZSTP = PageEnum.BASE_ZSTP
@@ -120,6 +121,7 @@ export function createPermissionGuard(router: Router) {
     router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
 
     permissionStore.setDynamicAddedRoute(true);
+    await nextTick()
     // console.log('Updated Routes1:', router.getRoutes().map(route => route.path));
     if (to.name === PAGE_NOT_FOUND_ROUTE.name) {
       // 动态添加路由后，此处应当重定向到fullPath，否则会加载404页面内容
