@@ -231,8 +231,7 @@ function onTableChange(pag) {
  */
 function handleAdd() {
   let query = route.query
-  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人' 
-      || props.qlrxx.qlrlxmc == '债务人' || props.qlrxx.qlrlxmc == '权利人代理人' || props.qlrxx.qlrlxmc == '义务人代理人') 
+  let formId = (['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人'].includes(props.qlrxx.qlrlxmc)) 
       ? ( props.formType == 'modal' ? '117' : '109' )
       : ( props.formType == 'modal' ? '116' : '55' )
   if (tableData.value.length > 0 && tableData.value[0].gyfs == '0') {
@@ -271,8 +270,7 @@ function handleAdd() {
  * @param record
  */
 function handleLook(record) {
-  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人'
-  || props.qlrxx.qlrlxmc == '债务人' || props.qlrxx.qlrlxmc == '权利人代理人' || props.qlrxx.qlrlxmc == '义务人代理人') 
+  let formId = (['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人'].includes(props.qlrxx.qlrlxmc))
       ? ( props.formType == 'modal' ? '117' : '109' )
       : ( props.formType == 'modal' ? '116' : '55' )
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
@@ -299,8 +297,7 @@ function handleLook(record) {
  */
 function handleEdit(record) {
   let query = route.query
-  let formId = (props.qlrxx.qlrlxmc == '查封机关' || props.qlrxx.qlrlxmc == '查封申请人' || props.qlrxx.qlrlxmc == '居住权人'
-  || props.qlrxx.qlrlxmc == '债务人' || props.qlrxx.qlrlxmc == '权利人代理人' || props.qlrxx.qlrlxmc == '义务人代理人') 
+  let formId = (['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人'].includes(props.qlrxx.qlrlxmc)) 
       ? ( props.formType == 'modal' ? '117' : '109' )
       : ( props.formType == 'modal' ? '116' : '55' )
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
