@@ -11,12 +11,12 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="24">
-                    <a-form-item label="名称" name="title" :rules="[{ required: true, message: '任务描述' }]">
+                    <a-form-item label="名称" name="title" :rules="[{ required: true, message: '执行器名称' }]">
                         <a-input v-model:value="jobInfo.title" prefix="" suffix="" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="24">
-                    <a-form-item label="注册方式" name="addressType" :rules="[{ required: true, message: '负责人' }]">
+                    <a-form-item label="注册方式" name="addressType" :rules="[{ required: true, message: '注册方式' }]">
                         <a-radio-group v-model:value="jobInfo.addressType" name="addressType">
                             <a-radio value="0">自动注册</a-radio>
                             <a-radio value="1">手动注册</a-radio>
@@ -24,8 +24,8 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="24">
-                    <a-form-item label="机器地址" name="addressList" :rules="[{ required: true, message: '报表编号' }]">
-                        <a-textarea v-model:value="jobInfo.addressList" />
+                    <a-form-item label="机器地址" name="addressList" :rules="[{ required: true, message: '机器地址' }]">
+                        <a-textarea v-model:value="jobInfo.addressList" placeholder="请输入执行器地址，多地址用逗号分割" />
                     </a-form-item>
                 </a-col>
 
@@ -66,12 +66,20 @@ function onClose() {
 const emit = defineEmits(['ok'])
 function onOk() {
     ruleForm.value.validate().then(() => {
-        let url = '/api/zrzy-api/xxljob/jobinfo/addOrUpdate' // 新增
+        debugger
+        let url;
+        if (jobInfo.value.id > 0) {
+            url = '/api/zrzy-api/jobgroup/update';
+        } else {
+            url = '/api/zrzy-api/jobgroup/save' // 新增
+        }
         defHttp.post({ url: url, data: jobInfo.value }, { withToken: true }).then((res) => {
-            if (res.success) {
+            if (res.code === 200) {
                 message.success('保存成功')
+                emit('ok', { refresh: true })
             } else {
-                message.error(res.message)
+                message.error(res.msg)
+                return;
             }
         }).catch(err => {
             message.error(err.message)

@@ -77,7 +77,7 @@ const columns = [
     { title: "AppName", dataIndex: "appname" },
     { title: "名称", dataIndex: "title" },
     { title: "注册方式", dataIndex: "addressType" },
-    { title: "OnLine机器地址", dataIndex: "registryList" },
+    { title: "OnLine机器地址", dataIndex: "addressList" },
     { title: '操作', key: 'action', width: 180 }
 ]
 let datalist: any = ref([]);
@@ -100,8 +100,7 @@ let pagination = ref({
 
 enum Api {
     list = '/api/zrzy-api/jobgroup/pageList',
-    delUrl = '/api/zrzy-form/form/report/delete',
-    list1 = '/api/zrzy-form/form/report/pages'
+    delUrl = '/api/zrzy-api/jobgroup/remove',
 }
 
 /**
