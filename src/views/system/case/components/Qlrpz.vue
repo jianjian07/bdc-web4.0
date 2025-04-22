@@ -3,7 +3,7 @@
     <a-row>
       <a-col :span="12">
           <a-form-item label="权利类型">
-              <a-select v-model:value="qllx" :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;"  @change="loadData">
+              <a-select v-model:value="qllx" :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;" show-search optionFilterProp="label" @change="loadData">
               </a-select>
           </a-form-item>
       </a-col>
