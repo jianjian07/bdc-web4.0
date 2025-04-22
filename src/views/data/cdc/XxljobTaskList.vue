@@ -3,14 +3,20 @@
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
 
-                <a-col :span="4" :offset="0">
+                <a-col :span="8" :offset="0">
                     <a-form-item label="执行器">
-                        <a-select v-model:value="formData.jobGroup" allowClear />
+                        <a-select v-model:value="jobGroup" :options="jobGroupList"
+                            :field-names="{ label: 'title', value: 'id' }" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="4" :offset="0">
+                <a-col :span="8" :offset="0">
                     <a-form-item label="任务状态">
-                        <a-select v-model:value="formData.triggerStatus" allowClear />
+                        <a-select ref="select" v-model:value="formData.triggerStatus">
+                            <a-select-option value="-1">全部</a-select-option>
+                            <a-select-option value="0">停止</a-select-option>
+                            <a-select-option value="1">启动</a-select-option>
+                        </a-select>
+
                     </a-form-item>
                 </a-col>
                 <a-col :span="8" :offset="0">
@@ -18,26 +24,27 @@
                         <a-input v-model:value="formData.jobDesc" allowClear />
                     </a-form-item>
                 </a-col>
+
+            </a-row>
+
+            <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="8" :offset="0">
                     <a-form-item label="JobHandler">
                         <a-input v-model:value="formData.executorHandler" allowClear />
                     </a-form-item>
                 </a-col>
-            </a-row>
-
-            <a-row :gutter="[0, 8]" tyle="flex">
-
 
                 <a-col :span="4" :offset="0">
                     <a-form-item label="负责人">
                         <a-input v-model:value="formData.author" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="4" :offset="0">
+
+                <!-- <a-col :span="4" :offset="0">
                     <a-form-item label="任务ID">
                         <a-input v-model:value="formData.id" allowClear />
                     </a-form-item>
-                </a-col>
+                </a-col> -->
 
                 <a-col :span="4" :offset="0">
                     <a-form-item style="text-align: center;">
@@ -144,9 +151,10 @@ const columns = [
     { title: '操作', key: 'action', width: 250 }
 ]
 let datalist: any = ref([]);
+let jobGroup = ref('');
 let formData: any = ref({
-    jobGroup: -1,
-    triggerStatus: -1,
+    // jobGroup: '',
+    triggerStatus: '-1',
     jobDesc: '',
     executorHandler: '',
     author: ''
@@ -155,6 +163,7 @@ let data = ref({});
 let title = ref('')
 let open = ref(false)
 onMounted(() => {
+    loadJobGroup();
     loadData() // 初始化加载数据
 })
 let pagination = ref({
@@ -168,13 +177,26 @@ enum Api {
     startUrl = '/api/zrzy-api/jobinfo/start',
     stopUrl = '/api/zrzy-api/jobinfo/stop',
     triggerUrl = '/api/zrzy-api/jobinfo/trigger',
-    delUrl = '/api/zrzy-api/jobinfo/remove'
+    delUrl = '/api/zrzy-api/jobinfo/remove',
+    jobGroupUrl = '/api/zrzy-api/jobgroup/getAll'
+}
+let jobGroupList = ref([])
+function loadJobGroup() {
+    defHttp.post({ url: Api.jobGroupUrl }, { withToken: true, isTransformResponse: false }).then((res) => {
+        if (res.data.success) {
+            jobGroupList.value = res.data.result
+        }
+    }).catch(err => {
+        console.info(err)
+    })
 }
 /**
  * 表格数据加载
 */
 async function loadData() {
-    defHttp.post({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
+    debugger
+    let jobGroupValue = (jobGroup.value == '' || jobGroup.value == undefined) ? -1 : jobGroup.value
+    defHttp.post({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
         if (res.status != 200) return;
         const { data, recordsTotal } = res.data
         datalist.value = data

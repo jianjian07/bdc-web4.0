@@ -88,6 +88,7 @@ let formData: any = ref({
 let data = ref({});
 let title = ref('')
 let open = ref(false)
+
 onMounted(() => {
     loadData() // 初始化加载数据
 })
@@ -100,8 +101,9 @@ let pagination = ref({
 enum Api {
     list = '/api/zrzy-api/jobgroup/pageList',
     delUrl = '/api/zrzy-form/form/report/delete',
-    list1 = '/api/zrzy-form/form/report/pages',
+    list1 = '/api/zrzy-form/form/report/pages'
 }
+
 /**
  * 表格数据加载
 */
@@ -122,7 +124,7 @@ function refreshData() {
     formData.value = {}
     loadData()
 }
-/**
+/** 
 * 分页
 * @param pag
 * @param callback 回调函数

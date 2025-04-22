@@ -34,7 +34,7 @@ let spinning = ref<boolean>(false)
 //   }
 // }
 // 创建响应式Map
-const demoRefsMap = ref(new Map<string, any>())
+let demoRefsMap = ref(new Map<string, any>())
 
 const demoRefs = computed(() => {
   const all = Array.from(demoRefsMap.value.values())
