@@ -2,7 +2,7 @@
     <a-row>
         <a-col :span="12">
             <a-form-item label="权利类型">
-                <a-select :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;" @change="onChangeQllx">
+                <a-select :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;" @change="onChangeQllx" show-search optionFilterProp="label">
                 </a-select>
             </a-form-item>
         </a-col>

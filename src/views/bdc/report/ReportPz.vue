@@ -15,12 +15,18 @@
       </div>
     </div>
     <div class="reportTabContent" style="height: 100%;padding: 10px;overflow: auto">
-      <div class="title-css1 title-left">
-        <span>上报配置</span>
-      </div>
-      <div style="text-align: right">
-        <a-button style="margin-bottom: 10px" type="primary" @click="handleAdd">新增</a-button>
-      </div>
+      <a-row>
+        <a-col :span="12">
+            <a-form-item label="权利类型">
+                <a-select v-model:value="searchQllx" mode="multiple" :options="selectQllxOptions" allowClear style="width: 98%;" show-search optionFilterProp="label"  @change="initData">
+                </a-select>
+            </a-form-item>
+        </a-col>
+        <a-col :span="12" class="oprBtns">
+          <a-button style="margin-bottom: 10px" type="primary" @click="handleAdd">新增</a-button>
+        </a-col>
+      </a-row>
+        
       <a-table :columns="columns" :data-source="dataSource" :pagination="false" bordered size="small">
         <template #bodyCell="{ column, record, index }">
           <div v-if="column.dataIndex == 'index'" style="text-align: center">
@@ -44,9 +50,9 @@
                 name="basic"
                 style="padding: 10px">
           <a-form-item label="权利类型">
-            <a-select v-model:value="currentRecord.qllxArr" :options="getDictItemsByCode('qllx')" allowClear
+            <a-select v-model:value="currentRecord.qllxArr" :options="selectQllxOptions" allowClear show-search optionFilterProp="label"
                       mode="multiple"
-                      style="width: 100%;" @change="onChangeQllx">
+                      style="width: 100%;">
             </a-select>
           </a-form-item>
           <a-form-item label="接入业务名称">
@@ -124,6 +130,16 @@ const columns = [
   }
 ]
 
+const qllxMap = {
+  '100': ['9', '31', '35', '44', '33', '34', '41', '42'], // 排除
+  '102': ['9', '31', '35', '44'],                        // 保留
+  '103': ['33', '34', '41', '42'],                       // 保留
+}
+// 权利类型下拉框
+let selectQllxOptions = ref<any>([])
+// 权利类型查询条件
+let searchQllx = ref<any>([])
+
 enum api {
   list = '/api/zrzy-report/bdc/report/config/getConfigList',
   save = '/api/zrzy-report/bdc/report/config/saveOrUpdateConfig',
@@ -150,14 +166,8 @@ function initOptions() {
 }
 
 function initData() {
-  defHttp.get({ url: api.list, params: { djlx: processInfo.value.regType } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.list, params: { djlx: processInfo.value.regType, qllx: searchQllx.value.join(',') } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      const qllxMap = {
-        '100': ['9', '31', '35', '44', '33', '34', '41', '42'], // 排除
-        '102': ['9', '31', '35', '44'],                        // 保留
-        '103': ['33', '34', '41', '42'],                       // 保留
-      }
-      
       const pid = processInfo.value.pid
       const qllxFilter = qllxMap[pid]
       
@@ -166,13 +176,17 @@ function initData() {
       
         const qllxArr = _r.qllx.split(',')
         const hasAny = qllxFilter.some(item => qllxArr.includes(item))
-      
-        if (pid === '100') {
-          return !hasAny 
-        } else {
-          return hasAny 
-        }
+        return pid === '100' ? !hasAny : hasAny
       })
+      
+      let qllxOptions: any = getDictItemsByCode('qllx') || []
+      if (qllxFilter) {
+        selectQllxOptions.value = pid === '100'
+          ? qllxOptions.filter(opt => !qllxFilter.includes(opt.value))
+          : qllxOptions.filter(opt => qllxFilter.includes(opt.value))
+      } else {
+        selectQllxOptions.value = [...qllxOptions]
+      }
     }
   }).catch(err => {
     console.info(err)
@@ -224,6 +238,7 @@ function handleDel(record) {
  */
 function onSelect(process: any) {
   processInfo.value = process
+  searchQllx.value = []
   initData()
 }
 
