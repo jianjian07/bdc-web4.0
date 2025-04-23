@@ -14,7 +14,7 @@
         <a-select v-model:value="formState.nodeId" :fieldNames="fieldNames" placeholder="请选择节点" :options="JDOptions" @change="onChange"></a-select>
       </a-form-item>
       <a-form-item ref="subType" label="权利类型" name="subType">
-        <a-select v-model:value="formState.subType" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />
+        <a-select v-model:value="formState.subType" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" show-search optionFilterProp="label"/>
       </a-form-item>
       <a-form-item ref="materialName" label="目录名称" name="materialName">
         <a-input v-model:value="formState.materialName" placeholder="请输入目录名称"></a-input>

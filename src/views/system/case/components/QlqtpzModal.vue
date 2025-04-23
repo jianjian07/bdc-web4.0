@@ -15,7 +15,7 @@
         </a-select>
       </a-form-item>
       <a-form-item ref="qllx" label="权利类型" name="qllx">
-        <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" />
+        <a-select v-model:value="formState.qllx" :options="getDictItemsByCode('qllx')" show-search optionFilterProp="label" placeholder="请选择权利类型" />
       </a-form-item>
       <a-form-item ref="sfybz" label="是否一本证" name="sfybz">
         <a-select v-model:value="formState.sfybz" :options="getDictItemsByCode('sfybz')" placeholder="请选择是否一本证" />

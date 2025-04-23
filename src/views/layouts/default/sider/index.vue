@@ -45,14 +45,14 @@ const tabList = computed(() => tabStore.getTabList)
 const tabActiveKeys = computed(() => tabStore.getTabActiveKey)
 const menuInfo = permissionStore.getMenuInfo
 const menuList = initMenuList(menuInfo)
-const menuFirst = menuList[0]
-const openKeys = [menuFirst.id]
+const menuFirst = menuList.length ? menuList[0] : null
+const openKeys = menuFirst ? [menuFirst.id] : []
 let state = reactive({
   rootSubmenuKeys: [],
   openKeys: []
 })
 state.rootSubmenuKeys = getRootMenuKeys()
-state.openKeys = [menuFirst.id]
+state.openKeys = openKeys
 let selectedKeys = ref<string[] | number[]>([])
 
 
@@ -67,7 +67,7 @@ watch(() => tabActiveKeys.value, (newVal, oldVal) => {
 
 onMounted(() => {
   const router = useRouter()
-  if (router.currentRoute.value.fullPath == PageEnum.BASE_HOME
+  if (router.currentRoute.value.fullPath == PageEnum.BASE_HOME && menuFirst
     && PageEnum.BASE_HOME !== menuFirst.children![0].path
     && tabList.value.length == 0
   ) {
@@ -97,7 +97,7 @@ function initMenuList(newArr) {
     if (item.children) {
       item.children = initMenuList(item.children)
     }
-    return item.hidden == false
+    return item?.hidden == false
   })
   return newData
 }

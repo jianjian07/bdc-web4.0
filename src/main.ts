@@ -28,7 +28,7 @@ async function bootstrap() {
     // 加载全局配置
     initGlobalSetting()
     // 配置路由
-    setupRouter(app)
+    await setupRouter(app)
     // 路由保护
     setupRouterGuard(router)
     // 定时器(长时间不操作退出)

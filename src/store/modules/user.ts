@@ -27,7 +27,7 @@ import { RouteRecordRaw } from 'vue-router'
 import { PAGE_NOT_FOUND_ROUTE } from '../../router/routes/basic'
 import { Modal, notification } from 'ant-design-vue'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
-import { createVNode } from 'vue'
+import { createVNode, nextTick } from 'vue'
 import { getDict, getRuleList } from "/@/api/sys/dict"
 // import { useGlobSetting } from '/@/hooks/setting';
 // import { useSso } from '/@/hooks/web/useSso';
@@ -422,7 +422,7 @@ export const useUserStore = defineStore({
           permissionStore.setDynamicAddedRoute(true);
         }
         await this.setLoginInfo(data);
-
+        await nextTick()
         goHome && (await router.replace((userInfo && userInfo.homePath) || PageEnum.BASE_HOME));
       }
       return data;
