@@ -1,4 +1,4 @@
-import { useUserStore } from "/@/store/modules/user"
+import { useUserStore, useUserStoreWithOut } from "/@/store/modules/user"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
 import { computed, nextTick } from "vue"
@@ -445,9 +445,11 @@ export async function print(params: { code: string, [key: string]: string | numb
     }
     url = await getReportUrl(_data)
   } else {
+    const userStore = useUserStoreWithOut();
+    const token = userStore.getToken
     domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
     url = `${domain}jmreport/view/${params.code}`
-    url += `?${queryParams.toString()}`
+    url += `?${queryParams.toString()}&token=${token}`
   }
   if (url) {
     window.open(url, '_blank')
