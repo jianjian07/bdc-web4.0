@@ -1370,7 +1370,8 @@ export function reReport(id) {
  * @param text
  */
 export function copyText(text: string) {
-    navigator.clipboard
+    const nav = navigator
+    nav.clipboard
         .writeText(text)
         .then(() => {
             message.success("内容已复制到剪切板！");
