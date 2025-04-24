@@ -148,7 +148,7 @@ function loadData() {
     pageSize: pagination.value.pageSize,
     processId: props.lcid,
     order: 'desc,asc',
-    column: 'id,sortNo',
+    column: 'subType,sortNo',
   }
   // 获取业务约束配置列表
   defHttp.get(
