@@ -50,12 +50,33 @@
                         <template #split>
                             <a-divider type="vertical" />
                         </template>
+
                         <a @click="editData(record)">编辑</a>
                         <a @click="design(record)">字典配置</a>
-                        <a @click="copy(record)">复制</a>
-                        <a-popconfirm title="是否确定删除该数据字典项？" ok-text="确定" cancel-text="取消" @confirm="deleteData(record)">
-                            <a>删除</a>
-                        </a-popconfirm>
+
+
+                        <a-dropdown>
+                            <a class="ant-dropdown-link" @click.prevent>
+                                更多
+                                <DownOutlined />
+                            </a>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item v-if="record.dictCode == 'bpm_process_type'">
+                                        <a @click="syncData(record.id)">同步</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
+                                        <a @click="copy(record)">复制</a>
+                                    </a-menu-item>
+                                    <a-menu-item>
+                                        <a-popconfirm title="是否确定删除该数据字典项？" ok-text="确定" cancel-text="取消"
+                                            @confirm="deleteData(record)">
+                                            <a>删除</a>
+                                        </a-popconfirm>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </a-space>
                 </template>
             </template>
@@ -71,7 +92,7 @@
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { del } from "/@/api/sys/dict";
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
@@ -214,6 +235,17 @@ function handleCache() {
     defHttp.post({ url: api.cacheUrl }, { withToken: true }).then(async (res) => {
         if (res.success) {
             message.success('缓存成功')
+        }
+    })
+}
+function syncData(id: String) {
+    let url = '/api/zrzy-system/sys/dict/tbProcessTypeDict'
+    defHttp.post({ url: url, params: { id: id } }, { withToken: true }).then(async (res) => {
+        if (res.result) {
+            message.info("数据字典同步成功")
+        }
+        else {
+            message.error("数据字典同步失败")
         }
     })
 }

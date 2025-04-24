@@ -6,7 +6,7 @@
       <a-input-search style="margin-bottom: 10px" v-model:value="searchName" placeholder="请输入关键字搜索" enter-button
         @search="onSearch" />
       <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys" :defaultExpandAll="false"
-        :show-icon="true" :tree-data="treeData" checkable check-strictly>
+        :show-icon="true" :tree-data="treeData" checkable>
         <template #title="{ title }">
           <span v-if="title.indexOf(searchName) > -1">
             {{ title.substr(0, title.indexOf(searchName)) }}
