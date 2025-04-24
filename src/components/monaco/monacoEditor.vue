@@ -144,7 +144,7 @@ const format = (): void => {
   right: 2px;
   background-color: rgba(255, 255, 255, 80%);
   font-size: 14px;
-  z-index: 1001;
+  z-index: 1000;
 }
 
 .fullscreen-icon {

@@ -12,9 +12,9 @@
               <CheckCircleFilled v-else style="font-size: 16px; color: #72c240"/>
             </template>
             <div class="process-item">
-              <span class="title">{{ item.jdmc }} （{{ item.shryxm }}）</span>
-              <span class="time">{{ item.shjssj }}</span>
-              <a-tooltip>
+              <span class="title">{{ item.jdmc }} （{{ item.blr }}）</span>
+              <span class="time">{{ item.bljssj }}</span>
+              <a-tooltip v-if="item.shyj">
                 <template #title>
                   {{ item.shyj }}
                 </template>

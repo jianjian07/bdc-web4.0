@@ -34,6 +34,9 @@ import { onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { isJsonData } from "/@/views/online/utils/commonUtils"
+import { useUserStore } from "/@/store/modules/user"
+const userStore = useUserStore();
+const token = userStore.getToken
 
 const route = useRoute()
 // 加载
@@ -116,7 +119,7 @@ function setUrl(item) {
         queryParams.append(key, value.toString())
       }
     })
-    url += `?${queryParams.toString()}`
+    url += `?${queryParams.toString()}&token=${token}`
     iframeUrl.value = url
   } else {
     message.warning('该打印条目配置的模版code有误!')

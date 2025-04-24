@@ -33,7 +33,9 @@ import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-
+import { useUserStore } from "/@/store/modules/user"
+const userStore = useUserStore();
+const token = userStore.getToken
 const route = useRoute()
 // 加载
 let spinning = ref<boolean>(false)
@@ -106,7 +108,7 @@ function onSelect(keys, e) {
  */
 function setUrl(id) {
   let domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
-  let url = `${domain}jmreport/view/${id}${queryString}`
+  let url = `${domain}jmreport/view/${id}${queryString ? `&token=${token}` : `?token=${token}`}`
   iframeUrl.value = url
 }
 </script>
