@@ -238,7 +238,7 @@ function editData(record: any) {
     open.value = true
 }
 function trigger(record: any) {
-    defHttp.post({ url: Api.triggerUrl, params: { id: record.id, executorParam: '', addressList: '' } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: Api.triggerUrl, params: { id: record.id, executorParam: record.executorParam, addressList: '' } }, { withToken: true }).then((res) => {
         if (!res.message) {
             message.success('执行成功')
             // loadData()

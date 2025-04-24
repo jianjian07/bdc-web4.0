@@ -66,7 +66,7 @@
                 </a-col>
                 <a-col :span="24">
                     <a-form-item label="任务参数" name="code">
-                        <a-textarea v-model:value="jobInfo.code" />
+                        <a-textarea v-model:value="jobInfo.executorParam" />
                     </a-form-item>
                 </a-col>
                 <a-divider orientation="left">高级配置</a-divider>

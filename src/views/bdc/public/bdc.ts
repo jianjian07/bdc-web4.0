@@ -1374,9 +1374,10 @@ export function plReport(ids) {
  * 单个重新上报
  * @param id
  */
-export function reReport(id) {
-   return new Promise((resolve, reject) => {
-    defHttp.post({ url: '/api/zrzy-report/bdc/report/reReport', params: { id: id }}, { withToken: true }).then((res) => {
+export function reReport(id, type = 'business') {
+  return new Promise((resolve) => {
+    let url = type == 'register' ? '/api/zrzy-report/bdc/register/reReport' : '/api/zrzy-report/bdc/report/reReport'
+    defHttp.post({ url: url, params: { id: id } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success('上报成功!' + res?.message)
         resolve(true)
