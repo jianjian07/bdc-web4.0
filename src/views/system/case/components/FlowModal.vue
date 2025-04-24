@@ -24,6 +24,9 @@
         <a-form-item label="流程前缀(补录)">
             <a-input v-model:value="flowInfo.prefix" />
         </a-form-item>
+        <a-form-item label="顺序号">
+            <a-input-number v-model:value="flowInfo.orderNum" :min="1" :max="100" />
+        </a-form-item>
         <!-- <a-form-item label="国标登记类型">
             <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('gbdjlx')" mode="multiple" />
         </a-form-item> -->
@@ -51,12 +54,12 @@ enum api {
     queryByLcidUrl = "/api/zrzy-bdc/flow/flowConfig/queryByLcid",
     saveUrl = "/api/zrzy-bdc/flow/flowConfig/save"
 }
+debugger
 let flowInfo: any = ref({
     username: "",
     password: "",
     remember: true
 });
-
 const emit = defineEmits(['setBaseInfo'])
 
 flowInfo.value.lcid = props.lcid;
