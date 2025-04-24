@@ -180,6 +180,6 @@ function showNodeInfo(data, taskId) {
 
 <style lang="less" scoped>
 .process-module {
-  padding: 20px;
+  padding: 10px;
 }
 </style>

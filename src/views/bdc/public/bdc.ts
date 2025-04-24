@@ -1051,7 +1051,7 @@ function getSpyj() {
       },
       onCancel: () => {
         resolve(false)
-        modal.close()
+        modal.destroy()
       }
     })
   })
@@ -1322,13 +1322,34 @@ export function getQlrGyqk() {
       gyqk = '按份共有: '
       for (let i = 0; i < usefulQlrList.length; i++) {
         gyqk += `${usefulQlrList[i].qlrmc}占${usefulQlrList[i].qlbl}`
-        gyqk += i != usefulQlrList.length - 1 ? '，' : '。'
+        gyqk += i != usefulQlrList.length - 1 ? '，' : ''
       }
     } else {
       gyqk = gyfsLabel
     }
   }
   return gyqk
+}
+
+/**
+ * 获取权利人附记
+ */
+export function getQlrFj() {
+  let fj = ''
+  let usefulQlrList = []
+  for (const key in qlrxxObj) {
+    let qlrlxmc = qlrxxObj[key].qlrlxmc
+    if (['权利人','抵押权人','预告权利人','预告抵押权人'].includes(qlrlxmc)) {
+      usefulQlrList = qlrxxObj[key].list
+    }
+  }
+  if (usefulQlrList.length) {
+    for (let i = 0; i < usefulQlrList.length; i++) {
+      fj += `${usefulQlrList[i].qlrmc} ${usefulQlrList[i].zjh}`
+      fj += i != usefulQlrList.length - 1 ? '，' : ''
+    }
+  }
+  return fj
 }
 
 /**
@@ -1381,4 +1402,37 @@ export function copyText(text: string) {
         .catch((error) => {
             message.warning("操作失败： ", error);
         });
+}
+
+/**
+ * 判断 base64 是否以图片的头部签名开头
+ * @param str
+ */
+export function processBase64Image(str: string): string {
+  const imageMimeTypes = {
+    jpeg: /^\/9j\/[A-Za-z0-9+/=]+$/,
+    png: /^iVBORw0KGgo[A-Za-z0-9+/=]+$/,
+    gif: /^R0lGODlh[A-Za-z0-9+/=]+$/,
+    webp: /^UklGR[A-Za-z0-9+/=]+$/,
+  }
+
+  for (const [type, regex] of Object.entries(imageMimeTypes)) {
+    if (regex.test(str)) {
+      return `data:image/${type};base64,${str}`
+    }
+  }
+
+  return str
+}
+
+/**
+ * 提取base64的字符串
+ * @param str
+ */
+export function extractPureBase64(str: string): string {
+  const match = str.match(/^data:image\/[a-zA-Z]+;base64,(.+)$/);
+  if (match) {
+    return match[1]
+  }
+  return str
 }

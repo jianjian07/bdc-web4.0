@@ -180,7 +180,7 @@
                     <a-button style="margin-right: 5px" size="small" :icon="h(EditOutlined)"
                       @click.stop="editCatalog(dataRef)" />
                   </a-tooltip>
-                  <a-tooltip title="删除目录及附件" placement="topRight">
+                  <a-tooltip title="删除目录及附件" placement="right">
                     <a-popconfirm placement="topRight" title="确定删除该目录及该目录下的附件？" ok-text="确定" cancel-text="取消"
                       @confirm="deleteCatalogOrFile(dataRef, 'folder')">
                       <a-button size="small" @click.stop="" :icon="h(DeleteOutlined)" />
