@@ -146,7 +146,9 @@ function loadData() {
   var params = {
     pageNo: pagination.value.current,
     pageSize: pagination.value.pageSize,
-    processId: props.lcid
+    processId: props.lcid,
+    order: 'desc,asc',
+    column: 'id,sortNo',
   }
   // 获取业务约束配置列表
   defHttp.get(
@@ -197,7 +199,7 @@ function onShowModal(data: any = null, type: String = 'new') {
       
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

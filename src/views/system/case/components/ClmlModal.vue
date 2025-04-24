@@ -22,8 +22,8 @@
       <a-form-item ref="copies" label="份数" name="copies">
         <a-input-number style="width: 100%" v-model:value="formState.copies" placeholder="请输入份数"></a-input-number>
       </a-form-item>
-      <a-form-item ref="orderId" label="顺序号" name="orderId">
-        <a-input-number style="width: 100%" v-model:value="formState.orderId" placeholder="请输入顺序号"></a-input-number>
+      <a-form-item ref="sortNo" label="顺序号" name="sortNo">
+        <a-input-number style="width: 100%" v-model:value="formState.sortNo" placeholder="请输入顺序号"></a-input-number>
       </a-form-item>
       <a-form-item ref="must" label="必须" name="must">
         <a-radio-group v-model:value="formState.must">
@@ -84,7 +84,8 @@ let formState: any = ref({
   original: 0,
   xzcz: -1,
   sign: 0,
-  remark: ""
+  remark: "",
+  sortNo: 1
 })
 let JDOptions: any = ref([])
 let fieldNames = { label: 'processNodeName', value: 'processNodeCode', children: 'children' }
