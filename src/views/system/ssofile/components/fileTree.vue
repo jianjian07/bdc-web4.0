@@ -309,7 +309,9 @@ function loadDefaultList() {
       url: urlList.defaultList,
       params: {
         nodeId: props.formData.nodeId, // 节点ID
-        slbh: props.formData.slbh
+        slbh: props.formData.slbh,
+        order: 'asc',
+        column: 'sortNo'
       }
     },
     { withToken: true }
@@ -364,7 +366,7 @@ function addCatalog() {
       modal.setConfirmLoading(false)
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }
@@ -422,7 +424,7 @@ function addFile(data: any = null, way: String = 'cata') {
       modal.setConfirmLoading(false)
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }
