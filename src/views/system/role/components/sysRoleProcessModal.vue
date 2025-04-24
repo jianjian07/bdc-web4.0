@@ -1,11 +1,12 @@
 <template>
   <div class="sys-role-process-modal">
     <a-modal v-model:open="modalVisible" :width="760" title="流程权限分配" :confirm-loading="confirmLoading"
-      @ok="handleModalOk" @cancel="handleModalCancel" :body-style="{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto'}">
+      @ok="handleModalOk" @cancel="handleModalCancel"
+      :body-style="{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }">
       <a-input-search style="margin-bottom: 10px" v-model:value="searchName" placeholder="请输入关键字搜索" enter-button
         @search="onSearch" />
-      <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys"
-        :defaultExpandAll="false" :show-icon="true" :tree-data="treeData" checkable check-strictly>
+      <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys" :defaultExpandAll="false"
+        :show-icon="true" :tree-data="treeData" checkable check-strictly>
         <template #title="{ title }">
           <span v-if="title.indexOf(searchName) > -1">
             {{ title.substr(0, title.indexOf(searchName)) }}
@@ -48,7 +49,7 @@ let currentRecord = ref<any>()
 let currentAjlx = ref<string>('')
 
 enum api {
-  processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
+  processlist = '/api/zrzy-bdc/bdc/flow/flowList',
   save = '/api/zrzy-system/role/addRoleProcess',
   checkList = '/api/zrzy-system/role/roleProcessList'
 }
@@ -79,12 +80,12 @@ defineExpose({
 function initData() {
   if (currentAjlx.value == '1') {
     defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
-    if (res && res.success) {
-      treeData.value = setPidList(res.result)
-    } else {
-      message.warning(res?.message)
-    }
-  })
+      if (res && res.success) {
+        treeData.value = setPidList(res.result)
+      } else {
+        message.warning(res?.message)
+      }
+    })
   } else {
     let arr = getTreeDictItemsByCode('bllc')
     treeData.value = setBlList(arr)
@@ -92,20 +93,20 @@ function initData() {
 }
 
 function setBlList(newArr, parentId?: any) {
-   let newData = newArr.map(item => {
-      item.title = item.label
-       if (parentId) {
-        item.pid = parentId
-      }
-      let pid = item.value
-      item.key = item.value
-     
-      if (item.children) {
-        item.children = setBlList(item.children, pid)
-      }
-      return item
+  let newData = newArr.map(item => {
+    item.title = item.label
+    if (parentId) {
+      item.pid = parentId
+    }
+    let pid = item.value
+    item.key = item.value
+
+    if (item.children) {
+      item.children = setBlList(item.children, pid)
+    }
+    return item
   })
-  
+
   return newData
 }
 
@@ -179,7 +180,7 @@ function getParentKey(key, tree) {
  * 搜索
  */
 function onSearch() {
- let value = searchName.value
+  let value = searchName.value
   expandedKeys.value = []
   const keyword = value
   if (keyword !== '') {
@@ -226,10 +227,11 @@ function handleModalOk() {
       lcid: key,
       lcmc: node.title,
       ajlx: currentAjlx.value,
-      lclb: node.pid
+      lclb: node.pid,
+      orderNum: node.orderNum
     }
   })
-  
+
   let data = {
     roleId: currentRecord.value.id,
     list: nodes,
@@ -294,6 +296,4 @@ function getCheckedList(roleId, ajlx) {
 }
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

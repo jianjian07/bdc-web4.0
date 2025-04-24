@@ -27,6 +27,9 @@
         <a-form-item label="顺序号">
             <a-input-number v-model:value="flowInfo.orderNum" :min="1" :max="100" />
         </a-form-item>
+        <a-form-item label="流程启用">
+            <a-switch v-model:checked="status" />
+        </a-form-item>
         <!-- <a-form-item label="国标登记类型">
             <a-select v-model:value="flowInfo.gbdjlx" :options="getDictItemsByCode('gbdjlx')" mode="multiple" />
         </a-form-item> -->
@@ -54,7 +57,7 @@ enum api {
     queryByLcidUrl = "/api/zrzy-bdc/flow/flowConfig/queryByLcid",
     saveUrl = "/api/zrzy-bdc/flow/flowConfig/save"
 }
-debugger
+let status = ref(false)
 let flowInfo: any = ref({
     username: "",
     password: "",
@@ -68,13 +71,18 @@ function getFlowInfo(lcid: string) {
     defHttp.get({ url: api.queryByLcidUrl, params: { lcid: lcid } }, { withToken: true }).then((res) => {
         if (res.success) {
             flowInfo.value = res.result
+            status.value = flowInfo.value.status === 1;
         } else {
             flowInfo.value = { lcid: flowInfo.value.lcid }
         }
         emit('setBaseInfo', flowInfo.value)
     })
 }
+
 function handleAdd() {
+    if (status.value) {
+        flowInfo.value.status = 1
+    }
     defHttp.post({ url: api.saveUrl, data: flowInfo.value }, { withToken: true }).then((res) => {
         if (res.success) {
             message.success("保存成功")
