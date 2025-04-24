@@ -146,7 +146,7 @@ function onShowModal(data: any = null, type: String = 'new') {
 
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

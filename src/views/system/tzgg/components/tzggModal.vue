@@ -202,7 +202,7 @@ function showUserModal() {
       modal.destroy()
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

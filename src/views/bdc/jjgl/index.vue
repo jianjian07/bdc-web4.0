@@ -251,7 +251,7 @@ function handleOper(record: any) {
       modal.setConfirmLoading(false)
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

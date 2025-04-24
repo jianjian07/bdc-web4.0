@@ -105,7 +105,7 @@ function onClickItem(item) {
       modal.destroy()
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

@@ -156,7 +156,7 @@ function showModal(record: any) {
       modal.destroy()
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

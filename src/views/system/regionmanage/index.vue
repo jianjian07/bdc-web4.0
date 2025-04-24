@@ -123,10 +123,10 @@ function addRegion(type: any = 'parent') {
         onRefreshList()
       }
       modal.setConfirmLoading(false)
-      modal.close()
+      modal.destroy()
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }

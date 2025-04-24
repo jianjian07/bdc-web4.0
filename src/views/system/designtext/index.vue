@@ -216,7 +216,7 @@ function handleModal(type: any, record: any = null) {
       modal.destroy()
     },
     onCancel: () => {
-      modal.close()
+      modal.destroy()
     }
   })
 }
