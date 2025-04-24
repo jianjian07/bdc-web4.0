@@ -138,7 +138,7 @@ function getList() {
         if (res && res.success) {
           list.value = res.result.records
           let findNode = list.value.find(f => f.type == 'node')
-          transferRule.value = findNode ? (findNode.handoverrule.includes(',') ? findNode.handoverrule.split(',') : [findNode.handoverrule]) : []
+          transferRule.value = (findNode && findNode.handoverrule) ? (findNode.handoverrule.includes(',') ? findNode.handoverrule.split(',') : [findNode.handoverrule]) : []
         } else {
           message.warning(res.message)
         }
@@ -183,8 +183,8 @@ function getLineList() {
  * @param target
  */
 function getLineName(source, target) {
-  let findSource = nodeList.value.find(f => f.processNodeCode == source)?.processNodeName
-  let findTarget = nodeList.value.find(f => f.processNodeCode == target)?.processNodeName
+  let findSource = nodeList.value.find(f => f.processNodeCode == source)?.processNodeName || source
+  let findTarget = nodeList.value.find(f => f.processNodeCode == target)?.processNodeName || target
   return findSource + '→' + findTarget
 }
 
