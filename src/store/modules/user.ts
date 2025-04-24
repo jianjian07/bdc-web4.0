@@ -119,13 +119,13 @@ export const useUserStore = defineStore({
       return this.isLocked || localStorage.getItem(LOCK_STATUS)
     },
     getAllDicts(): [] {
-      return this.dicts || getAuthCache(DB_DICT_DATA_KEY);
+      return (this.dicts && this.dict?.length) ? this.dict : getAuthCache(DB_DICT_DATA_KEY);
     },
     getAllCategory(): [] {
-      return this.category || getAuthCache(CATEGORY_DATA_KEY)
+      return (this.category && this.category?.length) ? this.category : getAuthCache(CATEGORY_DATA_KEY);
     },
     getValidateRuleList(): [] {
-      return this.validateRuleList || getAuthCache(VALIDATE_RULE_DATA_KEY)
+      return (this.validateRuleList && this.validateRuleList?.length) ? this.validateRuleList : getAuthCache(VALIDATE_RULE_DATA_KEY);
     },
     getCodeRuleList(): [] {
       return this.codeRuleList
