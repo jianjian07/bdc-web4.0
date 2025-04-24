@@ -18,13 +18,19 @@
       <a-row>
         <a-col :span="12">
             <a-form-item label="权利类型">
-                <a-select v-model:value="searchQllx" mode="multiple" :options="selectQllxOptions" allowClear style="width: 98%;" show-search optionFilterProp="label"  @change="initData">
+                <a-select v-model:value="searchQllx" mode="multiple" :options="selectQllxOptions" allowClear style="width: 98%;" show-search optionFilterProp="label">
                 </a-select>
             </a-form-item>
         </a-col>
         <a-col :span="12" class="oprBtns">
-          <a-button style="margin-bottom: 10px" type="primary" @click="handleAdd">新增</a-button>
+          <a-space>
+            <a-button style="margin-bottom: 10px" type="primary" @click="initData">查询</a-button>
+            <a-button style="margin-bottom: 10px" type="primary" @click="reset">重置</a-button>
+          </a-space>
         </a-col>
+      </a-row>
+      <a-row>
+        <a-button style="margin-bottom: 10px" type="primary" @click="handleAdd">新增</a-button>
       </a-row>
         
       <a-table :columns="columns" :data-source="dataSource" :pagination="false" bordered size="small">
@@ -165,8 +171,13 @@ function initOptions() {
   })
 }
 
+function reset() {
+  searchQllx.value = []
+  initData()
+}
+
 function initData() {
-  defHttp.get({ url: api.list, params: { djlx: processInfo.value.regType, qllx: searchQllx.value.join(',') } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.list, params: { djlx: processInfo.value.regType, qllx: searchQllx.value?.join(',') } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       const pid = processInfo.value.pid
       const qllxFilter = qllxMap[pid]
