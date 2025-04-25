@@ -80,9 +80,7 @@ function getFlowInfo(lcid: string) {
 }
 
 function handleAdd() {
-    if (status.value) {
-        flowInfo.value.status = 1
-    }
+    flowInfo.value.status = status.value ? 1 : 0
     defHttp.post({ url: api.saveUrl, data: flowInfo.value }, { withToken: true }).then((res) => {
         if (res.success) {
             message.success("保存成功")
