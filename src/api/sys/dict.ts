@@ -53,34 +53,38 @@ export function getDict() {
         })
     })
 }
-// // 数据字典
-// export function getDataDict() {
-//     const userStore = useUserStore();
-//     return new Promise((resolve, reject) => {
-//         defHttp.get({ url: api.getDictApi, params: { dictType: '0' } }, { withToken: true }).then((res) => {
-//             if (res) {
-//                 let dicts = userStore.formatDictList(res.result)
-//                 userStore.setAllDicts(dicts)
-//                 resolve(true);
-//             }
-//             else {
-//                 reject(false);
-//             }
-//         })
-//     })
+// 数据字典
+export function getDataDict() {
+    const userStore = useUserStore();
+    return new Promise((resolve, reject) => {
+        defHttp.get({ url: api.getDictApi, params: { dictType: '0' } }, { withToken: true }).then((res) => {
+            if (res) {
+                let dicts = userStore.formatDictList(res.result)
+                userStore.setAllDicts(dicts)
+                resolve(true);
+            }
+            else {
+                reject(false);
+            }
+        })
+    })
+}
 
-// }
-
-// // 分类字典
-// export function getCategoryDict() {
-//     const userStore = useUserStore();
-//     defHttp.get({ url: api.getDictApi, params: { dictType: '1' } }, { withToken: true }).then((res) => {
-//         if (res) {
-//             let dicts = userStore.formatDictList(res.result)
-//             userStore.setAllCategory(dicts)
-//         }
-//     })
-// }
+// 分类字典
+export function getCategoryDict() {
+    const userStore = useUserStore();
+    return new Promise((resolve, reject) => {
+        defHttp.get({ url: api.getDictApi, params: { dictType: '1' } }, { withToken: true }).then((res) => {
+            if (res) {
+                let dicts = userStore.formatDictList(res.result)
+                userStore.setAllCategory(dicts)
+                resolve(true);
+            } else {
+                reject(false);
+            }
+        })
+    })
+}
 
 // 规则
 export function getRuleList() {

@@ -38,6 +38,12 @@
                     </template>
                     新增
                 </a-button>
+                <a-button @click="handleStore">
+                  <template #icon>
+                    <RedoOutlined />
+                  </template>
+                  同步缓存
+                </a-button>
                 <a-button @click="handleCache">
                     redis缓存
                 </a-button>
@@ -92,9 +98,9 @@
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { del } from "/@/api/sys/dict";
+import { del, getDataDict } from "/@/api/sys/dict"
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
 const DictItemsList = defineAsyncComponent(() => import("/@/views/system/dict/components/dictItemsList.vue"));
 const columns = [
@@ -238,6 +244,16 @@ function handleCache() {
         }
     })
 }
+
+async function handleStore() {
+  let res = await getDataDict()
+  if (res) {
+    message.success('同步缓存成功!')
+  } else {
+    message.warning('同步缓存失败!')
+  } 
+}
+
 function syncData(id: String) {
     let url = '/api/zrzy-system/sys/dict/tbProcessTypeDict'
     defHttp.post({ url: url, params: { id: id } }, { withToken: true }).then(async (res) => {

@@ -38,6 +38,12 @@
                     </template>
                     新增
                 </a-button>
+               <a-button @click="handleStore">
+                  <template #icon>
+                    <RedoOutlined />
+                  </template>
+                  同步缓存
+                </a-button>
                 <!-- <a-button @click="deleteBatch">
                     <template #icon>
                         <DeleteOutlined />
@@ -77,7 +83,7 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { del, updateHasChild } from "/@/api/sys/dict";
+import { del, getCategoryDict, updateHasChild } from "/@/api/sys/dict"
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
 const DictItemsList = defineAsyncComponent(() => import("/@/views/system/dict/components/dictItemsList.vue"));
 const columns = [
@@ -221,6 +227,16 @@ function addData() {
     title.value = "新增字典"
     open.value = true
 }
+
+async function handleStore() {
+  let res = await getCategoryDict()
+  if (res) {
+    message.success('同步缓存成功!')
+  } else {
+    message.warning('同步缓存失败!')
+  } 
+}
+
 function handOk(value: any) {
     open.value = false
     // let find = findNodeById(datalist.value, Number(dataInfo.value.parentId))
