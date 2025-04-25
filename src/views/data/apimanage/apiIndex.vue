@@ -1,19 +1,19 @@
 <template>
- <div class="api-editor">
-   <a-spin tip="加载中..." :spinning="loading">
-     <api-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"></api-tree>
-   </a-spin>
+  <div class="api-editor">
+    <a-spin tip="加载中..." :spinning="loading">
+      <api-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"></api-tree>
+    </a-spin>
     <api-manage :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @load="initData"></api-manage>
- </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import ApiTree from "/@/views/apimanage/modules/apiTree.vue"
+import ApiTree from "/@/views/data/apimanage/modules/apiTree.vue"
 import { onMounted, ref } from "vue"
-import ApiManage from "/@/views/apimanage/modules/apiManage.vue"
+import ApiManage from "/@/views/data/apimanage/modules/apiManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { setParentId } from "/@/views/apimanage/modules/apiUtil"
+import { setParentId } from "/@/views/data/apimanage/modules/apiUtil"
 // 树
 let apiTreeData = ref<any>([])
 // 当前选中数据
@@ -69,7 +69,7 @@ function initData() {
   width: 100%;
   height: 100%;
   display: flex;
-  
+
   :deep(.ant-table.ant-table-small) {
     .ant-table-tbody>tr>td {
       padding: 2px;

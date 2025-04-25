@@ -56,7 +56,7 @@ import { defHttp } from "/@/utils/http/axios"
 import dayjs from 'dayjs';
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
-const ApiLogModal = defineAsyncComponent(() => import("/@/views/system/monitor/apilog/apiLogModal.vue"));
+const ApiLogModal = defineAsyncComponent(() => import("/@/views/data/apilog/apiLogModal.vue"));
 const columns = [
     { title: '接口名', dataIndex: "remark", ellipsis: true },
     { title: "地址", dataIndex: "url", ellipsis: true },

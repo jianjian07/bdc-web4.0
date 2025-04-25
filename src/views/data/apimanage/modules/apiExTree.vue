@@ -1,49 +1,42 @@
 <template>
-  <div class="api-editor-tree">
+  <div class="api-ex-tree">
     <div class="api-editor-search">
-      <a-input-search
-          v-model:value="searchValue"
-          placeholder="搜索目录/接口"
-          @search="onSearch"
-      />
+      <a-input-search v-model:value="searchValue" placeholder="搜索目录/接口" @search="onSearch" />
       <a-button style="margin-left: 8px" @click="handleExpand">
         <template #icon>
-          <VerticalAlignMiddleOutlined v-if="isExpand"/>
-          <ColumnHeightOutlined v-else/>
+          <VerticalAlignMiddleOutlined v-if="isExpand" />
+          <ColumnHeightOutlined v-else />
         </template>
       </a-button>
     </div>
     <div class="api-editor-tree-content">
       <a-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
-              :auto-expand-parent="autoExpandParent" :fieldNames="fieldNames" :tree-data="apiTreeData" blockNode
-              show-icon
-              style="width: 100%;"
-              @select="handleSelectTreeItem">
+        :auto-expand-parent="autoExpandParent" :fieldNames="fieldNames" :tree-data="apiTreeData" blockNode show-icon
+        style="width: 100%;" @select="handleSelectTreeItem">
         <template #title="node">
           <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
-              <folder-outlined/>
-              <span class="left-name" v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
+              <folder-outlined />
+              <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
                 {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
               </span>
-              <span class="left-name" v-else style="margin-left:5px">{{ node.name }}</span>
-              <!--              <span style="margin-left:5px">{{ node.apiGroupName }}</span>-->
+              <span v-else style="margin-left:5px">{{ node.name }}</span>
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
               <a-button style="margin-left: 8px;" @click.stop="addApi(node)">
                 <template #icon>
-                  <plus-outlined style="font-size: 10px"/>
+                  <plus-outlined style="font-size: 10px" />
                 </template>
               </a-button>
               <a-dropdown>
                 <a-button style="margin-left: 8px">
                   <template #icon>
-                    <ellipsis-outlined style="font-size: 10px"/>
+                    <ellipsis-outlined style="font-size: 10px" />
                   </template>
                 </a-button>
-                <ellipsis-outlined/>
+                <ellipsis-outlined />
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
@@ -61,23 +54,20 @@
                 <template #title>
                   {{ node.name }}
                 </template>
-                <span class="left-name" v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
+                <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:4px">
                   {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                   <span style="color: #f50">{{ searchValue }}</span>
                   {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
                 </span>
-                <span class="left-name" v-else style="margin-left:4px">{{ node.name }}</span>
+                <span v-else style="margin-left:4px">{{ node.name }}</span>
               </a-tooltip>
-              <!--              <span style="margin-left:10px">{{ node.apiName }}</span>-->
+              <!--              <span style="margin-left:10px">{{ node.name }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
-              <a-popconfirm
-                  title="你确定要删除该接口吗?"
-                  @confirm.stop="delApi(node)"
-              >
+              <a-popconfirm title="你确定要删除该接口吗?" @confirm.stop="delApi(node)">
                 <a-button style="margin-left: 8px;">
                   <template #icon>
-                    <minus-outlined style="font-size: 10px"/>
+                    <minus-outlined style="font-size: 10px" />
                   </template>
                 </a-button>
               </a-popconfirm>
@@ -88,7 +78,7 @@
     </div>
     <div class="api-editor-dir-add">
       <a-button style="width: 100%" type="dashed" @click="addDir">
-        <plus-outlined/>
+        <plus-outlined />
         新建
       </a-button>
     </div>
@@ -96,7 +86,6 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue"
 import {
   PlusOutlined,
   MinusOutlined,
@@ -105,19 +94,20 @@ import {
   ColumnHeightOutlined,
   VerticalAlignMiddleOutlined
 } from '@ant-design/icons-vue'
-import { guid } from "/@/utils"
-import { defHttp } from "/@/utils/http/axios"
+import { ref, watch } from "vue"
 import { message } from "ant-design-vue"
+import { defHttp } from "/@/utils/http/axios"
+import { guid } from "/@/utils"
 import {
   findNodeById,
   getAllParentKeys,
   getMagicApiInfo,
   getParentId,
   removeMagicApiById
-} from "/@/views/apimanage/modules/apiUtil"
-// 搜索目录/接口
+} from "/@/views/data/apimanage/modules/apiUtil"
+// 搜索
 let searchValue = ref<string>('')
-// 是否展开/收缩
+// 是否展开
 let isExpand = ref<boolean>(false)
 // 所有父节点
 let allParentKeys = ref<any>([])
@@ -168,6 +158,7 @@ watch(() => props.selectItem, (newVal: any) => {
       delete newVal.oldId
     }
   }
+
 }, {
   immediate: true
 })
@@ -187,11 +178,6 @@ watch(() => searchValue.value, (newVal: any) => {
     autoExpandParent.value = false
   }
 })
-
-onMounted(() => {
-  // init()
-})
-
 
 /**
  * 初始化数据
@@ -230,9 +216,8 @@ function generateList(data: any) {
 
 /**
  * 搜索
- * @param value
  */
-function onSearch(value) {
+function onSearch() {
 
 }
 
@@ -272,7 +257,7 @@ function addDir() {
     apiKeys: [],
     isEncrypt: '0',
     encryptType: '',
-    apiType: '2',
+    apiType: '1',
     bz: '',
     children: [],
     orderNum: props.apiTreeData.length + 1
@@ -280,6 +265,38 @@ function addDir() {
   props.apiTreeData?.push(dir)
   selectedKeys.value = [dir.id]
   emit('update:selectItem', dir)
+}
+
+
+/**
+ * 删除目录
+ * @param item
+ */
+async function delDirOld(item) {
+  let promises = []
+  if (props.apiTreeData) {
+    let findDir = props.apiTreeData.find(_data => _data.id == item.id)
+    if (findDir && findDir.children) {
+      for (let i = 0; i < findDir.children.length; i++) {
+        let addType = typeof findDir.children[i].id == 'string' ? findDir.children[i].id.substr(0, 4) == '新增接口' : false
+        let promise
+        promise = addType ? removeApiByIdWithoutHttp() : removeApiById(findDir.children[i].id)
+        promises.push(promise)
+      }
+    }
+    let res = await Promise.all(promises)
+    let flag = true
+    for (let i = 0; i < res.length; i++) {
+      if (!res[i]) {
+        flag = false
+        break
+      }
+    }
+    if (flag) {
+      removeById(props.apiTreeData, item.id)
+      message.success('删除成功')
+    }
+  }
 }
 
 /**
@@ -309,6 +326,15 @@ function delDir(item) {
   }
 }
 
+/**
+ * 前端删除id 返回promise
+ */
+function removeApiByIdWithoutHttp() {
+  return new Promise((resolve) => {
+    resolve(true)
+  })
+}
+
 function removeById(arr, id) {
   let currentSelect
   for (let i = 0; i < arr.length; i++) {
@@ -327,6 +353,7 @@ function removeById(arr, id) {
     }
   }
 }
+
 
 /**
  * 添加接口
@@ -352,7 +379,6 @@ async function addApi(dir) {
       publicKey: dir.publicKey,
       privateKey: dir.privateKey,
       apiKeys: dir.apiKeys,
-      apiPublicParams: dir.apiPublicParams,
       method: 'POST',
       version: 'testEnv',
       isResultDecrypt: 0,
@@ -386,6 +412,7 @@ async function addApi(dir) {
     message.warning('添加接口失败')
   }
 }
+
 
 /**
  * 删除接口
@@ -439,10 +466,11 @@ function onDoubleClick(node) {
   }
   expandedKeys.value = Array.from(new Set(expandedKeys.value))
 }
+
 </script>
 
 <style lang="less" scoped>
-.api-editor-tree {
+.api-ex-tree {
   width: 350px;
   height: 100%;
   padding: 10px;
@@ -456,31 +484,22 @@ function onDoubleClick(node) {
   .api-editor-tree-content {
     max-height: calc(100% - 90px);
     overflow: auto;
-    
+
     :deep(.ant-tree-node-content-wrapper) {
       padding: 0;
     }
-
 
     .api-row-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .left {
         width: 240px;
-        display: flex;
-        //overflow: hidden;
-        //white-space: nowrap;
-        //text-overflow: ellipsis;
-        
-        .left-name {
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
-
 
       .right {
         display: flex;

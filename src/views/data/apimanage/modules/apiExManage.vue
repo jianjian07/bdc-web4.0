@@ -35,10 +35,12 @@
                       <a @click="del(pane, record, index)">删除</a>
                     </div>
                     <template v-else-if="column.dataIndex == 'privateKey' || column.dataIndex == 'publicKey'">
-                      <a-textarea v-model:value="record[column.dataIndex]"  :rows="1"></a-textarea>
+                      <a-textarea v-model:value="record[column.dataIndex]" :rows="1"></a-textarea>
                     </template>
                     <template v-else-if="column.dataIndex == 'status'">
-                       <a-checkbox v-model:checked="record[column.dataIndex]" @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)" style="display: flex; justify-content: center" :options="column.options"></a-checkbox>
+                      <a-checkbox v-model:checked="record[column.dataIndex]"
+                        @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)"
+                        style="display: flex; justify-content: center" :options="column.options"></a-checkbox>
                     </template>
                     <template v-else>
                       <a-input v-model:value="record[column.dataIndex]"></a-input>
@@ -93,7 +95,8 @@
                     <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
                   </a-form-item>
                   <a-form-item label="接口标识" style="margin-right: 20px;">
-                    <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识" @click="onClickCode(pane)"></a-input>
+                    <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识"
+                      @click="onClickCode(pane)"></a-input>
                   </a-form-item>
                   <a-form-item label="是否返回值解密">
                     <a-radio-group v-model:value="pane.isResultDecrypt">
@@ -148,14 +151,14 @@ import {
   getMagicApiInfo,
   getUrl,
   removeMagicApiById,
-  dirDataChange, 
-  getMagicApiBody, 
-  sendExCommonApi, 
+  dirDataChange,
+  getMagicApiBody,
+  sendExCommonApi,
   sendMagicApi
-} from "/@/views/apimanage/modules/apiUtil"
+} from "/@/views/data/apimanage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
-import ApiExParam from "/@/views/apimanage/modules/apiExParam.vue"
-import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
+import ApiExParam from "/@/views/data/apimanage/modules/apiExParam.vue"
+import ApiResult from "/@/views/data/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { PlusOutlined } from '@ant-design/icons-vue'
@@ -583,7 +586,7 @@ function handleAddApiKeys(pane) {
  */
 function handleRadioChange(e, apiKeys, record, index) {
   if (record.status) {
-    apiKeys = apiKeys.map((m, _i) =>{
+    apiKeys = apiKeys.map((m, _i) => {
       m.status = _i == index ? m.status : (m.status !== undefined ? false : undefined)
       return m
     })
@@ -657,7 +660,7 @@ function onClickCode(pane) {
 
       .api-editor-manage-interface-breadcrumb {
         margin-bottom: 10px;
-        
+
         .breadcrumb-input-name {
           flex: auto;
           padding: 0 4px;
