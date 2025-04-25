@@ -5,8 +5,8 @@
         <a-col :md="12" class="mid-col"
           style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
           <a-row style="align-items: center;">
-            <a-col :span="8"><svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon> 移交方向：</a-col>
-            <a-col :span="16">
+            <a-col :span="10"><svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon> 移交方向：</a-col>
+            <a-col :span="14">
               <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
                 <a-radio :value="1">向后</a-radio>
                 <a-radio :value="2">平级</a-radio>
@@ -15,9 +15,9 @@
             </a-col>
           </a-row>
           <a-row style="padding: 10px 0;align-items: center;">
-            <a-col :span="8"><svg-icon name="people" width="20px" height="20px" color="#5094F9"></svg-icon>
+            <a-col :span="10"><svg-icon name="people" width="20px" height="20px" color="#5094F9"></svg-icon>
               承办人员：</a-col>
-            <a-col :span="16">
+            <a-col :span="14">
               <a-radio-group v-model:value="handleUserType" @change="onChangeUserType">
                 <a-radio :value="1">移交到人</a-radio>
                 <a-radio :value="2">移交到角色</a-radio>
@@ -25,9 +25,8 @@
             </a-col>
           </a-row>
           <a-divider orientation="left">承办人员</a-divider>
-
           <div v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
-            <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange">
+            <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange" :dropdownMatchSelectWidth="false">
               <template v-for="(item, index) in formState.taskData.histListNode">
                 <a-select-option v-if="item.name_ != formState.taskData.taskName" :value="item.task_def_key_">{{
       item.name_ }}</a-select-option>
@@ -37,7 +36,7 @@
           <a-input-search v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0" placeholder="请输入承办人员名称"
             enterButton @search="onSearch" style="margin-bottom: 10px">
           </a-input-search>
-          <a-spin class="tree-spin" :spinning="treeSpinning">
+          <a-spin :class="treeData.length ? 'tree-spin' : ''" :spinning="treeSpinning">
             <a-tree v-if="!treeSpinning && treeData.length" multiple :show-icon="true" :block-node="true"
               :selected-keys="selectedKeys" :default-expand-all="true" :auto-expand-parent="true" :tree-data="treeData"
               @select="onSelectTreeNode">
@@ -129,7 +128,8 @@ enum api {
   getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
   extractUserRole = '/api/zrzy-system/UserRole/extractUserRole',
   processComplete = '/api/zrzy-bdc/act/task/processComplete',
-  getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo'
+  getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo',
+  isRegister = '/api/zrzy-bdc/bdc/public/isRegistered'
 }
 
 onMounted(() => {
@@ -142,9 +142,24 @@ onMounted(() => {
 function getTaskInfo() {
   let taskId = route.query.taskId || props.formData.taskId
   let slbh = route.query.slbh
-  defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId, slbh: slbh } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId, slbh: slbh } }, { withToken: true }).then(async (res) => {
     if (res && res.success) {
       let taskData = res.result
+      let nodeArr: any = await getNodeList() || []
+      if (!nodeArr.includes(taskData.taskName)) {
+        let isRegister = await getIsRegister()
+        if (isRegister) {
+          let arr = [...taskData.histListNode]
+          let hisNode = arr.filter(f => f.name_ !== taskData.taskName)
+          taskData.histListNode = getHisListNode(hisNode)
+        } else {
+          if (taskData.taskName.includes('簿')) {
+            taskData.transitionList = []
+            // message.warning('请先记载登记簿!')
+          }
+        }
+      }
+      
       let slbh = route.query.slbh || props.formData.slbh
       // let lcmc = formConfig.value.ajmc
       let cbsj, cbr
@@ -172,6 +187,48 @@ function getTaskInfo() {
   })
 }
 
+function getHisListNode(nodes) {
+  const list = [...nodes] || []
+  let lastIndex = -1
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (list[i].name_?.includes('簿')) {
+      lastIndex = i
+      break
+    }
+  }
+  
+  const result = lastIndex !== -1 ? list.slice(lastIndex) : []
+  return result
+}
+
+/**
+ * 获取节点 (用来过滤登簿节点之前的节点 不做是否登簿接口判断)
+ * @param processId
+ */
+function getNodeList(processId?: any) {
+  return new Promise((resolve, reject) => {
+    // todo 这里一开始拿不到processId 没有接口获取当前流程节点列表
+    // 先写死
+    resolve(['收件','初审','复审','核定','审核']) 
+  })
+}
+
+/**
+ * 判断是否登簿
+ */
+function getIsRegister() {
+  let slbh = route.query.slbh
+  return new Promise((resolve, reject) => {
+    defHttp.get({ url: api.isRegister, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        reject(res?.message)
+      }
+    })
+  })
+}
+
 /**
  * 设置默认向后移交的树
  */
@@ -180,6 +237,8 @@ function setTransTree() {
   let stringList = transitionList.map(item => item.nextnode) || []
   if (stringList.length) {
     getTaskUserInfo(stringList, transitionList, 1)
+  } else {
+    resetData()
   }
 }
 
@@ -494,8 +553,8 @@ function onChangeDirection(e) {
   // 重新初始化用户树
   if (e.target.value == 3) {
     let nodeName
-    rejectModelNode.value = formState.value.taskData.histListNode[0].task_def_key_
-    nodeName = formState.value.taskData.histListNode[0].name_
+    rejectModelNode.value = formState.value.taskData.histListNode?.length ? formState.value.taskData.histListNode[0].task_def_key_ : null
+    nodeName = formState.value.taskData.histListNode?.length ? formState.value.taskData.histListNode[0].name_ : null
     if (rejectModelNode.value === formState.value.taskData.nodeId) {
       if (formState.value.taskData.histListNode[1].task_def_key_) {
         rejectModelNode.value = formState.value.taskData.histListNode[1].task_def_key_

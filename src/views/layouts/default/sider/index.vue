@@ -92,14 +92,18 @@ function dataFilter(data: any) {
  * @param newArr
  */
 function initMenuList(newArr) {
-  let newData = newArr.filter(item => {
+  if (newArr && newArr.length) {
+    let newData = newArr?.filter(item => {
 
-    if (item.children) {
-      item.children = initMenuList(item.children)
-    }
-    return item?.hidden == false
-  })
-  return newData
+      if (item.children) {
+        item.children = initMenuList(item.children)
+      }
+      return item?.hidden == false
+    })
+    return newData
+  } else {
+    return []
+  }
 }
 
 function getRootMenuKeys() {
