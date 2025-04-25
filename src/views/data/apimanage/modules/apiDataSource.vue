@@ -9,9 +9,9 @@
       </a-button>
       <div class="api-data-source-tree">
         <template v-if="apiData?.apiDataSource?.length">
-          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys" 
-                  v-model:expandedKeys="expandedRowKeys" :fieldNames="{ children:'children', key: 'id' }"
-            :blockNode="true" @select="handleSelectTreeItem">
+          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys"
+            v-model:expandedKeys="expandedRowKeys" :fieldNames="{ children: 'children', key: 'id' }" :blockNode="true"
+            @select="handleSelectTreeItem">
             <template #title="node">
               <div class="api-row-content">
                 <div class="left" :title="node.title" :id="`left-${node.id}`" :style="getFieldNameStyle(node)">
@@ -24,11 +24,11 @@
                     </template>
                   </a-button>
                   <a-popconfirm title="你确定要删除该数据源吗?" @confirm.stop="del(node)">
-                     <a-button style="margin-left: 8px;">
-                        <template #icon>
-                          <minus-outlined style="font-size: 10px" />
-                        </template>
-                     </a-button>
+                    <a-button style="margin-left: 8px;">
+                      <template #icon>
+                        <minus-outlined style="font-size: 10px" />
+                      </template>
+                    </a-button>
                   </a-popconfirm>
                 </div>
               </div>
@@ -75,7 +75,7 @@ import {
   AppstoreAddOutlined
 } from '@ant-design/icons-vue'
 import CodeEditor from '/@/components/common/CodeEditor.vue'
-import { nextTick, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, ref } from "vue"
 import { findNode } from "/@/views/online/utils/commonUtils"
 let aa = ref('horizontal');
 const props = defineProps({
@@ -127,7 +127,7 @@ function handleAdd() {
  */
 function del(node) {
   let currentSelect
-  let findParent = findParentNode(props.apiData.apiDataSource,node.id)
+  let findParent = findParentNode(props.apiData.apiDataSource, node.id)
   let arr = findParent.children || []
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].id == node.id) {
@@ -179,7 +179,7 @@ function getCodeValue(value) {
 }
 
 function addChild(node) {
-  let find = findNode(props.apiData.apiDataSource, node.id,'id')
+  let find = findNode(props.apiData.apiDataSource, node.id, 'id')
   if (find) {
     if (!find.children) {
       find.children = []
@@ -217,12 +217,12 @@ function getFieldNameStyle(node) {
   }
   if (num !== null || num !== undefined) {
     nextTick(() => {
-    let dom = document.getElementById('left-' + node.id)
-    if (dom) {
-      let width = 95 - 24 * num
-      dom.style.width = `${width}px`
-    }
-  })
+      let dom = document.getElementById('left-' + node.id)
+      if (dom) {
+        let width = 95 - 24 * num
+        dom.style.width = `${width}px`
+      }
+    })
   }
 }
 

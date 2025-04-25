@@ -82,13 +82,11 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref, watch, h, onMounted } from "vue"
+import { nextTick, ref, watch, onMounted } from "vue"
 import { AppstoreAddOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
-import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
-import { notification, Button } from 'ant-design-vue'
 import { guid } from "/@/utils"
-import { escapeJsonString } from "/@/views/apimanage/modules/apiUtil"
+import { escapeJsonString } from "/@/views/data/apimanage/modules/apiUtil"
 
 const props = defineProps({
   apiData: {

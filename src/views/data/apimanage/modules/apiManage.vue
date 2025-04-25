@@ -29,10 +29,12 @@
                       <a @click="del(pane, record, index)">删除</a>
                     </div>
                     <template v-else-if="column.dataIndex == 'privateKey' || column.dataIndex == 'publicKey'">
-                      <a-textarea v-model:value="record[column.dataIndex]" :rows="1" ></a-textarea>
+                      <a-textarea v-model:value="record[column.dataIndex]" :rows="1"></a-textarea>
                     </template>
                     <template v-else-if="column.dataIndex == 'status'">
-                       <a-checkbox v-model:checked="record[column.dataIndex]" @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)" style="display: flex; justify-content: center" :options="column.options"></a-checkbox>
+                      <a-checkbox v-model:checked="record[column.dataIndex]"
+                        @change="(e) => handleRadioChange(e, pane.apiKeys, record, index)"
+                        style="display: flex; justify-content: center" :options="column.options"></a-checkbox>
                     </template>
                     <template v-else>
                       <a-input v-model:value="record[column.dataIndex]"></a-input>
@@ -163,8 +165,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue"
-import ApiParam from "/@/views/apimanage/modules/apiParam.vue"
-import ApiResult from "/@/views/apimanage/modules/apiResult.vue"
+import ApiParam from "/@/views/data/apimanage/modules/apiParam.vue"
+import ApiResult from "/@/views/data/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { PlusOutlined } from '@ant-design/icons-vue'
@@ -179,7 +181,7 @@ import {
   getMagicApiBody,
   sendMagicApi,
   sendCommonApi
-} from "/@/views/apimanage/modules/apiUtil"
+} from "/@/views/data/apimanage/modules/apiUtil"
 
 const props = defineProps({
   apiTreeData: {
@@ -649,7 +651,7 @@ function handleAddApiKeys(pane) {
  */
 function handleRadioChange(e, apiKeys, record, index) {
   if (record.status) {
-    apiKeys = apiKeys.map((m, _i) =>{
+    apiKeys = apiKeys.map((m, _i) => {
       m.status = _i == index ? m.status : (m.status !== undefined ? false : undefined)
       return m
     })

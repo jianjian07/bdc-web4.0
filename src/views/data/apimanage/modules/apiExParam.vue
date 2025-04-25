@@ -7,24 +7,19 @@
           </CodeEditor>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="header" tab="Header" class="api-param-pane" forceRender>
+      <a-tab-pane key="header" tab="Headers" class="api-param-pane" forceRender>
         <api-header :apiData="apiData"></api-header>
       </a-tab-pane>
-      <a-tab-pane key="query" tab="params" class="api-param-pane" forceRender>
+      <a-tab-pane key="query" tab="Params" class="api-param-pane" forceRender>
         <api-query :apiData="apiData"></api-query>
       </a-tab-pane>
-      <a-tab-pane key="body" tab="请求body" class="api-param-pane" forceRender>
+      <a-tab-pane key="body" tab="请求Body" class="api-param-pane" forceRender>
         <api-body :apiData="apiData"></api-body>
       </a-tab-pane>
-      <a-tab-pane key="dparam" tab="动态参数-测试接口" class="api-param-pane" forceRender>
-        <monaco-editor v-model="apiData.dparams" height="100%" language="json" style="width: 100%;overflow: auto"
-          theme="vs">
-        </monaco-editor>
+      <a-tab-pane v-if="apiType != 2" key="datasource" tab="数据源" class="api-param-pane" forceRender>
+        <api-ex-data-source :apiData="apiData"></api-ex-data-source>
       </a-tab-pane>
-      <a-tab-pane v-if="apiType != 2" key="datasource" tab="参数数据源" class="api-param-pane" forceRender>
-        <api-data-source :apiData="apiData"></api-data-source>
-      </a-tab-pane>
-      <a-tab-pane key="remark" tab="接口说明" class="api-param-pane" forceRender>
+      <a-tab-pane key="bz" tab="接口说明" class="api-param-pane" forceRender>
         <a-textarea v-model:value="apiData.bz" placeholder="请输入接口说明" style="height: 100%" />
       </a-tab-pane>
     </a-tabs>
@@ -33,12 +28,12 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import ApiHeader from "/@/views/apimanage/modules/apiHeader.vue"
-import ApiQuery from "/@/views/apimanage/modules/apiQuery.vue"
-import ApiBody from "/@/views/apimanage/modules/apiBody.vue"
+import ApiHeader from "/@/views/data/apimanage/modules/apiHeader.vue"
+import ApiQuery from "/@/views/data/apimanage/modules/apiQuery.vue"
+import ApiExDataSource from "/@/views/data/apimanage/modules/apiExDataSource.vue"
+import ApiBody from "/@/views/data/apimanage/modules/apiBody.vue"
 import CodeEditor from '/@/components/common/CodeEditor.vue'
-import ApiDataSource from '/@/views/apimanage/modules/apiDataSource.vue'
-import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
+
 // 选中tab
 let activeKey = ref<string>('header')
 
@@ -56,6 +51,7 @@ const props = defineProps({
     default: 1
   }
 })
+
 const emit = defineEmits(['update:activePane'])
 
 watch(() => props.activePane, (val: string) => {
@@ -67,6 +63,7 @@ watch(() => props.activePane, (val: string) => {
 }, {
   immediate: true
 })
+
 /**
  * tab改变
  * @param key
@@ -98,6 +95,12 @@ function getCodeValue(value) {
         }
       }
     }
+  }
+}
+
+.api-script {
+  :deep(.full-screen-parent) {
+    height: 100%
   }
 }
 </style>

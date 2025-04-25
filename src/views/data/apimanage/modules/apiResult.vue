@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue"
+import { ref } from "vue"
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 // 选中tab
 let activeKey = ref<string>('response')

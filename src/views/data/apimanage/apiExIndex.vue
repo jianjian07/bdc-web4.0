@@ -9,11 +9,11 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import ApiExTree from "/@/views/apimanage/modules/apiExTree.vue"
-import ApiExManage from "/@/views/apimanage/modules/apiExManage.vue"
+import ApiExTree from "/@/views/data/apimanage/modules/apiExTree.vue"
+import ApiExManage from "/@/views/data/apimanage/modules/apiExManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { setParentId } from "/@/views/apimanage/modules/apiUtil"
+import { setParentId } from "/@/views/data/apimanage/modules/apiUtil"
 
 let loading = ref<boolean>(false)
 // 树
@@ -67,7 +67,7 @@ function initData() {
   width: 100%;
   height: 100%;
   display: flex;
-  
+
   :deep(.ant-table.ant-table-small) {
     .ant-table-tbody>tr>td {
       padding: 2px;
