@@ -98,7 +98,7 @@
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
-import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, RedoOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { del, getDataDict } from "/@/api/sys/dict"
 const DictModal = defineAsyncComponent(() => import("/@/views/system/dict/components/dictModal.vue"));
