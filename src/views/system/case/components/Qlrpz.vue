@@ -93,8 +93,8 @@ const columns = [
     width: 150
   },
   {
-    title: '顺序号',
-    dataIndex: 'sxh',
+    title: '排序',
+    dataIndex: 'orderNum',
     align: 'center',
     width: 150
   },

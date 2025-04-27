@@ -7,8 +7,8 @@
       :wrapper-col="{ span: 16 }"
       :disabled="formData.type == 'view'"
     >
-      <a-form-item ref="djlx" label="登记类型" name="djlx" :rules="[{ required: true, message: '请选择登记类型' }]">
-        <a-select v-model:value="formState.djlx" :options="djlxOption"  placeholder="请选择登记类型">
+      <a-form-item ref="djlx" label="登记类型" name="djlxCopy" :rules="[{ required: true, message: '请选择登记类型' }]">
+        <a-select v-model:value="formState.djlxCopy" :options="djlxOption"  placeholder="请选择登记类型" @change="handleChangeDjlxCopy">
         </a-select>
       </a-form-item>
       <a-form-item ref="qllx" label="权利类型" name="qllx" :rules="[{ required: true, message: '请选择权利类型' }]">
@@ -33,7 +33,7 @@
          </a-checkbox-group>
       </a-form-item>
       <a-form-item ref="sxh" label="顺序号" name="sxh" :rules="[{ required: true, message: '请输入顺序号' }]">
-        <a-input-number v-model:value="formState.sxh" placeholder="请输入顺序号" :disabled="formData.type == 'view'" style="width: 100%"></a-input-number>
+        <a-input-number v-model:value="formState.sxh" placeholder="请输入顺序号" disabled style="width: 100%"></a-input-number>
       </a-form-item>
       <a-form-item ref="orderNum" label="排序" name="orderNum" :rules="[{ required: true, message: '请输入排序' }]">
         <a-input-number v-model:value="formState.orderNum" placeholder="请输入排序" :disabled="formData.type == 'view'" style="width: 100%"></a-input-number>
@@ -79,9 +79,10 @@ enum api {
 watch(() => props.formData, (val: any) => {
    if (val.djlx && val.djlx.length) {
      djlxOption = getOptions(val.djlx)
-     formState.value.djlx = djlxOption[0].value
+     formState.value.djlxCopy = djlxOption[0].value
   }
-  formState.value.sxh = formState.value.sxh || 1
+  let split = formState.value.djlxCopy.split('-')
+  formState.value.sxh = split.length > 1 ? Number(split[1]) : 1
   if (val.type !== 'new') {
     Object.keys(formState.value).forEach(key => {
       formState.value[key] = val.itemData[key]
@@ -89,6 +90,7 @@ watch(() => props.formData, (val: any) => {
         formState.value['btnIdArr'] = formState.value['btnId'].includes(',') ? formState.value['btnId'].split(',') : [formState.value['btnId']]
       }
       formState.value.qlrxsmc = formState.value.qlrxsmc || formState.value.qlrlxmc
+      formState.value.djlxCopy = formState.value.djlx + '-' + formState.value.sxh
     })
   } else {
     formState.value.lcid = val.lcid
@@ -107,6 +109,7 @@ function onSubmit() {
     .then(() => {
       console.log('values', formState, toRaw(formState));
       formState.value['btnId'] = formState.value['btnIdArr'] ? formState.value['btnIdArr'].join(',') : ''
+      formState.value.djlx = formState.value.djlxCopy.split('-')[0]
       formState.value.qlrlxmc = getDictItemsByCode('qlrlb').filter((_v: any) => _v.dictCode == formState.value.qlrlb)[0]?.dictName || ''
       let copyState = JSON.parse(JSON.stringify(formState.value))
       delete copyState.btnIdArr
@@ -166,10 +169,14 @@ function onChange(value) {
  * @param djlx
  */
 function getOptions(djlx) {
-  let options = djlx.map(element => {
+  let options = djlx.map((element,index) => {
+    let sxh = ''
+    if (djlx.length > 1) {
+      sxh = `（顺序号:${index + 1}）`
+    }
     return {
-      label: element,
-      value: element
+      label: element + sxh,
+      value: element + '-' + (index + 1)
     }
   });
   let map = new Map();
@@ -179,6 +186,11 @@ function getOptions(djlx) {
       };
   };
   return [...map.values()];
+}
+
+function handleChangeDjlxCopy() {
+  let split = formState.value.djlxCopy.split('-')
+  formState.value.sxh = split.length > 1 ? Number(split[1]) : 1
 }
 
 defineExpose({
