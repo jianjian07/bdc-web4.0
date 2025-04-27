@@ -1339,7 +1339,7 @@ export function getQlrFj() {
   let usefulQlrList = []
   for (const key in qlrxxObj) {
     let qlrlxmc = qlrxxObj[key].qlrlxmc
-    if (['权利人','抵押权人','预告权利人','预告抵押权人'].includes(qlrlxmc)) {
+    if (['权利人','抵押人','预告权利人','预告抵押人'].includes(qlrlxmc)) {
       usefulQlrList = qlrxxObj[key].list
     }
   }
