@@ -169,8 +169,8 @@
                 <div style="display: flex" v-else>
                   <a-tooltip title="新增附件材料">
                     <!-- <a-button style="margin-right: 5px" size="small" :icon="h(PlusOutlined)" @click.stop="addFile(dataRef, 'file')" /> -->
-                    <a-upload multiple v-model:file-list="fileList" name="fiels" :customRequest="customRequest"
-                      :data="{ materialId: dataRef.materialId, materialName: dataRef.materialName, slbh: formData.slbh }"
+                    <a-upload multiple v-model:file-list="fileList" name="files"
+                              :beforeUpload="(file, list) => handleBeforeUpload(file, list, { materialId: dataRef.materialId, materialName: dataRef.materialName, slbh: formData.slbh })"
                       @click.stop="">
                       <a-button style="margin-right: 5px" size="small" :icon="h(UploadOutlined)" />
                       <template #itemRender=""></template>
@@ -225,6 +225,7 @@ let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
 let previewData: any = ref('')
 let fileList: any = ref([])
+let uploadFiles = ref<any>([])
 let editableData: any = ref([])
 let editOrder: any = ref(false)
 let expandAll: any = ref(true)
@@ -429,15 +430,24 @@ function addFile(data: any = null, way: String = 'cata') {
   })
 }
 
-function customRequest(data: any) {
-  const formData = new FormData()
-  const params = {
-    materialId: data.data.materialId, // 附件目录主键
-    materialName: data.data.materialName, // 附件目录名称
-    slbh: data.data.slbh // 流程实例ID
+function handleBeforeUpload(file, list, data) {
+  uploadFiles.value = [...(uploadFiles.value || []), file];
+  if (uploadFiles.value.length === list.length) {
+    customRequest(data);//自定义上传
   }
+}
 
-  formData.append(`files`, data.file);
+function customRequest(data) {
+  const params = {
+    materialId: data.materialId, // 附件目录主键
+    materialName: data.materialName, // 附件目录名称
+    slbh: data.slbh // 流程实例ID
+  }
+  const formData = new FormData();
+  uploadFiles.value.forEach((file: any) => {
+    formData.append("files", file as any);
+  });
+  uploadFiles.value = []
   defHttp
     .post(
       {
