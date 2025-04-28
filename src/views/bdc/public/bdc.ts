@@ -918,6 +918,38 @@ export function delDataBySlbhBdcdyh(slbh, bdcdyh) {
 }
 
 /**
+ * 通过主键删除数据
+ * @param keyName
+ * @param keyValue
+ * @param tableName
+ */
+export function delDataByKey(keyName, keyValue, tableName) {
+  return new Promise((resolve) => {
+    if (keyValue && keyName && tableName) {
+      defHttp.post({
+        url: '/imaginform/zrzy-form/form/report/deleteRow',
+        params: {
+          keyCol: keyName,
+          tableName: tableName,
+          keyValue: keyValue,
+        }
+      }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          message.success('删除成功!')
+          resolve(true)
+        } else {
+          message.warning('删除失败!')
+          resolve(false)
+        }
+      })
+    } else {
+      message.warning('请确认参数传递正确!')
+      resolve(false)
+    }
+  })
+}
+
+/**
  * 注销其中一户
  * @param ywh
  * @param djlx
@@ -1436,4 +1468,37 @@ export function extractPureBase64(str: string): string {
     return match[1]
   }
   return str
+}
+
+/**
+ * 获取企业信息(权利人中查询)
+ * @param qlrmc
+ * @param zjh
+ */
+export function getQyxxList(qlrmc, zjh) {
+  return new Promise((resolve) => {
+    let data = {
+      searchData: [{
+        name: "qlrmc",
+        searchType: "like",
+        value: qlrmc
+      }, {
+        name: "zjh",
+        searchType: "like",
+        value: zjh
+      }],
+      id: "51",
+      isPage: true,
+      current: 1,
+      size: 1
+    }
+     defHttp.post({ url: '/imaginform/zrzy-form/form/report/list', data: data }, { withToken: true }).then((res) => {
+       if (res && res.success) {
+         const result = JSON.parse(res.result)
+         resolve(result.records)
+       } else {
+         resolve([])
+       }
+     })
+  })
 }
