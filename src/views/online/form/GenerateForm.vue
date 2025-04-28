@@ -20,7 +20,9 @@ import {
   getLabelByDictCode,
   getLabelByTreeDictCode,
   getRowSpan,
-  loadStyle
+  loadStyle,
+  setInputStatus,
+  validateRules
 } from '/@/views/online/utils/commonUtils'
 import { initTable } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
@@ -367,7 +369,9 @@ const generateVue3 = defineComponent({
             getMatchTag,
             excuteHrefFun,
             loadStyle,
-            addNewRow
+            addNewRow,
+            setInputStatus,
+            validateRules
         }
 
     },

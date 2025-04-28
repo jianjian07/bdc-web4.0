@@ -6,7 +6,7 @@ import { nextTick, reactive, ref, watch } from "vue"
 import { message, Modal } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { router } from "/@/router"
-import { isJsonData,compareObjects } from "/@/views/online/utils/commonUtils"
+import { isJsonData, compareObjects, setInputStatus } from "/@/views/online/utils/commonUtils"
 import { cloneDeep } from "lodash-es"
 import { isEmpty } from "/@/utils/is"
 export let validateInfos: any = reactive({})
@@ -909,7 +909,11 @@ export const editRow = (key: string, editableData: any, dataSource: any, keyCol:
     }
 };
 
-export const saveRow = (key: string, editableData, dataSource: any, keyCol, tableName, _callback?: any) => {
+export const saveRow = async (key: string, editableData, dataSource: any, keyCol, tableName, columns, _callback?: any) => {
+    let validate = await validateRow(editableData[key], columns)
+    if (!validate) {
+        return
+    }
     Object.assign(dataSource.filter((item: { [keyCol]: string; }) => key == item[keyCol])[0], editableData[key]);
     obj.obj2[key] = cloneDeep(editableData[key])
     let entity = []
@@ -952,6 +956,22 @@ export const saveRow = (key: string, editableData, dataSource: any, keyCol, tabl
         delObj(key, editableData);
     }
 };
+
+/**
+ * 列表校验
+ */
+async function validateRow(editableData, columns) {
+    let record = editableData
+    let ruleColumn = columns.filter((column: any) => column.rules)
+    for (let j = 0; j < ruleColumn.length; j++) {
+      await setInputStatus(ruleColumn[j], record)
+      if (record[ruleColumn[j].dataIndex + 'Status'] == 'error') {
+        message.warning(`请检查${ruleColumn[j].title}填写`)
+        return false
+      }
+    }
+    return true
+}
 
 /**
  * 删除对象

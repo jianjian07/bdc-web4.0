@@ -16,6 +16,7 @@ import {
   DB_DICT_DATA_KEY,
   CATEGORY_DATA_KEY,
   VALIDATE_RULE_DATA_KEY,
+  API_RULE_DATA_KEY,
   TENANT_ID,
   LOGIN_INFO_KEY,
   MENU_INFO,
@@ -39,6 +40,7 @@ interface BasicStore {
   [DB_DICT_DATA_KEY]: string;
   [CATEGORY_DATA_KEY]: string;
   [VALIDATE_RULE_DATA_KEY]: string,
+  [API_RULE_DATA_KEY]: string,
   [TENANT_ID]: string;
   [LOGIN_INFO_KEY]: LoginInfo;
   [MENU_INFO]: [];

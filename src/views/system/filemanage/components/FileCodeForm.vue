@@ -70,13 +70,13 @@
                       </template>
                       <template v-else-if="column?.rules">
                         <a-tooltip :trigger="['focus', 'contextmenu']" placement="top" :arrow="false" color="red">
-                          <template v-if="validateRules(column.rules, record[column.key], record)" #title>
-                            <span>{{ validateRules(column.rules, record[column.key], record) }}</span>
+                          <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
+                            <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                           </template>
                           <template v-if="column?.key == 'ruleValue' && record['ruleParam'] == 'serial_num'">
                             <a-select v-model:value="record[column.key]" style="width: 100%;"
                               :disabled="column.disabled || getDisabled(column, record)"
-                              :status="record[column.key + 'Status']" :placeholder="column.placeholder" allow-clear
+                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder" allow-clear
                               :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
                               @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item, index) in getDict('serial_num_code')" :label="item.label"
@@ -88,7 +88,7 @@
                           <template v-else-if="column?.dict">
                             <a-select v-model:value="record[column.key]" style="width: 100%;"
                               :disabled="column.disabled || getDisabled(column, record)"
-                              :status="record[column.key + 'Status']" :placeholder="column.placeholder" allow-clear
+                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder" allow-clear
                               :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
                               @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item, index) in getDict(column.dict)" :label="item.label"
@@ -100,13 +100,13 @@
                           <template v-else-if="column?.key == 'orderId'">
                             <a-input-number v-model:value="record[column.key]" style="width: 100%;"
                               :disabled="column.disabled || getDisabled(column, record)"
-                              :status="record[column.key + 'Status']" :placeholder="column.placeholder"
+                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder"
                               @focus="setInputStatus(column, record)"
                               @change="(value) => handleChangeValue(value, null, column, record)">
                             </a-input-number>
                           </template>
                           <template v-else>
-                            <a-input v-model:value="record[column.key]" :status="record[column.key + 'Status']"
+                            <a-input v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']"
                               style="width: 100%;" :disabled="column.disabled || getDisabled(column, record)"
                               :placeholder="column.placeholder" @focus="setInputStatus(column, record)"
                               @change="(value, option) => handleChangeValue(value, option, column, record)">
@@ -496,7 +496,7 @@ function validateTable() {
       let ruleColumn = columns.filter((column: any) => column.rules)
       for (let j = 0; j < ruleColumn.length; j++) {
         setInputStatus(ruleColumn[j], record)
-        if (record[ruleColumn[j].key + 'Status'] && record[ruleColumn[j].key + 'Status'] == 'error') {
+        if (record[ruleColumn[j].dataIndex + 'Status'] && record[ruleColumn[j].dataIndex + 'Status'] == 'error') {
           message.warning('请检查' + ruleColumn[j].title + '填写')
           return false
         }

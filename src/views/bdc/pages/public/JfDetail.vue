@@ -21,10 +21,10 @@
         </template>
         <template v-else-if="['sl','sfjs','sfsx','jme','yse'].includes(column?.key)">
           <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
-            <template v-if="validateRules(column.rules, record[column.key])" #title>
-              <span>{{ validateRules(column.rules, record[column.key]) }}</span>
+            <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
+              <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
             </template>
-            <a-input-number :status="record[column.key + 'Status']" style="width: 100%" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
+            <a-input-number :status="record[column.dataIndex + 'Status']" style="width: 100%" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
                             @focus="setInputStatus(column, record)" @change="(value) => handleChangeValue(value, column, record)"/>
           </a-tooltip>
         </template>
@@ -225,7 +225,7 @@ function saveData() {
       let params = jfxx.value.map((item) => {
         let ruleColumn = columns.filter((column: any) => column.rules)
         for (let i = 0; i < ruleColumn.length; i++) {
-          delete item[ruleColumn[i].key + 'Status']
+          delete item[ruleColumn[i].dataIndex + 'Status']
         }
         item.slbh = route.query.slbh
         // item.sse = props.viewData?.BDC_SF?.SFJE
@@ -258,7 +258,7 @@ function validateTable() {
     let ruleColumn = columns.filter((column: any) => column.rules)
     for (let j = 0; j < ruleColumn.length; j++) {
       setInputStatus(ruleColumn[j], record)
-      if (record[ruleColumn[j].key+ 'Status'] == 'error') {
+      if (record[ruleColumn[j].dataIndex+ 'Status'] == 'error') {
         message.warning('请检查缴费信息填写')
         return false
       }

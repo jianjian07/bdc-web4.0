@@ -154,10 +154,10 @@
                         </template>
                         <template v-else-if="['sxy','sxfs'].includes(column?.key)">
                           <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
-                            <template v-if="validateRules(column.rules, record[column.key])" #title>
-                              <span>{{ validateRules(column.rules, record[column.key]) }}</span>
+                            <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
+                              <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                             </template>
-                            <a-select v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" multiple
+                            <a-select v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" :disabled="column.disabled" multiple
                                       :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item,index) in getDictItemsByCode(column.dict)" :label="item.label" :value="column.bz ? item.description : item.value">
                                 {{ item.label }}
@@ -167,11 +167,11 @@
                         </template>
                         <template v-else-if="['sxtj'].includes(column?.key)">
                           <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
-                            <template v-if="validateRules(column.rules, record[column.key])" #title>
-                              <span>{{ validateRules(column.rules, record[column.key]) }}</span>
+                            <template v-if="validateRules(column.rules, record[column.dataIndex])" #title>
+                              <span>{{ validateRules(column.rules, record[column.dataIndex]) }}</span>
                             </template>
                             <a-tree-select v-if="getSxyLabel(record['sxy']) == '权利人类型'" 
-                                           v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" 
+                                           v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" 
                                            :disabled="column.disabled" tree-checkable
                                            showCheckedStrategy="TreeSelect.SHOW_ALL"
                                            :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear
@@ -181,7 +181,7 @@
                             >
                               
                             </a-tree-select>
-                            <a-select v-else v-model:value="record[column.key]" :status="record[column.key + 'Status']" style="width: 100%;" :disabled="column.disabled" mode="multiple"
+                            <a-select v-else v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" :disabled="column.disabled" mode="multiple"
                                       :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item,index) in getDictItemsByCode(getSxtjOptions(record['sxy']))" :label="item.label" :value="column.bz ? item.description : item.value">
                                 {{ item.label }}
@@ -561,7 +561,7 @@ function validateTable() {
       let ruleColumn = columns.filter((column: any) => column.rules)
       for (let j = 0; j < ruleColumn.length; j++) {
         setInputStatus(ruleColumn[j], record)
-        if (record[ruleColumn[j].key+ 'Status'] && record[ruleColumn[j].key+ 'Status'] == 'error') {
+        if (record[ruleColumn[j].dataIndex+ 'Status'] && record[ruleColumn[j].dataIndex+ 'Status'] == 'error') {
           message.warning('请检查'+ ruleColumn[j].title + '填写')
           return false
         }

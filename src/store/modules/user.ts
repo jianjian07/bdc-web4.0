@@ -16,7 +16,8 @@ import {
   TENANT_ID,
   TOKEN_KEY,
   USER_INFO_KEY,
-  VALIDATE_RULE_DATA_KEY
+  VALIDATE_RULE_DATA_KEY,
+  API_RULE_DATA_KEY
 } from '/@/enums/cacheEnum'
 import { getAuthCache, removeAuthCache, setAuthCache } from '/@/utils/auth'
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel'
@@ -48,6 +49,8 @@ interface UserState {
   dataRuleList?: any[];
   // 其他(api)规则列表
   apiRuleList?: any[];
+  transferRuleList?: any[];
+  lineRuleList?: any[];
   sessionTimeout?: boolean;
   lastUpdateTime: number;
   tenantid?: string | number;
@@ -134,7 +137,7 @@ export const useUserStore = defineStore({
       return this.dataRuleList
     },
     getApiRuleList(): [] {
-      return this.apiRuleList
+      return (this.apiRuleList && this.apiRuleList?.length) ? this.apiRuleList : getAuthCache(API_RULE_DATA_KEY)
     },
     getTransferRuleList(): [] {
       return this.transferRuleList
@@ -214,6 +217,7 @@ export const useUserStore = defineStore({
     },
     setApiRuleList(rules: any) {
       this.apiRuleList = rules
+      setAuthCache(API_RULE_DATA_KEY, rules)
     },
     setTransferRuleList(rules: any) {
       this.transferRuleList = rules

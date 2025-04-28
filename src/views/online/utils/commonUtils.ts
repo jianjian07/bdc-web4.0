@@ -130,8 +130,9 @@ export function isJsonData(str) {
  * @param value
  * @param record
  */
-export function validateRules(rules, value, record?: any) {
+export async function validateRules(rulesArr, value, record?: any) {
   let msg = ''
+  let rules = [...rulesArr]
   let findRequired = rules.find(rule => rule.required)
   if (findRequired) {
     if (validateRequired(value)) {
@@ -148,6 +149,15 @@ export function validateRules(rules, value, record?: any) {
 
   if (flag) {
     for (let i = 0; i < rules.length; i++) {
+      let validateCode = rules[i].validateCode
+      if (validateCode) {
+        let findRule = getValidateRuleByCode(validateCode)
+        if (findRule) {
+          rules[i].pattern = new RegExp(eval(findRule.content))
+          rules[i].message = findRule.message
+        }
+      }
+
       let pattern = rules[i].pattern
       if (pattern) {
         if (!pattern.test(value)) {
@@ -155,12 +165,24 @@ export function validateRules(rules, value, record?: any) {
           break;
         }
       }
-      
+
+      if (rules[i].apiCode) {
+        let findRule = getApiRuleByCode(rules[i].apiCode)
+        if (findRule) {
+          const scope = { defHttp }; // 显式用一下，保证vite不会剔除
+          let fn = eval(`async (value, record) => {
+              ${findRule.content}
+          }`)
+          msg = await fn(value, record)
+          break;
+        }
+      }
+
       if (rules[i].validator) {
         msg = rules[i].validator(value, record)
         break
       }
-      
+
     }
   }
   return msg
@@ -172,11 +194,13 @@ export function validateRules(rules, value, record?: any) {
  * @param record
  */
 export async function setInputStatus(column, record) {
-  let res = validateRules(column.rules, record[column.key], record)
+  let res = await validateRules(column.rules, record[column.dataIndex], record)
   if (!!res) {
-    record[column.key + 'Status'] = 'error'
+    record[column.dataIndex + 'Status'] = 'error'
+    record[column.dataIndex + 'StatusMsg'] = res
   } else {
-    record[column.key + 'Status'] = ''
+    record[column.dataIndex + 'Status'] = ''
+    record[column.dataIndex + 'StatusMsg'] = ''
   }
 }
 

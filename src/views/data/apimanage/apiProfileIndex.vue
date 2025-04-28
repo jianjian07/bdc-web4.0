@@ -61,7 +61,7 @@
 import { onMounted, ref } from "vue"
 import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { defHttp } from "/@/utils/http/axios"
-import ApiProfileModal from "/@/views/apimanage/modules/apiProfileModal.vue"
+import ApiProfileModal from "/@/views/data/apimanage/modules/apiProfileModal.vue"
 import { message } from "ant-design-vue"
 const columns = [
   { title: "配置名称", dataIndex: "apiName" },
