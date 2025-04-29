@@ -1481,11 +1481,11 @@ export function getQyxxList(qlrmc, zjh) {
       searchData: [{
         name: "qlrmc",
         searchType: "like",
-        value: qlrmc
+        value: qlrmc || ''
       }, {
         name: "zjh",
         searchType: "like",
-        value: zjh
+        value: zjh || ''
       }],
       id: "51",
       isPage: true,
