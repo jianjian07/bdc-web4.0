@@ -479,15 +479,19 @@ function getReportUrl(data) {
  * cType为0不生成证号
  * @returns
  */
-export function register(demoRefs: any, loading: any, params: any) {
+export async function register(demoRefs: any, loading: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
+  let checkRes = await checkSeal(slbh, loading)
+  if (!checkRes) {
+    return
+  }
   loading.value = true
   defHttp.get({
-    url: '/api/zrzy-bdc/bdc/register/isRegister',
-    params: { slbh: slbh }
-  }, { withToken: true }
+      url: '/api/zrzy-bdc/bdc/register/isRegister',
+      params: { slbh: slbh }
+    }, { withToken: true }
   ).then((res: any) => {
     loading.value = false
     if (res.success) {
@@ -515,6 +519,38 @@ export function register(demoRefs: any, loading: any, params: any) {
     message.success("记载失败" + error)
   })
 }
+
+/**
+ * 保存移交逻辑校验
+ */
+function checkSeal(slbh: string, loading?: any) {
+  return new Promise((resolve, reject) => {
+    if (loading) {
+      loading.value = true
+    }
+    defHttp.post({
+        url: '/api/zrzy-logic/logic/check/checkSeal',
+        params: { slbh: slbh }
+      }, { withToken: true }).then((res: any) => {
+        if (loading) {
+          loading.value = false
+        }
+        if (res && res.success && res.result.code == 1) {
+          resolve(true)
+        } else {
+          message.warning(res?.message || res?.result?.message || '逻辑校验不通过!')
+          resolve(false)
+        }
+     }).catch((error: any) => {
+      if (loading) {
+        loading.value = false
+      }
+      resolve(false)
+      message.success("逻辑校验失败!" + error)
+    })
+  })
+}
+
 //登记簿逻辑
 function djb(slbh: string, cType: string, loading?: any) {
   if (loading) {
