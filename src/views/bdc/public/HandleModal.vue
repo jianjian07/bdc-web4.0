@@ -3,9 +3,12 @@
     <a-spin :spinning="spinning">
       <a-row style="display:flex; height: 100%; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8">
         <a-col :md="12" class="mid-col"
-          style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
+               style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
           <a-row style="align-items: center;">
-            <a-col :span="10"><svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon> 移交方向：</a-col>
+            <a-col :span="10">
+              <svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon>
+              移交方向：
+            </a-col>
             <a-col :span="14">
               <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
                 <a-radio :value="1">向后</a-radio>
@@ -15,8 +18,10 @@
             </a-col>
           </a-row>
           <a-row style="padding: 10px 0;align-items: center;">
-            <a-col :span="10"><svg-icon name="people" width="20px" height="20px" color="#5094F9"></svg-icon>
-              承办人员：</a-col>
+            <a-col :span="10">
+              <svg-icon name="people" width="20px" height="20px" color="#5094F9"></svg-icon>
+              承办人员：
+            </a-col>
             <a-col :span="14">
               <a-radio-group v-model:value="handleUserType" @change="onChangeUserType">
                 <a-radio :value="1">移交到人</a-radio>
@@ -26,41 +31,47 @@
           </a-row>
           <a-divider orientation="left">承办人员</a-divider>
           <div v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
-            <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange" :dropdownMatchSelectWidth="false">
+            <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange"
+                      :dropdownMatchSelectWidth="false">
               <template v-for="(item, index) in formState.taskData.histListNode">
                 <a-select-option v-if="item.name_ != formState.taskData.taskName" :value="item.task_def_key_">{{
-      item.name_ }}</a-select-option>
+                    item.name_
+                  }}
+                </a-select-option>
               </template>
             </a-select>
           </div>
-          <a-input-search v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0" placeholder="请输入承办人员名称"
-            enterButton @search="onSearch" style="margin-bottom: 10px">
+          <a-input-search v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0"
+                          placeholder="请输入承办人员名称"
+                          enterButton @search="onSearch" style="margin-bottom: 10px">
           </a-input-search>
           <a-spin :class="treeData.length ? 'tree-spin' : ''" :spinning="treeSpinning">
             <a-tree v-if="!treeSpinning && treeData.length" multiple :show-icon="true" :block-node="true"
-              :selected-keys="selectedKeys" :default-expand-all="true" :auto-expand-parent="true" :tree-data="treeData"
-              @select="onSelectTreeNode">
+                    :selected-keys="selectedKeys" :default-expand-all="true" :auto-expand-parent="true"
+                    :tree-data="treeData"
+                    @select="onSelectTreeNode">
               <template #icon="{ dataRef }">
-                <TeamOutlined v-if="dataRef.iconName == 'team'" />
-                <UserOutlined v-else-if="dataRef.iconName == 'user'" />
+                <TeamOutlined v-if="dataRef.iconName == 'team'"/>
+                <UserOutlined v-else-if="dataRef.iconName == 'user'"/>
               </template>
             </a-tree>
           </a-spin>
         </a-col>
         <a-col :md="12" style="padding: 20px;height: 100%;min-height: 500px;overflow-y: auto">
           <h3 style="text-align: left;letter-spacing: 0.1em;font-size: 20px;">
-            <svg-icon name="people" width="35px" height="35px" color="#5094F9"></svg-icon> 移交对象
+            <svg-icon name="people" width="35px" height="35px" color="#5094F9"></svg-icon>
+            移交对象
             <a-popconfirm title="确定要清空移交对象吗?" @confirm="onClearNode">
-              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }" />
+              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }"/>
             </a-popconfirm>
           </h3>
           <div style="color: #838E95 !important;">请选择需要移交的对象</div>
           <div v-if="selectedNodes.length" class="selected-nodes-content">
             <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
-              @mouseleave="hoverNodeIndex = -1">
+                 @mouseleave="hoverNodeIndex = -1">
               <span :title="item.title">{{ item.title }}</span>
               <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 15px;"
-                @click="onClickNode(item.key)" />
+                                   @click="onClickNode(item.key)"/>
             </div>
           </div>
         </a-col>
@@ -71,11 +82,13 @@
 
 <script lang="ts" setup>
 import { TeamOutlined, UserOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import { onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { findNode } from "/@/views/online/utils/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useRoute } from "vue-router"
+import { closeCurrentTab } from "/@/views/bdc/public/bdc.ts";
+
 const route = useRoute();
 const props = defineProps({
   formData: {
@@ -129,7 +142,9 @@ enum api {
   extractUserRole = '/api/zrzy-system/UserRole/extractUserRole',
   processComplete = '/api/zrzy-bdc/act/task/processComplete',
   getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo',
-  isRegister = '/api/zrzy-bdc/bdc/public/isRegistered'
+  isRegister = '/api/zrzy-bdc/bdc/public/isRegistered',
+  handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight',
+  hisTaskInfo = '/api/zrzy-bdc/hi/taskinst/getTaskInfo'
 }
 
 onMounted(() => {
@@ -142,7 +157,10 @@ onMounted(() => {
 function getTaskInfo() {
   let taskId = route.query.taskId || props.formData.taskId
   let slbh = route.query.slbh
-  defHttp.get({ url: api.getTaskInfo, params: { taskId: taskId, slbh: slbh } }, { withToken: true }).then(async (res) => {
+  defHttp.get({
+    url: api.getTaskInfo,
+    params: { taskId: taskId, slbh: slbh }
+  }, { withToken: true }).then(async (res) => {
     if (res && res.success) {
       let taskData = res.result
       let nodeArr: any = await getNodeList() || []
@@ -159,7 +177,7 @@ function getTaskInfo() {
           }
         }
       }
-      
+
       let slbh = route.query.slbh || props.formData.slbh
       // let lcmc = formConfig.value.ajmc
       let cbsj, cbr
@@ -180,6 +198,7 @@ function getTaskInfo() {
         cbsj: cbsj,
         taskData: taskData
       }
+      console.log("111")
       setTransTree()
     } else {
       message.warning('获取流程数据失败:' + res?.message)
@@ -196,7 +215,7 @@ function getHisListNode(nodes) {
       break
     }
   }
-  
+
   const result = lastIndex !== -1 ? list.slice(lastIndex) : []
   return result
 }
@@ -209,7 +228,7 @@ function getNodeList(processId?: any) {
   return new Promise((resolve, reject) => {
     // todo 这里一开始拿不到processId 没有接口获取当前流程节点列表
     // 先写死
-    resolve(['收件','初审','复审','核定','审核']) 
+    resolve(['收件', '初审', '复审', '核定', '审核'])
   })
 }
 
@@ -262,7 +281,11 @@ function setPjTransTree() {
  */
 function setRejectTransTree(rejectObj) {
   if (rejectObj) {
-    let transitionList = [{ nextnode: rejectObj.rejectNode, rejectNodeName: rejectObj.rejectNodeName, rejectNode: rejectObj.rejectNode }]
+    let transitionList = [{
+      nextnode: rejectObj.rejectNode,
+      rejectNodeName: rejectObj.rejectNodeName,
+      rejectNode: rejectObj.rejectNode
+    }]
     let stringList = transitionList.map(item => item.nextnode) || []
     getTaskUserInfo(stringList, transitionList, 3)
   }
@@ -739,8 +762,103 @@ function onClearNode() {
   selectedNodes.value = []
 }
 
+/**
+ * 窗口补正
+ */
+function markRight() {
+  const procInstId = formState.value.taskData.procInstId
+  const taskId = formState.value.taskId || route.query.taskId
+  if (!procInstId) {
+    message.warning('流程实例ID不能为空，请刷新重试!')
+    return
+  }
+  if (!taskId) {
+    message.warning('流程任务ID不能为空，请刷新重试!')
+    return
+  }
+  const params = {
+    procInstId: procInstId,
+    taskId: taskId,
+    slbh: route.query.slbh,
+    nodeName: formState.value.jdmc
+  }
+  return new Promise((resolve) => {
+    defHttp.post({ url: api.handOverMakeRight, params: params }, { withToken: true }).then((res) => {
+      spinning.value = false
+      if (res && res.success) {
+        message.success(res.message)
+        // 关闭移交弹窗
+        closeCurrentTab()
+      } else {
+        let msg = res?.message || ''
+        message.error('移交失败!' + msg)
+        resolve(false)
+      }
+    }).catch(err => {
+      message.error(err)
+      resolve(false)
+    })
+  })
+}
+
+/**
+ * 展示按钮
+ */
+async function getExtendBtn() {
+  return new Promise((resolve) => {
+    const slbh = route.query.slbh
+    if (!slbh) {
+      resolve([])
+      return []
+    }
+    defHttp.get({ url: api.hisTaskInfo, params: { slbh: route.query.slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        let taskList = res.result
+        const taskLength = taskList.length
+        if (taskLength < 2) {
+          resolve([])
+          return []
+        }
+        // 查询当前节点以及上一节点信息
+        const nodeName = taskList[taskLength - 1].jdmc
+        if (!nodeName) {
+          resolve([])
+          return []
+        }
+        const beforeTask = taskList[taskLength - 2]
+        // 1.判断不展示“窗口补正”的节点
+        const hidBtnNodeName = ["归档", "缮证", "登簿", "记载登记簿", "发证"]
+        if (hidBtnNodeName.indexOf(nodeName) > -1) {
+          resolve([])
+          return []
+        }
+        let text = "窗口补正"
+        if (nodeName == '收件') {
+          if (beforeTask.deleteReason == '窗口补正') {
+            // 2.收件节点，如果是发起的“窗口补正”，则展示按钮“完成补正”
+            text = "完成补正"
+          } else {
+            // 3.收件节点，如果不是发起的“窗口补正”，则不展示按钮
+            resolve([])
+            return []
+          }
+        }
+        // 4.非收件节点，显示“窗口补正”
+        let btnList = [{ function: markRight, text: text }]
+        resolve(btnList)
+        return btnList
+      }
+    }).catch(() => {
+      resolve([])
+      return []
+    })
+  })
+}
+
 defineExpose({
-  handleOk
+  handleOk,
+  markRight,
+  getExtendBtn
 })
 </script>
 
