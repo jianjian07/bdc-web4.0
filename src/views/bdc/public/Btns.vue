@@ -92,9 +92,14 @@ const props = defineProps({
   isAllFinished: {
     type: Boolean,
     dafault: false
+  },
+  jdmc: {
+    type: String,
+    default: ''
   }
 })
 let _vueRefs: any = computed(() => { return props.vueRefs })
+let _jdmc: any = computed(() => { return props.jdmc })
 // 左侧基础按钮
 let leftBtnList = ref<any>([])
 // 中侧按钮
@@ -172,12 +177,13 @@ async function handleClick(btn) {
       // 显示使用 避免打包被剔除
       const _bdcFun = bdc['baseSave']
       const _ref = _vueRefs.value
+      const _jdmcStr = _jdmc.value
       // 修正非 JSON 格式字符串
       let correctedBz = btn.bz
         .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
         .replace(/'/g, '"'); // 单引号变双引号
       let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
-      let _params = `(_vueRefs.value, loading${params ? (',' + JSON.stringify(params)) : params})`
+      let _params = `(_vueRefs.value, loading, _jdmcStr${params ? (',' + JSON.stringify(params)) : params})`
       if (btn.anwz == 'center') {
         _params = `(${params ? JSON.stringify(params) : params})`
       }

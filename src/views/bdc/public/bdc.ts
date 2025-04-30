@@ -148,28 +148,36 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
   })
 }
 
-export async function baseSave(demoRefs: any, loading: any, params: any) {
+export async function baseSave(demoRefs: any, loading: any, jdmc: string,  params: any) {
   return await sendSaveFun('baseSave', demoRefs, loading, params)
 }
 
-export async function handOver(demoRefs: any, loading: any, params: any) {
+export async function handOver(demoRefs: any, loading: any, jdmc: string, params: any) {
   let res = await sendSaveFun('handOver', demoRefs, loading, params)
   if (res && res.status && res.validate) {
-    let modal = cModal({
-      title: '移交',
-      width: '45vw',
-      filePath: 'views/bdc/public/HandleModal',
-      onOk: async (res: any) => {
-        if (res && res.handleOk) {
-          let _result = await res.handleOk()
-          if (_result) {
-            modal.destroy()
-            // 关闭当前标签页
-            closeCurrentTab()
+    const route = router.currentRoute.value;
+    const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
+    let checkRes:any = true
+    if (['收件','初审','复审','核定','审核','登簿','记载登记簿'].includes(jdmc)) {
+      checkRes = await checkSeal(slbh, loading)
+    }
+    if (checkRes) {
+      let modal = cModal({
+        title: '移交',
+        width: '45vw',
+        filePath: 'views/bdc/public/HandleModal',
+        onOk: async (res: any) => {
+          if (res && res.handleOk) {
+            let _result = await res.handleOk()
+            if (_result) {
+              modal.destroy()
+              // 关闭当前标签页
+              closeCurrentTab()
+            }
           }
         }
-      }
-    })
+      })
+    }
   }
   return res
 }
@@ -201,7 +209,7 @@ function closeCurrentTab() {
  * @param loading
  * @param type
  */
-export async function submit(demoRefs: any, loading: any, obj: any) {
+export async function submit(demoRefs: any, loading: any, jdmc: string, obj: any) {
   if (obj && obj.type == 'cftz') {
     let res = await getFormInfo(demoRefs)
     let find = res.find(r => r.validate == false)
@@ -388,7 +396,7 @@ function updateQlrData(type, data) {
  * 附件按钮
  * @param manage 是否默认展示为管理状态
  */
-export async function showFile(demoRefs: any, loading: any, params?: any) {
+export async function showFile(demoRefs: any, loading: any, jdmc: string,  params?: any) {
   eventBus.emit('showFile', params?.manage || false)
 }
 
@@ -398,7 +406,7 @@ export async function showFile(demoRefs: any, loading: any, params?: any) {
  * @param loading
  * @param params
  */
-export async function showSpPanel(demoRefs: any, loading: any, params?: any) {
+export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, params?: any) {
   eventBus.emit('showSpPanel')
 }
 
@@ -479,7 +487,7 @@ function getReportUrl(data) {
  * cType为0不生成证号
  * @returns
  */
-export async function register(demoRefs: any, loading: any, params: any) {
+export async function register(demoRefs: any, loading: any, jdmc: string, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
@@ -582,7 +590,7 @@ function djb(slbh: string, cType: string, loading?: any) {
  * @param params
  * @returns
  */
-export function savaGd(demoRefs: any, loading: any, params: any) {
+export function savaGd(demoRefs: any, loading: any, jdmc: string, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   return new Promise((resolve, reject) => {
@@ -598,7 +606,7 @@ export function savaGd(demoRefs: any, loading: any, params: any) {
     })
   })
 }
-export function baseGd(demoRefs: any, loading: any, params: any) {
+export function baseGd(demoRefs: any, loading: any, jdmc: string, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   const taskId = route.query.taskId?.toString()
@@ -824,9 +832,11 @@ export function createCard() {
  * @param validateKey
  * @param qlrList
  * @param value
+ * @param gyfs
+ * @param isSave
  */
-export function validateQlbl(validateKey, qlrList, value) {
-  if (qlrList.length > 0 && qlrList[0].gyfs == '2') {
+export function validateQlbl(validateKey, qlrList, value, gyfs, isSave?: boolean) {
+  if (qlrList.length >= 0 && gyfs == '2') {
     // 校验权利比例
     if (!validateInfos[validateKey]) {
       validateInfos[validateKey] = {
@@ -846,16 +856,21 @@ export function validateQlbl(validateKey, qlrList, value) {
           const itemQlbl = item.qlbl ? parseFloat(item.qlbl.slice(0, -1)) : 0;
           return acc + itemQlbl;
         }, qlblNum);
-
         // 验证总和是否超过 100
         if (sum > 100) {
           setValidateInfos(validateKey, 'error', '权利比例总和不能超过100%');
+          if (isSave) {
+            message.warning('权利比例总和不能超过100%')
+          }
         } else {
           setValidateInfos(validateKey, 'validating', '');
         }
       } else {
         // 输入值格式不正确
         setValidateInfos(validateKey, 'error', '请输入正确的比例');
+         if (isSave) {
+            message.warning('输入值格式不正确')
+         }
       }
     }
   } else {

@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ slbh }}-{{ jdmc }}：{{ formConfig.ajmc }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl" :isAllFinished="isAllFinished"/>
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl" :jdmc="jdmc" :isAllFinished="isAllFinished"/>
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
@@ -239,7 +239,7 @@ async function handleClick(btn) {
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
-    let _params = `(demoRefs.value,spinning${params ? (',' + JSON.stringify(params)) : params})`
+    let _params = `(demoRefs.value,spinning,jdmc${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }
@@ -254,7 +254,7 @@ let ywlx = ref('1')
  * @param spinning 
  * @param params 
  */
-function openList(demoRefs, spinning, params?: any) {
+function openList(demoRefs, spinning, jdmc, params?: any) {
   const { vtype, reportId } = params
   eType.value = vtype != undefined ? vtype : ''
   formId.value = reportId != undefined ? reportId : ''

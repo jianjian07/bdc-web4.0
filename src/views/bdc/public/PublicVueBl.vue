@@ -110,6 +110,7 @@ let startX = 0
 // 提取okloading
 let okLoading = ref<boolean>(false)
 let slbh: any = ref<string>('')
+let jdmc: any = ref<string>('')
 
 // 创建响应式Map
 let demoRefsMap = ref(new Map<string, any>())
@@ -227,7 +228,7 @@ async function handleClick(btn) {
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
-    let _params = `(demoRefs.value,spinning${params ? (',' + JSON.stringify(params)) : params})`
+    let _params = `(demoRefs.value,spinning,jdmc${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }
@@ -242,7 +243,7 @@ let ywlx = ref('1')
  * @param spinning 
  * @param params 
  */
-function openList(demoRefs, spinning, params?: any) {
+function openList(demoRefs, spinning, jdmc, params?: any) {
   const { vtype, reportId } = params
   eType.value = vtype != undefined ? vtype : ''
   formId.value = reportId != undefined ? reportId : ''
