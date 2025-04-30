@@ -114,7 +114,8 @@ function checkShowForDy(regType, fwInfo) {
     let djxl = regType.substr(2, 2)
     switch (djxl) {
       case '01' :
-        return true
+        // 抵押首次限制房屋用途
+        return ['40','41','42'].includes(fwInfo.fwyt) ? false : true
       default:
         return fwInfo.dyzt
     }
