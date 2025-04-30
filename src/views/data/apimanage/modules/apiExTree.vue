@@ -16,7 +16,7 @@
         <template #title="node">
           <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
-              <folder-outlined />
+              <folder-outlined style="color: #5094f9"/>
               <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>

@@ -9,10 +9,23 @@
               v-if="list.length>0"
               v-model:selectedKeys="selectedKeys"
               @select="onSelect"
+              block-node
               :tree-data="list"
               :field-names="{ children:'children', title:'filenamereal', key:'id0' }"
               class="djb-tree"
             >
+               <template #title="node">
+                  <div class="tree-row-content">
+                    <div class="left">
+                      <span class="left-name">
+                        {{ node.filenamereal }}
+                      </span>
+                    </div>
+                    <div v-if="selectedKeys && selectedKeys[0] == node.id0" class="right">
+                      <DownloadOutlined @click="handleDownLoad(node)"/>
+                    </div>
+                  </div>
+                </template>
             </a-tree>
             <a-empty v-else />
           </div>
@@ -34,6 +47,7 @@ import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { Base64 } from "js-base64"
 import { message } from "ant-design-vue"
+import { DownloadOutlined } from '@ant-design/icons-vue';
 
 const route = useRoute()
 // 加载
@@ -115,6 +129,20 @@ function setUrl(id0,name) {
   //     document.body.removeChild(elink)
   // })
 }
+
+/**
+ * 下载
+ * @param node
+ */
+function handleDownLoad(node) {
+  let newName = node.filename.replace(/\.(?=[^.]*$)/, `${node.id0}.`);
+  const link = document.createElement('a');
+  link.href = `${window.settingConfig.baseDomain}/zrzy-bdc/bdc/bdcDjb/download?id0=${node.id0}&fullfilename=${newName}`;
+  link.download = newName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 </script>
 
 <style lang="less" scoped>
@@ -135,6 +163,18 @@ function setUrl(id0,name) {
     .djb-iframe {
       height: 100%;
       overflow: hidden;
+    }
+  }
+  .tree-row-content {
+    display: flex;
+    justify-content: space-between;
+    
+    .left {
+      width: 70%;
+    }
+    
+    .right {
+      margin-right: 10px;
     }
   }
 }
