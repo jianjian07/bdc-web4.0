@@ -23,4 +23,6 @@ export interface cModalModel {
   isFullScreen?: boolean
   // 弹窗class
   wrapClassName?: string
+  // 是否存在扩展按钮集合
+  existExtendBtn?: boolean
 }

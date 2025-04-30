@@ -166,6 +166,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, params
         title: '移交',
         width: '45vw',
         filePath: 'views/bdc/public/HandleModal',
+        existExtendBtn: true,
         onOk: async (res: any) => {
           if (res && res.handleOk) {
             let _result = await res.handleOk()
@@ -185,7 +186,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, params
 /**
  * 关闭当前页面
  */
-function closeCurrentTab() {
+export function closeCurrentTab() {
   const tabStore = useTabsStore()
   const { getTabsShow } = useTabsSetting()
   if (getTabsShow.value) {

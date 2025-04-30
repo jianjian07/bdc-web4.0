@@ -1,19 +1,28 @@
 <template>
   <a-config-provider :locale="zhCN">
     <a-modal class="commonModal" v-model:open="modalVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
-      :wrap-class-name="(fullScreen || isFullScreen) ? `full-common-modal ${wrapClassName || ''}` : (wrapClassName || '')" :confirmLoading="confirmLoading" :maskClosable="false" @cancel="handleClose"
-      v-bind="footerBind" :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' })">
+             :wrap-class-name="(fullScreen || isFullScreen) ? `full-common-modal ${wrapClassName || ''}` : (wrapClassName || '')"
+             :confirmLoading="confirmLoading" :maskClosable="false" @cancel="handleClose"
+             v-bind="footerBind"
+             :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' })">
       <template #title>
         {{ title }}
         <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
-          <FullscreenExitOutlined v-if="fullScreen" />
-          <FullscreenOutlined v-else />
+          <FullscreenExitOutlined v-if="fullScreen"/>
+          <FullscreenOutlined v-else/>
         </div>
       </template>
       <template #footer>
         <div :style="footerStyle">
           <a-button @click="handleClose">{{ cancelText }}</a-button>
           <a-button type="primary" @click="handleOk">{{ okText }}</a-button>
+          <a-button v-if="existExtendBtn"
+                    v-for="btn in extendBtnList"
+                    type="primary"
+                    @click="handleExtend(btn.function)"
+          >
+            {{ btn.text }}
+          </a-button>
         </div>
       </template>
       <Suspense v-if="isFinish">
@@ -31,9 +40,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from "vue"
+import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
+import { getData } from "/@/views/online/utils/wonder1.0.1.ts";
+
 const modules = import.meta.glob('/src/**/*.vue')
 // 是否显示弹窗
 let modalVisible = ref<boolean>(false)
@@ -47,7 +58,7 @@ let isFinish = ref(false)
 const component = computed(() => {
   return defineAsyncComponent(modules[`/src/${props.filePath}.vue`]);
 });
-
+let extendBtnList = ref<any>([])
 let props = defineProps({
   title: {
     type: String,
@@ -103,6 +114,11 @@ let props = defineProps({
   wrapClassName: {
     type: String,
     default: ''
+  },
+  // 配套getExtendBtn使用
+  existExtendBtn: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -126,6 +142,14 @@ onMounted(() => {
   isFinish.value = true
   show()
 })
+if (props.existExtendBtn) {
+  watch(() => link.value, async (val) => {
+    if (val && val.getExtendBtn) {
+      const resBtnList = await val.getExtendBtn()
+      extendBtnList.value = resBtnList
+    }
+  })
+}
 
 /**
  * 设置loading
@@ -158,6 +182,22 @@ function handleClose() {
     // 自己在方法里面执行关闭按钮操作
   } else {
     modalVisible.value = false
+  }
+}
+
+/**
+ * 其他扩展方法
+ * @param functionName
+ */
+function handleExtend(functionName) {
+  if (functionName && typeof functionName === 'function') {
+    const childDom = link.value;
+    try {
+      functionName(childDom);
+    } catch (error) {
+      console.error(`Error executing function "${functionName}":`, error);
+    }
+    modalVisible.value = false;
   }
 }
 
@@ -233,7 +273,7 @@ function handleFullscreen() {
   .ant-modal-content {
     display: flex;
     flex-direction: column;
-    height: calc(100vh)!important;
+    height: calc(100vh) !important;
   }
 
   .ant-modal-body {
@@ -243,15 +283,15 @@ function handleFullscreen() {
 }
 
 .commonModal {
-  
+
   ::-webkit-scrollbar {
     width: 7px;
     height: 8px;
-}
-  
+  }
+
   ::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, 0.05);
-}
+  }
 
   ::-webkit-scrollbar-thumb {
     background-color: rgba(144, 147, 153, 0.3);
