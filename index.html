@@ -21,6 +21,9 @@
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
           window.settingConfig = xhr.response
+          if (window.settingConfig.appTitle) {
+            document.title = window.settingConfig.appTitle;
+          }
         } else {
           alert('nacos配置读取失败！')
         }
