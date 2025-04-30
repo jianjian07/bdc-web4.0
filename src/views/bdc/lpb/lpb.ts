@@ -115,7 +115,7 @@ function checkShowForDy(regType, fwInfo) {
     switch (djxl) {
       case '01' :
         // 抵押首次限制房屋用途
-        return ['40','41','42'].includes(fwInfo.fwyt) ? false : true
+        return !['40', '41', '42'].includes(fwInfo.fwyt)
       default:
         return fwInfo.dyzt
     }
