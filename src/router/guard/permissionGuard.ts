@@ -36,7 +36,8 @@ export function createPermissionGuard(router: Router) {
     /***************上架结束****************/
     // 首页特殊处理
     let tabTitle = to.meta.title || to.name
-    document.title = tabTitle ? tabTitle + ' · ' + '不动产登记信息管理系统' : '不动产登记信息管理系统'
+    let appTitle = window?.settingConfig?.appTitle || '不动产登记信息管理系统';
+    document.title = tabTitle ? tabTitle + ' · ' + appTitle : appTitle
 
     if (from.path === '/' && to.path === PageEnum.BASE_HOME && userStore.getUserInfo.homePath && userStore.getUserInfo.homePath !== PageEnum.BASE_HOME) {
       next(userStore.getUserInfo.homePath);

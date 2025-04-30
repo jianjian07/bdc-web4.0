@@ -2,7 +2,7 @@
     <layout-header style="background: #fff; padding: 0;height: 48px;line-height: 48px;border-bottom: 1px solid #eee;">
         <div style="display: flex;padding: 0 8px;align-items: center;">
             <sider-trigger></sider-trigger>
-            <div style="font-size: 20px;font-weight: 600;letter-spacing: 0.1em;">不动产登记信息管理系统</div>
+            <div style="font-size: 20px;font-weight: 600;letter-spacing: 0.1em;">{{ title }}</div>
             <div class="icons-list" style="position: absolute;right: 20px;display: flex;">
                 <c-notice></c-notice>
                 <a-dropdown class="oper-css">
@@ -40,7 +40,7 @@
 import { LayoutHeader, Modal } from 'ant-design-vue';
 import SiderTrigger from './../trigger/SiderTrigger.vue'
 import { PoweroffOutlined, TagsOutlined, SyncOutlined } from '@ant-design/icons-vue';
-import { computed, defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent } from 'vue'
 import { getUrl } from '/@/utils';
 import { useUserStore } from '/@/store/modules/user';
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
@@ -49,6 +49,9 @@ const CNotice = defineAsyncComponent(() => import("/@/views/layouts/default/head
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 const { toggleShowTabs } = useTabsSetting()
+
+let title = window?.settingConfig?.appTitle || '不动产登记信息管理系统'
+
 /**
  * 退出
  */
