@@ -238,7 +238,8 @@ function editData(record: any) {
     open.value = true
 }
 function trigger(record: any) {
-    defHttp.post({ url: Api.triggerUrl, params: { id: record.id, executorParam: record.executorParam, addressList: '' } }, { withToken: true }).then((res) => {
+    const param = record.executorParam == null ? '' : record.executorParam;
+    defHttp.post({ url: Api.triggerUrl, params: { id: record.id, executorParam: param, addressList: '' } }, { withToken: true }).then((res) => {
         if (!res.message) {
             message.success('执行成功')
             // loadData()
