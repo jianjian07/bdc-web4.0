@@ -113,9 +113,8 @@ const catalogState = reactive({
 });
 
 const catalogRules: any = {
-  materialId: [
-    { required: true, message: '请输入目录名称', trigger: 'change' },
-  ]
+  materialId: [{ required: true, message: '请输入目录名称', trigger: 'change' }],
+  materialName: [{ required: true, message: '请输入目录名称', trigger: 'change' }]
 }
 
 const fileState = ref({
