@@ -15,7 +15,7 @@
 import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { resetValidateInfos } from "form-imagining"
+import { resetValidateInfos, getFormInfo } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
@@ -156,11 +156,18 @@ async function savePlJcf(params?:any) {
   return await sendPlJcf(refs, spinning, params)
 }
 
+async function getGenFormInfo() {
+  const refs = demoRefs.value.map(ref => ref?.value || ref) 
+  let res = await getFormInfo(refs)
+  return res
+}
+
 defineExpose({
   saveData,
   saveValidateData,
   saveQlrData,
-  savePlJcf
+  savePlJcf,
+  getGenFormInfo
 })
 </script>
 

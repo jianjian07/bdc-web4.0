@@ -15,14 +15,17 @@
       <template #footer>
         <div :style="footerStyle">
           <a-button @click="handleClose">{{ cancelText }}</a-button>
+          <template v-for="(btn, btnIndex) in footerExtendBtn">
+            <a-button :type="btn.type" @click="handleExtendBtn(btn)">{{ btn.name }}</a-button>
+          </template>
           <a-button type="primary" @click="handleOk">{{ okText }}</a-button>
-          <a-button v-if="existExtendBtn"
-                    v-for="btn in extendBtnList"
-                    type="primary"
-                    @click="handleExtend(btn.function)"
-          >
-            {{ btn.text }}
-          </a-button>
+<!--          <a-button v-if="existExtendBtn"-->
+<!--                    v-for="btn in extendBtnList"-->
+<!--                    type="primary"-->
+<!--                    @click="handleExtend(btn.function)"-->
+<!--          >-->
+<!--            {{ btn.text }}-->
+<!--          </a-button>-->
         </div>
       </template>
       <Suspense v-if="isFinish">
@@ -115,6 +118,10 @@ let props = defineProps({
     type: String,
     default: ''
   },
+  footerExtendBtn: {
+    type: Array,
+    default: []
+  },
   // 配套getExtendBtn使用
   existExtendBtn: {
     type: Boolean,
@@ -180,6 +187,19 @@ function handleClose() {
     let childDom = link.value
     props.onCancel(childDom)
     // 自己在方法里面执行关闭按钮操作
+  } else {
+    modalVisible.value = false
+  }
+}
+
+/**
+ * 点击扩展方法
+ */
+function handleExtendBtn(btn) {
+  let func = btn.func
+  if (func && typeof func === 'function') {
+    let childDom = link.value
+    func(childDom)
   } else {
     modalVisible.value = false
   }
