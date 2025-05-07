@@ -239,7 +239,7 @@ async function handleClick(btn) {
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
-    let _params = `(demoRefs.value,spinning,jdmc${params ? (',' + JSON.stringify(params)) : params})`
+    let _params = `(demoRefs.value,spinning,jdmc.value${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }
