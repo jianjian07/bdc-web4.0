@@ -800,64 +800,9 @@ function markRight() {
   })
 }
 
-/**
- * 展示按钮
- */
-async function getExtendBtn() {
-  return new Promise((resolve) => {
-    const slbh = route.query.slbh
-    if (!slbh) {
-      resolve([])
-      return []
-    }
-    defHttp.get({ url: api.hisTaskInfo, params: { slbh: route.query.slbh } }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        let taskList = res.result
-        const taskLength = taskList.length
-        if (taskLength < 2) {
-          resolve([])
-          return []
-        }
-        // 查询当前节点以及上一节点信息
-        const nodeName = taskList[taskLength - 1].jdmc
-        if (!nodeName) {
-          resolve([])
-          return []
-        }
-        const beforeTask = taskList[taskLength - 2]
-        // 1.判断不展示“窗口补正”的节点
-        const hidBtnNodeName = ["归档", "缮证", "登簿", "记载登记簿", "发证"]
-        if (hidBtnNodeName.indexOf(nodeName) > -1) {
-          resolve([])
-          return []
-        }
-        let text = "窗口补正"
-        if (nodeName == '收件') {
-          if (beforeTask.deleteReason == '窗口补正') {
-            // 2.收件节点，如果是发起的“窗口补正”，则展示按钮“完成补正”
-            text = "完成补正"
-          } else {
-            // 3.收件节点，如果不是发起的“窗口补正”，则不展示按钮
-            resolve([])
-            return []
-          }
-        }
-        // 4.非收件节点，显示“窗口补正”
-        let btnList = [{ function: markRight, text: text }]
-        resolve(btnList)
-        return btnList
-      }
-    }).catch(() => {
-      resolve([])
-      return []
-    })
-  })
-}
-
 defineExpose({
   handleOk,
-  markRight,
-  getExtendBtn
+  markRight
 })
 </script>
 

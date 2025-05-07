@@ -168,7 +168,6 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, params
         title: '移交',
         width: '45vw',
         filePath: 'views/bdc/public/HandleModal',
-        existExtendBtn: false,
         footerExtendBtn: footerList,
         onOk: async (res: any) => {
           if (res && res.handleOk) {

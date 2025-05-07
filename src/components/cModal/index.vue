@@ -19,13 +19,6 @@
             <a-button :type="btn.type" @click="handleExtendBtn(btn)">{{ btn.name }}</a-button>
           </template>
           <a-button type="primary" @click="handleOk">{{ okText }}</a-button>
-<!--          <a-button v-if="existExtendBtn"-->
-<!--                    v-for="btn in extendBtnList"-->
-<!--                    type="primary"-->
-<!--                    @click="handleExtend(btn.function)"-->
-<!--          >-->
-<!--            {{ btn.text }}-->
-<!--          </a-button>-->
         </div>
       </template>
       <Suspense v-if="isFinish">
@@ -121,11 +114,6 @@ let props = defineProps({
   footerExtendBtn: {
     type: Array,
     default: []
-  },
-  // 配套getExtendBtn使用
-  existExtendBtn: {
-    type: Boolean,
-    default: false
   }
 })
 
@@ -149,14 +137,6 @@ onMounted(() => {
   isFinish.value = true
   show()
 })
-if (props.existExtendBtn) {
-  watch(() => link.value, async (val) => {
-    if (val && val.getExtendBtn) {
-      const resBtnList = await val.getExtendBtn()
-      extendBtnList.value = resBtnList
-    }
-  })
-}
 
 /**
  * 设置loading
@@ -202,22 +182,6 @@ function handleExtendBtn(btn) {
     func(childDom)
   } else {
     modalVisible.value = false
-  }
-}
-
-/**
- * 其他扩展方法
- * @param functionName
- */
-function handleExtend(functionName) {
-  if (functionName && typeof functionName === 'function') {
-    const childDom = link.value;
-    try {
-      functionName(childDom);
-    } catch (error) {
-      console.error(`Error executing function "${functionName}":`, error);
-    }
-    modalVisible.value = false;
   }
 }
 
