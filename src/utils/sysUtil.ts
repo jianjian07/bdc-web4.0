@@ -67,7 +67,7 @@ function checkTimeout() {
     if (pageList.includes(router.currentRoute.value.path)) return; // 已是登陆页或是401时不操作
     if (userStore.getLoginInfo.userpwd && !(userStore.getIsLocked == 'true')) {
       userStore.lockScreen()
-    } else {
+    } else if (!userStore.getLoginInfo.userpwd) {
       if (userStore.getToken) {
         doLogout()
       }
