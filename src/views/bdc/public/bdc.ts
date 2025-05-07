@@ -163,7 +163,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, params
     }
     if (checkRes) {
       let btnList = await getHandleCkbzBtn()
-      let footerList = btnList.length ? btnList.map((btn) => { return { func: eval(btn.func), name: btn.name } }) : []
+      let footerList = btnList.length ? btnList.map((btn) => { return { func: markRight, name: btn.name } }) : []
       let modal = cModal({
         title: '移交',
         width: '45vw',
@@ -663,20 +663,20 @@ export function baseGd(demoRefs: any, loading: any, jdmc: string, params: any) {
  * @param viewData
  * @param fields
  */
-export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any) {
+export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any, basicInfo: any) {
   let route = router.currentRoute.value
   if (viewData.value && fields) {
     if (fields.includes('.')) {
       let key = fields.split('.')
       if (!viewData.value[key[0]][key[1]]) {
         let slbh = route.query.slbh
-        let result = await getQlqtqkBySLBH(slbh, viewData, params)
+        let result = await getQlqtqkBySLBH(slbh, viewData, params, basicInfo)
         viewData.value[key[0]][key[1]] = result
       }
     } else {
       if (!viewData.value[fields]) {
         let slbh = route.query.slbh
-        let result = await getQlqtqkBySLBH(slbh, viewData, params)
+        let result = await getQlqtqkBySLBH(slbh, viewData, params, basicInfo)
         viewData.value[fields] = result
       }
     }
@@ -688,7 +688,7 @@ export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any) {
  * @param viewData
  * @param fields
  */
-export async function setQlqtqkByYwh(viewData: any, fields: any, params: any) {
+export async function setQlqtqkByYwh(viewData: any, fields: any, params: any, basicInfo: any) {
   let route = router.currentRoute.value
   if (viewData.value && fields) {
     if (fields.includes('.')) {
@@ -696,14 +696,14 @@ export async function setQlqtqkByYwh(viewData: any, fields: any, params: any) {
       if (!viewData.value[key[0]][key[1]]) {
         let slbh = route.query.slbh
         let ywh = params?.ywh
-        let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
+        let result = await getQlqtqkByMap(slbh, ywh, viewData, params, basicInfo)
         viewData.value[key[0]][key[1]] = result
       }
     } else {
       if (!viewData.value[fields]) {
         let slbh = route.query.slbh
         let ywh = params?.ywh
-        let result = await getQlqtqkByMap(slbh, ywh, viewData, params)
+        let result = await getQlqtqkByMap(slbh, ywh, viewData, params, basicInfo)
         viewData.value[fields] = result
       }
     }
@@ -714,7 +714,7 @@ export async function setQlqtqkByYwh(viewData: any, fields: any, params: any) {
  * 根据受理编号获取权利其他配置
  * @param slbh
  */
-export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
+export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null, basicInfo: any) {
   return new Promise((resolve, reject) => {
     defHttp.post({
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
@@ -727,7 +727,7 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
     }, { withToken: true }
     ).then((res: any) => {
       if (res && res.success) {
-        let result = manageQLQT(res.result, viewData)
+        let result = manageQLQT(res.result, viewData, basicInfo)
         resolve(result)
       } else {
         message.warning(res?.message || '查询出错！')
@@ -746,7 +746,7 @@ export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null) {
  * @param slbh
  * @param ywh
  */
-export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any = null) {
+export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any = null, basicInfo: any) {
   const quickParam = { ywh: ywh, slbh: slbh, sfybz: params?.sfybz || '', qllx: params?.qllx || '' }
   const xmlParam = { ywh: ywh, slbh: slbh, sfybz: params?.sfybz || '', qllx: params?.qllx || '' }
   const param = { quickParam: quickParam, xmlParam: xmlParam }
@@ -758,7 +758,7 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any =
       withToken: true
     }).then((res: any) => {
       if (res && res.success) {
-        let result = manageQLQT(res.result, viewData)
+        let result = manageQLQT(res.result, viewData, basicInfo)
         resolve(result)
       } else {
         reject()
@@ -802,7 +802,7 @@ export function batchQlqt() {
  * @param qlqtConfig
  * @param viewData
  */
-function manageQLQT(qlqtConfig: any, viewData: any) {
+function manageQLQTOld(qlqtConfig: any, viewData: any) {
   // 获取未赋值的占位符，从表单数据中赋值
   // let reg = /viewData\.value\.[^;；"”\s\u4e00-\u9fa5]*;?/g //匹配以viewData.value.开头并以分号/反引号/中文/空格结尾的
   // let reg = /(?<=\[)\S+(?=\])/g //匹配中括号，返回结果不包括中括号
@@ -823,6 +823,43 @@ function manageQLQT(qlqtConfig: any, viewData: any) {
     })
   }
   return qlqtConfig
+}
+
+/**
+ * 替换获取到的权利其他配置值中的占位符为实际值
+ * 规则为获取所有匹配 viewData.value./ basicInfo.value 形式的占位符并替换成实际值
+ * @param qlqtConfig
+ * @param viewData
+ */
+function manageQLQT(qlqtConfig: string, viewData: any, basicInfo: any) {
+  const reg = /\$(viewData|basicInfo)\.value(?:\.[^\$]+)+\$/g; // 匹配 $viewData.value.xxx$ 或 $basicInfo.value.xxx.xxx$
+
+  const qlqtmatch = qlqtConfig.match(reg)
+  if (qlqtmatch) {
+    qlqtmatch.forEach((match) => {
+      const cleanMatch = match.slice(1, -1) // 去掉首尾的 $
+      const parts = cleanMatch.split('.')  // 分割为 [viewData, value, bdc_dydj, dyfs] 或 [basicInfo, value, dyfs]
+
+      const source = parts[0] // viewData 或 basicInfo
+      const path = parts.slice(2)
+
+      let rootData = source === 'viewData' ? viewData : basicInfo;
+      let realValue: any = rootData?.value;
+
+      for (const key of path) {
+        if (realValue && realValue[key] != null) {
+          realValue = realValue[key];
+        } else {
+          realValue = ''
+          break;
+        }
+      }
+
+      qlqtConfig = qlqtConfig.replace(match, realValue);
+    });
+  }
+
+  return qlqtConfig;
 }
 
 /**
@@ -1614,7 +1651,7 @@ async function getHandleCkbzBtn() {
           }
         }
         // 4.非收件节点，显示“窗口补正”
-        let btnList = [{ name: text, func: 'markRight' }]
+        let btnList = [{ name: text }]
         
         resolve(btnList)
         return btnList
