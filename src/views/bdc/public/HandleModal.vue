@@ -787,8 +787,7 @@ function markRight() {
       spinning.value = false
       if (res && res.success) {
         message.success(res.message)
-        // 关闭移交弹窗
-        closeCurrentTab()
+        resolve(true)
       } else {
         let msg = res?.message || ''
         message.error('移交失败!' + msg)

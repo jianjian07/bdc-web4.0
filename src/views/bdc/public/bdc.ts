@@ -185,6 +185,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, params
       async function markRight(res) {
         if (res && res.markRight) {
           let _result = await res.markRight()
+          console.log(_result)
           if (_result) {
             modal.destroy()
             // 关闭当前标签页
