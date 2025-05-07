@@ -1629,9 +1629,9 @@ async function getHandleCkbzBtn() {
 /**
  * 通过小区名称和幢号查询自然幢号(预售许可信息中)
  * @param xqmc
- * @param dh
+ * @param zh
  */
-export function getZrzhByXqmcAndDh(xqmc: string, zh: string) {
+export function getZrzhByXqmcAndZh(xqmc: string, zh: string) {
   return new Promise((resolve) => {
     defHttp.get({ url: '/api/zrzy-bdc/bdc/bdcZsx/getZrzListByPage', params: { zh: zh, xqmc: xqmc, pageNo: 1, pageSize: 10 } }, { withToken: true }).then((res) => {
       if (res && res.success) {
