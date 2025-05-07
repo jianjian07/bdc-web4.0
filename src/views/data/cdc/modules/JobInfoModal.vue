@@ -7,7 +7,9 @@
             <a-row :gutter="24">
                 <a-col :span="12">
                     <a-form-item label="执行器" name="jobGroup" :rules="[{ required: true, message: '执行器' }]">
-                        <a-input v-model:value="jobInfo.jobGroup" prefix="" suffix="" />
+                        <!-- <a-input v-model:value="jobInfo.jobGroup" prefix="" suffix="" /> -->
+                        <a-select v-model:value="jobInfo.jobGroup" :options="jobGroupList"
+                            :field-names="{ label: 'title', value: 'id' }" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
@@ -39,10 +41,12 @@
                 <a-col :span="12">
                     <a-form-item v-if="jobInfo.scheduleType == 'CRON'" label="Cron" name="scheduleConf"
                         :rules="[{ required: true, message: 'Cron表达式' }]">
-                        <a-input v-model:value="jobInfo.scheduleConf" prefix="" suffix="" @click="openDialog" allow-clear/>
+                        <a-input v-model:value="jobInfo.scheduleConf" prefix="" suffix="" @click="openDialog"
+                            allow-clear />
                     </a-form-item>
-                    <a-modal v-model:open="showCron" :width="500" centered :destroyOnClose="true" title="Cron表达式" @ok="handleOk">
-                      <vue3-cron v-model="expression" locale="cn"/>
+                    <a-modal v-model:open="showCron" :width="500" centered :destroyOnClose="true" title="Cron表达式"
+                        @ok="handleOk">
+                        <vue3-cron v-model="expression" locale="cn" />
                     </a-modal>
                     <a-form-item v-if="jobInfo.scheduleType == 'FIX_RATE'" label="固定速度" name="title"
                         :rules="[{ required: true, message: '固定速度' }]">
@@ -161,7 +165,19 @@ function onClose() {
 const emit = defineEmits(['ok'])
 enum Api {
     addUrl = '/api/zrzy-api/jobinfo/add',
-    updateUrl = '/api/zrzy-api/jobinfo/update'
+    updateUrl = '/api/zrzy-api/jobinfo/update',
+    jobGroupUrl = '/api/zrzy-api/jobgroup/getAll'
+}
+let jobGroupList = ref([])
+loadJobGroup()
+function loadJobGroup() {
+    defHttp.post({ url: Api.jobGroupUrl }, { withToken: true, isTransformResponse: false }).then((res) => {
+        if (res.data.success) {
+            jobGroupList.value = res.data.result
+        }
+    }).catch(err => {
+        console.info(err)
+    })
 }
 function onOk() {
     ruleForm.value.validate().then(() => {
@@ -187,16 +203,16 @@ function onChange(value: any) {
     jobInfo.value.scheduleType = value
 }
 
-function openDialog () {
-  showCron.value = true;
-  if (jobInfo.value.scheduleConf != ""){
-    expression.value = jobInfo.value.scheduleConf
-  }
+function openDialog() {
+    showCron.value = true;
+    if (jobInfo.value.scheduleConf != "") {
+        expression.value = jobInfo.value.scheduleConf
+    }
 }
 
 const handleOk = () => {
-  showCron.value = false
-  jobInfo.value.scheduleConf= expression.value
-  ruleForm.value?.validateFields('scheduleConf')
+    showCron.value = false
+    jobInfo.value.scheduleConf = expression.value
+    ruleForm.value?.validateFields('scheduleConf')
 }
 </script>

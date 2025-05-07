@@ -217,13 +217,13 @@ export class RequestHttp {
                 }
             }
         }
-   
+
         if (config.requestOptions?.withTimeout !== undefined) {
             if (!config.requestOptions.withTimeout) {
                 config.timeout = 0
             }
         }
-        
+
         if (config && config.headers && config.requestOptions) { // 多一步判断
             if (config.requestOptions.xAuthToken != undefined) {
                 Reflect.set(config.headers, 'x-auth-token', config.requestOptions.xAuthToken)
@@ -307,7 +307,8 @@ export class RequestHttp {
                 break;
             }
             case 424: {
-                this.source.cancel('认证已过期！'); // 取消其他正在进行的请求
+                message = 'token认证已过期,请重新登陆';
+                this.source.cancel('token认证已过期！'); // 取消其他正在进行的请求
                 this.goLogin();
                 break;
             }
