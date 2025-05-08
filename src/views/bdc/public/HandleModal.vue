@@ -82,11 +82,12 @@
 
 <script lang="ts" setup>
 import { TeamOutlined, UserOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import { computed, onMounted, ref } from "vue"
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import { findNode } from "/@/views/online/utils/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useRoute } from "vue-router"
+import { eventBus } from "form-imagining"
 import { closeCurrentTab } from "/@/views/bdc/public/bdc.ts";
 
 const route = useRoute();
@@ -143,66 +144,116 @@ enum api {
   processComplete = '/api/zrzy-bdc/act/task/processComplete',
   getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo',
   isRegister = '/api/zrzy-bdc/bdc/public/isRegistered',
-  handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight',
-  hisTaskInfo = '/api/zrzy-bdc/hi/taskinst/getTaskInfo'
+  handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight'
 }
 
 onMounted(() => {
   getTaskInfo()
 })
 
+onBeforeUnmount(() => {
+  eventBus.off('setShjg')
+})
+
+/**
+ * 获取页面上的审核结果
+ * @param value
+ */
+function getShjg() {
+  eventBus.emit('getShjg')
+}
+
+/**
+ * 通过审核结果初始化移交方向
+ * @param shjg
+ */
+function initHandleDirection(shjg) {
+  let e 
+  switch(shjg) {
+    case '1':
+      // 同意 -> 向后
+        e = { target: { value: 1 } }
+      break;
+    case '2':
+    case '3':
+    case '5':
+      // 回退/退件/补齐补正  -> 驳回
+        e = { target: { value: 3 } }
+      break;
+    case '4':
+      // 转件 -> 平级
+      e = { target: { value: 2 } }
+      break;
+    default:
+      break;
+  }
+  
+  if (e) {
+    handleDirection.value = e.target.value
+    onChangeDirection(e)
+  }
+}
+
 /**
  * 获取流程信息
  */
 function getTaskInfo() {
-  let taskId = route.query.taskId || props.formData.taskId
-  let slbh = route.query.slbh
-  defHttp.get({
-    url: api.getTaskInfo,
-    params: { taskId: taskId, slbh: slbh }
-  }, { withToken: true }).then(async (res) => {
-    if (res && res.success) {
-      let taskData = res.result
-      let nodeArr: any = await getNodeList() || []
-      if (!nodeArr.includes(taskData.taskName)) {
-        let isRegister = await getIsRegister()
-        if (isRegister) {
-          let arr = [...taskData.histListNode]
-          let hisNode = arr.filter(f => f.name_ !== taskData.taskName)
-          taskData.histListNode = getHisListNode(hisNode)
-        } else {
-          if (taskData.taskName.includes('簿')) {
-            taskData.transitionList = []
-            // message.warning('请先记载登记簿!')
+  return new Promise((resolve) => {
+    let taskId = route.query.taskId || props.formData.taskId
+    let slbh = route.query.slbh
+    defHttp.get({
+      url: api.getTaskInfo,
+      params: { taskId: taskId, slbh: slbh }
+    }, { withToken: true }).then(async (res) => {
+      if (res && res.success) {
+        let taskData = res.result
+        let nodeArr: any = await getNodeList() || []
+        if (!nodeArr.includes(taskData.taskName)) {
+          let isRegister = await getIsRegister()
+          if (isRegister) {
+            let arr = [...taskData.histListNode]
+            let hisNode = arr.filter(f => f.name_ !== taskData.taskName)
+            taskData.histListNode = getHisListNode(hisNode)
+          } else {
+            if (taskData.taskName.includes('簿')) {
+              taskData.transitionList = []
+              // message.warning('请先记载登记簿!')
+            }
           }
         }
-      }
-
-      let slbh = route.query.slbh || props.formData.slbh
-      // let lcmc = formConfig.value.ajmc
-      let cbsj, cbr
-      if (taskData.bpmLogList.length) {
-        cbsj = taskData.bpmLogList[0].opTime
-        cbr = taskData.bpmLogList[0].opUserName
+  
+        let slbh = route.query.slbh || props.formData.slbh
+        // let lcmc = formConfig.value.ajmc
+        let cbsj, cbr
+        if (taskData.bpmLogList.length) {
+          cbsj = taskData.bpmLogList[0].opTime
+          cbr = taskData.bpmLogList[0].opUserName
+        } else {
+          cbsj = taskData.taskNameStartTime
+          cbr = taskData.taskAssigneeName
+        }
+  
+        formState.value = {
+          taskId: taskId,
+          slbh: slbh,
+          // lcmc: lcmc,
+          jdmc: taskData.nodeName,
+          cbr: cbr,
+          cbsj: cbsj,
+          taskData: taskData
+        }
+        if (!['初审','复审','核定','审核'].includes(taskData.taskName)) {
+         setTransTree()
+        } else {
+          eventBus.on('setShjg', initHandleDirection)
+          getShjg()
+        }
+        // setTransTree()
       } else {
-        cbsj = taskData.taskNameStartTime
-        cbr = taskData.taskAssigneeName
+        message.warning('获取流程数据失败:' + res?.message)
       }
-
-      formState.value = {
-        taskId: taskId,
-        slbh: slbh,
-        // lcmc: lcmc,
-        jdmc: taskData.nodeName,
-        cbr: cbr,
-        cbsj: cbsj,
-        taskData: taskData
-      }
-      console.log("111")
-      setTransTree()
-    } else {
-      message.warning('获取流程数据失败:' + res?.message)
-    }
+      resolve(true)
+    })
   })
 }
 
