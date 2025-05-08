@@ -25,6 +25,6 @@ export interface cModalModel {
   wrapClassName?: string
   // footer扩展按钮
   footerExtendBtn?: any[]
-  // 是否存在扩展按钮集合
-  existExtendBtn?: boolean
+  // 是否需要默认的确认取消按钮
+  isDefaultBtn?: boolean
 }

@@ -24,6 +24,11 @@ export function cModal (options?: cModalModel) {
       destroy()
     }
   }
+  
+  if (options && options.isDefaultBtn !== false) {
+    options.isDefaultBtn = true
+  }
+  
   // 定义弹窗中自己的动态组件加载 
   const modules = import.meta.glob('/src/**/*.vue');
   app = createApp(CommonModal, { ...options });

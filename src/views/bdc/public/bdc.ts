@@ -163,12 +163,13 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, params
     }
     if (checkRes) {
       let btnList = await getHandleCkbzBtn()
-      let footerList = btnList.length ? btnList.map((btn) => { return { func: markRight, name: btn.name } }) : []
+      let footerList = btnList.length ? btnList.map((btn) => { return { func: markRight, ...btn } }) : []
       let modal = cModal({
         title: '移交',
         width: '45vw',
         filePath: 'views/bdc/public/HandleModal',
         footerExtendBtn: footerList,
+        isDefaultBtn: !footerList.find(f => f.isDefaultBtn == false),
         onOk: async (res: any) => {
           if (res && res.handleOk) {
             let _result = await res.handleOk()
@@ -1651,7 +1652,7 @@ async function getHandleCkbzBtn() {
           }
         }
         // 4.非收件节点，显示“窗口补正”
-        let btnList = [{ name: text }]
+        let btnList = [{ name: text, type: 'primary', isDefaultBtn: text == '窗口补正' }]
         
         resolve(btnList)
         return btnList

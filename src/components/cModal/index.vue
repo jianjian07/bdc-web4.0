@@ -14,11 +14,11 @@
       </template>
       <template #footer>
         <div :style="footerStyle">
-          <a-button @click="handleClose">{{ cancelText }}</a-button>
+          <a-button v-if="isDefaultBtn" @click="handleClose">{{ cancelText }}</a-button>
           <template v-for="(btn, btnIndex) in footerExtendBtn">
             <a-button :type="btn.type" @click="handleExtendBtn(btn)">{{ btn.name }}</a-button>
           </template>
-          <a-button type="primary" @click="handleOk">{{ okText }}</a-button>
+          <a-button v-if="isDefaultBtn" type="primary" @click="handleOk">{{ okText }}</a-button>
         </div>
       </template>
       <Suspense v-if="isFinish">
@@ -114,6 +114,10 @@ let props = defineProps({
   footerExtendBtn: {
     type: Array,
     default: []
+  },
+  isDefaultBtn: {
+    type: Boolean,
+    default: true
   }
 })
 
