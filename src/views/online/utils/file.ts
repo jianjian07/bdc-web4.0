@@ -34,7 +34,6 @@ export const importJson = (fileList: any, params: any, callback: any) => {
                 duration: 5,
             });
             if (res.result > 0) {
-                debugger
                 if (typeof callback == 'function') {
                     callback()
                 }

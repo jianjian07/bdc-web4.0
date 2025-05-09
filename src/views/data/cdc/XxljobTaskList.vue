@@ -194,7 +194,6 @@ function loadJobGroup() {
  * 表格数据加载
 */
 async function loadData() {
-    debugger
     let jobGroupValue = (jobGroup.value == '' || jobGroup.value == undefined) ? -1 : jobGroup.value
     defHttp.post({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
         if (res.status != 200) return;

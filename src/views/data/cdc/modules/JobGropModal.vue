@@ -66,7 +66,6 @@ function onClose() {
 const emit = defineEmits(['ok'])
 function onOk() {
     ruleForm.value.validate().then(() => {
-        debugger
         let url;
         if (jobInfo.value.id > 0) {
             url = '/api/zrzy-api/jobgroup/update';

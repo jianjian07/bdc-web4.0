@@ -142,7 +142,6 @@ let formData: any = ref({
 let jobId = ref('');
 const time = new Date().getTime();
 const dayValue = formatToDate(time);
-debugger
 let timeValue = ref<[Dayjs, Dayjs]>([
     dayjs(dayValue + " 00:00:00", dateFormat),
     dayjs(dayValue + " 23:59:59", dateFormat),

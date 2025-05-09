@@ -162,7 +162,6 @@ function setNameValue(element: Element, value: string): void {
 
 // 点击用户节点，初始化用
 EventBus.on("element-init", function () {
-    debugger
     scopedElement = modelerStore.getActive;
     initElementName();
     getElementData();

@@ -159,7 +159,6 @@ let init = () => {
     bpmnModeler.on("import.done", () => {
 
         const a = "2"
-        debugger
         setCurrentElement(null)
         // setCurrentElement(null);
     });
@@ -201,7 +200,6 @@ let init = () => {
 let currentElementId = ref(-1)
 function setCurrentElement(activatedElement) {
     let activatedElementTypeName = "";
-    debugger
     if (!activatedElement) {
         activatedElement = modelerStore.getElRegistry?.find(
             (el) => el.type === "bpmn:Process" || el.type === "bpmn:Collaboration"

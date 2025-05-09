@@ -1,7 +1,4 @@
 import { LoginParams, LoginResultModel } from "./model/userModel";
-// import {defHttp} from "/@/utils/http";
-// import ceshi from "/@/utils/http/ceshi";
-// import { defHttp } from "/@/utils/http/demo";
 import { defHttp } from "/@/utils/http/axios";
 import * as CryptoJS from "crypto-js";
 import JSEncrypt from "jsencrypt";

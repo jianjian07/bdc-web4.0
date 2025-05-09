@@ -48,7 +48,6 @@ if (props.lType == 'msg') {
     logContent = ref(message)
 }
 
-debugger
 function onClose() {
     emit('ok', { refresh: false })
 }

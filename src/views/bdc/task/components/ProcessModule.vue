@@ -115,7 +115,6 @@ onMounted(() => {
  */
 function getImage(id) {
   defHttp.get({ url: api.image, params: { processInstanceId: id }, responseType: "blob" }, { withToken: true }).then((res) => {
-    console.log('getImageres',res)
     if (res.size == 0) {
       message.error('加载流程图出错！')
       return

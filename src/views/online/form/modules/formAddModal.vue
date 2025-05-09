@@ -150,7 +150,6 @@ function handleModalOk() {
     })
 }
 function changeType(_value, label) {
-    debugger
     formState.value.typeName = label[0]
 }
 

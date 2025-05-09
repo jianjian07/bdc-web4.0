@@ -40,7 +40,7 @@ import BdpzDrawer from '/@/views/system/case/components/BdpzDrawer_copy.vue';
 import { h } from 'vue';
 import { CopyrightCircleOutlined } from '@ant-design/icons-vue';
 import { defHttp } from '/@/utils/http/axios';
-import CLCLB from "/@/views/components/LCLB.vue"
+import CLCLB from "/@/views/bdc/case/LCLB.vue"
 enum api {
     nodelist = '/api/zrzy-bdc/act/process/extActProcessNode/list'
 }

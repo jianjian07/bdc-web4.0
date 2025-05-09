@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { ref, h, createVNode, onMounted } from "vue"
-import CLCLBBL from "/@/views/components/LCLBBL.vue"
+import CLCLBBL from "/@/views/bdc/blcase/LCLBBL.vue"
 import { defHttp } from "/@/utils/http/axios";
 import { ArrowRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { addFlowBL } from "../utils/case";

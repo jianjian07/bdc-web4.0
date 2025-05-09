@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref, defineAsyncComponent } from "vue";
-import CLCLB from "/@/views/components/LCLB.vue"
+import CLCLB from "/@/views/bdc/case/LCLB.vue"
 import NodeLineList from "/@/views/system/case/components/NodeLineList.vue"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))

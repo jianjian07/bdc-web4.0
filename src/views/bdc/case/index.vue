@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref, h, createVNode, onMounted } from "vue"
-import CLCLB from "/@/views/components/LCLB.vue"
+import CLCLB from "/@/views/bdc/case/LCLB.vue"
 import { defHttp } from "/@/utils/http/axios";
 import { ArrowRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { addFlow } from "../utils/case";

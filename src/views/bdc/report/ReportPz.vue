@@ -86,7 +86,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils'
-import CLCLB from "/@/views/components/LCLB.vue"
+import CLCLB from "/@/views/bdc/case/LCLB.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 

@@ -6,8 +6,7 @@
 import { defHttp } from "/@/utils/http/axios/index";
 import { menuModel } from "./model/menuModel";
 enum api {
-    menuUrlapi = '/src/assets/sys/menu.json',
-    menuUrlApi = '/api/zrzy-system/menu/getPermissionList',
+    menuUrlApi = '/src/assets/sys/menu.json',
     permissionListApi = '/api/zrzy-system/menu/getPermissionList'
 }
 /**
@@ -20,7 +19,7 @@ export function getMenuList() {
  */
 export function getMenuListByJson() {
     return new Promise((resolve) => {
-        defHttp.get<menuModel[]>({ url: api.menuUrlapi }, { withToken: true }).then((res) => {
+        defHttp.get<menuModel[]>({ url: api.menuUrlApi }, { withToken: true }).then((res) => {
             resolve(res)
         }).catch((err => {
             resolve(null)

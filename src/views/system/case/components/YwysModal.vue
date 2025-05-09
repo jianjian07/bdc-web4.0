@@ -115,7 +115,6 @@ function onChange(value, selectedOptions) {
 function isObtainTwoData(formdata, data) {
   for (let i = 0; i < data.length; i++) {
     if (data[i].xzlcbm == formdata.xzlcbm && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt) {
-      debugger
       return true
     }
   }
