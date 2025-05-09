@@ -371,6 +371,7 @@ export async function sendQlrSaveFun(type: string, demoRefs: any, spinning: any,
         bdcdyh: params.bdcdyh,
         slbh: params.slbh,
         qlrlb: params.qlrlb,
+        oldZjh: params.zjh,
         ...qlrid,
         ...sxh
       }
