@@ -5,6 +5,11 @@
         <a-button type="primary" @click="addCatalog">新增目录</a-button>
         <a-button type="primary" @click="addFile">新增附件</a-button>
         <a-button type="primary" @click="handleOrder">{{ editOrder ? '保存目录顺序' : '编辑目录顺序' }}</a-button>
+        <a-button type="primary" @click="showExe">工具上传</a-button>
+        <a-tooltip title="刷新附件" placement="right">
+          <a-button style="margin-right: 5px" size="small" :icon="h(ReloadOutlined)"
+                      @click.stop="loadFileList(false)" />
+        </a-tooltip>
       </div>
       <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="false"
         show-icon :default-expand-all="expandAll" @drop="onDrop" :draggable="isManage && editOrder" style="width: 100%">
@@ -218,8 +223,9 @@ import { message } from 'ant-design-vue';
 import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
 import { Base64 } from 'js-base64';
-import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
+import Icon, { EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined, ReloadOutlined } from '@ant-design/icons-vue';
 import { eventBus } from "form-imagining"
+import { useUserStoreWithOut } from "/@/store/modules/user"
 
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
@@ -628,6 +634,16 @@ function handleOrder() {
   }
 }
 
+//弹出上传工具
+function showExe() {
+  const userStore = useUserStoreWithOut();
+  let token = userStore.getToken.replace('Bearer ', '');
+  let url = window.location.hostname + ':' + window.location.port;
+  let exeUrl = `MapgisEGov://caseno=${props.formData.slbh}&url=${url}&processId=${props.formData.processId}&nodeId=${props.formData.nodeId}&token=${token}`;
+  //下面写法在chrome中报错，但在360浏览器（webkit内核）中正常
+  window.location.href = exeUrl;
+}
+
 </script>
 
 <style scoped lang="less">
@@ -646,7 +662,9 @@ function handleOrder() {
     padding-bottom: 10px;
 
     button {
-      margin-right: 5px;
+      margin-right: 2px;
+      padding-left: 5px;
+      padding-right: 5px;
     }
   }
 
