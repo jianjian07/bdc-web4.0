@@ -12,7 +12,7 @@
             <div v-if="actionBtnList.length" class="qlr-btns">
               <template v-for="(item,index) in actionBtnList">
                 <template v-if="item.name == '删除'">
-                  <a-popconfirm title="是否确定删除该数据？" ok-text="确定" cancel-text="取消" @confirm="handleFun(item.funcName,record)">
+                  <a-popconfirm title="是否确定删除该数据？" :disabled="disabled" ok-text="确定" cancel-text="取消" @confirm="handleFun(item.funcName,record)">
                     <a-button type="link" :disabled="disabled">{{ item.name }}</a-button>
                   </a-popconfirm>
                 </template>
@@ -153,7 +153,12 @@ function initBtnList() {
     value: '4',
     funcName: 'handleDel'
   }]
-  actionBtnList.value = list.filter(item => btnIdArr.includes(item.value))
+  let _list = list.filter(item => btnIdArr.includes(item.value))
+  let filterList = _list.filter(item => {
+    const alwaysKeep = item.name === '查看' || item.name === '家庭成员';
+    return alwaysKeep || !props.disabled;
+  });
+  actionBtnList.value = filterList
 }
 
 /**
