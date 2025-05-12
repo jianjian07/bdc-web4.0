@@ -639,7 +639,7 @@ function showExe() {
   const userStore = useUserStoreWithOut();
   let token = userStore.getToken.replace('Bearer ', '');
   let url = window.location.hostname + ':' + window.location.port;
-  let exeUrl = `MapgisEGov://caseno=${props.formData.slbh}&url=${url}&processId=${props.formData.processId}&nodeId=${props.formData.nodeId}&token=${token}`;
+  let exeUrl = `MapgisEGov://caseno=${encodeURIComponent(props.formData.slbh)}&url=${encodeURIComponent(url)}&processId=${encodeURIComponent(props.formData.processId)}&nodeId=${encodeURIComponent(props.formData.nodeId)}&token=${encodeURIComponent(token)}`;
   //下面写法在chrome中报错，但在360浏览器（webkit内核）中正常
   window.location.href = exeUrl;
 }
