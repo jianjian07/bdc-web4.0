@@ -24,7 +24,7 @@
             <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
               <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
             </template>
-            <a-input-number :status="record[column.dataIndex + 'Status']" style="width: 100%" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title" 
+            <a-input-number :status="record[column.dataIndex + 'Status']" style="width: 100%" v-model:value="record[column.key]" :disabled="column.disabled" :placeholder="'请输入' + column.title"
                             @focus="setInputStatus(column, record)" @change="(value) => handleChangeValue(value, column, record)"/>
           </a-tooltip>
         </template>
@@ -44,7 +44,7 @@ import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 const route = useRoute()
 const columns = [
-  { 
+  {
     title: '缴费项目',
     dataIndex: "jfxm",
     key: 'jfxm',
@@ -111,7 +111,8 @@ let props = defineProps({
 })
 enum api {
   getOptions = '/api/zrzy-bdc/bdc/sfconfig/queryAllList',
-  list = '/api/zrzy-bdc/bdc/sfx/list',
+//  list = '/api/zrzy-bdc/bdc/sfx/list',
+  list = '/api/zrzy-bdc/bdc/sf/getChargeDetials',
   del = '/api/zrzy-bdc/bdc/sfx/delete',
   save = '/api/zrzy-bdc/bdc/sfx/saveOrUpdate'
 }
