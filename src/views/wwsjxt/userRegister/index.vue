@@ -281,7 +281,7 @@ const onSubmit = () => {
     .validate()
     .then(async() => {
       // 触发证件号码的验证
-      await formRef.value.validateField('zjhm')
+      await formRef.value.validateFields('zjhm')
 
       if(fileList.value.length == 0) {
         message.warning('请选择要上传的附件材料')
