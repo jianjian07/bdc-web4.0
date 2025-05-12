@@ -639,8 +639,8 @@ function showExe() {
   const userStore = useUserStoreWithOut();
   let token = userStore.getToken.replace('Bearer ', '');
   let url = window.location.hostname + ':' + window.location.port;
+  //如果不encodeURIComponent编码，则url参数(192.168.27.160:9003)在chrome下会触发安全问题报错，但在360浏览器（webkit内核）中正常
   let exeUrl = `MapgisEGov://caseno=${encodeURIComponent(props.formData.slbh)}&url=${encodeURIComponent(url)}&processId=${encodeURIComponent(props.formData.processId)}&nodeId=${encodeURIComponent(props.formData.nodeId)}&token=${encodeURIComponent(token)}`;
-  //下面写法在chrome中报错，但在360浏览器（webkit内核）中正常
   window.location.href = exeUrl;
 }
 
