@@ -381,13 +381,13 @@ enum api {
 
 const emit = defineEmits(['ok'])
 
-onMounted(() => {
+onMounted(async () => {
   let route = router.currentRoute.value
   let slbh = route.query.slbh
   if (slbh) {
     getSlsqModel()
   } else {
-    initCurrentCase()
+    await initCurrentCase()
     loadList()
   }
 })
@@ -404,11 +404,11 @@ function handleLoad() {
 function getSlsqModel() {
   let route = router.currentRoute.value
   let slbh = route.query.slbh
-  defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then(async (res) => {
     if (res && res.success) {
       regType.value = res.result?.regtype || '0101'
     }
-    initCurrentCase()
+    await initCurrentCase()
     loadList()
   })
 }
@@ -417,22 +417,27 @@ function getSlsqModel() {
  * 获取当前案卷的不动产单元号数组
  */
 function initCurrentCase() {
-  let route = router.currentRoute.value
-  let slbh = route.query.slbh
-  defHttp.get({ url: api.dyxx, params: { slbh: slbh } }, { withToken: true }).then((res) => {
-    if (res && res.success) {
-      currentCase.value = res.result
-      if (res.result.length) {
-        currentZrzInfo.value.zbm = res.result[0].zbm
-        currentZrzInfo.value.zl = res.result[0].zl
-        currentZrzInfo.value.zddm = res.result[0].zddm
-        zrzData.value.zddm = res.result[0].zddm
-        loadFwxx(false, true)
+  return new Promise((resolve, reject) => {
+    let route = router.currentRoute.value
+    let slbh = route.query.slbh
+    defHttp.get({ url: api.dyxx, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        currentCase.value = res.result
+        if (res.result.length) {
+          currentZrzInfo.value.zbm = res.result[0].zbm
+          currentZrzInfo.value.zl = res.result[0].zl
+          currentZrzInfo.value.zddm = res.result[0].zddm
+          zrzData.value.zddm = res.result[0].zddm
+          loadFwxx(false, true)
+        }
+        resolve(true)
+      } else {
+        message.warning('获取当前案卷不动产单元号失败')
+        resolve(false)
       }
-    } else {
-      message.warning('获取当前案卷不动产单元号失败')
-    }
+    })
   })
+  
 }
 
 /**
