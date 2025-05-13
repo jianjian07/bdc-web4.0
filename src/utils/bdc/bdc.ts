@@ -56,6 +56,7 @@ export async function extractData(options: any) {
             }
             break;
         case '0204,0102,0201':
+        case '0102,0203':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
@@ -87,7 +88,7 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList}) : true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }) : true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -162,7 +163,7 @@ export async function extractDataLpb(options: any) {
                         router.push('/refresh')
                     }
                 })
-                
+
                 // router.push('/refresh')
             } else {
                 message.warning(res?.message)
