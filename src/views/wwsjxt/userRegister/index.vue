@@ -270,7 +270,7 @@ const formRules: any = {
 const urlList = {
   add: '/api/zrzy-system/sys/wwuser/add',
   checkUserName: '/api/zrzy-system/sys/wwuser/checkUserName', // 校验用户名是否重复
-  upload: '/api/zrzy-wwsj/wwsj/upfiles/file/uploadZczm'
+  upload: '/api/zrzy-bdc/bdcdj/upfiles/file/uploadBatchNoMaterial'
 }
 
 
@@ -316,7 +316,7 @@ function uploadFile() {
   // 上传证明材料
   const formData = new FormData()
   const params = {
-    userId: currentId.value, // 附件目录ID
+    slbh: currentId.value, // 附件目录ID
   }
   fileList.value.forEach((ele:any) => {
     formData.append(`files`, ele.originFileObj);
