@@ -127,9 +127,10 @@ function onOk() {
                     },
                     {
                         "key": "mounted002",
-                        "name": "mounted",
-                        "func": "console.info('new fun')",
-                        "param": ""
+                        "name": "initMount",
+                        "func": "",
+                        "param": "",
+                        "type": "Mounted"
                     }
                 ]
             }
