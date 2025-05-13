@@ -35,8 +35,12 @@ import {
     Tabs,
     Table,
     Pagination,
-    Breadcrumb, Space, Popconfirm,
-    Timeline, Cascader, Avatar,
+    Breadcrumb, 
+    Space, 
+    Popconfirm,
+    Timeline, 
+    Cascader, 
+    Avatar,
     Menu,
     Drawer,
     TreeSelect,
@@ -49,7 +53,8 @@ import {
     Skeleton,
     Flex,
     Transfer,
-    Steps
+    Steps,
+    AutoComplete
 } from 'ant-design-vue';
 
 export function registerGlobComp(app: App) {
@@ -106,4 +111,5 @@ export function registerGlobComp(app: App) {
         .use(Skeleton)
         .use(Transfer)
         .use(Steps)
+        .use(AutoComplete)
 }
