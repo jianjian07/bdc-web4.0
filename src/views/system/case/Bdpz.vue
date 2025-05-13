@@ -22,7 +22,7 @@
         <div class="userTabContent" style="height: 100%">
             <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
                 <a-tab-pane key="1" tab="基础配置">
-                    <FlowModal :lcid="processInfo.key" @setBaseInfo="setBaseInfo" />
+                    <FlowModal :lcid="processInfo.key" :lclx="processInfo.lclx" @setBaseInfo="setBaseInfo" />
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="表单配置" force-render>
                     <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" />

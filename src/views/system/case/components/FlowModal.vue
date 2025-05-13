@@ -51,6 +51,10 @@ const props = defineProps({
     lcid: {
         type: String,
         default: ""
+    },
+    lclx: {
+        type: String,
+        default: ""
     }
 })
 enum api {
@@ -81,6 +85,7 @@ function getFlowInfo(lcid: string) {
 
 function handleAdd() {
     flowInfo.value.status = status.value ? 1 : 0
+    flowInfo.value.lclx = flowInfo.value.lclx || props.lclx
     defHttp.post({ url: api.saveUrl, data: flowInfo.value }, { withToken: true }).then((res) => {
         if (res.success) {
             message.success("保存成功")

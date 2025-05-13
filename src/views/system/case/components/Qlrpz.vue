@@ -52,6 +52,10 @@ const props = defineProps({
   lcid: {
     type: String,
     default: ''
+  },
+  baseInfo: {
+    type: Object,
+    default: {}
   }
 })
 
@@ -59,8 +63,6 @@ const props = defineProps({
 let qllx = ref('')
 // 登记类型
 let djlx = ref([])
-// 流程信息
-let baseInfo = ref({})
 // 列表
 let dataList = ref([])
 
@@ -107,17 +109,20 @@ const columns = [
 ]
 enum api {
   list = '/api/zrzy-bdc/flow/qlr/list',
-  info = '/api/zrzy-bdc/flow/flowConfig/queryByLcid',
   delete = '/api/zrzy-bdc/flow/qlr/delete'
 }
 
 watch(() => props.lcid, (val:any) => {
-  console.log('valvalvalval',val)
-  djlx.value = []
   if (val) {
-    baseInfo.value.lcid = props.lcid;
-    getFlowInfo(props.lcid)
+    loadData()
   }
+}, {
+  immediate: true
+})
+
+watch(() => props.baseInfo, (val) => {
+  djlx.value = []
+  getDjlx()
 }, {
   immediate: true
 })
@@ -146,21 +151,10 @@ function getLabelByCode(dict: any, value: any) {
   return getDictItemsByCode(dict).filter((_v: any) => _v.dictCode == value)[0]?.dictName || ''
 }
 
-function getFlowInfo(lcid: string) {
-  defHttp.get({ url: api.info, params: { lcid: lcid } }, { withToken: true }).then((res) => {
-    if (res.success) {
-      baseInfo.value = res.result
-    } else {
-      baseInfo.value = { lcid: baseInfo.value.lcid }
-    }
-    getDjlx()
-    loadData()
-  })
-}
 
 function getDjlx() {
-  if (baseInfo.value.regType) {
-    djlx.value = baseInfo.value.regType.split(',')
+  if (props.baseInfo.regType) {
+    djlx.value = props.baseInfo.regType.split(',')
   }
 }
 

@@ -57,7 +57,6 @@ import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 
 let dataList: any = ref([])
 let djlxOptions: any = ref([])
-let baseInfo: any = ref({})
 let djlx: any = ref([])
 const columns = [
   {
@@ -112,40 +111,35 @@ let qllx = ref('')
 
 const urlList = {
   queryList: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/list', // 分页列表查询
-  delete: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/delete', //通过id删除
-  queryByLcidUrl: "/api/zrzy-bdc/flow/flowConfig/queryByLcid",
+  delete: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/delete' //通过id删除
 }
 
 const props = defineProps({
   lcid: {
     type: String,
     default: ''
+  },
+  baseInfo: {
+    type: Object,
+    default: {}
   }
 })
 
 watch(() => props.lcid, (val:any) => {
-  djlx.value = []
   if(val) {
     pagination.value.current = 1
-    baseInfo.value.lcid = props.lcid;
-    getFlowInfo(props.lcid)
     loadData()
   }
 }, {
   immediate: true
 })
 
-
-function getFlowInfo(lcid: string) {
-  defHttp.get({ url: urlList.queryByLcidUrl, params: { lcid: lcid } }, { withToken: true }).then((res) => {
-    if (res.success) {
-      baseInfo.value = res.result
-    } else {
-      baseInfo.value = { lcid: baseInfo.value.lcid }
-    }
-    getDjlx()
-  })
-}
+watch(() => props.baseInfo, (val) => {
+  djlx.value = []
+  getDjlx()
+}, {
+  immediate: true
+})
 
 function loadData() {
   // 获取权利其他配置列表
@@ -234,8 +228,8 @@ function getLabelByCode(dict: any, value: any) {
 }
 
 function getDjlx() {
-  if (baseInfo.value.regType) {
-    djlx.value = baseInfo.value.regType.split(',')
+  if (props.baseInfo.regType) {
+    djlx.value = props.baseInfo.regType.split(',')
   }
 }
 
