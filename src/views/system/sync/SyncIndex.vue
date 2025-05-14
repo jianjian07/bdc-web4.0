@@ -114,8 +114,8 @@ let pagination = ref({
 })
 
 enum api {
-  list = '/api/zrzy-api/data/sync/list',
-  del = '/api/zrzy-api/data/sync/delete'
+  list = '/api/zrzy-cdc/data/sync/list',
+  del = '/api/zrzy-cdc/data/sync/delete'
 }
 
 onMounted(() => {
