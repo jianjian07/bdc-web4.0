@@ -64,13 +64,24 @@ let dataList: any = ref([])
 const state = reactive({
   selectedRowKeys: []
 })
-const columns = [
-  {
-    title: '节点名称',
-    align: 'center',
-    dataIndex: 'nodeName',
+
+const props = defineProps({
+  lcid: {
+    type: String,
+    default: ''
   },
-  {
+  baseInfo: {
+    type: Object,
+    default: null
+  },
+  isBl: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const columns = ref<any>([])
+const defaultColumns = [{
     title: '权利类型',
     align: 'center',
     dataIndex: 'subType',
@@ -104,8 +115,7 @@ const columns = [
     dataIndex: 'operation',
     align: 'center',
     width: 200
-  },
-]
+  },]
 // 分页
 const pagination = ref<any>({ 
   total: 0,
@@ -121,15 +131,14 @@ const urlList = {
   deleteBatch: '/api/zrzy-bdc/casematerialConfig/deleteBatch' // 批量删除
 }
 
-const props = defineProps({
-  lcid: {
-    type: String,
-    default: ''
-  },
-  baseInfo: {
-    type: Object,
-    default: null
-  }
+watch(() => props.isBl, (val) => {
+  columns.value = val ? defaultColumns : [{
+    title: '节点名称',
+    align: 'center',
+    dataIndex: 'nodeName',
+  },...defaultColumns]
+}, {
+  immediate: true
 })
 
 watch(() => props.lcid, (val:any) => {
@@ -182,6 +191,7 @@ function onShowModal(data: any = null, type: String = 'new') {
       itemData: data, //当前操作的数据行
       dataSource: dataList.value,  //列表数据，用于新增/编辑时查找是否存在数据
       baseInfo: props.baseInfo,
+      isBl: props.isBl
     },
     onOk: async (res: any) => {
       if(type == 'view') {

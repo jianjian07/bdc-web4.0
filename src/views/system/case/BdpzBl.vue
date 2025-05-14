@@ -27,6 +27,9 @@
         <a-tab-pane key="2" force-render tab="表单配置">
           <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" :isBl="true" />
         </a-tab-pane>
+        <a-tab-pane key="5" tab="材料目录配置" force-render>
+          <ClmlList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="baseInfo" :isBl="true" />
+        </a-tab-pane>
         <a-tab-pane key="6" tab="权利人配置" force-render>
           <qlrpz v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="baseInfo"></qlrpz>
         </a-tab-pane>
@@ -40,6 +43,7 @@ import { defineAsyncComponent, onMounted, ref } from "vue"
 import { getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 const FlowModal = defineAsyncComponent(() => import("/@/views/system/case/components/FlowModal.vue"))
 const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
+const ClmlList = defineAsyncComponent(() => import("/@/views/system/case/components/ClmlList.vue"))
 const Qlrpz = defineAsyncComponent(() => import("/@/views/system/case/components/Qlrpz.vue"))
 let processInfo: any = ref('')
 let activeKey = ref('1')

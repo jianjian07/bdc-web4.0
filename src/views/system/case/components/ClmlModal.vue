@@ -10,8 +10,8 @@
       <a-form-item v-show="false" ref="processName" label="流程名称" name="processName">
         <a-input v-model:value="formState.processName" disabled/>
       </a-form-item>
-      <a-form-item ref="nodeId" label="节点名称" name="nodeId">
-        <a-select v-model:value="formState.nodeId" :fieldNames="fieldNames" placeholder="请选择节点" :options="JDOptions" @change="onChange"></a-select>
+      <a-form-item v-if="!formData.isBl" ref="nodeId" label="节点名称" name="nodeId">
+        <a-select v-model:value="formState.nodeId" allow-clear :fieldNames="fieldNames" placeholder="请选择节点" :options="JDOptions" @change="onChange"></a-select>
       </a-form-item>
       <a-form-item ref="subType" label="权利类型" name="subType">
         <a-select v-model:value="formState.subType" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" show-search optionFilterProp="label"/>
@@ -91,7 +91,7 @@ let JDOptions: any = ref([])
 let fieldNames = { label: 'processNodeName', value: 'processNodeCode', children: 'children' }
 
 const rules: any = {
-  nodeId: { required: true, message: '请选择节点名称', trigger: 'blur'},
+  // nodeId: { required: true, message: '请选择节点名称', trigger: 'blur'},
   materialName: { required: true, message: '请输入目录名称', trigger: 'blur'},
   subType: { required: true, message: '请选择权利类型', trigger: 'blur'}
 }
@@ -118,7 +118,9 @@ watch(() => props.formData, (val: any) => {
     formState.value.processId = val.lcid
     formState.value.processName = val.baseInfo.lcmc
   }
-  getNode()
+  if (!props.formData.isBl) {
+    getNode()
+  }
 }, {
   immediate: true,
   deep: true
@@ -143,7 +145,10 @@ function onSubmit() {
     formRef.value
     .validate()
     .then(() => {
-      console.log('values', formState, toRaw(formState));
+      // console.log('values', formState, toRaw(formState));
+      if (!formState.value.nodeId) {
+        formState.value.nodeName = ''
+      }
       let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
 
       if(props.formData.type == 'edit') {
