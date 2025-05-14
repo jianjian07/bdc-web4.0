@@ -116,19 +116,19 @@
               <template v-if="formState[`${type}Check`]?.length">
                 <div class="sync-panel-right-content">
                   <div class="sync-panel-right-row" v-for="(item, index) in formState[`${type}CheckRow`]" :key="index">
-                    <a-input :value="item.sourceTable" readonly style="text-align: center" />
+                    <a-input :value="item.sourceTable" readonly style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;"/>
                     <SwapRightOutlined style="margin: 0px 10px;font-size: 16px" />
                     <a-select v-model:value="item.targetTable" :dropdownMatchSelectWidth="false" placeholder="请选择目标表"
-                      style="width: 100%;" show-search>
+                      style="width: 100%; flex: 1 1 0; min-width: 0;" show-search @change="(value) => handleChangeTargetTable(value, item)">
                       <a-select-option v-for="(selectItem, selectIndex) in viewTables.target.table"
                         :value="selectItem.tablename">{{ selectItem.tablename }}</a-select-option>
                     </a-select>
                     <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
-                    <a-input v-model:value="item.identityColumn" placeholder="请输入目标表自增列"
-                      style="width: 100%" />&nbsp;&nbsp;
-                    <a-input v-model:value="item.businessKey" placeholder="请输入目标表标识列" style="width: 100%" />
-                    <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"
-                      @click="handleEdit(type, item, index)" />
+                    <a-input v-model:value="item.identityColumn" placeholder="目标表自增列" readOnly
+                      style="width: 100%; flex: 1 1 0; min-width: 0;" />&nbsp;&nbsp;
+                    <a-select v-model:value="item.businessKey" placeholder="请选择目标表标识列" style="width: 100%; flex: 1 1 0; min-width: 0;" :options="item.notIdentityColumns"></a-select>
+<!--                    <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
+<!--                      @click="handleEdit(type, item, index)" />-->
                     <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
                       @click="handelDelRow(type, item, index)" />
                   </div>
@@ -206,7 +206,8 @@ enum api {
   getTables = '/api/zrzy-cdc/data/sync/getTables',
   add = '/api/zrzy-cdc/data/sync/add',
   update = '/api/zrzy-cdc/data/sync/update',
-  info = '/api/zrzy-cdc/data/sync/getInfo'
+  info = '/api/zrzy-cdc/data/sync/getInfo',
+  getColumName = '/api/zrzy-cdc/data/sync/getAllColumns'
 }
 
 onMounted(() => {
@@ -459,6 +460,26 @@ function closeCurrentTab() {
   } else {
     router.push('/analysis')
   }
+}
+
+/**
+ * 更改目标表
+ * @param value
+ */
+function handleChangeTargetTable(value, item) {
+  defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: value } }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+        item.identityColumn = res.result.find(r => r.isidentity == 'YES')?.columnname || ''
+        console.log('iii',item)
+        item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
+          m.label = m.columnname
+          m.value = m.columnname
+          return m
+        })
+        console.log('item.notIdentityColumns',)
+      }
+  })
+  console.log('vallue',value)
 }
 </script>
 
