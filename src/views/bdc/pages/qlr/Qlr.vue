@@ -355,9 +355,15 @@ function handleJtcy(record) {
  * @param record
  */
 function handleDel(record) {
+  let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
   defHttp.post({
         url: '/api/zrzy-bdc/bdc/qlr/deleteQlr',
-        params: { qlrmc: record.qlrmc, zjh: record.zjh, slbh: route.query.slbh }
+        data: {
+          qlrmc: record.qlrmc, 
+          zjh: record.zjh, 
+          slbh: route.query.slbh,
+          ...qlrid
+        }
     }, { withToken: true }).then((res) => {
       if (res && res.success) {
         initData()
