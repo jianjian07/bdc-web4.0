@@ -362,6 +362,7 @@ function handleDel(record) {
           qlrmc: record.qlrmc, 
           zjh: record.zjh, 
           slbh: route.query.slbh,
+          qlrlb: props.qlrxx.qlrlxmc,
           ...qlrid
         }
     }, { withToken: true }).then((res) => {
