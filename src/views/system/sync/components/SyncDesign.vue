@@ -216,13 +216,10 @@ onMounted(() => {
 })
 
 async function initData() {
-  console.log('router.currentRoute.value', router.currentRoute.value)
   let id = router.currentRoute.value.query.id
-  console.log('idid', id)
   if (id) {
     let info = await getInfoById(id)
     if (info) {
-      console.log('info')
       formState.value = JSON.parse(JSON.stringify(info))
       getTables(formState.value.sourceDb, 'source')
       getTables(formState.value.targetDb, 'target')
@@ -470,16 +467,13 @@ function handleChangeTargetTable(value, item) {
   defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: value } }, { withToken: true }).then((res) => {
       if (res && res.code == 200) {
         item.identityColumn = res.result.find(r => r.isidentity == 'YES')?.columnname || ''
-        console.log('iii',item)
         item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
           m.label = m.columnname
           m.value = m.columnname
           return m
         })
-        console.log('item.notIdentityColumns',)
       }
   })
-  console.log('vallue',value)
 }
 </script>
 

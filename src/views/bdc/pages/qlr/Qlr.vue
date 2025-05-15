@@ -174,6 +174,7 @@ function initData() {
     params: {
       pageNo: pagination.value.current,
       pageSize: pagination.value.pageSize,
+      db: query.db
     },
     data: {
       slbh: query.slbh,
