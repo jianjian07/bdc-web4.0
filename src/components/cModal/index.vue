@@ -4,7 +4,7 @@
              :wrap-class-name="(fullScreen || isFullScreen) ? `full-common-modal ${wrapClassName || ''}` : (wrapClassName || '')"
              :confirmLoading="confirmLoading" :maskClosable="false" @cancel="handleClose"
              v-bind="footerBind"
-             :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' })">
+             :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, padding: '0px 10px', overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', padding: '0px 10px', overflowY: 'auto', overflowX: 'hidden' })">
       <template #title>
         {{ title }}
         <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
