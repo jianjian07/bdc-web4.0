@@ -45,6 +45,7 @@ export async function extractData(options: any) {
         case '0304':
         case '0305':
         case '0306':
+        case '0311':
         case '0312':
         case '0313':
         case '0314':
@@ -76,6 +77,7 @@ export async function extractData(options: any) {
                 })
             }
             break;
+        case '0211':
         case '0212':
         case '0213':
         case '0214':
