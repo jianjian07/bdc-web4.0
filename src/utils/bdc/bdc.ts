@@ -57,6 +57,7 @@ export async function extractData(options: any) {
             }
             break;
         case '0204,0102,0201':
+        case '0102,0202,0203':
         case '0102,0203':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
