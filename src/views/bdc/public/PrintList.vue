@@ -56,7 +56,7 @@ const props = defineProps({
 })
 
 enum api {
-  list = '/magicapi/zrzy-form/magic/form/form/printBtn'
+  list = '/api/zrzy-form/magic/form/form/printBtn'
 }
 
 onMounted(() => {

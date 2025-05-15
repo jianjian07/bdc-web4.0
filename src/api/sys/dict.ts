@@ -3,7 +3,7 @@ import { defHttp } from "/@/utils/http/axios"
 import { useUserStore } from "/@/store/modules/user"
 enum api {
     getDictApi = '/api/zrzy-system/sys/dict/tree',
-    delUrl = '/api/zrzy-system/sys/dict/deleteByIdList',//'/magicapi/zrzy-form/magic/dict/delete',//
+    delUrl = '/api/zrzy-system/sys/dict/deleteByIdList',
     updateHasChildUrl = '/api/zrzy-system/sys/dict/updateHasChild',
     getRuleListApi = '/api/zrzy-form/onlWonderRule/getRuleList'
 }

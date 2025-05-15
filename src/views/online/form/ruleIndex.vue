@@ -102,10 +102,10 @@ import dayjs from 'dayjs';
 import { useUserStore } from "/@/store/modules/user";
 
 enum api {
-    queryRuleVerifyList = '/magicapi/zrzy-form/magic/form/rule/queryRuleVerifyList',
-    addVerifyRule = '/magicapi/zrzy-form/magic/form/rule/addVerifyRule',
-    deleteVerifyRule = '/magicapi/zrzy-form/magic/form/rule/deleteVerifyRule',
-    editVerifyRule = '/magicapi/zrzy-form/magic/form/rule/editVerifyRule',
+    queryRuleVerifyList = '/api/zrzy-form/magic/form/rule/queryRuleVerifyList',
+    addVerifyRule = '/api/zrzy-form/magic/form/rule/addVerifyRule',
+    deleteVerifyRule = '/api/zrzy-form/magic/form/rule/deleteVerifyRule',
+    editVerifyRule = '/api/zrzy-form/magic/form/rule/editVerifyRule',
 }
 // 分页
 let pagination = ref({

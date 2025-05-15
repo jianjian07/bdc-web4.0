@@ -119,7 +119,7 @@ loadData()
  * 表格数据加载
 */
 async function loadData() {
-    let url = '/api/zrzy-system/sys/dict/list';//'/magicapi/zrzy-form/magic/dict/list'
+    let url = '/api/zrzy-system/sys/dict/list';
     defHttp.post({
         url: url, data: {
             dictCode: formData.value.code || '',

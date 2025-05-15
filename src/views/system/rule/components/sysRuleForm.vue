@@ -103,11 +103,11 @@ const rules = ref<any>({
 const emit = defineEmits(['formOk'])
 enum api {
   // 添加规则
-  add = '/magicapi/zrzy-form/magic/form/rule/add',
+  add = '/api/zrzy-form/magic/form/rule/add',
   // 编辑规则
-  edit = '/magicapi/zrzy-form/magic/form/rule/edit',
+  edit = '/api/zrzy-form/magic/form/rule/edit',
   // 检查规则编码是否重复
-  check = '/magicapi/zrzy-form/magic/form/rule/check'
+  check = '/api/zrzy-form/magic/form/rule/check'
 }
 
 defineExpose({

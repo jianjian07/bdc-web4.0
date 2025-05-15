@@ -20,11 +20,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,// 开启跨域
           rewrite: path => path.replace(/^\/api/, '')// 路由重写
         },
-        '/magicapi': {
-          target: VITE_GLOB_API_URL,// 代理的目标地址
-          changeOrigin: true,// 开启跨域
-          rewrite: path => path.replace(/^\/magicapi/, '')// 路由重写
-        },
         '/nacos': {
           target: VITE_GLOB_NACOS_API_URL,// 代理的目标地址
           changeOrigin: true,// 开启跨域

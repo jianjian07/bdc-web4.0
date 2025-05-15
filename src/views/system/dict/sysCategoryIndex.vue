@@ -191,7 +191,6 @@ function onChange(pag: any, callback: any) {
 }
 const expandedRowKeys = ref<any>([]);
 function onExpand(expanded, record) {
-    // let url = '/magicapi/zrzy-form/magic/dict/query'
     if (expanded) {
         expandedRowKeys.value.push(record.id);
         if (record.children.length > 0) {

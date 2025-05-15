@@ -114,7 +114,7 @@ watch(() => reportData.value.content, (newVal) => {
 })
 
 enum api {
-  field = '/magicapi/zrzy-form/sql/fileds',
+  field = '/api/zrzy-form/sql/fileds',
   check = '/api/zrzy-report/bdc/report/config/checkSql'
 }
 

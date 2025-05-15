@@ -62,7 +62,7 @@ const rules = ref<any>({
 })
 
 enum api {
-    check = '/magicapi/zrzy-form/magic/form/form/check'
+    check = '/api/zrzy-form/magic/form/form/check'
 }
 
 const emit = defineEmits(['handOver'])
