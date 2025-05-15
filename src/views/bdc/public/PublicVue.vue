@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
 import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
@@ -177,6 +177,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
   removeBusEvent()
+  resetValidateInfos()
+})
+
+onDeactivated(() => {
+  // 缓存页面离开时清除校验效果
+  resetValidateInfos()
 })
 
 function initBusEvent() {
