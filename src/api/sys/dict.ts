@@ -91,29 +91,29 @@ export function getRuleList() {
     const userStore = useUserStore();
 
     defHttp.get({ url: api.getRuleListApi }, { withToken: true }).then((res) => {
-        res.list = res.result.records;
-        if (res && res.list) {
-            let sysValidateRuleList = res.list.filter(f => f.ruleType == 'validate')
+        if (res && res?.result?.records) {
+            let list = res.result.records
+            let sysValidateRuleList = list.filter(f => f.ruleType == 'validate')
             if (sysValidateRuleList) {
                 userStore.setValidateRuleList(sysValidateRuleList)
             }
-            let sysCodeRuleList = res.list.filter(f => f.ruleType == 'code')
+            let sysCodeRuleList = list.filter(f => f.ruleType == 'code')
             if (sysCodeRuleList) {
                 userStore.setCodeRuleList(sysCodeRuleList)
             }
-            let sysDataRuleList = res.list.filter(f => f.ruleType == 'data')
+            let sysDataRuleList = list.filter(f => f.ruleType == 'data')
             if (sysDataRuleList) {
                 userStore.setDataRuleList(sysDataRuleList)
             }
-            let sysApiRuleList = res.list.filter(f => f.ruleType == 'api')
+            let sysApiRuleList = list.filter(f => f.ruleType == 'api')
             if (sysApiRuleList) {
                 userStore.setApiRuleList(sysApiRuleList)
             }
-            let sysTransferRuleList = res.list.filter(f => f.ywlx == 'transfer')
+            let sysTransferRuleList = list.filter(f => f.ywlx == 'transfer')
             if (sysTransferRuleList) {
                 userStore.setTransferRuleList(sysTransferRuleList)
             }
-            let sysLineRuleList = res.list.filter(f => f.ywlx == 'line')
+            let sysLineRuleList = list.filter(f => f.ywlx == 'line')
             if (sysLineRuleList) {
                 userStore.setLineRuleList(sysLineRuleList)
             }
