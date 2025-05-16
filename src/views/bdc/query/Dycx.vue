@@ -28,10 +28,11 @@
             <span style="position: absolute;left: -165px;">{{ item.djsj }}</span>
             <div style="padding-bottom: 10px">
               <span
-                :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline' }">{{
-      item.djlb }}</span>
-              <br />
-              <span>证号：{{ item.bdcqzh }}</span><span style="margin-left: 10px">业务号：{{ item.ywh }}</span>
+                  :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline' }">
+                {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
+              <br/>
+              <span>{{ item.qszt == 0 ? '' : '证号：' }}{{ item.bdcqzh }}</span><span
+                :style="{margin: item.qszt == 0?'0px 0px':'0px 10px'}">业务号：{{ item.ywh }}</span>
             </div>
 
           </a-timeline-item>
@@ -51,7 +52,7 @@ const route = useRoute();
 let isShowSearch = ref<boolean>(true)
 // 查询拦
 let formState = ref<any>({
-  bdcdyh: '429005047013GB00020F00010001'
+  bdcdyh: ''
 })
 // 不动产单元号
 let bdcdyh = ref<any>('')
