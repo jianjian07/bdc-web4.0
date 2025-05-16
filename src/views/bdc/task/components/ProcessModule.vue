@@ -12,15 +12,23 @@
         </template>
       </map>
     </div>
-    <a-card v-if="false" title="流程历史跟踪">
+    <a-card title="流程历史跟踪">
       <a-table
           :columns="columns"
           :data-source="tableData"
           :loading="loading"
           :scroll="{ x: 1300 }"
-          row-key="taskId"
+          row-key="index"
           size="small"
           bordered>
+        <template #bodyCell="{ column, record, index }">
+          <div v-if="column.dataIndex == 'index'" style="text-align: center">
+            {{ index + 1 }}
+          </div>
+          <div v-if="column.dataIndex == 'czjg'">
+            {{ getDictItemsByCode('shyjczjg').find(f => f.value == record[column.dataIndex])?.label }}
+          </div>
+        </template>
       </a-table>
     </a-card>
     
@@ -30,9 +38,12 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue"
+import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import NodeInfoModal from "/@/views/bdc/task/components/NodeInfoModal.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import { useRoute } from "vue-router"
+const route = useRoute()
 
 const props = defineProps({
   processInstanceId: {
@@ -56,35 +67,36 @@ const columns = [{
   key: 'index',
   width: 40,
 }, {
-  title: '名称',
-  dataIndex: 'name',
-  key: 'name'
+  title: '节点名称',
+  dataIndex: 'jdmc',
+  key: 'jdmc',
+  width: 100
 }, {
-  title: '流程实例ID',
-  dataIndex: 'processInstanceId',
-  key: 'processInstanceId'
+  title: '节点id',
+  dataIndex: 'jdid',
+  key: 'jdid'
 }, {
   title: '开始时间',
-  dataIndex: 'startTime',
-  key: 'startTime'
+  dataIndex: 'blkssj',
+  key: 'blkssj'
 }, {
   title: '结束时间',
-  dataIndex: 'endTime',
-  key: 'endTime'
+  dataIndex: 'bljssj',
+  key: 'bljssj'
 }, {
   title: '负责人',
-  dataIndex: 'assigneeName',
-  key: 'assigneeName'
+  dataIndex: 'blr',
+  key: 'blr'
 }, {
   title: '处理结果',
-  dataIndex: 'deleteReason',
-  key: 'deleteReason'
+  dataIndex: 'czjg',
+  key: 'czjg'
 }, {
   title: '处理意见',
   fixed: 'right',
   width: 250,
-  dataIndex: 'remarks',
-  key: 'remarks',
+  dataIndex: 'shyj',
+  key: 'shyj',
   ellipse: true
 }
 ]
@@ -92,7 +104,7 @@ const columns = [{
 let nodeInfoModal = ref()
 
 enum api {
-  list = '',
+  list = '/api/zrzy-bdc/bdc/public/getYwShBySlbh',
   nodeInfo = '',
   image = '/api/zrzy-bdc/act/task/traceImage'
 }
@@ -106,7 +118,7 @@ watch(() => props.processInstanceId, (newValue, _oldValue) => {
 })
 
 onMounted(() => {
-  
+  initTableData()
 })
 
 /**
@@ -139,8 +151,8 @@ function initImg() {
  */
 function initTableData() {
   loading.value = true
-  let params = { processInstanceId: '' }
-  defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
+  let slbh = route.query.slbh
+  defHttp.get({ url: api.list, params: { slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       tableData.value = res.result
     } else {
