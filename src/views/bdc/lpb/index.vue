@@ -41,6 +41,11 @@
               <PauseOutlined />
             </template>选列
           </a-button>
+          <a-button size="small" type="primary" @click="handleTemSave">
+            <template #icon>
+              <PushpinOutlined />
+            </template>暂存
+          </a-button>
         </a-space>
       </div>
     </div>
@@ -78,7 +83,7 @@
         <div class="search-result">
           <a-table class="zrz-table ant-table-striped" :columns="zrzColumns" :data-source="zrzTableData"
             :pagination="pagination" :loading="tableLoading" :scroll="{ y: 300 }" :custom-row="customRow"
-            :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : null"
+            :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : ( getTemClass(_record) ? 'tem-table-row' : null)"
             row-key="zbm" @change="handleTableChange" size="small">
           </a-table>
         </div>
@@ -250,7 +255,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
-import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlined, PushpinOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue"
 import { checkShowForSingle, checkShowForZh, getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
 import { extractDataLpb } from '/@/utils/bdc/bdc';
@@ -337,6 +342,8 @@ let filterLpb = ref<any>({
 let cxxOptions = ref<any>([])
 // 查询的楼盘表信(筛选用)
 let lpbData = ref<any>()
+// 暂存
+let temFwList = ref<any>([])
 // function getShbw(wlc: any, dyh: any, hbh: any) {
 //     const match = fwxx.find((t: any) => t.wlc === wlc && t.dyh === dyh && t.hbh === hbh);
 //     return match ? match : null;
@@ -428,6 +435,18 @@ function initCurrentCase() {
           currentZrzInfo.value.zl = res.result[0].zl
           currentZrzInfo.value.zddm = res.result[0].zddm
           zrzData.value.zddm = res.result[0].zddm
+          temFwList.value = Object.values(
+            currentCase.value.reduce((acc: Record<string, any>, item) => {
+              if (!acc[item.zbm]) {
+                acc[item.zbm] = {
+                  zbm: item.zbm,
+                  fwxxList: []
+                }
+              }
+              acc[item.zbm].fwxxList.push(item)
+              return acc
+            }, {})
+          )
           loadFwxx(false, true)
         }
         resolve(true)
@@ -479,9 +498,26 @@ async function loadFwxx(isFilter = false, initCheck = false) {
       if (!isFilter) {
         cxxOptions.value = JSON.parse(JSON.stringify(cxxData.value))
       }
-      if (initCheck) {
-        initFwxxChecked(false, false, currentCase.value)
+      let _case = [...currentCase.value]
+      if (temFwList.value.length) {
+        temFwList.value.forEach(item => {
+          const zbm = item.zbm
+          const zddm = item.zddm
+          item.fwxxList.forEach(fw => {
+            const exists = _case.some(c => c.zbm === zbm && c.bdcdyh === fw.bdcdyh)
+            if (!exists) {
+              _case.push({
+                zbm,
+                zddm,
+                bdcdyh: fw.bdcdyh
+              })
+            }
+          })
+        })
       }
+      // if (initCheck) {
+        initFwxxChecked(false, false, _case)
+      // }
       lpbData.value = {
         dyhList: dyxx.value,
         cxxList: cxxData.value,
@@ -638,6 +674,23 @@ function checkCol() {
 }
 
 /**
+ * 暂存勾选值
+ */
+function handleTemSave() {
+  const data = lpbData.value.fwList.filter(t => t.checked == true)
+  updateOrPush(temFwList.value, {
+    zbm: currentZrzInfo.value.zbm,
+    fwxxList: data.map((item) => {
+      item.zddm = currentZrzInfo.value.zddm 
+      item.zbm = currentZrzInfo.value.zbm
+      return item
+    })
+  })
+  
+  message.success('暂存成功!')
+}
+
+/**
  * 勾选框状态
  * @param fwInfo
  */
@@ -689,14 +742,56 @@ function handleOk() {
     return
   }
   const data = lpbData.value.fwList.filter(t => t.checked == true)
-  if (data.length == 0) {
+  let okData = []
+  if (!temFwList.value.length) {
+    temFwList.value = [{
+        zbm: currentZrzInfo.value.zbm,
+        fwxxList: data.map((item) => {
+          item.zddm = currentZrzInfo.value.zddm 
+          item.zbm = currentZrzInfo.value.zbm
+          return item
+        })
+    }]
+  } else {
+    updateOrPush(temFwList.value, {
+      zbm: currentZrzInfo.value.zbm,
+      fwxxList: data.map((item) => {
+        item.zddm = currentZrzInfo.value.zddm 
+        item.zbm = currentZrzInfo.value.zbm
+        return item
+      })
+    })
+  }
+ 
+  okData = temFwList.value
+  .filter(item => item.fwxxList && item.fwxxList.length > 0)
+  .flatMap(item => item.fwxxList)
+  if (okData.length == 0) {
     message.error("请选择要提取的房源")
   } else {
-    emit('ok', { reload: true, data: { fwxxList: data, zddm: currentZrzInfo.value.zddm, zbm: currentZrzInfo.value.zbm } })
+    emit('ok', { reload: true, data: { fwxxList: okData } })
     // extractDataLpb({
     //   data: data
     // })
   }
+}
+
+function updateOrPush(arr: any[], obj: any) {
+  const index = arr.findIndex(item => item.zbm === obj.zbm)
+  if (index !== -1) {
+    arr[index] = obj // 替换
+  } else {
+    arr.push(obj) // 添加
+  }
+}
+
+/**
+ * 暂存效果
+ * @param record
+ */
+function getTemClass(record) {
+  let temZbms = temFwList.value.filter(f => f.fwxxList.length).map(m => m.zbm)
+  return temZbms.includes(record.zbm)
 }
 
 function onClose() {

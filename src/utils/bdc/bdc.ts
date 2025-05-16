@@ -133,7 +133,7 @@ export async function extractDataLpb(options: any) {
     let fwxxList = data.fwxxList
     for (let index = 0; index < fwxxList.length; index++) {
         const dyh = fwxxList[index];
-        dyhList.push({ zddm: data.zddm, bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
+        dyhList.push({ zbm: dyh.zbm, zddm: dyh.zddm, bdcdyh: dyh.bdcdyh, preywh: dyh.ywh, qllx: 4 })
     }
     options.okLoading.value = true
     let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }) : true
@@ -144,9 +144,8 @@ export async function extractDataLpb(options: any) {
             // "djdl": "CQ",
             "slbh": slbh,
             "ywlx": '2',
-            "zddm": data.zddm,
+            "zddm": fwxxList[0].zddm,
             "vtype": 2,
-            "zbm": data.zbm,
             "dyhList": dyhList
         }
         defHttp.post({
