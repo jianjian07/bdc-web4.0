@@ -27,8 +27,8 @@
           <a-timeline-item v-for="(item, index) in hisData" :color="index == 0 ? 'green' : 'blue'">
             <span style="position: absolute;left: -165px;">{{ item.djsj }}</span>
             <div style="padding-bottom: 10px">
-              <span
-                  :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline' }">
+              <span @click="handleView(item)"
+                  :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline', cursor: 'pointer' }">
                 {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
               <br/>
               <span>{{ item.qszt == 0 ? '' : '证号：' }}{{ item.bdcqzh }}</span><span
@@ -47,6 +47,7 @@ import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
+import { router } from "/@/router"
 const route = useRoute();
 // 是否显示查询框
 let isShowSearch = ref<boolean>(true)
@@ -106,6 +107,14 @@ function sortByTime(arr, key) {
     let y = b[key]
     return ((x > y) ? -1 : ((x < y) ? 1 : 0))
   })
+}
+
+/**
+ * 进入详情
+ * @param item
+ */
+function handleView(item) {
+  router.push('/task/hisTaskDeal?slbh=' + item.slbh)
 }
 
 </script>
