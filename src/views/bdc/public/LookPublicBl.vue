@@ -6,9 +6,9 @@
           :formCode="form.vfd" :disabled="true" :ref="setRef">
         </component>
       </template>
-       <template v-if="qlr">
-         <qlr-list v-show="showQlr" :qlr="qlr" disabled></qlr-list>
-       </template>
+      <template v-if="qlr">
+        <qlr-list v-show="showQlr" :qlr="qlr" disabled></qlr-list>
+      </template>
     </a-spin>
   </div>
 </template>
@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
-import { resetValidateInfos, eventBus }  from "form-imagining"
+import { resetValidateInfos, eventBus } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
 import { useRoute } from "vue-router"
@@ -81,7 +81,8 @@ function removeBusEvent() {
 function getFormConfig() {
   spinning.value = true
   let slbh = route.query.slbh
-  defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+  let db = route.query.db
+  defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, db: db } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       let formConfig = res.result
       formList.value = formConfig?.vueList || []
