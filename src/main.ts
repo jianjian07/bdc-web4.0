@@ -14,8 +14,36 @@ import 'ant-design-vue/dist/reset.css';
 import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
 
 import setDirectives from './directives/index'
-// createApp(App).mount('#app')
+import { defHttp } from "/@/utils/http/axios"
+
+/**
+ * 读取nacos配置
+ */
+function fetchNacosConfig() {
+    return new Promise((resolve) => {
+        defHttp.get({ 
+            url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public',
+            responseType: 'json',
+            headers: { 
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+        }, { withToken: true }).then((res) => {
+            if (res) {
+                window.settingConfig = res
+                if (window.settingConfig.appTitle) {
+                    document.title = window.settingConfig.appTitle;
+                }
+            } else {
+                alert('nacos配置读取失败！')
+            }
+            resolve(true)
+        })
+    })
+}
+
 async function bootstrap() {
+    // 加载nacos配置
+    await fetchNacosConfig()
     const app = createApp(App)
     // 定义弹窗中自己的动态组件加载
     const modules = import.meta.glob('/src/**/*.vue');

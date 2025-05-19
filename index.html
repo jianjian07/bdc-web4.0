@@ -11,25 +11,25 @@
 <body>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
-  <script>
-    let xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.contentType = 'application/json;charset=UTF-8'
-    xhr.open("GET", "/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public");
-    xhr.send();
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
-          window.settingConfig = xhr.response
-          if (window.settingConfig.appTitle) {
-            document.title = window.settingConfig.appTitle;
-          }
-        } else {
-          alert('nacos配置读取失败！')
-        }
-      }
-    }
-  </script>
+<!--  <script>-->
+<!--    let xhr = new XMLHttpRequest();-->
+<!--    xhr.responseType = 'json';-->
+<!--    xhr.contentType = 'application/json;charset=UTF-8'-->
+<!--    xhr.open("GET", "/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public");-->
+<!--    xhr.send();-->
+<!--    xhr.onreadystatechange = function () {-->
+<!--      if (xhr.readyState == 4) {-->
+<!--        if (xhr.status == 200) {-->
+<!--          window.settingConfig = xhr.response-->
+<!--          if (window.settingConfig.appTitle) {-->
+<!--            document.title = window.settingConfig.appTitle;-->
+<!--          }-->
+<!--        } else {-->
+<!--          alert('nacos配置读取失败！')-->
+<!--        }-->
+<!--      }-->
+<!--    }-->
+<!--  </script>-->
 </body>
 
 </html>
