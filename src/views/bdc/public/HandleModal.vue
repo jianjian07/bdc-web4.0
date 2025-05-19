@@ -207,17 +207,23 @@ function getTaskInfo() {
     }, { withToken: true }).then(async (res) => {
       if (res && res.success) {
         let taskData = res.result
-        let nodeArr: any = await getNodeList() || []
-        if (!nodeArr.includes(taskData.taskName)) {
-          let isRegister = await getIsRegister()
-          if (isRegister) {
-            let arr = [...taskData.histListNode]
-            let hisNode = arr.filter(f => f.name_ !== taskData.taskName)
-            taskData.histListNode = getHisListNode(hisNode)
-          } else {
-            if (taskData.taskName.includes('簿')) {
-              taskData.transitionList = []
-              // message.warning('请先记载登记簿!')
+        let limit = true
+        if (window.settingConfig.removeRegisterLimit) {
+          limit = false
+        }
+        if (limit) {
+          let nodeArr: any = await getNodeList() || []
+          if (!nodeArr.includes(taskData.taskName)) {
+            let isRegister = await getIsRegister()
+            if (isRegister) {
+              let arr = [...taskData.histListNode]
+              let hisNode = arr.filter(f => f.name_ !== taskData.taskName)
+              taskData.histListNode = getHisListNode(hisNode)
+            } else {
+              if (taskData.taskName.includes('簿')) {
+                taskData.transitionList = []
+                // message.warning('请先记载登记簿!')
+              }
             }
           }
         }
