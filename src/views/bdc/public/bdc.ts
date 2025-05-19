@@ -1,7 +1,7 @@
 import { useUserStore, useUserStoreWithOut } from "/@/store/modules/user"
 import { Modal, message } from "ant-design-vue"
 import { cModal } from "/@/components/cModal/index"
-import { computed, nextTick } from "vue"
+import { computed, createVNode, nextTick } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
@@ -18,6 +18,7 @@ import {
   eventBus } from 'form-imagining'
 import { guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 
 const userStore = useUserStore()
 // 权利人信息
@@ -509,6 +510,7 @@ export async function register(demoRefs: any, loading: any, jdmc: string, params
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
+  const callback = params?.callback
   let checkRes = await checkSeal(slbh, loading)
   if (!checkRes) {
     return
@@ -521,7 +523,7 @@ export async function register(demoRefs: any, loading: any, jdmc: string, params
   ).then((res: any) => {
     loading.value = false
     if (res.success) {
-      djb(slbh, cType, loading);
+      djb(slbh, cType, loading, callback);
     } else {
       if (res.result == '-1') {
         message.error(res?.message)
@@ -533,7 +535,7 @@ export async function register(demoRefs: any, loading: any, jdmc: string, params
           okType: 'danger',
           cancelText: '取消',
           onOk() {
-            djb(slbh, "0", loading);
+            djb(slbh, "0", loading, callback);
           },
           onCancel() {
           },
@@ -563,6 +565,18 @@ function checkSeal(slbh: string, loading?: any) {
         }
         if (res && res.success && res.result.code == 1) {
           resolve(true)
+        } else if (res && res.success && res.result.code == 0){
+          Modal.confirm({
+            title: '提示',
+            icon: createVNode(ExclamationCircleOutlined),
+            content: createVNode('div', { style: 'color:red' }, res?.message || res?.result?.message),
+            onOk() {
+                resolve(true)
+            },
+            onCancel() {
+                resolve(false)
+            }
+          });
         } else {
           message.warning(res?.message || res?.result?.message || '逻辑校验不通过!')
           resolve(false)
@@ -578,7 +592,7 @@ function checkSeal(slbh: string, loading?: any) {
 }
 
 //登记簿逻辑
-function djb(slbh: string, cType: string, loading?: any) {
+function djb(slbh: string, cType: string, loading?: any, callback?: any) {
   if (loading) {
     loading.value = true
   }
@@ -586,15 +600,21 @@ function djb(slbh: string, cType: string, loading?: any) {
     url: '/api/zrzy-bdc/bdc/register/saveRegister',
     params: { slbh: slbh, cType: cType }
   }, { withToken: true }
-  ).then((res: any) => {
+  ).then(async (res: any) => {
     if (loading) {
       loading.value = false
     }
     message.success(res?.message)
-    // 刷新
-    const tabStore = useTabsStore()
-    tabStore.refreshTab()
-    // router.push('/refresh')
+    let _callbackRes = true
+    if (callback) {
+      _callbackRes = await eval(callback)
+    }
+    if (_callbackRes) {
+      // 刷新
+      const tabStore = useTabsStore()
+      tabStore.refreshTab()
+      // router.push('/refresh')
+    }
   }).catch((error: any) => {
     if (loading) {
       loading.value = false
