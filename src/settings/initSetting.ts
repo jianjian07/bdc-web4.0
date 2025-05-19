@@ -5,8 +5,6 @@ import { deepMerge } from "/@/utils"
 import projectSetting from "/@/settings/projectSetting"
 import { useAppStore } from "/@/store/modules/app"
 import { message } from "ant-design-vue"
-// 默哀日
-const memorialDays = ['04-04', '05-19', '07-07', '09-18', '11-30', '12-13']; 
 
 /**
  * 初始化全局配置
@@ -22,6 +20,8 @@ export function initGlobalSetting() {
  * 检查是否为默哀日
  */
 export function checkAndApplyMemorialEffect() {
+  // 默哀日
+  const memorialDays = window.settingConfig.memorialDays || ['04-04', '05-12', '07-07', '09-18', '11-30', '12-13'];
   const today = getTodayKey()
   if (memorialDays.includes(today)) {
     applyMemorialEffect()
