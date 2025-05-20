@@ -15,7 +15,7 @@ export const PAGE_NOT_FOUND_ROUTE: AppRouteRecordRaw = {
         {
             path: '/:path(.*)*',
             name: PAGE_NOT_FOUND_NAME + 'Child',
-            component: EXCEPTION_COMPONENT,
+            component: () => import('/@/views/sys/404/index.vue'),
             meta: {
                 title: 'ErrorPage',
                 hideBreadcrumb: true,
