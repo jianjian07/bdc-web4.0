@@ -2,19 +2,19 @@
     <div class="wonder-table-form">
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
-                <a-col :span="4" :offset="0">
-                    <a-form-item label="表单ID">
+                <a-col :span="6" :offset="0">
+                    <a-form-item label="报表ID">
                         <a-input v-model:value="formData.id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="表单编码">
-                        <a-input v-model:value="formData.code" allowClear />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8" :offset="0">
+                <a-col :span="6" :offset="0">
                     <a-form-item label="报表标题">
                         <a-input v-model:value="formData.title" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="6" :offset="0">
+                    <a-form-item label="报表编码">
+                        <a-input v-model:value="formData.code" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="4" :offset="0">
