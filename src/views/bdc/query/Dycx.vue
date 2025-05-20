@@ -14,20 +14,21 @@
     <div :class="isShowSearch ? 'bdc-dycx-main' : 'bdc-dycx-main-no-search'">
       <h2 style="text-align: center;margin-bottom: 20px">不动产单元查询</h2>
       <a-spin :spinning="spinning">
-        <a-timeline class="time-line" mode="left" style="margin-left: 50%">
+        <a-timeline class="time-line" mode="left" style="margin-left: 50%; margin-top: 50px">
           <a-timeline-item class="time-line-start" position="right">
             <template #dot>
               <div class="slot-dot-start">登记情况</div>
             </template>
-            <span style="font-weight: bold;position: absolute;left: -310px;">{{ bdcdyh }}</span>
+            <span style="font-weight: bold;position: absolute;left: -340px;font-size: 14px">{{ bdcdyh }}</span>
           </a-timeline-item>
           <a-timeline-item style="height: 50px">
             <template #dot><span style="font-weight: bold">至今</span></template>
           </a-timeline-item>
           <a-timeline-item v-for="(item, index) in hisData" :color="index == 0 ? 'green' : 'blue'">
-            <span style="position: absolute;left: -165px;">{{ item.djsj }}</span>
+            <template #dot><ClockCircleOutlined style="font-size: 16px" /></template>
+            <span style="position: absolute;left: -165px;top: 1px;">{{ item.djsj }}</span>
             <div style="padding-bottom: 10px">
-              <span @click="handleView(item)"
+              <span @click="handleView(item)" :class="index == 0 ? 'his-title-first' : 'his-title-other'"
                   :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline', cursor: 'pointer' }">
                 {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
               <br/>
@@ -48,6 +49,7 @@ import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { router } from "/@/router"
+import { ClockCircleOutlined } from '@ant-design/icons-vue'
 const route = useRoute();
 // 是否显示查询框
 let isShowSearch = ref<boolean>(true)
@@ -151,19 +153,33 @@ function handleView(item) {
   }
 
   .time-line-start {
-    height: 70px;
+    height: 75px;
     padding-right: 60px;
     margin-top: 40px;
   }
 
   .slot-dot-start {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border: 2px solid #e8e8e8;
     border-radius: 50%;
-    line-height: 76px;
+    line-height: 95px;
     font-weight: bold;
     font-size: 16px;
+  }
+}
+
+.his-title-first {
+  &:hover {
+    color: #7bb372!important;
+    transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),margin 0.3s,color 0.3s;
+  }
+}
+
+.his-title-other {
+  &:hover {
+    color: #7bb372!important;
+    transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),margin 0.3s,color 0.3s;
   }
 }
 </style>
