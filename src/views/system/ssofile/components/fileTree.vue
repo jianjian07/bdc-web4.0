@@ -441,6 +441,7 @@ function handleBeforeUpload(file, list, data) {
   if (uploadFiles.value.length === list.length) {
     customRequest(data);//自定义上传
   }
+  return false // 阻止默认上传
 }
 
 function customRequest(data) {
