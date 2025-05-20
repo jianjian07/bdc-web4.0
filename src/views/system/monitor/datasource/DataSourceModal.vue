@@ -29,6 +29,9 @@
             <a-form-item label="数据库" name="dbName" :rules="[{ required: true, message: '请输入数据库名' }]">
                 <a-input v-model:value="formData.dbName" />
             </a-form-item>
+            <a-form-item v-if="formData.dbType == '1'" label="模式名" name="schema" :rules="[{ required: true, message: '请输入模式名' }]">
+                <a-input v-model:value="formData.schema" />
+            </a-form-item>
             <a-form-item label="数据源地址" name="dbUrl" :rules="[{ required: true, message: '请输入数据源地址' }]">
                 <a-input v-model:value="formData.dbUrl" />
             </a-form-item>
@@ -125,6 +128,7 @@ function syncChange(value: any, syn: string) {
     const datasourceInfo: any = dataSources.find((item) => item.dbType == dbType)
     formData.value.dbDriver = datasourceInfo.dbDriver
     formData.value.dbUrl = datasourceInfo.dbUrl
+    formData.value.schema = ''
 }
 const dataSources = [
     { dbType: "MYSQl5.8", dbDriver: "com.mysql.cj.jdbc.Driver", dbUrl: "jdbc:mysql://127.0.0.1:3306/demo?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai" },
