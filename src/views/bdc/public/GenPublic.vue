@@ -71,6 +71,10 @@ watch(() => props.formData.sfybz, (newVal, oldVal) => {
   if (showQlr.value) {
      initQlrXx()
   }
+  // 外网转现提取弹窗用到 弹窗增加动态数据源参数
+  if (props.formData.db && !route.query.db) {
+    route.query.db = props.formData.db
+  }
   resetValidateInfos()
 }, {
   immediate: true
