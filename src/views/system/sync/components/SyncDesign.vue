@@ -97,15 +97,20 @@
               <a v-if="!isAllChecked(type)" @click="selectAll(type)">全选</a>
               <a v-else @click="cancelSelectAll(type)">取消全选</a>
             </template>
-            <a-checkbox-group style="width: 100%" v-model:value="formState[`${type}Check`]"
-              @change="handleChangeCheckBox(type)">
-              <div style="display: flex; flex-direction: column; width: 60%; margin: auto">
-                <a-checkbox v-for="(item, index) in viewTables.source[type]" :key="index" :value="item.tablename"
-                  class="sync-panel-checkbox">
-                  {{ item.tablename }}
-                </a-checkbox>
-              </div>
-            </a-checkbox-group>
+            <div class="search-tool">
+              <a-input-search v-model:value="searchValue[type]" placeholder="请输入搜索词" style="width: 100%" @search="(value) => onSearch(value, type)"/>
+            </div>
+            <div class="checkbox-content">
+              <a-checkbox-group style="width: 100%" v-model:value="formState[`${type}Check`]"
+                @change="handleChangeCheckBox(type)">
+                <div style="display: flex; flex-direction: column; width: 60%; margin: auto">
+                  <a-checkbox v-for="(item, index) in viewTables.source[type]" :key="index" :value="item.tablename"
+                    class="sync-panel-checkbox">
+                    {{ item.tablename }}
+                  </a-checkbox>
+                </div>
+              </a-checkbox-group>
+            </div>
           </a-card>
         </div>
         <div class="sync-panel-right">
@@ -126,7 +131,7 @@
                     <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
                     <a-input v-model:value="item.identityColumn" placeholder="目标表自增列" readOnly
                       style="width: 100%; flex: 1 1 0; min-width: 0;" />&nbsp;&nbsp;
-                    <a-select v-model:value="item.businessKey" placeholder="请选择目标表标识列" style="width: 100%; flex: 1 1 0; min-width: 0;" :options="item.notIdentityColumns"></a-select>
+                    <a-select v-model:value="item.businessKey" placeholder="请选择目标表标识列" style="width: 100%; flex: 1 1 0; min-width: 0;" :options="item.notIdentityColumns" @click="handleClickBusinessKey(item)"></a-select>
 <!--                    <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
 <!--                      @click="handleEdit(type, item, index)" />-->
                     <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
@@ -147,6 +152,9 @@
       <a-button v-if="current < steps.length - 1" type="primary" @click="next">下一步</a-button>
       <a-button v-if="current == steps.length - 1" type="primary" @click="handleComplete">
         完成
+      </a-button>
+      <a-button v-if="current == steps.length - 1" type="primary" style="margin-left: 8px" @click="handleClose">
+        关闭
       </a-button>
       <a-button v-if="current > 0" style="margin-left: 8px" @click="prev">上一步</a-button>
     </div>
@@ -190,6 +198,10 @@ let viewTables = ref<any>({
     table: []
   }
 })
+let searchValue = ref<any>({
+  view: '',
+  table: ''
+})
 // 视图全选
 let viewAllCheck = ref<boolean>(false)
 // 表全选
@@ -230,7 +242,7 @@ async function initData() {
         formState.value.viewCheck = content.view.map(v => v.sourceTable)
         formState.value.tableCheck = content.table.map(v => v.sourceTable)
       }
-      console.log('formState.value', formState.value)
+      // console.log('formState.value', formState.value)
 
     }
 
@@ -283,9 +295,12 @@ function getTables(dbKey, type) {
     if (res && res.success) {
       if (type == 'source') {
         viewTables.value.source.view = res.result.view
+        viewTables.value.source.viewAll =  res.result.view
         viewTables.value.source.table = res.result.table
+        viewTables.value.source.tableAll =  res.result.table
       } else {
         viewTables.value.target.table = res.result.table
+        viewTables.value.target.tableAll = res.result.table
       }
     }
   })
@@ -358,6 +373,9 @@ function selectAll(type) {
 function isAllChecked(type) {
   const allItems = viewTables.value.source[type].map(i => i.tablename);
   const selectedItems = formState.value[`${type}Check`] || [];
+  if (allItems.length === 0) {
+    return false;
+  }
   return allItems.length === selectedItems.length && allItems.every(item => selectedItems.includes(item));
 }
 
@@ -419,6 +437,10 @@ function handleModalOk(value) {
  */
 function handleComplete() {
   let obj = JSON.parse(JSON.stringify(formState.value))
+  obj.tableCheckRow = obj.tableCheckRow.map((row) => {
+    delete row.notIdentityColumns
+    return row
+  })
   obj.content = JSON.stringify({
     table: obj.tableCheckRow,
     view: obj.viewCheckRow
@@ -428,11 +450,15 @@ function handleComplete() {
   defHttp.post({ url: url, data: obj }, { withToken: true }).then((res) => {
     if (res && res.success) {
       message.success('保存成功!')
-      closeCurrentTab()
+      // closeCurrentTab()
     } else {
       message.warning(res?.message)
     }
   })
+}
+
+function handleClose() {
+  closeCurrentTab()
 }
 
 /**
@@ -467,14 +493,37 @@ function handleChangeTargetTable(value, item) {
   defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: value } }, { withToken: true }).then((res) => {
       if (res && res.code == 200) {
         item.identityColumn = res.result.find(r => r.isidentity == 'YES')?.columnname || ''
-        item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
-          m.label = m.columnname
-          m.value = m.columnname
-          return m
-        })
       }
   })
 }
+
+/**
+ * 点击目标表
+ * @param item
+ */
+function handleClickBusinessKey(item) {
+  defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: item.targetTable } }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+         item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
+            m.label = m.columnname
+            m.value = m.columnname
+            return m
+         })
+      }
+  })
+}
+
+/**
+ * 搜索
+ * @param value
+ * @param type
+ */
+function onSearch(value, type) {
+  viewTables.value.source[type] = viewTables.value.source[`${type}All`].filter((item) => {
+    return item.tablename.includes(value)
+  })
+}
+
 </script>
 
 <style lang="less" scoped>
@@ -529,6 +578,15 @@ function handleChangeTargetTable(value, item) {
       .sync-panel-left-card {
         height: calc(50% - 10px);
         margin-bottom: 8px;
+      }
+      
+      .search-tool {
+        height: 40px;
+      }
+      
+      .checkbox-content {
+        height: calc(100% - 40px);
+        overflow: auto;
       }
     }
 
