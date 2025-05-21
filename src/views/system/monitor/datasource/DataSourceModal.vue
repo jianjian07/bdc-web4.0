@@ -4,7 +4,7 @@
             <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
             <a-button type="primary" @click="onOk">确定</a-button>
         </template>
-        <a-form :model="formData" name="basic" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" autocomplete="off">
+        <a-form :model="formData" ref="formRef" name="basic" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" autocomplete="off">
             <a-form-item label="数据源编码" name="code" :rules="[{ required: true, message: '请输入数据源编码' }]">
                 <a-input v-model:value="formData.code" />
             </a-form-item>
@@ -21,16 +21,16 @@
                 <a-input v-model:value="formData.dbDriver" />
             </a-form-item>
             <a-form-item label="主机" name="hostName" :rules="[{ required: true, message: '请输入主机' }]">
-                <a-input v-model:value="formData.hostName" />
+                <a-input v-model:value="formData.hostName" @change="setDbUrl"/>
             </a-form-item>
             <a-form-item label="端口号" name="port" :rules="[{ required: true, message: '请输入端口号' }]">
-                <a-input v-model:value="formData.port" />
+                <a-input v-model:value="formData.port" @change="setDbUrl"/>
             </a-form-item>
             <a-form-item label="数据库" name="dbName" :rules="[{ required: true, message: '请输入数据库名' }]">
-                <a-input v-model:value="formData.dbName" />
+                <a-input v-model:value="formData.dbName" @change="setDbUrl"/>
             </a-form-item>
             <a-form-item v-if="formData.dbType == '1'" label="模式名" name="schema" :rules="[{ required: true, message: '请输入模式名' }]">
-                <a-input v-model:value="formData.schema" />
+                <a-input v-model:value="formData.schema" @change="setDbUrl"/>
             </a-form-item>
             <a-form-item label="数据源地址" name="dbUrl" :rules="[{ required: true, message: '请输入数据源地址' }]">
                 <a-input v-model:value="formData.dbUrl" />
@@ -79,6 +79,7 @@ enum api {
 // let { ...restConfig } = props.dataInfo
 let formData = ref<any>({})
 let open = ref(props.open)
+let formRef = ref<any>()
 const emit = defineEmits(["ok"])
 initData()
 function initData() {
@@ -97,21 +98,23 @@ function initData() {
  */
 function onOk() {
     // 执行保存
-    let url = api.addUrl
-    let methodType = 'add'
-    if (formData.value.hasOwnProperty("id")) {
-        url = api.updateUrl
-        methodType = 'update'
-    }
-    defHttp.post({ url: url, data: formData.value }, { withToken: true }).then((res) => {
-        message.success("保存成功")
-        if (methodType == 'add') {
-            emit("ok", { isAdd: true })
-        } else {
-            emit("ok", { isAdd: false })
+    formRef.value.validate().then(() => {
+        let url = api.addUrl
+        let methodType = 'add'
+        if (formData.value.hasOwnProperty("id")) {
+            url = api.updateUrl
+            methodType = 'update'
         }
-    }).catch(err => {
-        console.info(err)
+        defHttp.post({ url: url, data: formData.value }, { withToken: true }).then((res) => {
+            message.success("保存成功")
+            if (methodType == 'add') {
+                emit("ok", { isAdd: true })
+            } else {
+                emit("ok", { isAdd: false })
+            }
+        }).catch(err => {
+            console.info(err)
+        })
     })
 }
 function onTestConnection() {
@@ -129,6 +132,7 @@ function syncChange(value: any, syn: string) {
     formData.value.dbDriver = datasourceInfo.dbDriver
     formData.value.dbUrl = datasourceInfo.dbUrl
     formData.value.schema = ''
+    setDbUrl()
 }
 const dataSources = [
     { dbType: "MYSQl5.8", dbDriver: "com.mysql.cj.jdbc.Driver", dbUrl: "jdbc:mysql://127.0.0.1:3306/demo?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai" },
@@ -137,6 +141,26 @@ const dataSources = [
     { dbType: "Oracle", dbDriver: "oracle.jdbc.OracleDriver", dbUrl: "jdbc:oracle:thin:@127.0.0.1:1521:ORCL" },
     { dbType: "PostgreSQL", dbDriver: "org.postgresql.Driver", dbUrl: "jdbc:postgresql://127.0.0.1:5432/demo" }
 ]
+
+/**
+ * 拼接数据源地址
+ */
+function setDbUrl() {
+  let dbTypeLabel = getDictItemsByCode('database').filter((_v: any) => _v.dictCode == formData.value.dbType)[0]?.dictName || ''
+  let url = ''
+  let host = formData.value.hostName || ''
+  let port = formData.value.port || ''
+  let db = formData.value.dbName || ''
+  let schema = formData.value.schema || ''
+  
+  switch (dbTypeLabel) {
+    case 'PostgreSQL':
+      url = `jdbc:postgresql://${host}:${port}/${db}?currentSchema=${schema}`
+      break;
+  }
+  formData.value.dbUrl = url
+}
+
 function onClose() {
     // 执行取消
     emit("ok", { isAdd: false })
