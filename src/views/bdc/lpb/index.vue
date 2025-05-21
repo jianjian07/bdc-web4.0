@@ -121,7 +121,7 @@
             <tbody class="ant-table-tbody">
               <tr v-for="(cInfo, cIndex) in cxx" :key="cInfo.wlc">
                 <td class="title">{{ cInfo.wlc }}</td>
-                <td class="title">{{ cInfo.myc }}层</td>
+                <td class="title">{{ getMycStr(cInfo.myc) }}</td>
                 <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
                   <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
                     :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan"
@@ -796,6 +796,11 @@ function getTemClass(record) {
 
 function onClose() {
   checkFw.value = null
+}
+
+function getMycStr(myc) {
+  if (!myc) return '';
+  return myc.endsWith('层') ? myc : myc + '层';
 }
 </script>
 
