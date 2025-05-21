@@ -104,10 +104,13 @@
               <a-checkbox-group style="width: 100%" v-model:value="formState[`${type}Check`]"
                 @change="handleChangeCheckBox(type)">
                 <div style="display: flex; flex-direction: column; width: 60%; margin: auto">
-                  <a-checkbox v-for="(item, index) in viewTables.source[type]" :key="index" :value="item.tablename"
-                    class="sync-panel-checkbox">
-                    {{ item.tablename }}
-                  </a-checkbox>
+                  <template v-for="(item, index) in viewTables.source[type]" :key="index">
+                    <a-checkbox v-show="!item.hidden" :value="item.tablename"
+                      class="sync-panel-checkbox">
+                      {{ item.tablename }}
+                    </a-checkbox>
+                  </template>
+                  
                 </div>
               </a-checkbox-group>
             </div>
@@ -295,12 +298,9 @@ function getTables(dbKey, type) {
     if (res && res.success) {
       if (type == 'source') {
         viewTables.value.source.view = res.result.view
-        viewTables.value.source.viewAll =  res.result.view
         viewTables.value.source.table = res.result.table
-        viewTables.value.source.tableAll =  res.result.table
       } else {
         viewTables.value.target.table = res.result.table
-        viewTables.value.target.tableAll = res.result.table
       }
     }
   })
@@ -314,7 +314,7 @@ function handleChangeCheckBox(type) {
   const isView = type === 'view';
   const checkList = isView ? formState.value.viewCheck : formState.value.tableCheck;
   const checkRowList = isView ? formState.value.viewCheckRow || [] : formState.value.tableCheckRow || [];
-
+  
   const updatedRows = checkList.map(check => {
     const foundRow = checkRowList.find(rowCheck => rowCheck.sourceTable === check);
     return foundRow || {
@@ -519,8 +519,9 @@ function handleClickBusinessKey(item) {
  * @param type
  */
 function onSearch(value, type) {
-  viewTables.value.source[type] = viewTables.value.source[`${type}All`].filter((item) => {
-    return item.tablename.includes(value)
+  viewTables.value.source[type] = viewTables.value.source[`${type}`].map((item) => {
+    item.hidden = !item.tablename.includes(value)
+    return item
   })
 }
 
