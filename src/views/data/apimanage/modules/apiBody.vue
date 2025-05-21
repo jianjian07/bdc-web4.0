@@ -177,6 +177,9 @@ watch(() => jsonContent.value, (newVal: string) => {
   if (isJsonData(newVal)) {
     props.apiData.apiBody = jsonToView(newVal, props.apiData.apiBody)
   }
+  nextTick(() => {
+    props.apiData.jsonContent = jsonContent.value
+  })
 }, {
   deep: true
 })

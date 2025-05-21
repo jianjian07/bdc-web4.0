@@ -22,6 +22,19 @@
       <a-tab-pane key="bz" tab="接口说明" class="api-param-pane" forceRender>
         <a-textarea v-model:value="apiData.bz" placeholder="请输入接口说明" style="height: 100%" />
       </a-tab-pane>
+      <a-tab-pane key="callback" tab="请求接口">
+        <a-form
+          ref="formRef"
+          :label-col="{ span: 3 }"
+          :wrapper-col="{ span: 18 }">
+          <a-form-item label="类路径">
+            <a-input v-model:value="apiData.className"></a-input>
+          </a-form-item>
+          <a-form-item label="方法名">
+            <a-input v-model:value="apiData.methodName"></a-input>
+          </a-form-item>
+        </a-form>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>

@@ -300,11 +300,11 @@ function formatXml(str) {
     position: fixed;
     top: 10px;
     left: 10px;
-    width: calc(100% - 20px);
-    height: calc(100% - 20px);
+    width: calc(100% - 20px) !important;
+    height: calc(100% - 20px) !important;
     padding: 10px;
     background-color: #f5f5f5;
-    z-index: 1000;
+    z-index: 1001;
 
     .full-screen-icon {
       top: 11px;
