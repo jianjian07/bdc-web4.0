@@ -119,7 +119,7 @@
                     <a-input :value="item.sourceTable" readonly style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;"/>
                     <SwapRightOutlined style="margin: 0px 10px;font-size: 16px" />
                     <a-select v-model:value="item.targetTable" :dropdownMatchSelectWidth="false" placeholder="请选择目标表"
-                      style="width: 100%; flex: 1 1 0; min-width: 0;" show-search @change="(value) => handleChangeTargetTable(value, item)">
+                      style="width: 100%; flex: 1 1 0; min-width: 0;" show-search @change="(value) => handleChangeTargetTable(value, item)" allow-clear>
                       <a-select-option v-for="(selectItem, selectIndex) in viewTables.target.table"
                         :value="selectItem.tablename">{{ selectItem.tablename }}</a-select-option>
                     </a-select>
