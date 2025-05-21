@@ -22,8 +22,8 @@
           >
             <template #icon="{ dataRef }">
               <AuditOutlined v-if="dataRef.iconName == 'audit'" />
-              <BookOutlined v-else-if="dataRef.iconName == 'book'"/>
-              <FileOutlined v-else-if="dataRef.iconName == 'file'"/>
+              <BookOutlined v-else-if="dataRef.iconName == 'book'" />
+              <FileOutlined v-else-if="dataRef.iconName == 'file'" />
             </template>
           </a-tree>
         </a-spin>
@@ -167,8 +167,8 @@
                         </template>
                         <template v-else-if="['sxtj'].includes(column?.key)">
                           <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
-                            <template v-if="validateRules(column.rules, record[column.dataIndex])" #title>
-                              <span>{{ validateRules(column.rules, record[column.dataIndex]) }}</span>
+                            <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
+                              <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                             </template>
                             <a-tree-select v-if="getSxyLabel(record['sxy']) == '权利人类型'" 
                                            v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" 
@@ -177,9 +177,7 @@
                                            :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear
                                            @change="(value, option) => handleChangeValue(value, option, column, record)"
                                            :tree-data="getTreeDictItemsByCode(getSxtjOptions(record['sxy']))"
-                                           treeCheckStrictly
-                            >
-                              
+                                           treeCheckStrictly>
                             </a-tree-select>
                             <a-select v-else v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" :disabled="column.disabled" mode="multiple"
                                       :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
@@ -605,7 +603,7 @@ function handleDelSxtj(record, index) {
      sxtjxx.value.splice(index, 1)
   }
 }
-
+// 
 </script>
 
 <style lang="less" scoped>
