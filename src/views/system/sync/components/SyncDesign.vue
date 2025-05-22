@@ -1,9 +1,9 @@
 <template>
   <div class="sync-design">
-    <div class="sync-design-steps-tool">
+    <div class="sync-design-steps-tool" v-if="!isJustTb">
       <a-steps class="sync-design-steps" :current="current" :items="items"></a-steps>
     </div>
-    <div :class="`sync-steps-${current == 0 ? 'one' : 'two'}-content`">
+    <div :class="`sync-steps-${current == 0 ? 'one' : 'two'}-content${isJustTb ? '-sync' : ''}`">
       <div v-if="current == 0" class="sync-form">
         <a-form ref="formRef" :model="formState">
           <a-row>
@@ -98,12 +98,12 @@
               <a v-else @click="cancelSelectAll(type)">取消全选</a>
             </template>
             <div class="search-tool">
-              <a-input-search v-model:value="searchValue[type]" placeholder="请输入搜索词" style="width: 100%" @search="(value) => onSearch(value, type)"/>
+              <a-input-search v-model:value="searchValue[type]" enter-button placeholder="请输入搜索词" style="width: 100%" @search="(value) => onSearch(value, type)"/>
             </div>
             <div class="checkbox-content">
               <a-checkbox-group style="width: 100%" v-model:value="formState[`${type}Check`]"
                 @change="handleChangeCheckBox(type)">
-                <div style="display: flex; flex-direction: column; width: 60%; margin: auto">
+                <div style="display: flex; flex-direction: column; width: 90%; margin: auto">
                   <template v-for="(item, index) in viewTables.source[type]" :key="index">
                     <a-checkbox v-show="!item.hidden" :value="item.tablename"
                       class="sync-panel-checkbox">
@@ -123,22 +123,62 @@
               class="sync-panel-right-card">
               <template v-if="formState[`${type}Check`]?.length">
                 <div class="sync-panel-right-content">
-                  <div class="sync-panel-right-row" v-for="(item, index) in formState[`${type}CheckRow`]" :key="index">
-                    <a-input :value="item.sourceTable" readonly style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;"/>
-                    <SwapRightOutlined style="margin: 0px 10px;font-size: 16px" />
-                    <a-select v-model:value="item.targetTable" :dropdownMatchSelectWidth="false" placeholder="请选择目标表"
-                      style="width: 100%; flex: 1 1 0; min-width: 0;" show-search @change="(value) => handleChangeTargetTable(value, item)" allow-clear>
-                      <a-select-option v-for="(selectItem, selectIndex) in viewTables.target.table"
-                        :value="selectItem.tablename">{{ selectItem.tablename }}</a-select-option>
-                    </a-select>
-                    <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
-                    <a-input v-model:value="item.identityColumn" placeholder="目标表自增列" readOnly
-                      style="width: 100%; flex: 1 1 0; min-width: 0;" />&nbsp;&nbsp;
-                    <a-select v-model:value="item.businessKey" placeholder="请选择目标表标识列" style="width: 100%; flex: 1 1 0; min-width: 0;" :options="item.notIdentityColumns" @click="handleClickBusinessKey(item)"></a-select>
-<!--                    <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
-<!--                      @click="handleEdit(type, item, index)" />-->
-                    <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
-                      @click="handelDelRow(type, item, index)" />
+                  <a-alert type="info" :showIcon="false">
+                    <template #description>
+                     <div :class="['sync-panel-right-row-header',`sync-panel-right-row-header-${type}`]">
+                      <div style="text-align: center; min-width: 0;">
+                        <a-tag color="orange">源表</a-tag></div>
+                      <div style="visibility: hidden;"><SwapRightOutlined /></div>
+                      <div style="text-align: center; min-width: 0;">
+                        <a-tag color="green">目标表</a-tag>
+                      </div>
+                      <div style="visibility: hidden;"><MinusOutlined /></div>
+                      <div style="text-align: center; min-width: 0;">
+                        <a-tag color="pink">自增列</a-tag></div>
+                      <div style="text-align: center; min-width: 0;">
+                        <a-tag color="purple">标识列</a-tag></div>
+                      <div style="visibility: hidden;">
+                        <MinusOutlined />
+                        <MinusOutlined />
+                      </div>
+                     </div>
+                    </template>
+                  </a-alert>
+                 
+                  <div class="sync-panel-right-row-body">
+                    <div class="sync-panel-right-row" v-for="(item, index) in formState[`${type}CheckRow`]" :key="index">
+                      <div :class="['sync-panel-right-row-parent',`sync-panel-right-row-parent-${type}`]">
+                        <a-input :value="item.sourceTable" readonly style="text-align: center; min-width: 0;"/>
+                        <div><SwapRightOutlined style="margin: 0px 10px;font-size: 16px" /></div>
+                        <a-select v-model:value="item.targetTable" :dropdownMatchSelectWidth="false" placeholder="请选择目标表"
+                          style="min-width: 0; text-align: center;" show-search @change="(value) => handleChangeTargetTable(value, item)" allow-clear>
+                          <a-select-option v-for="(selectItem, selectIndex) in viewTables.target.table"
+                            :value="selectItem.tablename">{{ selectItem.tablename }}</a-select-option>
+                        </a-select>
+                        <div><MinusOutlined style="margin: 0px 10px;font-size: 16px" /></div>
+                        <a-input v-model:value="item.identityColumn" placeholder="目标表自增列" readOnly
+                          style="min-width: 0; text-align: center;" />
+                        <a-select v-model:value="item.businessKey" placeholder="请选择目标表标识列" style="min-width: 0; text-align: center;" :options="item.notIdentityColumns" @click="handleClickBusinessKey(item)"></a-select>
+                         <div style="display: flex; justify-content: end">
+                           <AppstoreAddOutlined v-if="type == 'view'" style="margin: 0 0 0 10px;font-size: 18px;color: #1890FF; cursor: pointer" @click="handleAddChild(type, item, index)" />
+                           <!--                      <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
+  <!--                        @click="handleEdit(type, item, index)" />--> 
+                           <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
+                          @click="handelDelRow(type, item, index)" />
+                         </div>
+                        
+                        </div>
+                      <template v-if="type == 'view' && item.children && item.children.length">
+                        <div class="sync-panel-right-row-child" v-for="(child, childIndex) in item.children">
+                          <EnterOutlined style="transform: scaleX(-1);margin: 0px 10px;font-size: 16px;"/>
+                          <a-select v-model:value="child.viewTable" :options="item.viewTables"  @click="handleClickViewTable(item, child.viewTable)" style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;" placeholder="请选择关联表"/>
+                          <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
+                          <a-input v-model:value="child.viewTableKey" style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;" placeholder="请输入关联标识列"/>
+                          <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
+                          @click="handelDelChildRow(item.children, child, childIndex)" />
+                        </div>
+                      </template>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -159,7 +199,7 @@
       <a-button v-if="current == steps.length - 1" type="primary" style="margin-left: 8px" @click="handleClose">
         关闭
       </a-button>
-      <a-button v-if="current > 0" style="margin-left: 8px" @click="prev">上一步</a-button>
+      <a-button v-if="!isJustTb && current > 0" style="margin-left: 8px" @click="prev">上一步</a-button>
     </div>
   </div>
   <sync-modal ref="refModal" @ok="handleModalOk"></sync-modal>
@@ -170,7 +210,7 @@ import { computed, onMounted, ref, watch } from "vue"
 import { router } from "/@/router"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
-import { SwapRightOutlined, MinusOutlined, MinusCircleOutlined, FormOutlined } from '@ant-design/icons-vue';
+import { SwapRightOutlined, MinusOutlined, MinusCircleOutlined, FormOutlined, EnterOutlined, AppstoreAddOutlined } from '@ant-design/icons-vue';
 import SyncModal from "/@/views/system/sync/components/SyncModal.vue"
 import { message } from "ant-design-vue"
 import { useTabsStore } from "/@/store/modules/tabs"
@@ -215,6 +255,7 @@ let currentEdit = ref<any>()
 let refModal = ref()
 const steps = [{ title: '填写同步基本信息' }, { title: '选择同步信息对应' }];
 const items = steps.map(item => ({ key: item.title, title: item.title }));
+let isJustTb = ref<boolean>(false)
 
 enum api {
   options = '/api/zrzy-system/sys/datasource/options',
@@ -226,7 +267,14 @@ enum api {
 }
 
 onMounted(() => {
-  getDataSourceOptions()
+  let sync = router.currentRoute.value.query.sync
+  if (sync && sync == '1') {
+    isJustTb.value = true
+    current.value = 1
+  }
+  if (!isJustTb.value) {
+     getDataSourceOptions()
+  }
   initData()
 })
 
@@ -408,6 +456,53 @@ function handleEdit(type, item, index) {
 }
 
 /**
+ * 添加子项
+ * @param type
+ * @param item
+ * @param index
+ */
+function handleAddChild(type, item, index) {
+  if (!item.children) {
+    item.children = []
+  }
+  handleClickViewTable(item)
+  item.children.push({
+    viewTable: null,
+    viewTableKey: null
+  })
+}
+
+/**
+ * 点击视图关联表选项
+ * @param item
+ */
+function handleClickViewTable(item, current?: any) {
+  console.log('ite',item)
+  if (!item.viewTables) {
+  // 这里先写死 todo 接口获取
+    item.viewTables = [
+      { label: 'bdc-bdcdj', value: 'bdc-bdcdj' },
+      { label: 'bdc-djzb', value: 'bdc-djzb' },
+      { label: 'bdc-qyxx', value: 'bdc-qyxx' }
+    ]
+  }
+  
+  const currentValue = current
+  
+  const otherSelectedValues = item.children
+    .filter(m => m !== item) // 排除当前项
+    .map(m => m.viewTable)
+    .filter(Boolean) // 去掉 null 或 undefined
+  
+  item.viewTables = item.viewTables.map(option => {
+    return {
+      ...option,
+      disabled: option.value !== currentValue && otherSelectedValues.includes(option.value)
+    }
+  })
+}
+
+/**
  * 删除行
  * @param type
  * @param item
@@ -419,6 +514,16 @@ function handelDelRow(type, item, index) {
     formState.value[`${type}Check`].splice(findCheckIndex, 1)
     formState.value[`${type}CheckRow`].splice(index, 1)
   }
+}
+
+/**
+ * 删除子行
+ * @param type
+ * @param item
+ * @param index
+ */
+function handelDelChildRow(children, item, index) {
+  children.splice(index, 1)
 }
 
 /**
@@ -439,6 +544,11 @@ function handleComplete() {
   let obj = JSON.parse(JSON.stringify(formState.value))
   obj.tableCheckRow = obj.tableCheckRow.map((row) => {
     delete row.notIdentityColumns
+    return row
+  })
+  obj.viewCheckRow = obj.viewCheckRow.map((row) => {
+    delete row.notIdentityColumns
+    delete row.viewTables
     return row
   })
   obj.content = JSON.stringify({
@@ -558,6 +668,11 @@ function onSearch(value, type) {
     height: calc(100% - 130px);
     overflow: auto;
   }
+  
+  .sync-steps-two-content-sync {
+    height: calc(100% - 80px);
+    overflow: auto;
+  }
 
   .sync-form,
   .sync-panel {
@@ -613,22 +728,68 @@ function onSearch(value, type) {
 
         .sync-panel-right-content {
           width: 100%;
+          height: 100%;
           display: flex;
           flex-direction: column;
-
-          .sync-panel-right-row {
+          
+          :deep(.ant-alert) {
+            padding: 0;
+            margin-bottom: 10px;
+          }
+          
+          .sync-panel-right-row-header {
+            display: grid;
+            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 60px;
+            align-items: center;
+            column-gap: 8px;
+            //margin-bottom: 10px;
+            height: 30px;
+          }
+          
+          .sync-panel-right-row-header-table {
+            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 30px;
+          }
+          
+          .sync-panel-right-row-body {
+            width: 100%;
+            height: calc(100% - 40px);
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+          }
+          
+          .sync-panel-right-row-parent {
+            display: grid;
+            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 60px;
+            align-items: center;
+            column-gap: 8px;
+            margin-bottom: 10px;
+            height: 30px;
+            //display: flex;
+            //justify-content: center;
+            //width: 100%;
+            //margin-bottom: 10px;
+            //height: 30px;
+          }
+          
+          .sync-panel-right-row-parent-table {
+            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 30px;
+          }
+          
+          .sync-panel-right-row-child {
             display: flex;
             justify-content: center;
             width: 100%;
             margin-bottom: 10px;
             height: 30px;
+            padding-left: 20px;
           }
         }
       }
     }
 
     :deep(.ant-card-body) {
-      height: calc(100% - 50px);
+      height: calc(100% - 40px);
       overflow: auto;
     }
 

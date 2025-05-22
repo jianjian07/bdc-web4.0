@@ -49,6 +49,8 @@
           {{ index + 1 }}
         </template>
         <template v-else-if="column.dataIndex == 'operate'">
+          <a @click="sync(record)">同步</a>
+          <a-divider type="vertical" />
           <a @click="edit(record)">编辑</a>
           <a-divider type="vertical" />
           <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
@@ -103,7 +105,7 @@ const columns = [
     title: '操作',
     dataIndex: 'operate',
     key: 'operate',
-    width: 110
+    width: 150
   },
 ]
 
@@ -151,6 +153,10 @@ function add() {
 
 function edit(record) {
   router.push({ path: '/system/syncdesign', query: { id: record.id } })
+}
+
+function sync(record) {
+  router.push({ path: '/system/syncdesign', query: { id: record.id, sync: '1' } })
 }
 
 /**
