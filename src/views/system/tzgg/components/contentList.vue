@@ -1,8 +1,9 @@
 <template>
-  <div :class="{'scroll-container': true, scrollable: scrollable}" ref="scrollRef">
+  <div :class="{ 'scroll-container': true, scrollable: scrollable }" ref="scrollRef">
     <a-list item-layout="horizontal" :data-source="scrollList">
       <template #renderItem="{ item }">
-        <a-list-item @click="showModal(item)" :style="{height: itemHeight + 'px'}" @mouseover="toggleAnimation(false)" @mouseleave="toggleAnimation(true)">
+        <a-list-item @click="showModal(item)" :style="{ height: itemHeight + 'px' }" @mouseover="toggleAnimation(false)"
+          @mouseleave="toggleAnimation(true)">
           <a-list-item-meta>
             <template #description>
               <div style="display: flex; justify-content: space-between;">
@@ -11,10 +12,12 @@
                   <a-tag color="yellow" v-if="item.priority == 'M'">中</a-tag>
                   <a-tag color="green" v-if="item.priority == 'L'">低</a-tag>
                   <a-tooltip :title="item.msgAbstract">
-                    <span class="text-ellipsis">{{  item.msgAbstract }}</span>
+                    <span class="text-ellipsis">{{ item.msgAbstract }}</span>
                   </a-tooltip>
-                  </div>
-                <div style="width: 350px; padding-left: 5px; text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" v-if="item.sendTime">发布时间：{{ item.sendTime }}</div>
+                </div>
+                <div
+                  style="width: 350px; padding-left: 5px; text-overflow: ellipsis;overflow: hidden;white-space: nowrap;"
+                  v-if="item.sendTime">发布时间：{{ item.sendTime }}</div>
               </div>
             </template>
             <template #title>
@@ -22,7 +25,7 @@
             </template>
             <template #avatar>
               <!-- <svg-icon  :name="item.msgCategory == '1' ? 'tzgg' : item.msgCategory == '2' ? 'xttz' : item.msgCategory == '3' ? 'gsgg' : 'qttz'" width="30px" height="30px" ></svg-icon> -->
-              <svg-icon :name="category ? 'qttz' : 'tzgg'"  width="30px" height="30px" ></svg-icon>
+              <svg-icon :name="category ? 'qttz' : 'tzgg'" width="30px" height="30px"></svg-icon>
             </template>
           </a-list-item-meta>
         </a-list-item>
@@ -59,7 +62,7 @@ const props = defineProps({
 })
 
 watch(() => props.category, (val) => {
-  if(val) {
+  if (val) {
     itemHeight.value = 70
   }
   loadData()
@@ -89,11 +92,11 @@ const scroll = () => {
     top: top++
   })
 
-  if(top % itemHeight.value === 0) {
+  if (top % itemHeight.value === 0) {
     const target = scrollList.value[index]
     scrollList.value.push(target)
 
-    if(index < (dataList.value.length - 1)) {
+    if (index < (dataList.value.length - 1)) {
       index++
     } else {
       top = 0
@@ -101,20 +104,20 @@ const scroll = () => {
       scrollRef.value?.scrollTo({
         top: 0
       })
-      scrollList.value = [ ...dataList.value ]
+      scrollList.value = [...dataList.value]
     }
   }
-  if(running.value) {
+  if (running.value) {
     animId.value = requestAnimationFrame(scroll)
   }
 }
 
 function toggleAnimation(flag: any) {
-  if(dataList.value.length <= (Math.ceil(scrollRef.value?.offsetHeight / itemHeight.value) || 3)) {
-    return 
+  if (dataList.value.length <= (Math.ceil(scrollRef.value?.offsetHeight / itemHeight.value) || 3)) {
+    return
   }
   running.value = flag
-  if(running.value) {
+  if (running.value) {
     scroll()
   } else {
     cancelAnimationFrame(animId)
@@ -123,22 +126,23 @@ function toggleAnimation(flag: any) {
 
 function loadData() {
   spinning.value = true
-  defHttp.get({ 
-    url: api.tasklist, 
+  defHttp.get({
+    url: api.tasklist,
     params: {
       pageNo: 1,
       pageSize: 100,
-      msgCategory: props.category
-    }, 
+      msgCategory: props.category,
+      sendStatus: 1
+    },
   }, { withToken: true }).then(res => {
-      if (res.success) {
-          const result: any = res.result
-          dataList.value = result.records
-          scrollList.value = [...dataList.value]
-      }
-      spinning.value = false
+    if (res.success) {
+      const result: any = res.result
+      dataList.value = result.records
+      scrollList.value = [...dataList.value]
+    }
+    spinning.value = false
   }).catch(() => {
-      spinning.value = false
+    spinning.value = false
   })
 }
 
@@ -166,21 +170,28 @@ function showModal(record: any) {
 .scroll-container {
   overflow: hidden;
   height: 100%;
+
   :deep(.ant-list-item) {
     padding: 10px 0px !important;
   }
+
   :deep(.ant-list-item-meta) {
     align-items: center !important;
   }
 }
+
 .scrollable {
   overflow: auto;
 }
 
 .text-ellipsis {
-  flex: 1; /* 定义容器宽度 */
-  white-space: nowrap; /* 确保文本在一行内显示 */
-  overflow: hidden; /* 隐藏超出容器的内容 */
-  text-overflow: ellipsis; /* 使用省略号表示被截断的文本 */
+  flex: 1;
+  /* 定义容器宽度 */
+  white-space: nowrap;
+  /* 确保文本在一行内显示 */
+  overflow: hidden;
+  /* 隐藏超出容器的内容 */
+  text-overflow: ellipsis;
+  /* 使用省略号表示被截断的文本 */
 }
 </style>
