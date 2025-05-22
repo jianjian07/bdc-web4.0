@@ -294,7 +294,7 @@ function ensureSingleSlashStart(str) {
  */
 export function sendExCommonApi(sendParams) {
   return new Promise((resolve, reject) => {
-    defHttp.post({ url: '/api/zrzy-api/sql/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
+    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(JSON.stringify(res.result))
         message.success('请求成功')
