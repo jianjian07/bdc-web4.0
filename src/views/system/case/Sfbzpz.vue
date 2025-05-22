@@ -28,7 +28,7 @@
           </a-tree>
         </a-spin>
       </a-col>
-      <a-col :md="17" :sm="24" style="padding: 10px;height: 100%; overflow: auto">
+      <a-col :md="17" :sm="24" style="padding: 10px;height: 100%; overflow: auto; display: flex; justify-content: center; align-items: center;">
         <div class="sfbzpz-detail" v-if="selectedNode.id">
           <div class="title-css1 title-left" >
             <span>详细信息</span>

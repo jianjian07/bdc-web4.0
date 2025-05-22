@@ -134,7 +134,7 @@ function handleAdd() {
 function del(node) {
   let currentSelect
   let findParent = findParentNode(props.apiData.apiDataSource,node.id)
-  let arr = findParent.children || []
+  let arr = findParent?.children || props.apiData.apiDataSource || []
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].id == node.id) {
       if (arr[i + 1]) {
@@ -259,6 +259,7 @@ function findNodeLevel(tree: any[], targetId: string | number, currentLevel = 0)
  * @param targetId
  */
 function findParentNode(tree: any[], targetId: string | number): any | null {
+  console.log('targetId',targetId)
   for (const node of tree) {
     if (node.children && node.children.some((child) => child.id === targetId)) {
       return node

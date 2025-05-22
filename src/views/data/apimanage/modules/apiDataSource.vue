@@ -128,7 +128,7 @@ function handleAdd() {
 function del(node) {
   let currentSelect
   let findParent = findParentNode(props.apiData.apiDataSource, node.id)
-  let arr = findParent.children || []
+  let arr = findParent?.children || props.apiData.apiDataSource || []
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].id == node.id) {
       if (arr[i + 1]) {
