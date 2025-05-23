@@ -1,7 +1,7 @@
 <template>
   <div class="jf-detail">
     <a-button style="margin-bottom: 10px; float: right" @click="handelAdd">新增</a-button>
-    <a-table :columns="columns" :data-source="jfxx" size="small" :loading="loading">
+    <a-table :columns="columns" :data-source="jfxx" size="small" :loading="loading" :pagination="false" style="padding-bottom: 8px">
       <template #headerCell="{ title, column }">
         <template v-if="column.rules?.find(r => r.required)">
           <span class="required-text">{{ title }}</span>

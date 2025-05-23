@@ -75,23 +75,27 @@ let columns = ref<any>([
   {
     title: '姓名',
     dataIndex: 'qlrmc',
-    key: 'qlrmc'
+    key: 'qlrmc',
+    width: 250
   },
   {
     title: '证件号',
     dataIndex: 'zjh',
-    key: 'zjh'
+    key: 'zjh',
+    width: 200
   },
   {
     title: '证件种类',
     dataIndex: 'zjzl',
     key: 'zjzl',
-    dict: 'zjzl'
+    dict: 'zjzl',
+    width: 150
   },
   {
     title: '联系电话',
     dataIndex: 'dh',
-    key: 'dh'
+    key: 'dh',
+    width: 200
   },
   {
     title: '操作',
