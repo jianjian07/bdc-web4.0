@@ -14,7 +14,7 @@ const checkFlag = true
  */
 export async function extractData(options: any) {
     const route = router.currentRoute.value;
-    const { data, dtype, open, reload, regType, ywlx } = options
+    const { data, dtype, open, reload, regType, ywlx, exParams } = options
     const slbh = route.query.slbh?.toString()
     let dyhList: any = []
     let lcid = "";
@@ -51,6 +51,10 @@ export async function extractData(options: any) {
         case '0314':
         case '0315':
         case '0316':
+        case '0801':
+        case '0804':
+        case '0601':
+        case '0604':
             for (let index = 0; index < data.length; index++) {
                 const dyh = data[index];
                 dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
@@ -91,7 +95,8 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }) : true
+    let cqly = exParams?.cqly 
+    let check = checkFlag ? (cqly && cqly == 14 ? true : await checkLogic({ slbh: slbh, bdcModels: dyhList })): true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -99,7 +104,8 @@ export async function extractData(options: any) {
             "ywlx": ywlx,
             "slbh": slbh,
             "lcid": lcid,
-            "dyhList": dyhList
+            "dyhList": dyhList,
+            "cqly": cqly
         }
         defHttp.post({
             url: '/api/zrzy-bdc/bdc/case/addCase',
