@@ -48,15 +48,26 @@
         <template v-if="column.dataIndex == 'index'">
           {{ index + 1 }}
         </template>
+        <template v-else-if="column.dataIndex === 'jobId'">
+          <a-tag :color="record[column.dataIndex] != '' ? 'green' : 'red'" style="padding: 0 15px;">
+            {{ record[column.dataIndex] != '' ? '运行中' : '已停止' }}
+          </a-tag>
+        </template>
         <template v-else-if="column.dataIndex == 'operate'">
-          <a @click="sync(record)">同步</a>
-          <a-divider type="vertical" />
-          <a @click="edit(record)">编辑</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
-            <a>删除</a>
-          </a-popconfirm>
+          <a-space>
+            <template #split>
+              <a-divider type="vertical" />
+            </template>
+            <a v-if="record.jobId == ''" @click="start(record)">启动</a>
+            <a v-else @click="stop(record)">停止</a>
+            <a @click="sync(record)">同步信息</a>
 
+            <a @click="edit(record)">编辑</a>
+
+            <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
+              <a>删除</a>
+            </a-popconfirm>
+          </a-space>
         </template>
       </template>
     </a-table>
@@ -102,10 +113,15 @@ const columns = [
     key: 'targetDb'
   },
   {
+    title: '任务状态',
+    dataIndex: 'jobId',
+    key: 'jobId'
+  },
+  {
     title: '操作',
     dataIndex: 'operate',
     key: 'operate',
-    width: 150
+    width: 300
   },
 ]
 
@@ -117,7 +133,9 @@ let pagination = ref({
 
 enum api {
   list = '/api/zrzy-cdc/data/sync/list',
-  del = '/api/zrzy-cdc/data/sync/delete'
+  del = '/api/zrzy-cdc/data/sync/delete',
+  start = '/api/zrzy-cdc/data/sync/start',
+  stop = '/api/zrzy-cdc/data/sync/stop'
 }
 
 onMounted(() => {
@@ -158,6 +176,39 @@ function edit(record) {
 function sync(record) {
   router.push({ path: '/system/syncdesign', query: { id: record.id, sync: '1' } })
 }
+/**
+ * 启动
+ * @param record
+ */
+function start(record) {
+  defHttp.post({ url: api.start, params: { code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
+    if (res.success) {
+      record.jobId = res.result
+      message.success('启动成功')
+    } else {
+      message.error('启动失败' + res?.message)
+    }
+  }).catch(err => {
+    message.error('启动失败' + err)
+  })
+}
+/**
+ * 停止
+ * @param record
+ */
+function stop(record) {
+  defHttp.post({ url: api.stop, params: { jobId: record.jobId, code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
+    if (res.success) {
+      message.success('停止成功')
+      record.jobId = '';
+    } else {
+      message.error('停止失败' + res?.message)
+    }
+  }).catch(err => {
+    message.error('停止失败' + err)
+  })
+}
+
 
 /**
  * 删除
