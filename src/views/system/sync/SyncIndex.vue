@@ -3,13 +3,13 @@
     <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="8" :offset="0">
-          <a-form-item label="源表">
-            <a-input v-model:value="formData.sourceTable" />
+          <a-form-item label="源库">
+            <a-input v-model:value="formData.sourceDb" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="8" :offset="0">
-          <a-form-item label="目标表">
-            <a-input v-model:value="formData.targetTable" />
+          <a-form-item label="目标库">
+            <a-input v-model:value="formData.targetDb" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -49,8 +49,9 @@
           {{ index + 1 }}
         </template>
         <template v-else-if="column.dataIndex === 'jobId'">
-          <a-tag :color="record[column.dataIndex] != '' ? 'green' : 'red'" style="padding: 0 15px;">
-            {{ record[column.dataIndex] != '' ? '运行中' : '已停止' }}
+          <a-tag :color="record[column.dataIndex] != null && record[column.dataIndex] != '' ? 'green' : 'red'"
+            style="padding: 0 15px;">
+            {{ record[column.dataIndex] != null && record[column.dataIndex] != '' ? '运行中' : '已停止' }}
           </a-tag>
         </template>
         <template v-else-if="column.dataIndex == 'operate'">
@@ -58,13 +59,13 @@
             <template #split>
               <a-divider type="vertical" />
             </template>
-            <a v-if="record.jobId == ''" @click="start(record)">启动</a>
+            <a v-if="record.jobId == null || record.jobId == ''" @click="start(record)">启动</a>
             <a v-else @click="stop(record)">停止</a>
             <a @click="sync(record)">同步信息</a>
 
             <a @click="edit(record)">编辑</a>
 
-            <a-popconfirm title="确定要删除这条记录吗?" @confirm="del(record)">
+            <a-popconfirm :title="'确定要删除任务：' + record.name + '?'" @confirm="del(record)">
               <a>删除</a>
             </a-popconfirm>
           </a-space>
@@ -146,7 +147,7 @@ onMounted(() => {
  * 加载数据
  */
 function loadData() {
-  defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, ...formData.value } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       dataList.value = res.result.records
       pagination.value.total = res.result.total
@@ -158,7 +159,7 @@ function loadData() {
 }
 
 function searchData() {
-
+  loadData()
 }
 
 function refreshData() {
