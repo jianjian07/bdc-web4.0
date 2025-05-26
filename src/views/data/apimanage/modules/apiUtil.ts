@@ -294,6 +294,13 @@ function ensureSingleSlashStart(str) {
  */
 export function sendExCommonApi(sendParams) {
   return new Promise((resolve, reject) => {
+    try {
+      JSON.parse(sendParams.body);
+    } catch (parseErr) {
+      message.warning('body 参数格式错误：请检查 JSON 格式是否正确');
+      resolve('body 参数格式错误：' + parseErr);
+      return
+    }
     defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(JSON.stringify(res.result))
@@ -304,6 +311,7 @@ export function sendExCommonApi(sendParams) {
       }
     }).catch(err => {
       console.log('err', err)
+      message.warning('err',err)
       // responseBody.value = err + ''
       resolve(err + '')
     })
@@ -312,6 +320,25 @@ export function sendExCommonApi(sendParams) {
 
 export function sendCommonApi(sendParams) {
   return new Promise((resolve, reject) => {
+    if (!sendParams.dparams) {
+      message.warning('动态参数不能为空!')
+      return;
+    }
+    try {
+      JSON.parse(sendParams.body);
+    } catch (err) {
+      message.warning('body 参数格式错误：请检查 JSON 格式是否正确');
+      resolve('body 参数格式错误：' + err);
+      return;
+    }
+    
+    try {
+      JSON.parse(sendParams.dparams);
+    } catch (err) {
+      message.warning('dparams 参数格式错误：请检查 JSON 格式是否正确');
+      resolve('dparams 参数格式错误：' + err);
+      return;
+    }
     let data = {
       apiCode: sendParams.code,
       requestType: sendParams.method,

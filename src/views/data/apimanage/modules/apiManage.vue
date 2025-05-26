@@ -143,8 +143,8 @@
                     </a-select>
                   </template>
                 </a-input>
-                <a-button style="margin-left:10px" type="primary" @click="sendApi">发送</a-button>
-                <a-button style="margin-left:10px" @click="saveApi(false)">保存</a-button>
+                <a-button style="margin-left:10px" type="primary" :loading="loading" @click="sendApi">发送</a-button>
+                <a-button style="margin-left:10px" :loading="saveLoading" @click="saveApi(false)">保存</a-button>
               </div>
             </div>
             <div class="bottom">
@@ -200,6 +200,10 @@ let tabList = ref<any>([])
 let activeKey = ref<any>()
 // 实时响应
 let responseBody = ref<string>('')
+// loading
+let loading = ref<boolean>(false)
+// 保存loading
+let saveLoading = ref<boolean>(false)
 
 const columns = [
   {
@@ -377,6 +381,9 @@ function remove(targetKey: string) {
  */
 function saveApi(isSend?: any) {
   return new Promise(async (resolve, reject) => {
+    if (isSend) {
+      saveLoading.value = true
+    }
     let select = JSON.parse(JSON.stringify(props.selectItem))
     select = formatSelectItem(select)
     let saveRes
@@ -392,6 +399,9 @@ function saveApi(isSend?: any) {
     }
     if (select.jsonContent) {
       delete select.jsonContent
+    }
+    if (isSend) {
+      saveLoading.value = false
     }
     resolve(saveRes)
   })
@@ -576,6 +586,7 @@ function saveDir() {
  * 发送api
  */
 async function sendApi() {
+  loading.value = true
   let select = JSON.parse(JSON.stringify(props.selectItem))
   select = formatSelectItem(select)
   let headers = {}
@@ -615,6 +626,7 @@ async function sendApi() {
     props.selectItem.responseBody = '请求失败'
     message.warning('请求失败')
   }
+  loading.value = false
 }
 
 async function handleChangeApiType(pane, e) {
