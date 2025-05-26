@@ -170,9 +170,9 @@
                         </div>
                         <a-input v-model:value="item.identityColumn" placeholder="目标表自增列" readOnly
                           style="min-width: 0; text-align: center;" />
-                        <a-select v-model:value="item.businessKey" placeholder="请选择目标表标识列"
+                        <a-select v-model:value="item.businessKeyArr" placeholder="请选择目标表标识列"
                           style="min-width: 0; text-align: center;" :options="item.notIdentityColumns"
-                          @click="handleClickBusinessKey(item)"></a-select>
+                          @click="handleClickBusinessKey(item)" mode="multiple"></a-select>
                         <div style="display: flex; justify-content: end">
                           <AppstoreAddOutlined v-if="type == 'view'"
                             style="margin: 0 0 0 10px;font-size: 18px;color: #1890FF; cursor: pointer"
@@ -318,8 +318,16 @@ async function initData() {
       getTables(formState.value.targetDb, 'target')
       let content = formState.value.content && typeof formState.value.content == 'string' ? JSON.parse(formState.value.content) : formState.value.content
       if (content) {
-        formState.value.viewCheckRow = content.view || []
-        formState.value.tableCheckRow = content.table || []
+        let _viewRow = content.view || []
+        let _tableRow = content.table || []
+        formState.value.viewCheckRow = _viewRow.map((view) => {
+          view.businessKeyArr = view.businessKey.split(',')
+          return view
+        })
+        formState.value.tableCheckRow = _tableRow.map((table) => {
+          table.businessKeyArr = table.businessKey.split(',')
+          return table
+        })
         formState.value.viewCheck = content.view.map(v => v.sourceTable)
         formState.value.tableCheck = content.table.map(v => v.sourceTable)
       }
@@ -573,10 +581,14 @@ function handleModalOk(value) {
 function handleComplete() {
   let obj = JSON.parse(JSON.stringify(formState.value))
   obj.tableCheckRow = obj.tableCheckRow.map((row) => {
+    row.businessKey = row.businessKeyArr?.join(',') || ''
+    delete row.businessKeyArr
     delete row.notIdentityColumns
     return row
   })
   obj.viewCheckRow = obj.viewCheckRow.map((row) => {
+    row.businessKey = row.businessKeyArr?.join(',') || ''
+    delete row.businessKeyArr
     delete row.notIdentityColumns
     delete row.viewTables
     return row
@@ -644,11 +656,16 @@ function handleChangeTargetTable(value, item) {
 function handleClickBusinessKey(item) {
   defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: item.targetTable } }, { withToken: true }).then((res) => {
     if (res && res.code == 200) {
-      item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
+      item.notIdentityColumns = res.result.map((m) => {
         m.label = m.columnname
         m.value = m.columnname
         return m
       })
+      // item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
+      //   m.label = m.columnname
+      //   m.value = m.columnname
+      //   return m
+      // })
     }
   })
 }
