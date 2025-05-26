@@ -293,7 +293,8 @@ enum api {
   add = '/api/zrzy-cdc/data/sync/add',
   update = '/api/zrzy-cdc/data/sync/update',
   info = '/api/zrzy-cdc/data/sync/getInfo',
-  getColumName = '/api/zrzy-cdc/data/sync/getAllColumns'
+  getColumName = '/api/zrzy-cdc/data/sync/getAllColumns',
+  getKeyColumn = '/api/zrzy-cdc/data/sync/getKeyColumns',
 }
 
 onMounted(() => {
@@ -654,20 +655,22 @@ function handleChangeTargetTable(value, item) {
  * @param item
  */
 function handleClickBusinessKey(item) {
-  defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: item.targetTable } }, { withToken: true }).then((res) => {
-    if (res && res.code == 200) {
-      item.notIdentityColumns = res.result.map((m) => {
-        m.label = m.columnname
-        m.value = m.columnname
-        return m
-      })
-      // item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
-      //   m.label = m.columnname
-      //   m.value = m.columnname
-      //   return m
-      // })
-    }
-  })
+  if (!item.notIdentityColumns || item.notIdentityColumns.length === 0) {
+    defHttp.get({ url: api.getKeyColumn, params: { dbKey: formState.value.sourceDb, tableName: item.sourceTable } }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+        item.notIdentityColumns = res.result.map((m) => {
+          m.label = m.columnname
+          m.value = m.columnname
+          return m
+        })
+        // item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {
+        //   m.label = m.columnname
+        //   m.value = m.columnname
+        //   return m
+        // })
+      }
+    })
+  }
 }
 
 /**
