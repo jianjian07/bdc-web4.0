@@ -433,7 +433,7 @@ async function sendApi() {
  */
 function saveApi(isSend?: any) {
   return new Promise(async (resolve, reject) => {
-    if (isSend) {
+    if (!isSend) {
       saveLoading.value = true
     }
     let select = JSON.parse(JSON.stringify(props.selectItem))
@@ -452,7 +452,7 @@ function saveApi(isSend?: any) {
     if (select.jsonContent) {
       delete select.jsonContent
     }
-    if (isSend) {
+    if (!isSend) {
       saveLoading.value = false
     }
     resolve(saveRes)

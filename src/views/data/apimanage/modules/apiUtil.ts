@@ -322,6 +322,7 @@ export function sendCommonApi(sendParams) {
   return new Promise((resolve, reject) => {
     if (!sendParams.dparams) {
       message.warning('动态参数不能为空!')
+      resolve('动态参数不能为空');
       return;
     }
     try {
