@@ -27,7 +27,7 @@
           theme="vs">
         </monaco-editor>
       </a-tab-pane>
-      <a-tab-pane key="callback" tab="请求接口">
+      <a-tab-pane key="callback" tab="串行接口">
         <a-form
           ref="formRef"
           :label-col="{ span: 3 }"
