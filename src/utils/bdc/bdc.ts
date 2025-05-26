@@ -93,6 +93,9 @@ export async function extractData(options: any) {
                 dyhList.push({ zddm: dyh.zddm, bdcqzh: dyh.bdcqzh })
             }
             break;
+        default:
+            console.log('查找不到该流程')
+            break;
     }
     options.okLoading.value = true
     let cqly = exParams?.cqly 

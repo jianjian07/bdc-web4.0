@@ -53,7 +53,7 @@ import { ClockCircleOutlined } from '@ant-design/icons-vue'
 const route = useRoute();
 // 是否显示查询框
 let isShowSearch = ref<boolean>(true)
-// 查询拦
+// 查询栏
 let formState = ref<any>({
   bdcdyh: ''
 })

@@ -58,17 +58,31 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
+import {
+  computed,
+  defineAsyncComponent,
+  onActivated,
+  onBeforeUnmount,
+  onDeactivated,
+  onMounted,
+  provide,
+  ref
+} from 'vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useRoute } from 'vue-router'
 import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { getMultipleRef } from "/@/views/bdc/public/bdc"
-import { resetValidateInfos, eventBus } from "form-imagining"
+import { createScopedBus } from "/@/views/online/utils/scopeEventBus"
+import { resetValidateInfos } from "form-imagining"
 import ApprovalProcess from "/@/views/bdc/query/ApprovalProcess.vue"
 import RViewOnline from "/@/views/online/report/RViewOnline.vue"
 import { message } from "ant-design-vue"
+import { updateCModalScopeBus } from "/@/components/cModal/index"
+const eventBus = createScopedBus()
+updateCModalScopeBus(eventBus)
+provide('scopedEventBus', eventBus)
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))
 const generateForm = computed(() => {
@@ -180,6 +194,10 @@ onBeforeUnmount(() => {
   resetValidateInfos()
 })
 
+onActivated(() => {
+  updateCModalScopeBus(eventBus)
+})
+
 onDeactivated(() => {
   // 缓存页面离开时清除校验效果
   resetValidateInfos()
@@ -240,12 +258,13 @@ async function handleClick(btn) {
   if (btn.funName) {
     // 修正非 JSON 格式字符串
     let _publicFun = publicVueFun // 定义打包识别方法
+    const _on = eventBus?.on // 防止被打包剔除
     console.log('_publicFun', _publicFun) // 需要输出被用到一次 不然打包后eval获取不到
     let correctedBz = btn.bz
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
-    let _params = `(demoRefs.value,spinning,jdmc.value${params ? (',' + JSON.stringify(params)) : params})`
+    let _params = `(demoRefs.value,spinning,jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }

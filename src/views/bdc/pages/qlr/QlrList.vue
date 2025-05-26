@@ -7,10 +7,10 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue"
+import { inject, onBeforeUnmount, onMounted, ref } from "vue"
 import Qlr from "/@/views/bdc/pages/qlr/Qlr.vue"
-import { eventBus } from "form-imagining"
 import { updateQlrxxList } from "/@/views/bdc/public/bdc"
+const eventBus = inject('scopedEventBus', null)
 // 权利人渲染列表
 let qlrList = ref<any>([])
 // 权利人实例

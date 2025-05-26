@@ -14,13 +14,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
+import { computed, defineAsyncComponent, onActivated, onBeforeUnmount, onMounted, provide, ref } from "vue"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos, eventBus } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
 import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
+import { updateCModalScopeBus } from "/@/components/cModal/index"
+import { createScopedBus } from "/@/views/online/utils/scopeEventBus"
+const eventBus = createScopedBus()
+updateCModalScopeBus(eventBus)
+provide('scopedEventBus', eventBus)
 const route = useRoute();
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
@@ -61,6 +66,10 @@ onMounted(() => {
   initBusEvent()
   getFormConfig()
   resetValidateInfos()
+})
+
+onActivated(() => {
+  updateCModalScopeBus(eventBus)
 })
 
 onBeforeUnmount(() => {

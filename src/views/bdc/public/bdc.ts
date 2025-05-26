@@ -14,8 +14,8 @@ import {
   validateInfos, 
   setInputValue, 
   setValidateInfos, 
-  updateFormDatas, 
-  eventBus } from 'form-imagining'
+  updateFormDatas 
+} from 'form-imagining'
 import { guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
@@ -75,7 +75,7 @@ export function getMultipleRef(list: any[], arr: any[]) {
  * @param _type
  * @param demoRefs
  */
-export async function sendSaveFun(type: string, demoRefs: any, loading: any, params?: any) {
+export async function sendSaveFun(type: string, demoRefs: any, loading: any, eventBus: any, params?: any, ) {
   return new Promise(async (resolve) => {
     loading.value = true
     if (type == 'baseSave') {
@@ -88,7 +88,8 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
     let afterRes = true
     let validate = true
     if (params && params.beforeFun) {
-      beforeRes = await eval(params.beforeFun)
+      let _beforeFun = getSaveEventBusFuncStr(params.beforeFun)
+      beforeRes = await eval(_beforeFun)
       console.log('beforeRes', beforeRes)
     }
     if (beforeRes) {
@@ -100,7 +101,8 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
       }
       console.log('commonSaveRes', commonSaveRes)
       if (commonSaveRes && params && params.afterFun) {
-        afterRes = await eval(params.afterFun)
+        let _afterFun = getSaveEventBusFuncStr(params.afterFun)
+        afterRes = await eval(_afterFun)
       }
       console.log('afterRes', afterRes)
       const errorList = (document as any).querySelectorAll(".ant-form-item-has-error")
@@ -149,12 +151,28 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, par
   })
 }
 
-export async function baseSave(demoRefs: any, loading: any, jdmc: string,  params: any) {
-  return await sendSaveFun('baseSave', demoRefs, loading, params)
+/**
+ * 保存前/后方法参数默认传递 局部eventbus
+ * @param fun
+ */
+function getSaveEventBusFuncStr(fun) {
+  let str = ''
+  // 提取函数名
+  const funName = fun.substring(0, fun.indexOf('(')).trim();
+  const paramStr = fun.substring(fun.indexOf('(') + 1, fun.lastIndexOf(')')).trim();
+  
+  // 插入 eventBus 到第一个参数
+  let finalParamStr = paramStr ? `eventBus, ${paramStr}` : `eventBus`;
+  str = `${funName}(${finalParamStr})`;
+  return str
 }
 
-export async function handOver(demoRefs: any, loading: any, jdmc: string, params: any) {
-  let res = await sendSaveFun('handOver', demoRefs, loading, params)
+export async function baseSave(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
+  return await sendSaveFun('baseSave', demoRefs, loading,  eventBus, params)
+}
+
+export async function handOver(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
+  let res = await sendSaveFun('handOver', demoRefs, loading,  eventBus, params)
   if (res && res.status && res.validate) {
     const route = router.currentRoute.value;
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
@@ -227,7 +245,7 @@ export function closeCurrentTab() {
  * @param loading
  * @param type
  */
-export async function submit(demoRefs: any, loading: any, jdmc: string, obj: any) {
+export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus:any, obj: any) {
   if (obj && obj.type == 'cftz') {
     let res = await getFormInfo(demoRefs)
     let find = res.find(r => r.validate == false)
@@ -415,7 +433,7 @@ function updateQlrData(type, data) {
  * 附件按钮
  * @param manage 是否默认展示为管理状态
  */
-export async function showFile(demoRefs: any, loading: any, jdmc: string,  params?: any) {
+export async function showFile(demoRefs: any, loading: any, jdmc: string, eventBus:any, params?: any) {
   eventBus.emit('showFile', params?.manage || false)
 }
 
@@ -425,7 +443,7 @@ export async function showFile(demoRefs: any, loading: any, jdmc: string,  param
  * @param loading
  * @param params
  */
-export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, params?: any) {
+export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, eventBus:any, params?: any) {
   eventBus.emit('showSpPanel')
 }
 
@@ -434,7 +452,7 @@ export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, par
  * @param demoRefs
  * @param loading
  */
-export function reloadTable(demoRefs: any, loading: any) {
+export function reloadTable(eventBus:any) {
   eventBus.emit('onTableReload')
   return true
 }
@@ -506,7 +524,7 @@ function getReportUrl(data) {
  * cType为0不生成证号
  * @returns
  */
-export async function register(demoRefs: any, loading: any, jdmc: string, params: any) {
+export async function register(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
@@ -628,7 +646,7 @@ function djb(slbh: string, cType: string, loading?: any, callback?: any) {
  * @param params
  * @returns
  */
-export function savaGd(demoRefs: any, loading: any, jdmc: string, params: any) {
+export function savaGd() {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   return new Promise((resolve, reject) => {
@@ -644,7 +662,7 @@ export function savaGd(demoRefs: any, loading: any, jdmc: string, params: any) {
     })
   })
 }
-export function baseGd(demoRefs: any, loading: any, jdmc: string, params: any) {
+export function baseGd(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   const taskId = route.query.taskId?.toString()
@@ -1449,7 +1467,7 @@ export function createFghbZy(ywlx, slbh, dyhList) {
  * @param qlrxsmc
  * @description 所有都刷新不传参数,多个逗号隔开
  */
-export function reloadQlrList(qlrxsmc?: string) {
+export function reloadQlrList(eventBus: any, qlrxsmc?: string) {
   eventBus.emit('reloadQlrList', qlrxsmc)
 }
 

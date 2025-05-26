@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, watch } from "vue"
+import { computed, inject, nextTick, onMounted, ref, watch } from "vue"
 import * as bdc from '/@/views/bdc/public/bdc'
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
@@ -98,6 +98,7 @@ const props = defineProps({
     default: ''
   }
 })
+const eventBus = inject('scopedEventBus', null)
 let _vueRefs: any = computed(() => { return props.vueRefs })
 let _jdmc: any = computed(() => { return props.jdmc })
 // 左侧基础按钮
@@ -178,12 +179,13 @@ async function handleClick(btn) {
       const _bdcFun = bdc['baseSave']
       const _ref = _vueRefs.value
       const _jdmcStr = _jdmc.value
+      const _on = eventBus?.on
       // 修正非 JSON 格式字符串
       let correctedBz = btn.bz
         .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
         .replace(/'/g, '"'); // 单引号变双引号
       let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
-      let _params = `(_vueRefs.value, loading, _jdmc.value${params ? (',' + JSON.stringify(params)) : params})`
+      let _params = `(_vueRefs.value, loading, _jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
       if (btn.anwz == 'center') {
         _params = `(${params ? JSON.stringify(params) : params})`
       }

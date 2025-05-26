@@ -5,6 +5,12 @@ import formImagining from 'form-imagining'
 import { cModalModel } from "/@/components/cModal/model"
 import { router } from "/@/router";
 
+let scopeBus = null
+
+export function updateCModalScopeBus(value) {
+  scopeBus = value
+}
+
 export function cModal (options?: cModalModel) {
   let div: any
   let app: any
@@ -33,6 +39,7 @@ export function cModal (options?: cModalModel) {
   const modules = import.meta.glob('/src/**/*.vue');
   app = createApp(CommonModal, { ...options });
   app.provide('projModules', modules);
+  app.provide('scopedEventBus',scopeBus)
   registerGlobComp(app)
   app.use(router)
   app.use(formImagining)
