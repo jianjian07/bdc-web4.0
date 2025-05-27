@@ -279,7 +279,7 @@ let ywlx = ref('1')
  * @param spinning 
  * @param params 
  */
-function openList(demoRefs, spinning, jdmc, params?: any) {
+function openList(demoRefs, spinning, jdmc, eventBus ,params?: any) {
   const { vtype, reportId } = params
   eType.value = vtype != undefined ? vtype : ''
   formId.value = reportId != undefined ? reportId : ''
