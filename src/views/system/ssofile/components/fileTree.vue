@@ -375,6 +375,7 @@ function addCatalog() {
         loadFileList(false)
       }
       modal.setConfirmLoading(false)
+      modal.destroy()
     },
     onCancel: () => {
       modal.destroy()
