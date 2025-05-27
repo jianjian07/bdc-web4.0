@@ -85,8 +85,8 @@
                 <template v-if="column.dataIndex === 'handleCode'">
                     <a-tag v-if="record.handleCode === 502" color="red">
                         失败(超时)</a-tag>
-                    <a-span v-else-if="record.handleCode === 0">
-                    </a-span>
+                    <span v-else-if="record.handleCode === 0">
+                    </span>
                     <a-tag v-else color="green">
                         成功</a-tag>
                 </template>

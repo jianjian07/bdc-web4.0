@@ -130,7 +130,7 @@
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
 import { ref, createVNode, reactive, watch } from 'vue';
-import { SearchOutlined, RedoOutlined, DownOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined, RedoOutlined, DownOutlined, DeleteOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
 import dayjs from 'dayjs';
