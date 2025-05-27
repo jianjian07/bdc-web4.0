@@ -12,10 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, watch } from 'vue'
+import { onMounted, provide, reactive, watch } from 'vue'
 import dirTree from './components/dirTree.vue';
 import { useRoute } from 'vue-router'
-
+import { createScopedBus } from "/@/views/online/utils/scopeEventBus.ts"
+import { updateCModalScopeBus } from "/@/components/cModal/index.ts"
+const eventBus = createScopedBus()
+updateCModalScopeBus(eventBus)
+provide('scopedEventBus', eventBus)
 const route = useRoute();
 const props = defineProps({
   formData: {
