@@ -1,5 +1,5 @@
 <template>
-  <CFViewer ref="fView" :id="id" :p-router="router" :p-route="route" :reload="reload" formType="form" :p-formData="{ bdc: bdc, ...formData }"></CFViewer>
+  <CFViewer :style="isRouterPage ? 'padding: 20px' : ''" ref="fView" :id="formId" :p-router="router" :p-route="route" :reload="reload" :disabled="_disabled" formType="form" :p-formData="{ bdc: bdc, ...formData }"></CFViewer>
 </template>
 
 <script lang="ts" setup>
@@ -9,8 +9,9 @@ import * as bdc from '/@/views/bdc/public/bdc'
 const route = useRoute();
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
-import { ref } from "vue"
+import { ref, useAttrs } from "vue"
 import { useUserStore } from "/@/store/modules/user"
+const { disabled } = useAttrs()
 const props = defineProps({
     id: {
         type: String,
@@ -31,6 +32,20 @@ const props = defineProps({
 })
 
 let fView = ref()
+// 页面单独表单预览 则增加padding
+let isRouterPage = ref<boolean>(false)
+let _disabled: any
+_disabled = disabled == undefined ? route.query.iszd == '1' : disabled
+let formId: string = props.formData.formId || props.id
+if (formId == "-1") {
+    if (route.params.code == undefined) {
+        const pathSegments = route.path.split('/')
+        formId = pathSegments[pathSegments.length - 1] || '-1'
+    } else {
+        formId = route?.params?.code.toString()
+    }
+    isRouterPage.value = true
+}
 
 defineExpose({
   fView

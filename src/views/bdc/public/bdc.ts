@@ -19,6 +19,7 @@ import {
 import { guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
+import { useAppStore } from "/@/store/modules/app.ts"
 
 const userStore = useUserStore()
 // 权利人信息
@@ -77,7 +78,9 @@ export function getMultipleRef(list: any[], arr: any[]) {
  */
 export async function sendSaveFun(type: string, demoRefs: any, loading: any, eventBus: any, params?: any, ) {
   return new Promise(async (resolve) => {
-    loading.value = true
+    if (loading) {
+      loading.value = true
+    }
     if (type == 'baseSave') {
       userStore.setSaveFormFlag(false)
     } else {
@@ -114,7 +117,9 @@ export async function sendSaveFun(type: string, demoRefs: any, loading: any, eve
         })
       }
     }
-    loading.value = false
+    if (loading) {
+      loading.value = false
+    }
     userStore.setSaveFormFlag(true)
     console.log('validateInfos', validateInfos)
     let saveStatus
