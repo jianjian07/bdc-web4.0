@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from "vue"
+import { computed, defineAsyncComponent, inject, nextTick, onMounted, ref, watch } from "vue"
 import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views/bdc/public/bdc"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos, getFormInfo } from "form-imagining"
@@ -33,6 +33,7 @@ let spinning = ref<boolean>(false)
 //     demoRefs.push(el.fView)
 //   }
 // }
+const eventBus = inject('scopedEventBus', null)
 // 创建响应式Map
 let demoRefsMap = ref(new Map<string, any>())
 
@@ -115,7 +116,7 @@ async function saveData(params?: any) {
   // 这里如果是带.value的就需要拿到.value 因为保存的内部直接处理的formDoms[i].formId
   // eval那种形式是默认解包了 所以不需要再处理
   const refs = demoRefs.value.map(ref => ref?.value || ref)
-  return await sendSaveFun('baseSave', refs, spinning, params)
+  return await sendSaveFun('baseSave', refs, spinning, eventBus, params)
 }
 
 /**
@@ -130,10 +131,9 @@ async function saveValidateData(params?: any) {
   } else {
     params = { params: props.formData, validateSave: true }
   }
-  
   // checkDemoRefs()
   const refs = demoRefs.value.map(ref => ref?.value || ref)
-  return await sendSaveFun('baseSave', refs, spinning, params)
+  return await sendSaveFun('baseSave', refs, spinning, eventBus, params)
 }
 
 async function saveQlrData(type: any, params?: any) {
