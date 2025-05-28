@@ -160,7 +160,7 @@ function isChecked(selectedKeys: (string | number)[], eventKey: string | number)
 function handleTreeData(treeNodes, targetKeys: string[] = []) {
   return treeNodes.map(({ children, code, ...props }) => ({
     ...props,
-    disabled: targetKeys.includes(props.key as string),
+    disabled: targetKeys.includes(props.key as string) || !code || !props.dirId,
     children: handleTreeData(children ?? [], targetKeys),
   }));
 }
@@ -213,7 +213,7 @@ function mapTreeFields(tree) {
    return tree.map(node => {
     const newNode = {
       ...node,
-      key: node.id,
+      key: node.code,
       title: `${node.name}(${node.code})`,
       children: node.apiList ? mapTreeFields(node.apiList) : []
     };
