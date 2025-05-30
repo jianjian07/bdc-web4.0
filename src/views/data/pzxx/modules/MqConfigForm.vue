@@ -235,6 +235,7 @@ function topicDataChange(e, topic) {
       return child
     })
   }
+  emit('getSelectItem', { ...topic })
 }
 
 /**

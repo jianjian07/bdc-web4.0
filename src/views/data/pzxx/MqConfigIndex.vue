@@ -180,14 +180,20 @@ function initData() {
 }
 
 function getSelectItem(value) {
-  selectedKeys.value = value ? [value.id] : []
-  if (value && value.oid) {
-    let find = findNodeById(treeData.value, value.oid)
-    if (find) {
-      Object.assign(find, value);
-      delete find.oid
+  selectedKeys.value = value?.id ? [value.id] : [];
+
+  if (value) {
+    const nodeId = value.oid || value.id;
+    const node = findNodeById(treeData.value, nodeId);
+  
+    if (node) {
+      Object.assign(node, value);
+      if (value.oid) {
+        delete node.oid; 
+      }
     }
-    selectItem.value = value
+  
+    selectItem.value = value;
   }
 }
 
