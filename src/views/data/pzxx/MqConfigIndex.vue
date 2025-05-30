@@ -362,7 +362,8 @@ function addTag(node: any) {
       tag: 'tag_新增tag-' + timestamp,
       topic: node.topic,
       mqlx: node.mqlx,
-      type: 'tag'
+      type: 'tag',
+      pid: node.id
     }
     node.children.push(tag)
     selectedKeys.value = [tag.id]
