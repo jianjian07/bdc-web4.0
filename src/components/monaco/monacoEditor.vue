@@ -125,6 +125,8 @@ const format = (): void => {
 <style lang="less" scoped>
 .c-monaco-editor {
   position: relative;
+  width: v-bind(width);
+  height: v-bind(height);
 }
 
 .codeEditBox {
