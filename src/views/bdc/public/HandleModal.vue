@@ -145,7 +145,7 @@ enum api {
   getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo',
   isRegister = '/api/zrzy-bdc/bdc/public/isRegistered',
   handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight',
-  insertMqMessageForHandOver = '/api/zrzy-api/bdc/publiccommon/insertMqMessageForHandOver',
+  insertMqMessageForHandOver = '/api/zrzy-bdc/bdc/publiccommon/insertMqMessageForHandOver',
 }
 
 onMounted(() => {
@@ -868,10 +868,10 @@ function markRight() {
  */
 function insertMqMessageForHandOver() {
   return new Promise((resolve) => {
-    // todo 后续接口代码需要迁移 地址会更换
     defHttp.post({ url: api.insertMqMessageForHandOver, params: { 
         slbh: route.query.slbh,
-        yjfx: handleDirection.value
+        yjfx: handleDirection.value,
+        jdmc: formState.value.jdmc
       }}, { withToken: true }).then((res) => {
         if (res && res.success) {
           resolve(true)
