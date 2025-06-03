@@ -116,7 +116,11 @@ function sortByTime(arr, key) {
  * @param item
  */
 function handleView(item) {
-  router.push('/task/hisTaskDeal?slbh=' + item.slbh)
+  if (item.ajlx == '1') {
+    router.push('/task/hisTaskDeal?slbh=' + item.slbh)
+  } else if (item.ajlx == '2') {
+    router.push('/task/hisTaskBl?slbh=' + item.slbh)
+  }
 }
 
 </script>
