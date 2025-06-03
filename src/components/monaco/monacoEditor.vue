@@ -1,7 +1,9 @@
 <template>
+  <div class="c-monaco-editor">
     <div ref="codeEditBox" class="codeEditBox"></div>
     <FullscreenOutlined class="un-fullscreen-icon" v-if="!isFullscreen" @click="toggleFullscreen"/>
     <FullscreenExitOutlined class="fullscreen-icon" v-else @click="toggleFullscreen"/>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -121,6 +123,10 @@ const format = (): void => {
 </script>
 
 <style lang="less" scoped>
+.c-monaco-editor {
+  position: relative;
+}
+
 .codeEditBox {
     width: v-bind(width);
     height: v-bind(height);
