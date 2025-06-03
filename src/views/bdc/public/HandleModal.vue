@@ -144,7 +144,8 @@ enum api {
   processComplete = '/api/zrzy-bdc/act/task/processComplete',
   getTaskInfo = '/api/zrzy-bdc/act/task/getProcessTaskTransInfo',
   isRegister = '/api/zrzy-bdc/bdc/public/isRegistered',
-  handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight'
+  handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight',
+  insertMqMessageForHandOver = '/api/zrzy-api/bdc/publiccommon/insertMqMessageForHandOver',
 }
 
 onMounted(() => {
@@ -558,7 +559,7 @@ async function handleOk() {
         nextnode: nextnode,
         nextnodeUserNameList: nameItems.toString(),
         nextnodeUserIdList: idItems.toString(),
-        yjFx: handleDirection.value
+        yjfx: handleDirection.value
       }
       return await handleProcessOver(obj)
     }
@@ -592,16 +593,21 @@ function handleProcessOver(obj) {
       fileList: ''
     }
     spinning.value = true
-    defHttp.post({ url: api.processComplete, data: model }, { withToken: true }).then((res) => {
-      spinning.value = false
+    defHttp.post({ url: api.processComplete, data: model }, { withToken: true }).then(async (res) => {
       if (res && res.success) {
         message.success('移交成功!')
-        resolve(true)
+        let _mq = await insertMqMessageForHandOver()
+        if (_mq) {
+          resolve(true)
+        } else {
+          resolve(false)
+        }
       } else {
         let msg = res?.message || ''
         message.error('移交失败!' + msg)
         resolve(false)
       }
+      spinning.value = false
     }).catch(err => {
       message.error(err)
       resolve(false)
@@ -854,6 +860,27 @@ function markRight() {
       message.error(err)
       resolve(false)
     })
+  })
+}
+
+/**
+ * 一窗办理进度推送
+ */
+function insertMqMessageForHandOver() {
+  return new Promise((resolve) => {
+    // todo 后续接口代码需要迁移 地址会更换
+    defHttp.post({ url: api.insertMqMessageForHandOver, params: { 
+        slbh: route.query.slbh,
+        yjfx: handleDirection.value
+      }}, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          resolve(true)
+        } else {
+          message.error('进度推送失败!' + res?.message)
+          resolve(false)
+        }
+      }
+    )
   })
 }
 
