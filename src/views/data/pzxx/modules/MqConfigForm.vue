@@ -24,7 +24,7 @@
             <a-row>
               <a-col :md="24">
                 <a-form-item label="Tag标签" name="tag">
-                  <a-input v-model:value="formState.tag" placeholder=""/>
+                  <a-input v-model:value="formState.tag" placeholder="" />
                   <span class="tip-css">命名规则：tag_ </span>
                 </a-form-item>
               </a-col>
@@ -235,6 +235,7 @@ function topicDataChange(e, topic) {
       return child
     })
   }
+  topic.title = topic.topic
   emit('getSelectItem', { ...topic })
 }
 
@@ -260,7 +261,7 @@ function handleSave() {
     params.api = targetKeys.value.join(',')
     defHttp.post({ url: apiUrl, data: params }, { withToken: true }).then((res) => {
       if (res && res.success) {
-        emit('getSelectItem', { ...params, oid: oid, id: res.result  })
+        emit('getSelectItem', { ...params, oid: oid, id: res.result, title: params.tag })
         // props.selectItem =  { ...params, id: res.result }
         message.success('保存成功!')
       } else {
