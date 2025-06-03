@@ -70,12 +70,12 @@
             </a-col>
           </a-row>
           <a-row>
-            <a-col :md="12">
+            <!-- <a-col :md="12">
               <a-form-item label="定时器表达式" name="corn" :label-col="labelCol" :wrapper-col="wrapperCol">
                 <a-input v-model:value="formState.corn" style="width: 100%"
                   :auto-size="{ minRows: 2, maxRows: 5 }"></a-input>
               </a-form-item>
-            </a-col>
+            </a-col> -->
             <a-col :md="12">
               <a-form-item label="状态" name="status" :rules="[{ required: true, message: '请选择状态!' }]"
                 :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -177,8 +177,6 @@
                           <AppstoreAddOutlined v-if="type == 'view'"
                             style="margin: 0 0 0 10px;font-size: 18px;color: #1890FF; cursor: pointer"
                             @click="handleAddChild(type, item, index)" />
-                          <!--                      <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
-                          <!--                        @click="handleEdit(type, item, index)" />-->
                           <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
                             @click="handelDelRow(type, item, index)" />
                         </div>
@@ -187,15 +185,19 @@
                       <template v-if="type == 'view' && item.children && item.children.length">
                         <div class="sync-panel-right-row-child" v-for="(child, childIndex) in item.children">
                           <EnterOutlined style="transform: scaleX(-1);margin: 0px 10px;font-size: 16px;" />
-                          <a-select v-model:value="child.viewTable" :options="item.viewTables"
-                            @click="handleClickViewTable(item, child.viewTable)"
+
+                          <a-select v-model:value="child.table" :options="item.viewTables"
+                            @click="handleClickViewTable(item, child.table)"
                             style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;" placeholder="请选择关联表" />
                           <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
-                          <a-input v-model:value="child.viewTableKey"
-                            style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;"
-                            placeholder="请输入关联标识列" />
+                          <a-select v-model:value="child.isMainTable" :options="getDictItemsByCode('yn')"
+                            style="flex: 1 1 0;" placeholder="是否主表" allowClear />
+                          <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
+                          <a-input v-model:value="child.filter"
+                            style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;" placeholder="过滤条件" />
                           <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
                             @click="handelDelChildRow(item.children, child, childIndex)" />
+
                         </div>
                       </template>
                     </div>
@@ -253,11 +255,11 @@ let sourceDbList = ref<any>([])
 let targetDbList = ref<any>([])
 let cdcTypeInfo = ref<any>({
   source: {
-    // view: '视图',
+    view: '视图',
     table: '源表'
   },
   target: {
-    // view: '视图 - 目标表',
+    view: '视图 - 目标表',
     table: '源表 - 目标表'
   }
 })
@@ -506,8 +508,8 @@ function handleAddChild(type, item, index) {
   }
   handleClickViewTable(item)
   item.children.push({
-    viewTable: null,
-    viewTableKey: null
+    table: '',
+    filter: ''
   })
 }
 
@@ -530,7 +532,7 @@ function handleClickViewTable(item, current?: any) {
 
   const otherSelectedValues = item.children
     .filter(m => m !== item) // 排除当前项
-    .map(m => m.viewTable)
+    .map(m => m.table)
     .filter(Boolean) // 去掉 null 或 undefined
 
   item.viewTables = item.viewTables.map(option => {
@@ -656,7 +658,7 @@ function handleChangeTargetTable(value, item) {
  */
 function handleClickBusinessKey(item) {
   if (!item.notIdentityColumns || item.notIdentityColumns.length === 0) {
-    defHttp.get({ url: api.getKeyColumn, params: { dbKey: formState.value.sourceDb, tableName: item.sourceTable } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.sourceDb, tableName: item.sourceTable } }, { withToken: true }).then((res) => {
       if (res && res.code == 200) {
         item.notIdentityColumns = res.result.map((m) => {
           m.label = m.columnname

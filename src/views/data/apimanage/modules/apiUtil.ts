@@ -301,9 +301,9 @@ export function sendExCommonApi(sendParams) {
       resolve('body 参数格式错误：' + parseErr);
       return
     }
-    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        resolve(JSON.stringify(res.result))
+    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true, isTransformResponse: false }).then((res) => {
+      if (res.status == 200) {
+        resolve(JSON.stringify(res.data))
         message.success('请求成功')
       } else {
         message.warning('请求失败')
@@ -311,7 +311,7 @@ export function sendExCommonApi(sendParams) {
       }
     }).catch(err => {
       console.log('err', err)
-      message.warning('err',err)
+      message.warning('err', err)
       // responseBody.value = err + ''
       resolve(err + '')
     })
@@ -332,7 +332,7 @@ export function sendCommonApi(sendParams) {
       resolve('body 参数格式错误：' + err);
       return;
     }
-    
+
     try {
       JSON.parse(sendParams.dparams);
     } catch (err) {
