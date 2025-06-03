@@ -1,9 +1,9 @@
 <template>
   <div class="api-editor">
     <a-spin tip="加载中..." :spinning="loading">
-      <api-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"></api-tree>
+      <api-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @set-save-fun="saveFun"></api-tree>
     </a-spin>
-    <api-manage :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @load="initData"></api-manage>
+    <api-manage ref="manageRef" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @load="initData"></api-manage>
   </div>
 </template>
 
@@ -20,7 +20,7 @@ let apiTreeData = ref<any>([])
 let currentSelectItem = ref<any>()
 //
 let loading = ref<boolean>(false)
-
+let manageRef = ref()
 enum api {
   list = '/api/zrzy-api/inner/dir/list'
 }
@@ -60,6 +60,13 @@ function initData() {
     message.error(err)
     loading.value = false
   })
+}
+
+/**
+ * 执行保存操作
+ */
+function saveFun() {
+  manageRef.value?.saveApi(false)
 }
 
 </script>

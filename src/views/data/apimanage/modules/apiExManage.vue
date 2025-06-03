@@ -86,9 +86,9 @@
                 <div class="api-editor-manage-interface-header">
                   <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px">
                     <a-radio-group :value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
-                      <a-radio-button :value="1">自定义</a-radio-button>
-                      <a-radio-button :value="2">magicapi</a-radio-button>
                       <a-radio-button :value="3">通用接口</a-radio-button>
+                      <a-radio-button :value="2">magicapi</a-radio-button>
+                      <a-radio-button :value="1">自定义</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
                   <a-form-item label="版本" style="margin-right: 20px;">
@@ -97,6 +97,9 @@
                   <a-form-item label="接口标识" style="margin-right: 20px;">
                     <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识"
                       @click="onClickCode(pane)"></a-input>
+                  </a-form-item>
+                  <a-form-item label="排序" style="margin-right: 20px;">
+                    <a-input v-model:value="pane.orderNum" style="width: 50px" placeholder="排序"></a-input>
                   </a-form-item>
                   <a-form-item label="是否返回值解密">
                     <a-radio-group v-model:value="pane.isResultDecrypt">
@@ -624,9 +627,19 @@ function onClickCode(pane) {
     pane.code = _arr[_arr.length - 1]
   }
 }
+
+defineExpose({
+  saveApi
+})
 </script>
 
 <style lang="less" scoped>
+@media (max-width: 1520px) {
+  .api-editor-manage {
+     width: calc(100% - 300px)!important;
+  }
+}
+
 .api-editor-manage {
   width: calc(100% - 350px);
   height: 100%;

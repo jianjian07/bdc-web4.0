@@ -12,7 +12,7 @@
     <div class="api-editor-tree-content">
       <a-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
         :auto-expand-parent="autoExpandParent" :fieldNames="fieldNames" :tree-data="apiTreeData" blockNode show-icon
-        style="width: 100%;" @select="handleSelectTreeItem">
+        style="width: 100%;" @select="handleSelectTreeItem" draggable @drop="onDrop">
         <template #title="node">
           <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, ref, watch } from "vue"
 import {
   PlusOutlined,
   MinusOutlined,
@@ -136,7 +136,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:selectItem'])
+const emit = defineEmits(['update:selectItem','setSaveFun'])
 
 enum api {
   delDir = '/api/zrzy-api/inner/dir/delete',
@@ -430,9 +430,94 @@ function onDoubleClick(node) {
   }
   expandedKeys.value = Array.from(new Set(expandedKeys.value))
 }
+
+function onDrop(info) {
+  
+  if (info.dragNode.children && info.dragNode.children.length) {
+    // 只允许子节点拖拽
+    return
+  }
+  
+  const dropKey = info.node.key;
+  const dragKey = info.dragNode.key;
+  const dropPos = info.node.pos.split('-');
+  const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+  
+  const loop = (data: any, key: string | number, callback: any) => {
+    data.forEach((item: any, index: any) => {
+      if (item.id === key) {
+        return callback(item, index, data);
+      }
+      if (item.children) {
+        return loop(item.children, key, callback);
+      }
+    });
+  };
+  const data = [...props.apiTreeData];
+  
+  // 拖动节点对象
+  let dragObj: any;
+ 
+  // 移除原位置的节点
+  loop(data, dragKey, (item: any, index: number, arr: any) => {
+    arr.splice(index, 1);
+    dragObj = item;
+  });
+
+  let ar: any = [];
+  let i = 0;
+  let targetNode: any
+  loop(data, dropKey, (_item: any, index: number, arr: any) => {
+    ar = arr;
+    i = index;
+    targetNode = _item
+  });
+  
+  // 目标节点是父节点（有子节点）作为子节点插入
+  if (targetNode.children) {
+    dragObj.dirId = targetNode.id
+    dragObj.dirName = targetNode.name
+    dragObj.dirCode = targetNode.code
+    dragObj.pid = targetNode.id
+    
+    targetNode.children.push(dragObj)
+  } else {
+    //目标节点是叶子节点 作为同级节点插入
+    if (dropPosition === -1) {
+      ar.splice(i, 0, dragObj);
+    } else {
+      ar.splice(i + 1, 0, dragObj);
+    }
+  }
+  
+  // 拖拽的即为选中的节点
+  selectedKeys.value = [dragObj.id]
+  emit('update:selectItem', dragObj)
+  
+  props.apiTreeData = data;
+  
+  if (targetNode.children) {
+    // 执行保存
+    nextTick(() => {
+      emit('setSaveFun')
+    })
+  }
+}
 </script>
 
 <style lang="less" scoped>
+@media (max-width: 1520px) {
+  .api-editor-tree {
+    width: 300px!important;
+  }
+  
+  .api-row-content {
+    .left {
+      width: 190px!important;
+    }
+  }
+}
+
 .api-editor-tree {
   width: 350px;
   height: 100%;
