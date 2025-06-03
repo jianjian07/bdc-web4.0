@@ -30,7 +30,7 @@
         </a-form>
     </div>
     <div class="wonder-table-css">
-        <a-table :row-selection="rowSelection" bordered :columns="columns" rowKey="id" :data-source="datalist"
+        <a-table bordered :columns="columns" rowKey="id" :data-source="datalist"
             :pagination="pagination" @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'requestType'">

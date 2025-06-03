@@ -62,7 +62,6 @@ const props = defineProps({
         default: []
     }
 })
-let ss = JSON.parse(props.data.headers)
 
 const emit = defineEmits(["ok"])
 const onClose = () => {
