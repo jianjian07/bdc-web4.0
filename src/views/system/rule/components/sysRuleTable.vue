@@ -119,6 +119,9 @@ enum api {
 }
 
 watch(() => props.selectRuleCatalog, (newVal) => {
+  ruleList.value = []
+  pagination.value.total = 0
+  pagination.value.current = 1
   initData()
 }, {
   deep: true
@@ -290,12 +293,13 @@ function toggleFullscreen() {
   .sys-rule-table-body {
     height: calc(100% - 50px);
     // overflow: auto;
+    
 
     :deep(.ant-table-body) {
       overflow-y: scroll;
       max-height: calc(100% - 50px) !important;
     }
-
+    
     :deep(.ant-table-wrapper) {
       height: 100%;
     }
@@ -310,7 +314,7 @@ function toggleFullscreen() {
 
     :deep(.ant-spin-container) {
       height: 100%;
-      overflow: hidden;
+      overflow: hidden!important;
     }
 
     :deep(.ant-spin-nested-loading) {
