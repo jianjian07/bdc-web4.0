@@ -112,7 +112,7 @@
                     </a-radio-group>
                   </a-form-item>
                   <a-form-item label="版本" style="margin-right: 20px;">
-                    <a-select :options="getDictItemsByCode('version_code')" style="width: 100px" v-model:value="pane.version"></a-select>
+                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
                   </a-form-item>
                   <a-form-item label="接口标识" style="margin-right: 20px;">
                     <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识"

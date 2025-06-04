@@ -89,8 +89,8 @@ export function getCategoryDict() {
 // 规则
 export function getRuleList() {
     const userStore = useUserStore();
-
-    defHttp.get({ url: api.getRuleListApi }, { withToken: true }).then((res) => {
+    return new Promise((resolve, reject) => {
+        defHttp.get({ url: api.getRuleListApi }, { withToken: true }).then((res) => {
         if (res && res?.result?.records) {
             let list = res.result.records
             let sysValidateRuleList = list.filter(f => f.ruleType == 'validate')
@@ -117,7 +117,10 @@ export function getRuleList() {
             if (sysLineRuleList) {
                 userStore.setLineRuleList(sysLineRuleList)
             }
-        }
+            resolve(true);
+        } else {
+            reject(false);
+        }})
     })
 }
 

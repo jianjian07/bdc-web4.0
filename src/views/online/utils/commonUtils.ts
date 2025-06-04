@@ -64,6 +64,14 @@ export const getApiRuleByCode = (ruleCode: string) => {
     return find ? find : null
 }
 
+// 根据规则编码获取移交规则
+export const getTransferRuleByCode = (ruleCode: string) => {
+    const userStore = useUserStore();
+    let ruleList = userStore.getTransferRuleList
+    let find = ruleList.find((t: { ruleCode: string }) => t.ruleCode == ruleCode)
+    return find ? find : null
+}
+
 export function findNode(arr, key, valueName = 'value') {
     for (let i = 0; i < arr.length; i++) {
         let node = arr[i];

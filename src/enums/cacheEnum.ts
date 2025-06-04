@@ -17,6 +17,8 @@ export const CATEGORY_DATA_KEY = 'UI_CACHE_CATEGORY_DATA';
 export const VALIDATE_RULE_DATA_KEY = 'UI_CACHE_VALIDATE_RULE_DATA'
 // apiRuleList info key
 export const API_RULE_DATA_KEY = 'UI_CACHE_API_RULE_DATA'
+// transferRuleList info key
+export const TRANSFER_RULE_DATA_KEY = 'UI_CACHE_TRANSFER_RULE_DATA'
 
 // project config key
 export const PROJ_CFG_KEY = 'PROJ__CFG__KEY__';

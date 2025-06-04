@@ -17,7 +17,8 @@ import {
   TOKEN_KEY,
   USER_INFO_KEY,
   VALIDATE_RULE_DATA_KEY,
-  API_RULE_DATA_KEY
+  API_RULE_DATA_KEY,
+  TRANSFER_RULE_DATA_KEY
 } from '/@/enums/cacheEnum'
 import { getAuthCache, removeAuthCache, setAuthCache } from '/@/utils/auth'
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel'
@@ -140,7 +141,7 @@ export const useUserStore = defineStore({
       return (this.apiRuleList && this.apiRuleList?.length) ? this.apiRuleList : getAuthCache(API_RULE_DATA_KEY)
     },
     getTransferRuleList(): [] {
-      return this.transferRuleList
+      return (this.transferRuleList && this.transferRuleList?.length) ? this.transferRuleList : getAuthCache(TRANSFER_RULE_DATA_KEY)
     },
     getLineRuleList(): [] {
       return this.lineRuleList
@@ -221,6 +222,7 @@ export const useUserStore = defineStore({
     },
     setTransferRuleList(rules: any) {
       this.transferRuleList = rules
+      setAuthCache(TRANSFER_RULE_DATA_KEY, rules)
     },
     setLineRuleList(rules: any) {
       this.lineRuleList = rules
@@ -466,7 +468,7 @@ export const useUserStore = defineStore({
       }
       await getDict()
       // 规则
-      getRuleList()
+      await getRuleList()
       return userInfo;
     },
     /**
