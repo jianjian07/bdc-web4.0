@@ -143,6 +143,9 @@
                         <div style="text-align: center; min-width: 0;">
                           标识列
                         </div>
+                        <div v-if="type == 'view'" style="text-align: center; min-width: 0;">
+                          视图主表
+                        </div>
                         <div style="visibility: hidden;">
                           &nbsp; &nbsp;
                         </div>
@@ -173,33 +176,16 @@
                         <a-select v-model:value="item.businessKeyArr" placeholder="请选择目标表标识列"
                           style="min-width: 0; text-align: center;" :options="item.notIdentityColumns"
                           @click="handleClickBusinessKey(item)" mode="multiple"></a-select>
+                        <a-select v-if="type == 'view'" v-model:value="item.mainTable" :options="item.viewTables"  
+                                  @click="handleClickViewTable(item)"></a-select>
                         <div style="display: flex; justify-content: end">
-                          <AppstoreAddOutlined v-if="type == 'view'"
-                            style="margin: 0 0 0 10px;font-size: 18px;color: #1890FF; cursor: pointer"
-                            @click="handleAddChild(type, item, index)" />
+  <!--                      <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
+  <!--                        @click="handleEdit(type, item, index)" />--> 
                           <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
                             @click="handelDelRow(type, item, index)" />
                         </div>
 
                       </div>
-                      <template v-if="type == 'view' && item.children && item.children.length">
-                        <div class="sync-panel-right-row-child" v-for="(child, childIndex) in item.children">
-                          <EnterOutlined style="transform: scaleX(-1);margin: 0px 10px;font-size: 16px;" />
-
-                          <a-select v-model:value="child.table" :options="item.viewTables"
-                            @click="handleClickViewTable(item, child.table)"
-                            style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;" placeholder="请选择关联表" />
-                          <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
-                          <a-select v-model:value="child.isMainTable" :options="getDictItemsByCode('yn')"
-                            style="flex: 1 1 0;" placeholder="是否主表" allowClear />
-                          <MinusOutlined style="margin: 0px 10px;font-size: 16px" />
-                          <a-input v-model:value="child.filter"
-                            style="text-align: center; width: 100%; flex: 1 1 0; min-width: 0;" placeholder="过滤条件" />
-                          <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
-                            @click="handelDelChildRow(item.children, child, childIndex)" />
-
-                        </div>
-                      </template>
                     </div>
                   </div>
                 </div>
@@ -297,6 +283,7 @@ enum api {
   info = '/api/zrzy-cdc/data/sync/getInfo',
   getColumName = '/api/zrzy-cdc/data/sync/getAllColumns',
   getKeyColumn = '/api/zrzy-cdc/data/sync/getKeyColumns',
+  getViewTables = '/api/zrzy-cdc/data/sync/getViewTables',
 }
 
 onMounted(() => {
@@ -497,49 +484,34 @@ function handleEdit(type, item, index) {
 }
 
 /**
- * 添加子项
- * @param type
- * @param item
- * @param index
- */
-function handleAddChild(type, item, index) {
-  if (!item.children) {
-    item.children = []
-  }
-  handleClickViewTable(item)
-  item.children.push({
-    table: '',
-    filter: ''
-  })
-}
-
-/**
  * 点击视图关联表选项
  * @param item
  */
-function handleClickViewTable(item, current?: any) {
-  console.log('ite', item)
+async function handleClickViewTable(item) {
   if (!item.viewTables) {
-    // 这里先写死 todo 接口获取
-    item.viewTables = [
-      { label: 'bdc-bdcdj', value: 'bdc-bdcdj' },
-      { label: 'bdc-djzb', value: 'bdc-djzb' },
-      { label: 'bdc-qyxx', value: 'bdc-qyxx' }
-    ]
+    item.viewTables = await getViewTables(item)
   }
+}
 
-  const currentValue = current
-
-  const otherSelectedValues = item.children
-    .filter(m => m !== item) // 排除当前项
-    .map(m => m.table)
-    .filter(Boolean) // 去掉 null 或 undefined
-
-  item.viewTables = item.viewTables.map(option => {
-    return {
-      ...option,
-      disabled: option.value !== currentValue && otherSelectedValues.includes(option.value)
-    }
+/**
+ * 获取视图下的所有表
+ * @param item
+ */
+function getViewTables(item) {
+  return new Promise((resolve) => {
+    defHttp.get({ url: api.getViewTables, params: { dbKey: formState.value.sourceDb, tableName: item.sourceTable } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        let result = res.result.map((m) => {
+          m.label = m.table_name
+          m.value = m.table_name
+          return m
+        })
+        resolve(result || [])
+      } else {
+        message.warning(res?.message)
+        resolve([])
+      }
+    })
   })
 }
 
@@ -555,16 +527,6 @@ function handelDelRow(type, item, index) {
     formState.value[`${type}Check`].splice(findCheckIndex, 1)
     formState.value[`${type}CheckRow`].splice(index, 1)
   }
-}
-
-/**
- * 删除子行
- * @param type
- * @param item
- * @param index
- */
-function handelDelChildRow(children, item, index) {
-  children.splice(index, 1)
 }
 
 /**
@@ -791,7 +753,7 @@ function onSearch(value, type) {
 
           .sync-panel-right-row-header {
             display: grid;
-            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 60px;
+            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 1fr 30px;
             align-items: center;
             column-gap: 8px;
             //margin-bottom: 10px;
@@ -812,7 +774,7 @@ function onSearch(value, type) {
 
           .sync-panel-right-row-parent {
             display: grid;
-            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 60px;
+            grid-template-columns: 1fr 30px 1fr 30px 1fr 1fr 1fr 30px;
             align-items: center;
             column-gap: 8px;
             margin-bottom: 10px;
