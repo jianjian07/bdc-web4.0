@@ -186,11 +186,6 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, eventB
       checkRes = await checkSeal(slbh, loading)
     }
     if (checkRes) {
-      if (['初审', '复审', '核定', '审核'].includes(jdmc)) {
-        checkRes = await zjswbjStateCheck(slbh, loading)
-      }
-    }
-    if (checkRes) {
       let btnList = await getHandleCkbzBtn()
       let footerList = btnList.length ? btnList.map((btn) => { return { func: markRight, ...btn } }) : []
       let modal = cModal({
@@ -615,109 +610,6 @@ function checkSeal(slbh: string, loading?: any) {
       }
       resolve(false)
       message.success("逻辑校验失败!" + error)
-    })
-  })
-}
-
-/**
- * 移交查询住建，税务办件完成状态校验
- * @param slbh
- * @param loading
- */
-function zjswbjStateCheck(slbh: string, loading?: any) {
-  return new Promise((resolve, reject) => {
-    if (loading) {
-      loading.value = true
-    }
-    // 根据受理编号获取一窗业务号
-    defHttp.get({ 
-        url: '/api/zrzy-bdc/bdc/public/getYcYwh',
-        params: { slbh: slbh }}, { withToken: true }
-    ).then(async (res: any) => {
-      if (res && res.success) {
-        if (!res.result) {
-           resolve(true)
-        } else {
-          let invokeResult = await invokeFindAllRecheck(res.result)
-          resolve(invokeResult)
-        }
-      } else {
-        message.warning(res?.message)
-        resolve(false)
-      }
-      if (loading) {
-        loading.value = false
-      }
-    })
-  })
-}
-
-/**
- * 调用第三方findAllRecheck接口
- * @param ywh
- */
-function invokeFindAllRecheck(ywh) {
-  return new Promise((resolve, reject) => {
-    const data = {
-      apiCode: 'findAllRecheck',
-      dparams: {
-        ywh: ywh
-      },
-      headers: {
-        "X-Gisq-Rsa-UserId": '29f92a50ea914ac8bd6cdfcf4ce5a68e'
-      }
-    }
-    defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        let result = res.result
-        if (result.code == '0') {
-          let _result = result.data
-          if (!_result.zj) {
-             Modal.confirm({
-              title: '提示',
-              icon: createVNode(ExclamationCircleOutlined),
-              content: createVNode('div', { style: 'color:red' }, '未获取到信息，是否继续移交?'),
-              onOk() {
-                resolve(true)
-              },
-              onCancel() {
-                resolve(false)
-              }
-            });
-          } else {
-            if (_result.zj != null && _result.zj.fgshjg != '0') {
-              message.warning('住建' + _result.zj.fgshyj);
-              resolve(false)
-            } else {
-              resolve(true)
-            }
-          }
-        } else {
-          Modal.confirm({
-            title: '提示',
-            icon: createVNode(ExclamationCircleOutlined),
-            content: createVNode('div', { style: 'color:red' }, (result?.msg) + ' 是否继续移交?'),
-            onOk() {
-              resolve(true)
-            },
-            onCancel() {
-              resolve(false)
-            }
-          });
-        }
-      } else {
-        Modal.confirm({
-          title: '提示',
-          icon: createVNode(ExclamationCircleOutlined),
-          content: createVNode('div', { style: 'color:red' }, (res?.message || res?.result?.message) + ' 是否继续移交?'),
-          onOk() {
-            resolve(true)
-          },
-          onCancel() {
-            resolve(false)
-          }
-        });
-      }
     })
   })
 }

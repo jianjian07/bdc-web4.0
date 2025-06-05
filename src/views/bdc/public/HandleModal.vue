@@ -81,15 +81,22 @@
 </template>
 
 <script lang="ts" setup>
-import { TeamOutlined, UserOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue"
-import { findNode } from "/@/views/online/utils/commonUtils"
+import {
+  TeamOutlined,
+  UserOutlined,
+  DeleteOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons-vue'
+import { computed, createVNode, inject, onBeforeUnmount, onMounted, ref } from "vue"
+import { findNode, getTransferRuleByCode } from "/@/views/online/utils/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
-import { message } from "ant-design-vue"
+import { Modal, message } from "ant-design-vue"
 import { useRoute } from "vue-router"
 import { closeCurrentTab } from "/@/views/bdc/public/bdc.ts";
+import { useUserStore } from "/@/store/modules/user.ts"
 const eventBus = inject('scopedEventBus', null)
-
+const userStore = useUserStore()
 const route = useRoute();
 const props = defineProps({
   formData: {
@@ -146,6 +153,7 @@ enum api {
   isRegister = '/api/zrzy-bdc/bdc/public/isRegistered',
   handOverMakeRight = '/api/zrzy-bdc/act/task/handOverMakeRight',
   insertMqMessageForHandOver = '/api/zrzy-bdc/bdc/publiccommon/insertMqMessageForHandOver',
+  getApiTransferRule = '/api/zrzy-bdc/act/task/getTaskHandoverRule'
 }
 
 onMounted(() => {
@@ -250,7 +258,7 @@ function getTaskInfo() {
           taskData: taskData
         }
         if (!['初审','复审','核定','审核'].includes(taskData.taskName)) {
-         setTransTree()
+          setTransTree()
         } else {
           eventBus.on('setShjg', initHandleDirection)
           getShjg()
@@ -574,7 +582,7 @@ async function handleOk() {
  * @param obj
  */
 function handleProcessOver(obj) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let nextnode = obj.nextnode
     let yjfx = obj.yjfx
     let model = {
@@ -593,26 +601,86 @@ function handleProcessOver(obj) {
       fileList: ''
     }
     spinning.value = true
-    defHttp.post({ url: api.processComplete, data: model }, { withToken: true }).then(async (res) => {
-      if (res && res.success) {
-        message.success('移交成功!')
-        let _mq = await insertMqMessageForHandOver()
-        if (_mq) {
-          resolve(true)
+    let apiStatus = await validateApiTransfer(model)
+    spinning.value = false
+    if (apiStatus) {
+      spinning.value = true
+      defHttp.post({ url: api.processComplete, data: model }, { withToken: true }).then(async (res) => {
+        if (res && res.success) {
+          message.success('移交成功!')
+          let _mq = await insertMqMessageForHandOver()
+          if (_mq) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
         } else {
+          let msg = res?.message || ''
+          message.error('移交失败!' + msg)
           resolve(false)
         }
+        spinning.value = false
+      }).catch(err => {
+        message.error(err)
+        resolve(false)
+      })
+    } else {
+      message.error('移交失败!')
+      resolve(false)
+    }
+  })
+}
+
+/**
+ * 校验api移交规则
+ */
+function validateApiTransfer(obj) {
+  return new Promise(async (resolve, reject) => {
+    let slbh = obj.slbh
+    let str = await getCurrentApiTransferRule(obj.taskId)
+    if (str === false) {
+      resolve(false)
+      return
+    }
+    let arr = str ? str.split(',') : []
+    for (let i = 0; i < arr.length; i++) {
+      let find: any = getTransferRuleByCode(arr[i])
+      if (find) {
+        let content = find.content
+        const scope: any = { defHttp, Modal, createVNode, ExclamationCircleOutlined }; // 显式用一下，保证vite不会剔除
+  
+        let fn = eval(`async (slbh) => {
+          ${content}
+        }`)
+        let transferRes = await fn(slbh)
+        if (!transferRes) {
+          resolve(false)
+          return
+        }
       } else {
-        let msg = res?.message || ''
-        message.error('移交失败!' + msg)
+        message.warning('移交规则查找失败!')
+        resolve(false)
+        return
+      }
+    }
+    resolve(true)
+  })
+}
+
+/**
+ * 获取当前流程配置的api移交规则
+ * @param slbh
+ */
+function getCurrentApiTransferRule(taskId) {
+  return new Promise((resolve, reject) => {
+    defHttp.post({ url: api.getApiTransferRule, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result || '')
+      } else {
+        message.warning(res?.message)
         resolve(false)
       }
-      spinning.value = false
-    }).catch(err => {
-      message.error(err)
-      resolve(false)
     })
-
   })
 }
 
