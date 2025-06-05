@@ -1740,3 +1740,64 @@ export function getZrzhByXqmcAndZh(xqmc: string, zh: string) {
     })
   })
 }
+
+/**
+ * 单个消费
+ * @param obj
+ */
+export function sendMsgSingle(obj) {
+  return new Promise((resolve) => {
+    obj = convertSnakeKeysToCamel(obj)
+    let url = '/api/zrzy-api/mq/log/sendMsgSingle'
+    defHttp.post({ url: url, data: obj }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+        message.success('发送成功!')
+      } else {
+        resolve(false)
+        message.warning('发送失败!' + res?.message)
+      }
+    })
+  })
+}
+
+/**
+ * 批量消费
+ * @param list
+ */
+export function sendMsgList(list) {
+  return new Promise((resolve) => {
+    list = list.map(item => convertSnakeKeysToCamel(item))
+    let url = '/api/zrzy-api/mq/log/sendMsgList'
+    defHttp.post({ url: url, data: list }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+        message.success('发送成功!')
+      } else {
+        resolve(false)
+        message.warning('发送失败!' + res?.message)
+      }
+    })
+  })
+}
+
+/**
+ * 下划线转驼峰
+ * @param str
+ */
+function snakeToCamel(str: string) {
+  return str.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
+}
+
+/**
+ * 短横线对象转为驼峰对象
+ * @param obj
+ */
+function convertSnakeKeysToCamel(obj: any) {
+  const result: Record<string, any> = {};
+  for (const key in obj) {
+    const camelKey = snakeToCamel(key);
+    result[camelKey] = obj[key];
+  }
+  return result;
+}
