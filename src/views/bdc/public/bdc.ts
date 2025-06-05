@@ -1431,6 +1431,22 @@ export function getDeptOptions() {
   })
 }
 
+/**
+ * 获取区域选项
+ */
+export function getRegionOptions() {
+  return new Promise((resolve, reject) => {
+    let url = '/api/zrzy-system/sys/areacode/queryAreaTreeAndZdgs'
+    defHttp.get({ url: url }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+          resolve(res.result || [])
+        } else {
+          resolve([])
+      }
+    })
+  })
+}
+
 export function cc() {
   message.success('ccccc')
 }
