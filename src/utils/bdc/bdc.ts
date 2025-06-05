@@ -14,7 +14,7 @@ const checkFlag = true
  */
 export async function extractData(options: any) {
     const route = router.currentRoute.value;
-    const { data, dtype, open, reload, regType, ywlx, exParams } = options
+    const { data, dtype, open, reload, regType, ywlx } = options
     const slbh = route.query.slbh?.toString()
     let dyhList: any = []
     let lcid = "";
@@ -98,8 +98,7 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    let cqly = exParams?.cqly 
-    let check = checkFlag ? (cqly && cqly == 14 ? true : await checkLogic({ slbh: slbh, bdcModels: dyhList })): true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }): true
     options.okLoading.value = false
     if (check) {
         let _data: any =
@@ -107,8 +106,7 @@ export async function extractData(options: any) {
             "ywlx": ywlx,
             "slbh": slbh,
             "lcid": lcid,
-            "dyhList": dyhList,
-            "cqly": cqly
+            "dyhList": dyhList
         }
         defHttp.post({
             url: '/api/zrzy-bdc/bdc/case/addCase',

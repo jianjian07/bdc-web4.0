@@ -156,7 +156,7 @@ function loadData() {
   var params = {
     pageNo: pagination.value.current,
     pageSize: pagination.value.pageSize,
-    xzlcbm: "eq "+props.baseInfo?.regType
+    lcid: "eq " + props.lcid
   }
   // 获取业务约束配置列表
   defHttp.get(
@@ -207,7 +207,8 @@ function onShowModal(data: any = null, type: String = 'new') {
       xzlcbm: props.baseInfo?.regType, //限制流程编码，即当前流程 （使用regType关联）
       xzlcmc: props.baseInfo?.title, //限制流程编码，即当前流程
       treeData: props.treeData, //左侧目录树
-      dataSource: dataList.value  //列表数据，用于新增/编辑时查找是否存在数据
+      dataSource: dataList.value,  //列表数据，用于新增/编辑时查找是否存在数据
+      lcid: props.lcid
     },
     onOk: async (res: any) => {
       if(type == 'view') {
