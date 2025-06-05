@@ -49,7 +49,8 @@ let formState: any = ref({
   xzcz: -1,
   xzlcmc: "",
   xzlcbm: "",
-  bz: ""
+  bz: "",
+  lcid: ""
 })
 let lcKey: any = ref()
 let options: any = ref([])
@@ -84,6 +85,7 @@ watch(() => props.formData, (val: any) => {
     //给限制流程编码及名称赋值
     formState.value.xzlcbm = val.xzlcbm
     formState.value.xzlcmc = val.xzlcmc
+    formState.value.lcid = val.lcid
   }
   options.value = val.treeData
   
@@ -114,7 +116,7 @@ function onChange(value, selectedOptions) {
 
 function isObtainTwoData(formdata, data) {
   for (let i = 0; i < data.length; i++) {
-    if (data[i].xzlcbm == formdata.xzlcbm && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt) {
+    if (data[i].lcid == formdata.lcid && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt) {
       return true
     }
   }
