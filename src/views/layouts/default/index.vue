@@ -6,7 +6,7 @@
     <Layout :class="[layoutClass]" style="min-height: calc(100% - 50px)">
       <!-- 左侧导航 -->
       <!-- 这里测试如果sider的放里面会导致莫名其妙渲染100多次-->
-      <a-layout-sider class="menu-sider" v-model:collapsed="getCollapsed" collapsible :trigger="null" v-show="!fullscreen">
+      <a-layout-sider class="menu-sider" width="250" v-model:collapsed="getCollapsed" collapsible :trigger="null" v-show="!fullscreen">
         <LayoutSideBar />
       </a-layout-sider>
 
