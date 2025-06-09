@@ -371,3 +371,33 @@ export function escapeJsonString(inputStr) {
     .replace(/\\/g, "\\\\") // 先转义 `\`
     .replace(/"/g, '\\"'); // 再转义 `"`
 }
+
+/**
+ * 获取字符串中的非法字符
+ * @param str
+ **/
+function getIllegalChars(str) {
+  const illegalPattern = /[\t\n\r\/\\#%&?=+$@^*~`|<>"';:,. ，。【】（）「」《》！·……￥　]/g;
+  const matches = str.match(illegalPattern);
+  return matches ? [...new Set(matches)] : [];
+}
+
+/**
+ * 验证字符串中是否包含非法字符
+ * @param str
+ **/
+export function validateNoIllegalChars(str) {
+  const illegalChars = getIllegalChars(str);
+  if (illegalChars.length > 0) {
+    const visibleChars = illegalChars.map((ch) =>
+      ch === '\t' ? '\\t' :
+      ch === '\n' ? '\\n' :
+      ch === '\r' ? '\\r' :
+      ch === ' '  ? '[空格]' :
+      ch === '　' ? '[全角空格]' :
+      ch
+    );
+    return `不能包含非法字符：${visibleChars.join(' ')}`;
+  }
+  return '';
+}

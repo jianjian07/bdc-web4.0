@@ -91,9 +91,9 @@
                       <a-radio-button :value="1">自定义</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
-                  <a-form-item label="版本" style="margin-right: 20px;">
-                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>
-                  </a-form-item>
+<!--                  <a-form-item label="版本" style="margin-right: 20px;">-->
+<!--                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>-->
+<!--                  </a-form-item>-->
                   <a-form-item label="接口标识" style="margin-right: 20px;">
                     <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识"
                       @click="onClickCode(pane)"></a-input>
@@ -157,7 +157,8 @@ import {
   dirDataChange,
   getMagicApiBody,
   sendExCommonApi,
-  sendMagicApi
+  sendMagicApi, 
+  validateNoIllegalChars
 } from "/@/views/data/apimanage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import ApiExParam from "/@/views/data/apimanage/modules/apiExParam.vue"
@@ -469,6 +470,12 @@ function saveApi(isSend?: any) {
 function saveCommonApi(data, isSend?: any) {
   return new Promise((resolve, reject) => {
     let url = data.id ? api.editApi : api.addApi
+    let validateMsg = validateNoIllegalChars(data.code)
+    if (validateMsg) {
+      message.warning('接口标识' + validateMsg)
+      resolve(false)
+      return
+    }
     defHttp.post({ url: url, data: data }, { withToken: true }).then((res) => {
       if (res && res.code == 200) {
         if (!isSend) {
