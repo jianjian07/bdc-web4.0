@@ -222,7 +222,7 @@ const columns = [
     title: '流水号类型',
     dataIndex: 'serialType',
     key: 'serialType',
-    dict: [{ label: '年', value: 'year' }, { label: '月', value: 'month' }],
+    dict: [{ label: '年', value: 'year' }, { label: '月', value: 'month' }, { label: '日', value: 'day' }],
     placeholder: '请选择流水号类型',
     optional: true
   },
