@@ -1801,3 +1801,53 @@ function convertSnakeKeysToCamel(obj: any) {
   }
   return result;
 }
+
+/**
+ * 新建合同
+ * @param arr
+ */
+export function addContract(arr: any) {
+  return new Promise((resolve) => {
+    let url = '/api/zrzy-bdc/clf/ht/addContract'
+    let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj }
+    defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        message.warning(res?.message)
+        resolve(false)
+      }
+    })
+  })
+}
+
+/**
+ * 更新合同状态
+ * @param czlx
+ */
+export function updateHtZt(htbh, czlx) {
+  return new Promise((resolve) => {
+    let url = '/api/zrzy-bdc/clf/ht/updateHtZt'
+    let str = ''
+    switch (czlx) {
+      case 'tijiao':
+        str = '提交'
+        break;
+      case 'chehui':
+        str = '撤回'
+        break;
+      case 'chexiao':
+        str = '撤销'
+        break;
+    }
+    defHttp.post({ url: url, params: { htbh: htbh, czlx: czlx } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        message.success(str + '成功!')
+        resolve(true)
+      } else {
+        message.warning(res?.message || str + '失败!')
+        resolve(false)
+      }
+    })
+  })
+}

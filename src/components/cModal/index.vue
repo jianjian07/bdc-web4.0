@@ -36,10 +36,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue"
+import { computed, defineAsyncComponent, onMounted, ref } from "vue"
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
-import { getData } from "/@/views/online/utils/wonder1.0.1.ts";
 
 const modules = import.meta.glob('/src/**/*.vue')
 // 是否显示弹窗
@@ -54,7 +53,6 @@ let isFinish = ref(false)
 const component = computed(() => {
   return defineAsyncComponent(modules[`/src/${props.filePath}.vue`]);
 });
-let extendBtnList = ref<any>([])
 let props = defineProps({
   title: {
     type: String,
