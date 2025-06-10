@@ -80,8 +80,10 @@ import ApprovalProcess from "/@/views/bdc/query/ApprovalProcess.vue"
 import RViewOnline from "/@/views/online/report/RViewOnline.vue"
 import { message } from "ant-design-vue"
 import { updateCModalScopeBus } from "/@/components/cModal/index"
+import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
 const eventBus = createScopedBus()
 updateCModalScopeBus(eventBus)
+updateCDrawerScopeBus(eventBus)
 provide('scopedEventBus', eventBus)
 const modules = import.meta.glob('/src/**/*.vue')
 const CBtnsVue = defineAsyncComponent(() => import("/@/views/bdc/public/Btns.vue"))

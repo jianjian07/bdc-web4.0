@@ -17,8 +17,10 @@ import dirTree from './components/dirTree.vue';
 import { useRoute } from 'vue-router'
 import { createScopedBus } from "/@/views/online/utils/scopeEventBus.ts"
 import { updateCModalScopeBus } from "/@/components/cModal/index.ts"
+import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
 const eventBus = createScopedBus()
 updateCModalScopeBus(eventBus)
+updateCDrawerScopeBus(eventBus)
 provide('scopedEventBus', eventBus)
 const route = useRoute();
 const props = defineProps({
