@@ -1870,3 +1870,32 @@ export function deleteHtByHtbh(htbh) {
     })
   })
 }
+
+/**
+ * 根据合同编号提取附件
+ */
+export async function addFjByHtbh(demoRefs: any, loading: any) {
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh
+  if (!slbh) {
+    message.error("未获取到受理编号，请检查!")
+  }
+  if (loading) {
+    loading.value = true
+  }
+  let _result = await getFormInfo(demoRefs)
+  let htbh = _result[0].data[0].bdc_bdcdj.htbh
+  if (htbh) {
+    defHttp.post({
+      url: '/api/zrzy-bdc/clf/ht/copyFjByHtbh',
+      params: { htbh: htbh, slbh: slbh }
+    }, { withToken: true }).then((res) => {
+      if (res.success) {
+        message.success(res.result)
+      } else {
+        message.error(res.message)
+      }
+    })
+  }
+  loading.value = false
+}
