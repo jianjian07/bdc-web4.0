@@ -1879,6 +1879,7 @@ export async function addFjByHtbh(demoRefs: any, loading: any) {
   const slbh = route.query.slbh
   if (!slbh) {
     message.error("未获取到受理编号，请检查!")
+    return
   }
   if (loading) {
     loading.value = true
@@ -1898,4 +1899,29 @@ export async function addFjByHtbh(demoRefs: any, loading: any) {
     })
   }
   loading.value = false
+}
+
+/**
+ * 根据受理编号修改合同状态
+ */
+export function updateHtztBySlbh() {
+  return new Promise((resolve) => {
+    const route = router.currentRoute.value;
+    const slbh = route.query.slbh
+    if (!slbh) {
+      message.error("未获取到受理编号，请检查!")
+      resolve(false)
+      return
+    }
+    defHttp.post({
+      url: '/api/zrzy-bdc/clf/ht/updateHtztBySlbh',
+      params: { slbh: slbh }
+    }, { withToken: true }).then((res) => {
+      if (res.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
 }
