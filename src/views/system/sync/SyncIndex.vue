@@ -42,6 +42,7 @@
         </a-button>
       </a-space>
     </div>
+    <a-alert message="建议一个数据库一个同步任务,避免数据表重复监测" class="sys-role-table-header" show-icon type="info" />
     <a-table :columns="columns" :data-source="dataList" :pagination="pagination" @change="onChange($event, loadData)"
       :row-key="record => record.id">
       <template #bodyCell="{ column, record, index }">
@@ -49,9 +50,8 @@
           {{ index + 1 }}
         </template>
         <template v-else-if="column.dataIndex === 'jobId'">
-          <a-tag :color="record[column.dataIndex] != null && record[column.dataIndex] != '' ? 'green' : 'red'"
-            style="padding: 0 15px;">
-            {{ record[column.dataIndex] != null && record[column.dataIndex] != '' ? '运行中' : '已停止' }}
+          <a-tag :color="record.jobId ? 'green' : 'red'" style="padding: 0 15px;">
+            {{ record.jobId ? '运行中' : '已停止' }}
           </a-tag>
         </template>
         <template v-else-if="column.dataIndex == 'operate'">
@@ -62,9 +62,7 @@
             <a v-if="record.jobId == null || record.jobId == ''" @click="start(record)">启动</a>
             <a v-else @click="stop(record)">停止</a>
             <a @click="sync(record)">同步信息</a>
-
             <a @click="edit(record)">编辑</a>
-
             <a-popconfirm :title="'确定要删除任务：' + record.name + '?'" @confirm="del(record)">
               <a>删除</a>
             </a-popconfirm>

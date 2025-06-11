@@ -38,7 +38,7 @@
                 <span v-html="item.content"></span>
                 <div v-if="item.type == 'answer'" class="clip" @click="copyText(item.content)">
                   <CopyOutlined />
-                  复制内容
+                  复制
                 </div>
               </div>
             </div>
@@ -64,10 +64,10 @@
 
       </div>
       <div class="question">
-        <div v-if="inAnswer" @click="abortRequest" class="stopRequest">
-          <svg-icon name="suspend" width="20px" height="20px"></svg-icon>
+        <!-- <div v-if="inAnswer" @click="abortRequest" class="stopRequest">
+          <svg-icon name="suspend" width="20px" height="20px" color="red"></svg-icon>
           停止回答
-        </div>
+        </div> -->
         <a-textarea v-model:value="question" placeholder="输入您的问题，按 Ctrl+Enter 换行，按 Enter 发送"
           :auto-size="{ minRows: 3, maxRows: 10 }" :bordered="false" @keydown="handleTextareaKey" />
         <div class="operate">
@@ -102,28 +102,27 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from 'lodash-es';
 import { PlusOutlined, MessageOutlined, EditOutlined, DeleteOutlined, ShareAltOutlined, SendOutlined, CopyOutlined } from '@ant-design/icons-vue';
-import { useUserStoreWithOut } from '/@/store/modules/user';
+
 import { scrollOnTheEnd } from "/@/utils"
 
-let topicList = ref([
-  {
-    id: 1,
-    title: '帮我写一篇演讲稿'
-  },
-  {
-    id: 2,
-    title: '帮我写一篇论文'
-  },
-  {
-    id: 3,
-    title: '帮我写一篇作文'
-  }
+let topicList: any = ref([
+  // {
+  //   id: 1,
+  //   title: '帮我写一篇演讲稿'
+  // },
+  // {
+  //   id: 2,
+  //   title: '帮我写一篇论文'
+  // },
+  // {
+  //   id: 3,
+  //   title: '帮我写一篇作文'
+  // }
 ]);
-
 let open = ref<boolean>(false);
 let editItem = ref({})
 let question = ref('')
-let currentTopic = ref({})
+let currentTopic: any = ref()
 
 let conversationList: any = ref([
   {
@@ -140,7 +139,7 @@ let inAnswer = ref(false)
 
 const urlList = {
   znwd: '/api/zrzy-form/ai/znwd',
-  aiStream: '/api/zrzy-form/ai/call/Stream'
+  aiStream: '/api/zrzy-form/ai/call/streamFlux'
 }
 
 const chatContainer = ref<HTMLElement>();
@@ -154,25 +153,40 @@ watch(conversationList, async () => {
   }
 }, { deep: true, immediate: true });
 
-watch(() => currentTopic.value, (val: any) => {
+watch(() => currentTopic.value, (val: any, oldVal) => {
+  if (oldVal != undefined) {
+    const index = topicList.value.findIndex(item => item.id == oldVal.id);
+    topicList.value[index].message = conversationList.value;
+  }
+
   if (val && val?.id) {
     // TODO 加载会话主题，获取之前的会话记录
+    conversationList.value = val.message
   } else {
-    conversationList.value = []
-    conversationList.value.push({
-      role: 'assistant',
-      content: '您好，我是AI助手，请问有什么可以帮您的吗？',
-      type: 'default'
-    })
+    // conversationList.value = []
+    // conversationList.value.push({
+    //   role: 'assistant',
+    //   content: '您好，我是AI助手，请问有什么可以帮您的吗？',
+    //   type: 'default'
+    // })
   }
 })
 
 function onAddNew() {
+  const a = {
+    id: Date.now().toString(16),
+    title: '新的会话',
+    message: [
+      {
+        role: 'assistant',
+        content: '您好，我是AI助手，请问有什么可以帮您的吗？',
+        type: 'default'
+      }
+    ]
+  }
   // 新增
-  topicList.value.unshift({
-    id: 0,
-    title: '新的会话'
-  })
+  topicList.value.unshift(a)
+  currentTopic.value = a
 }
 
 function editTopic(item: any) {
@@ -220,14 +234,29 @@ function sendQuestion() {
     content: 'AI助手正在思考中...',
     type: 'waiting'
   }
+  debugger
   conversationList.value.push(tempMessage)
+  if (currentTopic.value == undefined) {
+    topicList.value.push({
+      id: Date.now().toString(16),
+      title: conversationList.value[1].content.length > 20 ? conversationList.value[1].content.substring(0, 20) + '...' : conversationList.value[1].content,
+      message: conversationList.value
+    })
+    currentTopic.value = topicList.value[0]
+  }
+  if (currentTopic.value.title == "新的会话") {
+    const index = topicList.value.findIndex(item => item.id == currentTopic.value.id);
+    topicList.value[index].title = conversationList.value[1].content.length > 20 ? conversationList.value[1].content.substring(0, 20) + '...' : conversationList.value[1].content;
+  }
 
+  debugger
   // 使用封装的axios实例进行流式请求
   defHttp.post({
     url: urlList.aiStream,
-    params: {
-      message: currentDate
-    },
+    data: conversationList.value,
+    // params: {
+    //   message: currentDate
+    // },
     responseType: 'text', // 指定响应类型为文本
     // 添加中止信号
     signal: abortController.value.signal,
@@ -260,7 +289,7 @@ function sendQuestion() {
   }).then(() => {
     inAnswer.value = false
   }).catch((err: any) => {
-  console.log(err)
+    console.log(err)
     if (err.name !== 'CanceledError') {
       console.error('Stream error:', err)
       tempMessage.content = 'AI助手思考失败，请稍后再试!'
