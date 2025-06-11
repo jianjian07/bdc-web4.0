@@ -1809,7 +1809,7 @@ function convertSnakeKeysToCamel(obj: any) {
 export function addContract(arr: any) {
   return new Promise((resolve) => {
     let url = '/api/zrzy-bdc/clf/ht/addContract'
-    let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj }
+    let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj, ywh: arr[0].ywh }
     defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(res.result)
@@ -1846,6 +1846,25 @@ export function updateHtZt(htbh, czlx) {
         resolve(true)
       } else {
         message.warning(res?.message || str + '失败!')
+        resolve(false)
+      }
+    })
+  })
+}
+
+/**
+ * 通过合同编号删除合同
+ * @param htbh
+ */
+export function deleteHtByHtbh(htbh) {
+  return new Promise((resolve) => {
+    let url = '/api/zrzy-bdc/clf/ht/deleteHtByHtbh'
+    defHttp.delete({ url: url, params: { htbh: htbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        message.success('删除成功!')
+        resolve(true)
+      } else {
+        message.warning(res?.message || '删除失败!')
         resolve(false)
       }
     })
