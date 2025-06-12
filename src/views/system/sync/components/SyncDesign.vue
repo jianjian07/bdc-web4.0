@@ -298,33 +298,44 @@ onMounted(() => {
   initData()
 })
 
-async function initData() {
+async function initData(isSave?: boolean) {
   let id = router.currentRoute.value.query.id
   if (id) {
     let info = await getInfoById(id)
     if (info) {
       formState.value = JSON.parse(JSON.stringify(info))
-      getTables(formState.value.sourceDb, 'source')
-      getTables(formState.value.targetDb, 'target')
-      let content = formState.value.content && typeof formState.value.content == 'string' ? JSON.parse(formState.value.content) : formState.value.content
+      if (!isSave) {
+        getTables(formState.value.sourceDb, 'source')
+        getTables(formState.value.targetDb, 'target')
+      }
+
+      let tableList = formState.value.tableList
+      const content:any = { table: [], view: [] };
+      tableList.forEach((item:any) => {
+        if (item.type === 'table') {
+          content.table.push(item);
+        } else if (item.type === 'view') {
+          content.view.push(item);
+        }
+      });
       if (content) {
         let _viewRow = content.view || []
         let _tableRow = content.table || []
         formState.value.viewCheckRow = _viewRow.map((view) => {
-          view.businessKeyArr = view.businessKey.split(',')
+          view.businessKeyArr = view.businessKey ? view.businessKey.split(',') : []
           return view
         })
         formState.value.tableCheckRow = _tableRow.map((table) => {
-          table.businessKeyArr = table.businessKey.split(',')
+          table.businessKeyArr = table.businessKey ? table.businessKey.split(',') : []
           return table
         })
         formState.value.viewCheck = content.view.map(v => v.sourceTable)
         formState.value.tableCheck = content.table.map(v => v.sourceTable)
+        formState.value.viewOriginalIds = JSON.parse(JSON.stringify(content.view.map(v => v.id)))
+        formState.value.tableOriginalIds = JSON.parse(JSON.stringify(content.table.map(v => v.id)))
       }
       // console.log('formState.value', formState.value)
-
     }
-
   }
 }
 
@@ -547,26 +558,39 @@ function handleComplete() {
   let obj = JSON.parse(JSON.stringify(formState.value))
   obj.tableCheckRow = obj.tableCheckRow.map((row) => {
     row.businessKey = row.businessKeyArr?.join(',') || ''
+    row.type = 'table'
+    row.syncId = router.currentRoute.value.query.id
     delete row.businessKeyArr
     delete row.notIdentityColumns
     return row
   })
   obj.viewCheckRow = obj.viewCheckRow.map((row) => {
     row.businessKey = row.businessKeyArr?.join(',') || ''
+    row.type = 'view'
+    row.syncId = router.currentRoute.value.query.id
     delete row.businessKeyArr
     delete row.notIdentityColumns
     delete row.viewTables
     return row
   })
-  obj.content = JSON.stringify({
-    table: obj.tableCheckRow,
-    view: obj.viewCheckRow
-  })
-  delete obj.tableCheckRow, obj.viewCheckRow, obj.tableCheck, obj.viewCheck
+  obj.viewNewIds = obj.viewCheckRow.map(v => v.id).filter(v => v)
+  obj.tableNewIds = obj.tableCheckRow.map(v => v.id).filter(v => v)
+  obj.tableList = [...obj.tableCheckRow, ...obj.viewCheckRow]
+  obj.delIds = [...obj.viewOriginalIds.filter(item => !obj.viewNewIds.includes(item)), ...obj.tableOriginalIds.filter(item => !obj.tableNewIds.includes(item))]
+  // 定义需要删除的临时属性数组
+  const tempProps = [
+    'tableCheckRow', 'viewCheckRow', 
+    'tableCheck', 'viewCheck', 
+    'viewNewIds', 'tableNewIds', 
+    'viewOriginalIds', 'tableOriginalIds'
+  ]
+  // 循环删除临时属性
+  tempProps.forEach(prop => delete obj[prop])
   let url = formState.value.id ? api.update : api.add
   defHttp.post({ url: url, data: obj }, { withToken: true }).then((res) => {
     if (res && res.success) {
       message.success('保存成功!')
+      initData(true)
       // closeCurrentTab()
     } else {
       message.warning(res?.message)
