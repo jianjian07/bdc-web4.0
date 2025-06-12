@@ -1884,7 +1884,9 @@ export async function addFjByHtbh(demoRefs: any, loading: any) {
   if (loading) {
     loading.value = true
   }
-  let _result = await getFormInfo(demoRefs)
+  // 过滤掉计费表单 避免保存
+  let filter = demoRefs.filter(demo => demo.id != '87')
+  let _result = await getFormInfo(filter)
   let htbh = _result[0].data[0].bdc_bdcdj.htbh
   if (htbh) {
     defHttp.post({
