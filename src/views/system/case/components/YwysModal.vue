@@ -4,8 +4,8 @@
       ref="formRef"
       :model="formState"
       :rules="rules"
-      :label-col="{span: 6}"
-      :wrapper-col="{span: 16}"
+      :label-col="{ span: 6 }"
+      :wrapper-col="{ span: 16 }"
     >
       <a-form-item ref="yblcbm" label="已发生的登记" name="yblcbm">
         <a-cascader v-model:value="lcKey" :options="options" :fieldNames="fieldNames" placeholder="请选择" @change="onChange"/>
@@ -80,7 +80,7 @@ watch(() => props.formData, (val: any) => {
     })
     editZt.value = val.itemData.yblczt
     // 获取已办流程编码名称
-    getLcKey(val.itemData.yblcbm, val.treeData)
+    getLcKey(val.itemData.lclx, val.itemData.yblcbm, val.treeData)
   } else {
     //给限制流程编码及名称赋值
     formState.value.xzlcbm = val.xzlcbm
@@ -94,13 +94,15 @@ watch(() => props.formData, (val: any) => {
   deep: true
 })
 
-function getLcKey(regType, data) {
+function getLcKey(lclx, regType, data) {
   for (let i = 0; i < data.length; i++) {
-    let children = data[i].children
-    for(let j = 0; j < children.length; j++) {
-      if(children[j].regType === regType) {
-        lcKey.value = [data[i].key, children[j].key]
-        break;
+    if (data[i].key == lclx) {
+      let children = data[i].children
+      for(let j = 0; j < children.length; j++) {
+        if(children[j].regType === regType) {
+          lcKey.value = [data[i].key, children[j].key]
+          break;
+        }
       }
     }
   }
@@ -108,9 +110,10 @@ function getLcKey(regType, data) {
 
 function onChange(value, selectedOptions) {
   //给已办流程编码及名称赋值
-  if(value.length == 2) {
+  if (value.length == 2) {
     formState.value.yblcmc = selectedOptions[1].title
     formState.value.yblcbm = selectedOptions[1].regType
+    formState.value.lclx = selectedOptions[1].lclx
   }
 }
 
