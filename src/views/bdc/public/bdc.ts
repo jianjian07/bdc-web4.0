@@ -1803,22 +1803,66 @@ function convertSnakeKeysToCamel(obj: any) {
 }
 
 /**
+ * 创建合同逻辑检查
+ * @param params
+ */
+export function checkHtLogic(_data) {
+    return new Promise((resolve) => {
+        defHttp.post({
+            url: '/api/zrzy-bdc/clf/ht/checkHtLogic',
+            data: _data
+        }, { withToken: true }).then((res) => {
+            if (res && res.success) {
+                // 通过
+                resolve(true)
+            } else if (res && res.code == -1) {
+                // 提醒
+                Modal.confirm({
+                    title: '提示',
+                    icon: createVNode(ExclamationCircleOutlined),
+                    content: createVNode('div', { style: 'color:red;' }, res.message),
+                    onOk() {
+                        resolve(true)
+                    },
+                    onCancel() {
+                        resolve(false)
+                    }
+                });
+            } else {
+                // 限制
+                Modal.error({
+                    title: '提示',
+                    content: res.message,
+                });
+                resolve(false)
+            }
+        })
+    })
+}
+
+/**
  * 新建合同
  * @param arr
  */
 export function addContract(arr: any) {
-  return new Promise((resolve) => {
-    let url = '/api/zrzy-bdc/clf/ht/addContract'
-    let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj, ywh: arr[0].ywh }
-    defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        resolve(res.result)
-      } else {
-        message.warning(res?.message)
-        resolve(false)
-      }
+    return new Promise(async (resolve) => {
+        let url = '/api/zrzy-bdc/clf/ht/addContract'
+        let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj, ywh: arr[0].ywh }
+        // 逻辑检查
+        let check = await checkHtLogic(_data)
+        if (check) {
+            defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
+                if (res && res.success) {
+                    resolve(res.result)
+                } else {
+                    message.warning(res?.message)
+                    resolve(false)
+                }
+            })
+        } else {
+            resolve(false)
+        }
     })
-  })
 }
 
 /**
