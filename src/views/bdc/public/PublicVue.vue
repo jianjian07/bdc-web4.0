@@ -39,7 +39,7 @@
 <!--                :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setRef" :reload="reload" >-->
 <!--              </component>-->
             </template>
-            <template v-if="qlr && showQlr">
+            <template v-if="qlr && isAllFinished">
               <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc" :regType="regType"></qlr-list>
             </template>
             <!-- <tdxx-list></tdxx-list> -->

@@ -3,10 +3,10 @@
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <template v-for="(form, index) in formList">
         <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"
-          :formCode="form.vfd" :disabled="true" :ref="setRef" :formData="formData">
+          :formCode="form.vfd" :disabled="true" :ref="(el) => setRef(el, form.formId)" :formData="formData">
         </component>
       </template>
-       <template v-if="qlr">
+       <template v-if="qlr && showQlr && isAllFinished">
          <qlr-list v-show="showQlr" :qlr="qlr" disabled></qlr-list>
        </template>
     </a-spin>
@@ -24,6 +24,7 @@ import { message } from "ant-design-vue"
 import { createScopedBus } from "/@/views/online/utils/scopeEventBus"
 import { updateCModalScopeBus } from "/@/components/cModal/index"
 import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
+import { getMultipleRef } from "/@/views/bdc/public/bdc.ts"
 const eventBus = createScopedBus()
 updateCModalScopeBus(eventBus)
 updateCDrawerScopeBus(eventBus)
@@ -47,16 +48,28 @@ let formList = ref<any>([])
 let qlr = ref<any>()
 // 是否显示权利人
 let showQlr = ref<boolean>(true)
-// 通用表单组件实例
-let demoRefs: any = []
+// 创建响应式Map
+let demoRefsMap = ref(new Map<string, any>())
+
+const demoRefs = computed(() => {
+  const all = Array.from(demoRefsMap.value.values())
+  return getMultipleRef(all, [])
+})
+
 // 动态设置ref 在组件渲染后才能设置
-const setRef = (el: any) => {
-  if (el && el.fView) {
-    demoRefs.push(el.fView)
+const setRef = (el: any, formId: string) => {
+  const fView = el?.fView || el?.$?.exposed?.fView
+  if (el && fView) {
+    demoRefsMap.value.set(formId, fView)
   }
 }
 // 表单查询参数
 let formData = ref<any>({})
+
+// 动态组件是否全部加载
+const isAllFinished = computed(() => {
+  return demoRefs.value.length === formList.value.length
+})
 
 const component = (path: string) => {
   let _com = `/src/views/${path}.vue`
