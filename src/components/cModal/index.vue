@@ -151,10 +151,19 @@ function setConfirmLoading(value: boolean) {
 /**
  * 确定
  */
-function handleOk() {
+async function handleOk() {
   if (props.onOk && typeof props.onOk === "function") {
     let childDom = link.value
-    props.onOk(childDom)
+    let res
+    if (childDom && childDom?.rView?.$?.exposed?.exposedEvents?.handleOk) {
+      res = await childDom.rView.$.exposed.exposedEvents.handleOk()
+      props.onOk(res)
+    } else if (childDom && childDom.handleOk) {
+      res = await childDom.handleOk()
+      props.onOk(res)
+    } else {
+      props.onOk(childDom)
+    }
     // 自己在方法里面执行关闭按钮操作
   } else {
     modalVisible.value = false

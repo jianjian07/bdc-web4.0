@@ -2,18 +2,17 @@
   <a-config-provider :locale="zhCN">
     <a-drawer class="commonDrawer" v-model:open="drawerVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
               :root-class-name="(fullScreen || isFullScreen) ? `full-common-drawer ${wrapClassName || ''}` : (wrapClassName || '')"
-              :confirmLoading="confirmLoading" :maskClosable="false"  @cancel="handleClose"
+              :confirmLoading="confirmLoading" :maskClosable="maskClosable"  @cancel="handleClose"
               v-bind="footerBind"
     >
       <template #title>
-        {{ title }}
         <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
           <FullscreenExitOutlined v-if="fullScreen"/>
           <FullscreenOutlined v-else/>
         </div>
       </template>
       
-      <template #footer>
+      <template v-if="footer" #footer>
         <div :style="footerStyle">
           <a-space>
             <a-button v-if="isDefaultBtn" @click="handleClose">{{ cancelText }}</a-button>
@@ -120,6 +119,10 @@ let props = defineProps({
   isDefaultBtn: {
     type: Boolean,
     default: true
+  },
+  maskClosable: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -155,10 +158,19 @@ function setConfirmLoading(value: boolean) {
 /**
  * 确定
  */
-function handleOk() {
+async function handleOk() {
   if (props.onOk && typeof props.onOk === "function") {
     let childDom = link.value
-    props.onOk(childDom)
+    let res
+    if (childDom && childDom?.rView?.$?.exposed?.exposedEvents?.handleOk) {
+      res = await childDom.rView.$.exposed.exposedEvents.handleOk()
+      props.onOk(res)
+    } else if (childDom && childDom.handleOk) {
+      res = await childDom.handleOk()
+      props.onOk(res)
+    } else {
+      props.onOk(childDom)
+    }
     // 自己在方法里面执行关闭按钮操作
   } else {
     drawerVisible.value = false

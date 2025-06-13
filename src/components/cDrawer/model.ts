@@ -27,4 +27,6 @@ export interface cDrawerModel {
   footerExtendBtn?: any[]
   // 是否需要默认的确认取消按钮
   isDefaultBtn?: boolean
+  // 是否点击遮罩关闭
+  maskClosable?: boolean
 }
