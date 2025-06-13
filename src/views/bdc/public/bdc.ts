@@ -1864,7 +1864,44 @@ export function addContract(arr: any) {
         }
     })
 }
-
+/**
+ * 提交合同逻辑检查
+ * @param params
+ */
+export function verifyHtLogic(htbh) {
+  return new Promise((resolve) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/clf/ht/verifyHtLogic',
+      params: { htbh: htbh }
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        // 通过
+        resolve(true)
+      } else {
+        // 限制
+        Modal.error({
+          title: '提示',
+          content: res.message,
+        });
+        resolve(false)
+      }
+    })
+  })
+}
+/**
+ * 提交合同
+ * @param arr
+ */
+export function submitContract(htbh) {
+  return new Promise(async (resolve) => {
+    // 逻辑检查
+    let check = await verifyHtLogic(htbh)
+    if (check) {
+      const res = await updateHtZt(htbh, 'tijiao')
+      return resolve(res)
+    }
+  })
+}
 /**
  * 更新合同状态
  * @param czlx
