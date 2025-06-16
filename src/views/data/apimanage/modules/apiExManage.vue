@@ -126,8 +126,9 @@
                     </a-select>
                   </template>
                 </a-input>
-                <a-button style="margin-left:10px" type="primary" :loading="loading" @click="sendApi">发送</a-button>
                 <a-button style="margin-left:10px" :loading="saveLoading" @click="saveApi(false)">保存</a-button>
+                <a-button style="margin-left:10px" type="primary" :loading="loading" @click="sendApi">发送</a-button>
+
               </div>
             </div>
             <div class="bottom">
@@ -413,7 +414,8 @@ async function sendApi() {
   if (select.jsonContent) {
     delete select.jsonContent
   }
-  let saveRes = await saveApi(true)
+  // let saveRes = await saveApi(true)
+  let saveRes = true
   if (saveRes) {
     let response: any = ''
     if (select.apiType == 2) {

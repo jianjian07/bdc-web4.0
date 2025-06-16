@@ -9,9 +9,9 @@
       </a-button>
       <div class="api-ex-data-source-tree">
         <template v-if="apiData?.apiDataSource.length">
-          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys" 
-                  v-model:expandedKeys="expandedRowKeys" :fieldNames="{ children:'children', key: 'id' }"
-            :blockNode="true" @select="handleSelectTreeItem">
+          <a-tree :tree-data="apiData.apiDataSource" v-model:selectedKeys="selectedKeys"
+            v-model:expandedKeys="expandedRowKeys" :fieldNames="{ children: 'children', key: 'id' }" :blockNode="true"
+            @select="handleSelectTreeItem">
             <template #title="node">
               <div class="api-row-content">
                 <div class="left" :title="node.title" :id="`left-${node.id}`" :style="getFieldNameStyle(node)">
@@ -24,11 +24,11 @@
                     </template>
                   </a-button>
                   <a-popconfirm title="你确定要删除该数据源吗?" @confirm.stop="del(node)">
-                     <a-button style="margin-left: 8px;">
-                        <template #icon>
-                          <minus-outlined style="font-size: 10px" />
-                        </template>
-                     </a-button>
+                    <a-button style="margin-left: 8px;">
+                      <template #icon>
+                        <minus-outlined style="font-size: 10px" />
+                      </template>
+                    </a-button>
                   </a-popconfirm>
                 </div>
               </div>
@@ -50,17 +50,16 @@
           <a-form-item label="keyName" :label-col="{ style: { width: '80px' } }">
             <a-input v-model:value="selectedNode.keyName"></a-input>
           </a-form-item>
-<!--          <a-form-item label="主数据源" :label-col="{ style: { width: '80px' } }">-->
-<!--            <a-radio-group v-model:value="selectedNode.isMain" @change="(e) => handleIsMain(e, selectedNode)">-->
-<!--              <a-radio value="1">是</a-radio>-->
-<!--              <a-radio value="0">否</a-radio>-->
-<!--            </a-radio-group>-->
-<!--          </a-form-item>-->
+
           <a-form-item label="类型" :label-col="{ style: { width: '80px' } }">
             <a-radio-group v-model:value="selectedNode.type">
               <a-radio value="sql">sql</a-radio>
               <a-radio value="mybatis">mybatis</a-radio>
             </a-radio-group>
+          </a-form-item>
+          <a-form-item label="数据类型" :label-col="{ style: { width: '80px' } }">
+            <a-select v-model:value="selectedNode.dataType" :options="dicts" style="width: 120px">
+            </a-select>
           </a-form-item>
         </a-flex>
 
@@ -90,7 +89,13 @@ const props = defineProps({
     default: {}
   }
 })
-
+const dicts = [
+  { value: 'Array', label: 'Array' },
+  { value: 'Object', label: 'Object' },
+  { value: 'String', label: 'String' },
+  { value: 'Integer', label: 'Integer' },
+  { value: 'Boolean', label: 'Boolean' }
+]
 // 选中keys
 let selectedKeys = ref<any>([])
 // 选中node
@@ -133,7 +138,7 @@ function handleAdd() {
  */
 function del(node) {
   let currentSelect
-  let findParent = findParentNode(props.apiData.apiDataSource,node.id)
+  let findParent = findParentNode(props.apiData.apiDataSource, node.id)
   let arr = findParent?.children || props.apiData.apiDataSource || []
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].id == node.id) {
@@ -185,7 +190,7 @@ function getCodeValue(value) {
 }
 
 function addChild(node) {
-  let find = findNode(props.apiData.apiDataSource, node.id,'id')
+  let find = findNode(props.apiData.apiDataSource, node.id, 'id')
   if (find) {
     if (!find.children) {
       find.children = []
@@ -223,12 +228,12 @@ function getFieldNameStyle(node) {
   }
   if (num !== null || num !== undefined) {
     nextTick(() => {
-    let dom = document.getElementById('left-' + node.id)
-    if (dom) {
-      let width = 95 - 24 * num
-      dom.style.width = `${width}px`
-    }
-  })
+      let dom = document.getElementById('left-' + node.id)
+      if (dom) {
+        let width = 95 - 24 * num
+        dom.style.width = `${width}px`
+      }
+    })
   }
 }
 
@@ -259,7 +264,7 @@ function findNodeLevel(tree: any[], targetId: string | number, currentLevel = 0)
  * @param targetId
  */
 function findParentNode(tree: any[], targetId: string | number): any | null {
-  console.log('targetId',targetId)
+  console.log('targetId', targetId)
   for (const node of tree) {
     if (node.children && node.children.some((child) => child.id === targetId)) {
       return node
