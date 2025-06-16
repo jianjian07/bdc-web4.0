@@ -2,10 +2,12 @@
   <div style="height: 100%">
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <component v-bind:is="generateForm" :id="formData.formId" formType="modal" :key="formData.formId"
-                :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'" :ref="(el) => setRef(el, formData.formId)">
-     </component>
+        :formCode="formData.vfd" :formData="formData" :disabled="formData.iszd == '1'"
+        :ref="(el) => setRef(el, formData.formId)">
+      </component>
       <template v-if="showQlr">
-         <qlr-list :qlr="qlr" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="formData.iszd == '1'" formType="modal" :regType="regType"></qlr-list>
+        <qlr-list :qlr="qlr" :ywh="ywh" :bdcdyh="bdcdyh" :disabled="formData.iszd == '1'" formType="modal"
+          :regType="regType"></qlr-list>
       </template>
     </a-spin>
   </div>
@@ -67,10 +69,10 @@ const props = defineProps({
 })
 
 watch(() => props.formData.sfybz, (newVal, oldVal) => {
-  console.log('弹窗表单',props.formData)
-  showQlr.value = !! (props.formData.sfybz == '0')
+  console.log('弹窗表单', props.formData)
+  showQlr.value = !!(props.formData.sfybz == '0')
   if (showQlr.value) {
-     initQlrXx()
+    initQlrXx()
   }
   // 外网转现提取弹窗用到 弹窗增加动态数据源参数
   if (props.formData.db && !route.query.db) {
@@ -82,7 +84,7 @@ watch(() => props.formData.sfybz, (newVal, oldVal) => {
 })
 
 onMounted(() => {
-  
+
 })
 
 /**
@@ -105,13 +107,13 @@ function initQlrXx() {
 
 
 async function saveData(params?: any) {
-  console.log('保存表单',demoRefs.value)
+  console.log('保存表单', demoRefs.value)
   if (params) {
-    params['params']  = params?.params || props.formData
+    params['params'] = params?.params || props.formData
   } else {
     params = { params: props.formData }
   }
-  
+
   // checkDemoRefs()
   // 这里如果是带.value的就需要拿到.value 因为保存的内部直接处理的formDoms[i].formId
   // eval那种形式是默认解包了 所以不需要再处理
@@ -142,30 +144,29 @@ async function saveQlrData(type: any, params?: any) {
   } else {
     params = props.formData
   }
-  
+
   // checkDemoRefs()
   const refs = demoRefs.value.map(ref => ref?.value || ref)
   return await sendQlrSaveFun(type, refs, spinning, params)
 }
 
-async function savePlJcf(params?:any) {
+async function savePlJcf(params?: any) {
   if (params) {
     params = params?.params || props.formData
   } else {
     params = props.formData
   }
-  
+
   // checkDemoRefs()
   const refs = demoRefs.value.map(ref => ref?.value || ref)
   return await sendPlJcf(refs, spinning, params)
 }
 
 async function getGenFormInfo() {
-  const refs = demoRefs.value.map(ref => ref?.value || ref) 
+  const refs = demoRefs.value.map(ref => ref?.value || ref)
   let res = await getFormInfo(refs)
   return res
 }
-onOK()
 defineExpose({
   saveData,
   saveValidateData,
@@ -177,11 +178,11 @@ defineExpose({
 
 <style lang="less" scoped>
 :deep(.ant-input-disabled) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-input[disabled]) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input)) {
@@ -191,7 +192,7 @@ defineExpose({
 }
 
 :deep(.ant-picker.ant-picker-disabled) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-input-number-disabled) {
