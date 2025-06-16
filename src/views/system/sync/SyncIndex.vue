@@ -196,7 +196,7 @@ function start(record) {
  * @param record
  */
 function stop(record) {
-  defHttp.post({ url: api.stop, params: { jobId: record.jobId, code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
+  defHttp.post({ url: api.stop, params: { code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
     if (res.success) {
       message.success('停止成功')
       record.jobId = '';

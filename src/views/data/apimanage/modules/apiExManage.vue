@@ -91,9 +91,9 @@
                       <a-radio-button :value="1">自定义</a-radio-button>
                     </a-radio-group>
                   </a-form-item>
-<!--                  <a-form-item label="版本" style="margin-right: 20px;">-->
-<!--                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>-->
-<!--                  </a-form-item>-->
+                  <!--                  <a-form-item label="版本" style="margin-right: 20px;">-->
+                  <!--                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>-->
+                  <!--                  </a-form-item>-->
                   <a-form-item label="接口标识" style="margin-right: 20px;">
                     <a-input v-model:value="pane.code" style="width: 100px" placeholder="接口标识"
                       @click="onClickCode(pane)"></a-input>
@@ -157,7 +157,7 @@ import {
   dirDataChange,
   getMagicApiBody,
   sendExCommonApi,
-  sendMagicApi, 
+  sendMagicApi,
   validateNoIllegalChars
 } from "/@/views/data/apimanage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
@@ -240,11 +240,11 @@ const columns = [
 const emit = defineEmits(['update:selectItem', 'load'])
 
 enum api {
-  addDir = '/api/zrzy-api/inner/dir/add',
-  editDir = '/api/zrzy-api/inner/dir/update',
+  addDir = '/api/zrzy-api/api/dir/add',
+  editDir = '/api/zrzy-api/api/dir/update',
   saveMagicApi = '/api/zrzy-form/magic/web/resource/file/api/save?auto=1',
-  addApi = '/api/zrzy-api/inner/api/add',
-  editApi = '/api/zrzy-api/inner/api/update'
+  addApi = '/api/zrzy-api/api/inner/add',
+  editApi = '/api/zrzy-api/api/inner/update'
 }
 
 watch(() => props.selectItem, (newVal: any) => {
@@ -643,7 +643,7 @@ defineExpose({
 <style lang="less" scoped>
 @media (max-width: 1520px) {
   .api-editor-manage {
-     width: calc(100% - 300px)!important;
+    width: calc(100% - 300px) !important;
   }
 }
 

@@ -3,7 +3,8 @@
     <a-spin tip="加载中..." :spinning="loading">
       <api-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @set-save-fun="saveFun"></api-tree>
     </a-spin>
-    <api-manage ref="manageRef" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @load="initData"></api-manage>
+    <api-manage ref="manageRef" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"
+      @load="initData"></api-manage>
   </div>
 </template>
 
@@ -22,7 +23,7 @@ let currentSelectItem = ref<any>()
 let loading = ref<boolean>(false)
 let manageRef = ref()
 enum api {
-  list = '/api/zrzy-api/inner/dir/list'
+  list = '/api/zrzy-api/api/dir/list'
 }
 
 onMounted(() => {

@@ -234,7 +234,6 @@ function sendQuestion() {
     content: 'AI助手正在思考中...',
     type: 'waiting'
   }
-  debugger
   conversationList.value.push(tempMessage)
   if (currentTopic.value == undefined) {
     topicList.value.push({
@@ -248,8 +247,6 @@ function sendQuestion() {
     const index = topicList.value.findIndex(item => item.id == currentTopic.value.id);
     topicList.value[index].title = conversationList.value[1].content.length > 20 ? conversationList.value[1].content.substring(0, 20) + '...' : conversationList.value[1].content;
   }
-
-  debugger
   // 使用封装的axios实例进行流式请求
   defHttp.post({
     url: urlList.aiStream,
@@ -276,6 +273,7 @@ function sendQuestion() {
         .replace(/event:error/g, '');
 
       // 处理分块数据（后端返回纯文本流）
+      // tempMessage.content = rawData
       tempMessage.content = parseMarkdown(rawData)
       tempMessage.type = 'answer'
       // 触发视图更新

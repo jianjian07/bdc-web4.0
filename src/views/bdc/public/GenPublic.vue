@@ -165,7 +165,7 @@ async function getGenFormInfo() {
   let res = await getFormInfo(refs)
   return res
 }
-
+onOK()
 defineExpose({
   saveData,
   saveValidateData,

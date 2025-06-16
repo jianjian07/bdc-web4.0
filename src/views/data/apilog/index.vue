@@ -30,8 +30,8 @@
         </a-form>
     </div>
     <div class="wonder-table-css">
-        <a-table bordered :columns="columns" rowKey="id" :data-source="datalist"
-            :pagination="pagination" @change="onChange($event, loadData)">
+        <a-table bordered :columns="columns" rowKey="id" :data-source="datalist" :pagination="pagination"
+            @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'requestType'">
                     <a-tag :color="record[column.dataIndex] == 'POST' ? 'orange' : 'green'">
@@ -92,7 +92,7 @@ let pagination = ref({
  * 表格数据加载
 */
 async function loadData() {
-    let url = '/api/zrzy-api/apiLog/getApiLogList'
+    let url = '/api/zrzy-api/api/apiLog/getApiLogList'
     if (formData.value.createTime) {
         formData.value.startTime = dayjs(formData.value.createTime[0]).format('YYYY-MM-DD')
         formData.value.endTime = dayjs(formData.value.createTime[1]).format('YYYY-MM-DD')

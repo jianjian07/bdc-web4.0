@@ -176,11 +176,11 @@
                         <a-select v-model:value="item.businessKeyArr" placeholder="请选择目标表标识列"
                           style="min-width: 0; text-align: center;" :options="item.notIdentityColumns"
                           @click="handleClickBusinessKey(item)" mode="multiple"></a-select>
-                        <a-select v-if="type == 'view'" v-model:value="item.mainTable" :options="item.viewTables"  
-                                  @click="handleClickViewTable(item)"></a-select>
+                        <a-select v-if="type == 'view'" v-model:value="item.mainTable" :options="item.viewTables"
+                          @click="handleClickViewTable(item)"></a-select>
                         <div style="display: flex; justify-content: end">
-  <!--                      <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
-  <!--                        @click="handleEdit(type, item, index)" />--> 
+                          <!--                      <FormOutlined style="margin: 0 0 0 10px;font-size: 16px;color: #1890FF; cursor: pointer"-->
+                          <!--                        @click="handleEdit(type, item, index)" />-->
                           <MinusCircleOutlined style="margin: 0px 10px;font-size: 16px;color: red;cursor: pointer"
                             @click="handelDelRow(type, item, index)" />
                         </div>
@@ -310,8 +310,8 @@ async function initData(isSave?: boolean) {
       }
 
       let tableList = formState.value.tableList
-      const content:any = { table: [], view: [] };
-      tableList.forEach((item:any) => {
+      const content: any = { table: [], view: [] };
+      tableList.forEach((item: any) => {
         if (item.type === 'table') {
           content.table.push(item);
         } else if (item.type === 'view') {
@@ -579,9 +579,9 @@ function handleComplete() {
   obj.delIds = [...obj.viewOriginalIds.filter(item => !obj.viewNewIds.includes(item)), ...obj.tableOriginalIds.filter(item => !obj.tableNewIds.includes(item))]
   // 定义需要删除的临时属性数组
   const tempProps = [
-    'tableCheckRow', 'viewCheckRow', 
-    'tableCheck', 'viewCheck', 
-    'viewNewIds', 'tableNewIds', 
+    'tableCheckRow', 'viewCheckRow',
+    'tableCheck', 'viewCheck',
+    'viewNewIds', 'tableNewIds',
     'viewOriginalIds', 'tableOriginalIds'
   ]
   // 循环删除临时属性
@@ -633,7 +633,7 @@ function closeCurrentTab() {
 function handleChangeTargetTable(value, item) {
   defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.targetDb, tableName: value } }, { withToken: true }).then((res) => {
     if (res && res.code == 200) {
-      item.identityColumn = res.result.find(r => r.isidentity == 'YES')?.columnname || ''
+      item.identityColumn = res.result.find(r => r.isIdentity == 'YES')?.columnName || ''
     }
   })
 }
@@ -645,10 +645,11 @@ function handleChangeTargetTable(value, item) {
 function handleClickBusinessKey(item) {
   if (!item.notIdentityColumns || item.notIdentityColumns.length === 0) {
     defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.sourceDb, tableName: item.sourceTable } }, { withToken: true }).then((res) => {
+      debugger
       if (res && res.code == 200) {
         item.notIdentityColumns = res.result.map((m) => {
-          m.label = m.columnname
-          m.value = m.columnname
+          m.label = m.columnName
+          m.value = m.columnName
           return m
         })
         // item.notIdentityColumns = res.result.filter(r => r.isidentity != 'YES').map((m) => {

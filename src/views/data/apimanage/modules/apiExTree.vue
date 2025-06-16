@@ -16,7 +16,7 @@
         <template #title="node">
           <div v-if="node.children" class="api-row-content" @dblclick="onDoubleClick(node)">
             <div class="left">
-              <folder-outlined style="color: #5094f9"/>
+              <folder-outlined style="color: #5094f9" />
               <span v-if="node.name.indexOf(searchValue) > -1" style="margin-left:5px">
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
@@ -138,8 +138,8 @@ const props = defineProps({
 const emit = defineEmits(['update:selectItem', 'setSaveFun'])
 
 enum api {
-  delDir = '/api/zrzy-api/inner/dir/delete',
-  delApi = '/api/zrzy-api/inner/api/delete'
+  delDir = '/api/zrzy-api/api/dir/delete',
+  delApi = '/api/zrzy-api/api/inner/delete'
 }
 
 watch(() => props.apiTreeData, (newVal: any) => {
@@ -468,17 +468,17 @@ function onDoubleClick(node) {
 }
 
 function onDrop(info) {
-  
+
   if (info.dragNode.children && info.dragNode.children.length) {
     // 只允许子节点拖拽
     return
   }
-  
+
   const dropKey = info.node.key;
   const dragKey = info.dragNode.key;
   const dropPos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-  
+
   const loop = (data: any, key: string | number, callback: any) => {
     data.forEach((item: any, index: any) => {
       if (item.id === key) {
@@ -490,10 +490,10 @@ function onDrop(info) {
     });
   };
   const data = [...props.apiTreeData];
-  
+
   // 拖动节点对象
   let dragObj: any;
- 
+
   // 移除原位置的节点
   loop(data, dragKey, (item: any, index: number, arr: any) => {
     arr.splice(index, 1);
@@ -508,16 +508,16 @@ function onDrop(info) {
     i = index;
     targetNode = _item
   });
-  
+
   // 目标节点是父节点（有子节点）作为子节点插入
   if (targetNode.children) {
     dragObj.dirId = targetNode.id
     dragObj.dirName = targetNode.name
     dragObj.dirCode = targetNode.code
     dragObj.pid = targetNode.id
-   
+
     targetNode.children.push(dragObj)
-    
+
   } else {
     // 目标节点是叶子节点 作为同级节点插入
     if (dropPosition === -1) {
@@ -526,13 +526,13 @@ function onDrop(info) {
       ar.splice(i + 1, 0, dragObj);
     }
   }
-  
+
   // 拖拽的即为选中的节点
   selectedKeys.value = [dragObj.id]
   emit('update:selectItem', dragObj)
-  
+
   props.apiTreeData = data;
-  
+
   if (targetNode.children) {
     // 执行保存
     nextTick(() => {
@@ -546,12 +546,12 @@ function onDrop(info) {
 <style lang="less" scoped>
 @media (max-width: 1520px) {
   .api-ex-tree {
-    width: 300px!important;
+    width: 300px !important;
   }
-  
+
   .api-row-content {
     .left {
-      width: 190px!important;
+      width: 190px !important;
     }
   }
 }

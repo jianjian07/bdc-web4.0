@@ -6,16 +6,18 @@
     <div v-else class="mq-config-form-content">
       <a-spin :spinning="formSpinning" class="file-form-spin">
         <a-form ref="formRef" :label-col="{ span: 4 }" :model="formState" :rules="rules" :wrapper-col="{ span: 18 }"
-                style="padding-top: 20px">
+          style="padding-top: 20px">
           <a-row>
             <a-col :md="24">
               <a-form-item label="队列类型" name="mqlx">
-                <a-select v-model:value="formState.mqlx" :disabled="formState.type == 'tag'" @change="topicDataChange($event, formState)" :options="getDictItemsByCode('mq_type')"/>
+                <a-select v-model:value="formState.mqlx" :disabled="formState.type == 'tag'"
+                  @change="topicDataChange($event, formState)" :options="getDictItemsByCode('mq_type')" />
               </a-form-item>
             </a-col>
             <a-col :md="24">
               <a-form-item label="主题" name="topic">
-                <a-input v-model:value="formState.topic" :disabled="formState.type == 'tag'" @change="topicDataChange($event, formState)"/>
+                <a-input v-model:value="formState.topic" :disabled="formState.type == 'tag'"
+                  @change="topicDataChange($event, formState)" />
                 <span class="tip-css">命名规则：tp_</span>
               </a-form-item>
             </a-col>
@@ -30,72 +32,61 @@
               </a-col>
               <a-col :md="24">
                 <a-form-item label="接口" name="api">
-                  <a-transfer v-model:target-keys="targetKeys"
-                              :data-source="dataSource" :list-style="{ width: '320px', height: '300px' }">
+                  <a-transfer v-model:target-keys="targetKeys" :data-source="dataSource"
+                    :list-style="{ width: '320px', height: '300px' }">
                     <template #render="item">
                       <a-tooltip placement="rightBottom" color="#108ee9">
                         <template #title>
                           {{ item.title }}
                         </template>
-                        {{  item.title }}
+                        {{ item.title }}
                       </a-tooltip>
                     </template>
                     <template #children="{ direction, selectedKeys, onItemSelect }">
-                      <a-tree
-                        v-if="direction === 'left'"
-                        block-node
-                        checkable
-                        check-strictly
-                        default-expand-all
-                        class="mq-left-tree"
-                        :checked-keys="[...selectedKeys, ...targetKeys]"
-                        :tree-data="treeData"
-                        @check="
-                          (_, props) => {
-                            onChecked(props, [...selectedKeys, ...targetKeys], onItemSelect);
-                          }
-                        "
-                        @select="
-                          (_, props) => {
-                            onChecked(props, [...selectedKeys, ...targetKeys], onItemSelect);
-                          }
-                        "
-                      >
+                      <a-tree v-if="direction === 'left'" block-node checkable check-strictly default-expand-all
+                        class="mq-left-tree" :checked-keys="[...selectedKeys, ...targetKeys]" :tree-data="treeData"
+                        @check="(_, props) => {
+      onChecked(props, [...selectedKeys, ...targetKeys], onItemSelect);
+    }
+      " @select="(_, props) => {
+      onChecked(props, [...selectedKeys, ...targetKeys], onItemSelect);
+    }
+      ">
                         <template #title="node">
                           <div class="tree-row-content">
-                            
-                              <a-tooltip placement="rightBottom" color="#108ee9">
-                                <template #title>
-                                  {{ node.title }}
-                                </template>
-                                <span class="left-name">
-                                  {{ node.title }}
-                                </span>
-                              </a-tooltip>
-                              
+
+                            <a-tooltip placement="rightBottom" color="#108ee9">
+                              <template #title>
+                                {{ node.title }}
+                              </template>
+                              <span class="left-name">
+                                {{ node.title }}
+                              </span>
+                            </a-tooltip>
+
                           </div>
                         </template>
                       </a-tree>
                     </template>
-                    
+
                   </a-transfer>
                 </a-form-item>
               </a-col>
               <a-col :md="24">
                 <a-form-item label="备注" name="bz">
-                  <a-textarea v-model:value="formState.bz"/>
+                  <a-textarea v-model:value="formState.bz" />
                 </a-form-item>
               </a-col>
               <a-col :md="24">
                 <a-form-item label="状态" name="status">
-                  <a-switch v-model:checked="formState.status" :checked-value="1" :un-checked-value="0"/>
+                  <a-switch v-model:checked="formState.status" :checked-value="1" :un-checked-value="0" />
                 </a-form-item>
               </a-col>
               <a-col :md="24">
                 <a-form-item :wrapper-col="{ offset: 4, span: 18 }">
                   <a-button type="primary" @click="handleSave">
                     <template #icon>
-                      <CheckOutlined/>
+                      <CheckOutlined />
                     </template>
                     保存
                   </a-button>
@@ -135,7 +126,7 @@ let formRef = ref()
 let formSpinning = ref<boolean>(false)
 let formState = ref<any>({})
 let rules = ref<any>({
-  mqlx: { required: true, message: '请选择队列类型', trigger: 'blur'},
+  mqlx: { required: true, message: '请选择队列类型', trigger: 'blur' },
   topic: [{ required: true, message: '请输入Topic主题' }, { pattern: /^tp_.*/, message: '必须以tp_开头' }],
   tag: [{ required: true, message: '请输入Tag' }, { pattern: /^tag_.*/, message: '必须以tag_开头' }]
 })
@@ -182,8 +173,8 @@ const onChecked = (
 };
 
 enum api {
-  add = '/api/zrzy-api/mqConfig/add',
-  edit = '/api/zrzy-api/mqConfig/update'
+  add = '/api/zrzy-api/api/mq/config/add',
+  edit = '/api/zrzy-api/api/mq/config/update'
 }
 
 const emit = defineEmits(['getSelectItem'])
@@ -210,7 +201,7 @@ watch(() => props.selectItem, (newVal: any) => {
 })
 
 function mapTreeFields(tree) {
-   return tree.map(node => {
+  return tree.map(node => {
     const newNode = {
       ...node,
       key: node.code,
@@ -247,7 +238,7 @@ function handleSave() {
     let params = JSON.parse(JSON.stringify(formState.value))
     params.status = params.status || 0
     params.updateTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
-    params.updateBy =  userInfo.username
+    params.updateBy = userInfo.username
     let apiUrl = ''
     let oid = JSON.parse(JSON.stringify(params.id))
     if (params.id.includes('新增')) {
@@ -288,8 +279,8 @@ function handleSave() {
       align-items: center;
     }
   }
-  
-   
+
+
   .mq-empty {
     width: 100%;
     height: 100%;
@@ -297,7 +288,7 @@ function handleSave() {
     justify-content: center;
     align-items: center;
   }
-  
+
   :deep(.ant-transfer-list-body) {
     overflow: auto;
   }
@@ -311,7 +302,7 @@ function handleSave() {
 .mq-left-tree {
   .tree-row-content {
     display: flex;
-    
+
     .left-name {
       width: 220px;
       white-space: nowrap;
@@ -320,6 +311,4 @@ function handleSave() {
     }
   }
 }
-
-
 </style>

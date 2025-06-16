@@ -13,8 +13,8 @@
         </div>
         <div class="mq-config-tree-content">
           <a-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
-            :auto-expand-parent="autoExpandParent" :tree-data="treeData" blockNode show-icon
-            style="width: 100%;" @select="handleSelectTreeItem" :fieldNames="{ key: 'id' }">
+            :auto-expand-parent="autoExpandParent" :tree-data="treeData" blockNode show-icon style="width: 100%;"
+            @select="handleSelectTreeItem" :fieldNames="{ key: 'id' }">
             <template #title="node">
               <div v-if="node.children" class="tree-row-content" @dblclick="onDoubleClick(node)">
                 <div class="left">
@@ -54,12 +54,12 @@
               <div v-else class="tree-row-content">
                 <div class="left">
                   <div>
-                     <svg-icon name="tag" width="18px" height="18px" color="rgb(255 107 77)"></svg-icon>
+                    <svg-icon name="tag" width="18px" height="18px" color="rgb(255 107 77)"></svg-icon>
                   </div>
                   <a-tooltip placement="rightBottom" color="#108ee9">
                     <template #title>
                       {{ node.title }}
-                    </template> 
+                    </template>
                     <span class="left-name" v-if="node.title.indexOf(searchValue) > -1" style="margin-left:4px">
                       {{ node.title.substr(0, node.title.indexOf(searchValue)) }}
                       <span style="color: #f50">{{ searchValue }}</span>
@@ -153,9 +153,9 @@ watch(() => searchValue.value, (newVal: any) => {
 })
 
 enum api {
-  list = '/api/zrzy-api/mqConfig/list',
-  del = '/api/zrzy-api/mqConfig/delete',
-  apiList = '/api/zrzy-api/inner/dir/list?apiType=2'
+  list = '/api/zrzy-api/api/mq/config/list',
+  del = '/api/zrzy-api/api/mq/config/delete',
+  apiList = '/api/zrzy-api/api/dir/list?apiType=2'
 }
 
 onMounted(() => {
@@ -169,7 +169,7 @@ onMounted(() => {
 function initData() {
   defHttp.get({ url: api.list }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      let data:any = res.result || []
+      let data: any = res.result || []
       let tree = setTree(data, 'topic')
       treeData.value = setParentKey(tree)
       init()
@@ -185,14 +185,14 @@ function getSelectItem(value) {
   if (value) {
     const nodeId = value.oid || value.id;
     const node = findNodeById(treeData.value, nodeId);
-  
+
     if (node) {
       Object.assign(node, value);
       if (value.oid) {
-        delete node.oid; 
+        delete node.oid;
       }
     }
-  
+
     selectItem.value = value;
   }
 }
@@ -374,7 +374,7 @@ function addTag(node: any) {
     node.children.push(tag)
     selectedKeys.value = [tag.id]
     selectItem.value = tag
-    
+
     let expands = JSON.parse(JSON.stringify(expandedKeys.value))
     expands.push(node.id)
     expandedKeys.value = Array.from(new Set(expands))
@@ -473,14 +473,14 @@ function removeById(arr, id) {
   width: 100%;
   height: 100%;
   display: flex;
-  
+
   .mq-config-tree {
     width: 350px;
     height: 100%;
     padding: 10px;
     border-right: 1px solid #f9f9f9;
   }
-  
+
   .mq-config-search {
     display: flex;
     margin-bottom: 10px;
@@ -530,13 +530,13 @@ function removeById(arr, id) {
 
       }
     }
-    
+
   }
 
   .mq-config-topic-add {
     margin-top: 5px;
   }
-  
+
   .mq-config-form-body {
     width: calc(100% - 350px);
     height: 100%;

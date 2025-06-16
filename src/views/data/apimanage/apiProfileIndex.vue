@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="api-profile wonder-table-form">
     <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
       <a-row :gutter="[0, 8]" tyle="flex">
@@ -175,4 +175,4 @@ function onChange(pag) {
 // table通用样式，保持项目内样式一致
 @import url('/@/assets/less/table.less');
 
-</style>
+</style> -->

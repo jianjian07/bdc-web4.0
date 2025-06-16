@@ -7,14 +7,14 @@ import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import { checkLogic } from "/@/utils/bdc/bdc"
-import { 
-  saveFormData, 
-  saveHandleData, 
-  getFormInfo, 
-  validateInfos, 
-  setInputValue, 
-  setValidateInfos, 
-  updateFormDatas 
+import {
+  saveFormData,
+  saveHandleData,
+  getFormInfo,
+  validateInfos,
+  setInputValue,
+  setValidateInfos,
+  updateFormDatas
 } from 'form-imagining'
 import { guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
@@ -76,7 +76,7 @@ export function getMultipleRef(list: any[], arr: any[]) {
  * @param _type
  * @param demoRefs
  */
-export async function sendSaveFun(type: string, demoRefs: any, loading: any, eventBus: any, params?: any, ) {
+export async function sendSaveFun(type: string, demoRefs: any, loading: any, eventBus: any, params?: any,) {
   return new Promise(async (resolve) => {
     if (loading) {
       loading.value = true
@@ -165,24 +165,24 @@ function getSaveEventBusFuncStr(fun) {
   // 提取函数名
   const funName = fun.substring(0, fun.indexOf('(')).trim();
   const paramStr = fun.substring(fun.indexOf('(') + 1, fun.lastIndexOf(')')).trim();
-  
+
   // 插入 eventBus 到第一个参数
   let finalParamStr = paramStr ? `eventBus, ${paramStr}` : `eventBus`;
   str = `${funName}(${finalParamStr})`;
   return str
 }
 
-export async function baseSave(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
-  return await sendSaveFun('baseSave', demoRefs, loading,  eventBus, params)
+export async function baseSave(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
+  return await sendSaveFun('baseSave', demoRefs, loading, eventBus, params)
 }
 
-export async function handOver(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
-  let res = await sendSaveFun('handOver', demoRefs, loading,  eventBus, params)
+export async function handOver(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
+  let res = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
   if (res && res.status && res.validate) {
     const route = router.currentRoute.value;
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
-    let checkRes:any = true
-    if (['收件','初审','复审','核定','审核','登簿','记载登记簿'].includes(jdmc)) {
+    let checkRes: any = true
+    if (['收件', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
       checkRes = await checkSeal(slbh, loading)
     }
     if (checkRes) {
@@ -205,7 +205,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, eventB
           }
         }
       })
-      
+
       async function markRight(res) {
         if (res && res.markRight) {
           let _result = await res.markRight()
@@ -217,7 +217,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, eventB
           }
         }
       }
-      
+
     }
   }
   return res
@@ -250,7 +250,7 @@ export function closeCurrentTab() {
  * @param loading
  * @param type
  */
-export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus:any, obj: any) {
+export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus: any, obj: any) {
   if (obj && obj.type == 'cftz') {
     let res = await getFormInfo(demoRefs)
     let find = res.find(r => r.validate == false)
@@ -273,8 +273,8 @@ export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus
       let newInfo = await getFormInfo(demoRefs)
       let allRes: any = []
       for (let i = 0; i < res.length; i++) {
-          const promiseRes = await updateFormDatas(newInfo[i])
-          allRes.push(promiseRes)
+        const promiseRes = await updateFormDatas(newInfo[i])
+        allRes.push(promiseRes)
       }
       let status = allRes ? allRes.filter(r => r).length == res.length : false
       if (status) {
@@ -438,7 +438,7 @@ function updateQlrData(type, data) {
  * 附件按钮
  * @param manage 是否默认展示为管理状态
  */
-export async function showFile(demoRefs: any, loading: any, jdmc: string, eventBus:any, params?: any) {
+export async function showFile(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
   eventBus.emit('showFile', params?.manage || false)
 }
 
@@ -448,7 +448,7 @@ export async function showFile(demoRefs: any, loading: any, jdmc: string, eventB
  * @param loading
  * @param params
  */
-export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, eventBus:any, params?: any) {
+export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
   eventBus.emit('showSpPanel')
 }
 
@@ -457,7 +457,7 @@ export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, eve
  * @param demoRefs
  * @param loading
  */
-export function reloadTable(eventBus:any) {
+export function reloadTable(eventBus: any) {
   eventBus.emit('onTableReload')
   return true
 }
@@ -473,7 +473,7 @@ export async function print(params: { code: string, [key: string]: string | numb
   const route = router.currentRoute.value;
   const routeSlbh = route.query.slbh?.toString(); // 从路由获取的 slbh
   let domain = ''
-  let url:any = ''
+  let url: any = ''
   const queryParams = new URLSearchParams()
   const slbhValue = params.slbh ? params.slbh.toString() : routeSlbh
   if (slbhValue) {
@@ -484,7 +484,7 @@ export async function print(params: { code: string, [key: string]: string | numb
       queryParams.append(key, value.toString())
     }
   })
-  
+
   if (params.code.includes('.frx')) {
     let obj = Object.fromEntries(queryParams.entries())
     let reportName = params.code.replace(/\.frx$/, '')
@@ -529,7 +529,7 @@ function getReportUrl(data) {
  * cType为0不生成证号
  * @returns
  */
-export async function register(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
+export async function register(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
@@ -540,9 +540,9 @@ export async function register(demoRefs: any, loading: any, jdmc: string, eventB
   }
   loading.value = true
   defHttp.get({
-      url: '/api/zrzy-bdc/bdc/register/isRegister',
-      params: { slbh: slbh }
-    }, { withToken: true }
+    url: '/api/zrzy-bdc/bdc/register/isRegister',
+    params: { slbh: slbh }
+  }, { withToken: true }
   ).then((res: any) => {
     loading.value = false
     if (res.success) {
@@ -580,31 +580,31 @@ function checkSeal(slbh: string, loading?: any) {
       loading.value = true
     }
     defHttp.post({
-        url: '/api/zrzy-logic/logic/check/checkSeal',
-        params: { slbh: slbh }
-      }, { withToken: true }).then((res: any) => {
-        if (loading) {
-          loading.value = false
-        }
-        if (res && res.success && res.result.code == 1) {
-          resolve(true)
-        } else if (res && res.success && res.result.code == 0){
-          Modal.confirm({
-            title: '提示',
-            icon: createVNode(ExclamationCircleOutlined),
-            content: createVNode('div', { style: 'color:red' }, res?.message || res?.result?.message),
-            onOk() {
-                resolve(true)
-            },
-            onCancel() {
-                resolve(false)
-            }
-          });
-        } else {
-          message.warning(res?.message || res?.result?.message || '逻辑校验不通过!')
-          resolve(false)
-        }
-     }).catch((error: any) => {
+      url: '/api/zrzy-logic/logic/check/checkSeal',
+      params: { slbh: slbh }
+    }, { withToken: true }).then((res: any) => {
+      if (loading) {
+        loading.value = false
+      }
+      if (res && res.success && res.result.code == 1) {
+        resolve(true)
+      } else if (res && res.success && res.result.code == 0) {
+        Modal.confirm({
+          title: '提示',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: createVNode('div', { style: 'color:red' }, res?.message || res?.result?.message),
+          onOk() {
+            resolve(true)
+          },
+          onCancel() {
+            resolve(false)
+          }
+        });
+      } else {
+        message.warning(res?.message || res?.result?.message || '逻辑校验不通过!')
+        resolve(false)
+      }
+    }).catch((error: any) => {
       if (loading) {
         loading.value = false
       }
@@ -667,11 +667,11 @@ export function savaGd() {
     })
   })
 }
-export function baseGd(demoRefs: any, loading: any, jdmc: string, eventBus:any, params: any) {
+export function baseGd(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
   const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   const taskId = route.query.taskId?.toString()
-  return new Promise( async (resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let validateFlag = true
     if (params?.validate) {
       let res = await getFormInfo(demoRefs)
@@ -836,7 +836,7 @@ export function batchQlqt() {
         resolve(false)
       }
     })
-  }).catch(err =>{
+  }).catch(err => {
     message.warning(err)
   })
 }
@@ -966,9 +966,9 @@ export function validateQlbl(validateKey, qlrList, value, gyfs, isSave?: boolean
       } else {
         // 输入值格式不正确
         setValidateInfos(validateKey, 'error', '请输入正确的比例');
-         if (isSave) {
-            message.warning('输入值格式不正确')
-         }
+        if (isSave) {
+          message.warning('输入值格式不正确')
+        }
       }
     }
   } else {
@@ -1107,7 +1107,7 @@ export function logOffDataByYwh(ywh, djlx) {
   return new Promise((resolve) => {
     defHttp.post({
       url: '/api/zrzy-bdc/bdc/case/delDataByYwh',
-      params: { ywh: ywh, djlx: djlx},
+      params: { ywh: ywh, djlx: djlx },
     }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success('注销成功')
@@ -1147,7 +1147,7 @@ export function previewDjb(record?: any) {
   const route = router.currentRoute.value
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
-    router.push({ path: '/djb/preview', query: { slbh: slbh, ywh: record?.ywh }})
+    router.push({ path: '/djb/preview', query: { slbh: slbh, ywh: record?.ywh } })
   }
 }
 
@@ -1159,7 +1159,7 @@ export function lookDjb(record?: any) {
   const route = router.currentRoute.value
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
-    router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record?.ywh }})
+    router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record?.ywh } })
   }
 }
 
@@ -1169,9 +1169,9 @@ export function lookDjb(record?: any) {
 export function addCfCase() {
   defHttp.post({ url: '/api/zrzy-bdc/bdc/bdcCftz/start', data: { lcid: 'cf1735093073136' } }, { withToken: true }).then(res => {
     if (res.success) {
-        router.push({ path: '/bdc/blcasedoing', query: { slbh: res.result.slbh, jf: '0' } });
+      router.push({ path: '/bdc/blcasedoing', query: { slbh: res.result.slbh, jf: '0' } });
     } else {
-        message.error('创建失败')
+      message.error('创建失败')
     }
   })
 }
@@ -1253,17 +1253,17 @@ export function chooseKgLpb(slbh, viewData) {
       id: viewData.value.bdc_yw_gd.pjh,
       dahgg: viewData.value.bdc_yw_gd.dahgg
     },
-     onOk: async (res: any) => {
-        if (res && res.handleOk) {
-          let _result = await res.handleOk()
-          if (_result)  {
-             viewData.value.bdc_yw_gd.dacfjbm = _result
-          }
-          if (_result) {
-            modal.destroy()
-          }
+    onOk: async (res: any) => {
+      if (res && res.handleOk) {
+        let _result = await res.handleOk()
+        if (_result) {
+          viewData.value.bdc_yw_gd.dacfjbm = _result
+        }
+        if (_result) {
+          modal.destroy()
         }
       }
+    }
   })
 }
 
@@ -1271,7 +1271,7 @@ export function chooseKgLpb(slbh, viewData) {
  * 获取库房选项
  */
 export function getKfOptions() {
-   return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     defHttp.get({
       url: '/api/zrzy-bdc/arch/arch/getArchiveCodeTbl',
     }, { withToken: true }).then((res) => {
@@ -1282,7 +1282,7 @@ export function getKfOptions() {
         resolve([])
       }
     })
-   })
+  })
 }
 
 /**
@@ -1292,7 +1292,7 @@ export function getKfOptions() {
 export function getPjOptionsByKf(kfid) {
   return new Promise((resolve, reject) => {
     if (kfid) {
-        defHttp.get({
+      defHttp.get({
         url: '/api/zrzy-bdc/arch/arch/getPjCodeTbl',
         params: { kfid: kfid }
       }, { withToken: true }).then((res) => {
@@ -1306,7 +1306,7 @@ export function getPjOptionsByKf(kfid) {
     } else {
       resolve([])
     }
-   })
+  })
 }
 
 /**
@@ -1361,15 +1361,15 @@ export async function checkLogicFun(options) {
 export function handleWwsjFun(options) {
   return new Promise((resolve, reject) => {
     let defUrl = `/api/zrzy-bdc/bdcww/wwtobdc/${options.action}`;
-      defHttp.post( {url: defUrl, params: { wwSlbh: options.slbh, yj: options.yj,allowEdit: options.allowEdit } }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          // 退件result为null,避免后续判断问题,给个1返回值
-          resolve(res.result||1)
-        } else {
-          message.warning(res?.message)
-          resolve(false)
-        }
-      })
+    defHttp.post({ url: defUrl, params: { wwSlbh: options.slbh, yj: options.yj, allowEdit: options.allowEdit } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        // 退件result为null,避免后续判断问题,给个1返回值
+        resolve(res.result || 1)
+      } else {
+        message.warning(res?.message)
+        resolve(false)
+      }
+    })
   })
 }
 
@@ -1378,41 +1378,41 @@ export function handleWwsjFun(options) {
  * @param options
  */
 export async function relateData(options: any) {
-    return new Promise((resolve, reject) => {
-      const route = router.currentRoute.value;
-      const { data } = options
-      const slbh = route.query.slbh?.toString()
-      let dyhList: any = []
-      for (let index = 0; index < data.length; index++) {
-          const dyh = data[index];
-          dyhList.push({ bdcdyh: dyh.bdcdyh, ywh: dyh.ywh, bdcqzh: dyh.bdcqzh })
-      }
-       let _data: any = {
-          "slbh": slbh,
-          "dyhList": dyhList
-      }
-      defHttp.post({
-          url: '/api/zrzy-bdc/bdc/glgx/relate',
-          data: _data
-      }, { withToken: true }).then((res) => {
-          if (res && res.success) {
-              resolve(true)
-              message.success('数据关联成功')
-              nextTick(() => {
-                  const { getTabsShow } = useTabsSetting()
-                  if (getTabsShow.value) {
-                      const tabStore = useTabsStore()
-                      tabStore.refreshTab()
-                  } else {
-                      router.push('/refresh')
-                  }
-              })
+  return new Promise((resolve, reject) => {
+    const route = router.currentRoute.value;
+    const { data } = options
+    const slbh = route.query.slbh?.toString()
+    let dyhList: any = []
+    for (let index = 0; index < data.length; index++) {
+      const dyh = data[index];
+      dyhList.push({ bdcdyh: dyh.bdcdyh, ywh: dyh.ywh, bdcqzh: dyh.bdcqzh })
+    }
+    let _data: any = {
+      "slbh": slbh,
+      "dyhList": dyhList
+    }
+    defHttp.post({
+      url: '/api/zrzy-bdc/bdc/glgx/relate',
+      data: _data
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+        message.success('数据关联成功')
+        nextTick(() => {
+          const { getTabsShow } = useTabsSetting()
+          if (getTabsShow.value) {
+            const tabStore = useTabsStore()
+            tabStore.refreshTab()
           } else {
-            message.warning(res?.message || '数据关联发生错误')
-            resolve(false)
+            router.push('/refresh')
           }
-      })
+        })
+      } else {
+        message.warning(res?.message || '数据关联发生错误')
+        resolve(false)
+      }
     })
+  })
 }
 
 /**
@@ -1439,9 +1439,9 @@ export function getRegionOptions() {
     let url = '/api/zrzy-system/sys/areacode/queryAreaTreeAndZdgs'
     defHttp.get({ url: url }, { withToken: true }).then((res) => {
       if (res && res.success) {
-          resolve(res.result || [])
-        } else {
-          resolve([])
+        resolve(res.result || [])
+      } else {
+        resolve([])
       }
     })
   })
@@ -1460,11 +1460,11 @@ export function cc() {
 export function createFghbZy(ywlx, slbh, dyhList) {
   return new Promise(async (resolve) => {
     let _data: any =
-        {
-          "ywlx": ywlx,
-          "slbh": slbh,
-          "dyhList": dyhList
-        }
+    {
+      "ywlx": ywlx,
+      "slbh": slbh,
+      "dyhList": dyhList
+    }
     defHttp.post({
       url: '/api/zrzy-bdc/bdc/case/addCaseFghbzy',
       data: _data
@@ -1508,7 +1508,7 @@ export function getQlrGyqk() {
   let usefulQlrList = []
   for (const key in qlrxxObj) {
     let qlrlxmc = qlrxxObj[key].qlrlxmc
-    if (['权利人','抵押权人','预告权利人','预告抵押权人'].includes(qlrlxmc)) {
+    if (['权利人', '抵押权人', '预告权利人', '预告抵押权人'].includes(qlrlxmc)) {
       usefulQlrList = qlrxxObj[key].list
     }
   }
@@ -1536,7 +1536,7 @@ export function getQlrFj() {
   let usefulQlrList = []
   for (const key in qlrxxObj) {
     let qlrlxmc = qlrxxObj[key].qlrlxmc
-    if (['权利人','抵押人','预告权利人','预告抵押人'].includes(qlrlxmc)) {
+    if (['权利人', '抵押人', '预告权利人', '预告抵押人'].includes(qlrlxmc)) {
       usefulQlrList = qlrxxObj[key].list
     }
   }
@@ -1591,15 +1591,15 @@ export function reReport(id, type = 'business') {
  * @param text
  */
 export function copyText(text: string) {
-    const nav = navigator
-    nav.clipboard
-        .writeText(text)
-        .then(() => {
-            message.success("内容已复制到剪切板！");
-        })
-        .catch((error) => {
-            message.warning("操作失败： ", error);
-        });
+  const nav = navigator
+  nav.clipboard
+    .writeText(text)
+    .then(() => {
+      message.success("内容已复制到剪切板！");
+    })
+    .catch((error) => {
+      message.warning("操作失败： ", error);
+    });
 }
 
 /**
@@ -1657,14 +1657,14 @@ export function getQyxxList(qlrmc, zjh) {
       current: 1,
       size: 1
     }
-     defHttp.post({ url: '/imaginform/zrzy-form/form/report/list', data: data }, { withToken: true }).then((res) => {
-       if (res && res.success) {
-         const result = JSON.parse(res.result)
-         resolve(result.records)
-       } else {
-         resolve([])
-       }
-     })
+    defHttp.post({ url: '/imaginform/zrzy-form/form/report/list', data: data }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        const result = JSON.parse(res.result)
+        resolve(result.records)
+      } else {
+        resolve([])
+      }
+    })
   })
 }
 
@@ -1713,7 +1713,7 @@ async function getHandleCkbzBtn() {
         }
         // 4.非收件节点，显示“窗口补正”
         let btnList = [{ name: text, type: 'primary', isDefaultBtn: text == '窗口补正' }]
-        
+
         resolve(btnList)
         return btnList
       }
@@ -1748,7 +1748,7 @@ export function getZrzhByXqmcAndZh(xqmc: string, zh: string) {
 export function sendMsgSingle(obj) {
   return new Promise((resolve) => {
     obj = convertSnakeKeysToCamel(obj)
-    let url = '/api/zrzy-api/mq/log/sendMsgSingle'
+    let url = '/api/zrzy-api/api/mq/log/sendMsgSingle'
     defHttp.post({ url: url, data: obj }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(true)
@@ -1768,7 +1768,7 @@ export function sendMsgSingle(obj) {
 export function sendMsgList(list) {
   return new Promise((resolve) => {
     list = list.map(item => convertSnakeKeysToCamel(item))
-    let url = '/api/zrzy-api/mq/log/sendMsgList'
+    let url = '/api/zrzy-api/api/mq/log/sendMsgList'
     defHttp.post({ url: url, data: list }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(true)
@@ -1807,37 +1807,37 @@ function convertSnakeKeysToCamel(obj: any) {
  * @param params
  */
 export function checkHtLogic(_data) {
-    return new Promise((resolve) => {
-        defHttp.post({
-            url: '/api/zrzy-bdc/clf/ht/checkHtLogic',
-            data: _data
-        }, { withToken: true }).then((res) => {
-            if (res && res.success) {
-                // 通过
-                resolve(true)
-            } else if (res && res.code == -1) {
-                // 提醒
-                Modal.confirm({
-                    title: '提示',
-                    icon: createVNode(ExclamationCircleOutlined),
-                    content: createVNode('div', { style: 'color:red;' }, res.message),
-                    onOk() {
-                        resolve(true)
-                    },
-                    onCancel() {
-                        resolve(false)
-                    }
-                });
-            } else {
-                // 限制
-                Modal.error({
-                    title: '提示',
-                    content: res.message,
-                });
-                resolve(false)
-            }
-        })
+  return new Promise((resolve) => {
+    defHttp.post({
+      url: '/api/zrzy-bdc/clf/ht/checkHtLogic',
+      data: _data
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        // 通过
+        resolve(true)
+      } else if (res && res.code == -1) {
+        // 提醒
+        Modal.confirm({
+          title: '提示',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: createVNode('div', { style: 'color:red;' }, res.message),
+          onOk() {
+            resolve(true)
+          },
+          onCancel() {
+            resolve(false)
+          }
+        });
+      } else {
+        // 限制
+        Modal.error({
+          title: '提示',
+          content: res.message,
+        });
+        resolve(false)
+      }
     })
+  })
 }
 
 /**
@@ -1845,24 +1845,24 @@ export function checkHtLogic(_data) {
  * @param arr
  */
 export function addContract(arr: any) {
-    return new Promise(async (resolve) => {
-        let url = '/api/zrzy-bdc/clf/ht/addContract'
-        let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj, ywh: arr[0].ywh }
-        // 逻辑检查
-        let check = await checkHtLogic(_data)
-        if (check) {
-            defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
-                if (res && res.success) {
-                    resolve(res.result)
-                } else {
-                    message.warning(res?.message)
-                    resolve(false)
-                }
-            })
+  return new Promise(async (resolve) => {
+    let url = '/api/zrzy-bdc/clf/ht/addContract'
+    let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj, ywh: arr[0].ywh }
+    // 逻辑检查
+    let check = await checkHtLogic(_data)
+    if (check) {
+      defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          resolve(res.result)
         } else {
-            resolve(false)
+          message.warning(res?.message)
+          resolve(false)
         }
-    })
+      })
+    } else {
+      resolve(false)
+    }
+  })
 }
 /**
  * 提交合同逻辑检查
