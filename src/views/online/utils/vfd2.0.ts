@@ -1,8 +1,7 @@
 import * as convert from 'xml-js';
 import { defHttp } from '/@/utils/http/axios';
 import { guid } from '/@/utils/index';
-import { message } from 'ant-design-vue';
-import modal from 'ant-design-vue/es/modal';
+import { Modal, message } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { h } from 'vue';
 import { router } from '/@/router';
@@ -256,7 +255,7 @@ function updateFormInfo(vfdModel: any) {
     defHttp.post({ url: "/api/zrzy-form/form/vfdToForm", data: vfdModel }, { withToken: true }).then(async (_res) => {
         if (_res.code == 200) {
             message.success("VFD导入成功")
-            modal.confirm({
+            Modal.confirm({
                 title: '导入成功，是否直接进入设计界面?',
                 icon: h(ExclamationCircleOutlined),
                 okText: '是',
