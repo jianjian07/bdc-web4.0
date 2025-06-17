@@ -195,13 +195,10 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, eventB
         footerExtendBtn: footerList,
         isDefaultBtn: !footerList.find(f => f.isDefaultBtn == false),
         onOk: async (res: any) => {
-          if (res && res.handleOk) {
-            let _result = await res.handleOk()
-            if (_result) {
-              modal.destroy()
-              // 关闭当前标签页
-              closeCurrentTab()
-            }
+          if (res) {
+            modal.destroy()
+            // 关闭当前标签页
+            closeCurrentTab()
           }
         }
       })
@@ -1297,14 +1294,9 @@ export function chooseKgLpb(slbh, viewData) {
       dahgg: viewData.value.bdc_yw_gd.dahgg
     },
     onOk: async (res: any) => {
-      if (res && res.handleOk) {
-        let _result = await res.handleOk()
-        if (_result) {
-          viewData.value.bdc_yw_gd.dacfjbm = _result
-        }
-        if (_result) {
-          modal.destroy()
-        }
+      if (res) {
+        viewData.value.bdc_yw_gd.dacfjbm = res
+        modal.destroy()
       }
     }
   })

@@ -437,12 +437,9 @@ function onSelectTreeNode(keys, e) {
       filePath: 'views/system/case/SfbzpzModal',
       formData: record,
       onOk: async (res: any) => {
-        if (res && res.handleOk) {
-          let _result = await res.handleOk()
-          if (_result) {
-            modal.destroy()
-            initData()
-          }
+        if (res) {
+          modal.destroy()
+          initData()
         }
       }
     })
