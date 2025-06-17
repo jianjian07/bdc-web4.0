@@ -1189,6 +1189,49 @@ export function editCfOrJfCase(slbh, type) {
 }
 
 /**
+ * 导入查封台账
+ */
+export function importCfCase() {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.style.display = 'none'; 
+  
+  document.body.appendChild(fileInput);
+
+  // 监听用户选择文件后
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('请选择一个文件');
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    defHttp.post(
+      {
+        url: '/api/zrzy-bdc/bdc/bdcCftz/importExcel',
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+      { withToken: true, withTimeout: false }
+    ).then((res: any) => {
+      if (res && res.success) { 
+        message.success('导入成功!')
+      } else {
+        message.warning(res?.message || '导入失败!')
+      }
+      
+      // 清理掉临时创建的 input
+      document.body.removeChild(fileInput);
+    })
+  });
+  
+  fileInput.click();
+}
+
+/**
  * 选择审批意见
  * @param viewData
  * @param fields
