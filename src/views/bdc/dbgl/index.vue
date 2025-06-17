@@ -143,7 +143,7 @@ onMounted(() => {
 
 function loadData() {
   spinning.value = true
-  defHttp.get({ url: api.tasklist, params: { ajmc: formData.value.ajmc, slbh: formData.value.slbh,
+  defHttp.get({ url: api.tasklist, params: { ajmc: formData.value.ajmc, slbh: formData.value.slbh, type: 'suspervise',
       pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
       if (res.success) {
           const result = res.result
@@ -198,11 +198,11 @@ function handleRestart(record) {
     url: api.edit,
     data: params
   },{ withToken: true }).then((res: any) => {
-      if (res?.success) {
-        message.success(res?.message)
-        loadData()
+    if (res?.success) {
+      message.success(res?.message)
+      loadData()
     } else {
-        message.warn(res?.message || '操作失败！')
+      message.warn(res?.message || '操作失败！')
     }
   })
 }
