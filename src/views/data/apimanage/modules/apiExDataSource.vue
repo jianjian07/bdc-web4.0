@@ -92,9 +92,7 @@ const props = defineProps({
 const dicts = [
   { value: 'Array', label: 'Array' },
   { value: 'Object', label: 'Object' },
-  { value: 'String', label: 'String' },
-  { value: 'Integer', label: 'Integer' },
-  { value: 'Boolean', label: 'Boolean' }
+  { value: 'String', label: 'String' }
 ]
 // 选中keys
 let selectedKeys = ref<any>([])
