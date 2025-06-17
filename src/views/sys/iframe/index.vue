@@ -59,7 +59,7 @@ function defaultLogin(baseUrl, pathUrl) {
   defHttp.get({ url: url }, { withToken: false }).then((res) => {
     if (res) {
       let redirect = encodeURIComponent(pathUrl)
-      let iframeurl = `${baseUrl}/user/loginByCode?access_token=${res.access_token}&refresh_token=${res.refresh_token}&expires_in=${res.expires_in}&password_tip=false&redirect=${redirect}`
+      let iframeurl = `${baseUrl}/user/loginByCode?access_token=${res.access_token}&refresh_token=${res.refresh_token}&expires_in=${res.expires_in}&password_tip=false&target_url=${redirect}`
       appStore.setIframeSrc(iframeurl)
     } else {
       message.warning(res?.msg || '登录失败')
