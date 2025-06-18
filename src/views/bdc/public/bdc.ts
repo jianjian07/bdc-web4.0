@@ -177,7 +177,7 @@ export async function baseSave(demoRefs: any, loading: any, jdmc: string, eventB
 }
 
 export async function handOver(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
-  let res = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
+  let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
   if (res && res.status && res.validate) {
     const route = router.currentRoute.value;
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
@@ -2042,4 +2042,33 @@ export function updateHtztBySlbh() {
       }
     })
   })
+}
+
+/**
+ * 不予登记
+ */
+export async function handTerminate(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
+  let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
+  if (res && res.status && res.validate) {
+    Modal.confirm({
+        title: '提示',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: createVNode('div', { style: 'color:red;' }, '是否不予登记?'),
+        onOk() {
+          let url = '/api/zrzy-bdc/bdc/process/terminate'
+          const route = router.currentRoute.value;
+          const slbh = route.query.slbh
+          defHttp.get({ url: url, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+            if (res && res.success) {
+              message.success('操作成功!')
+              // 关闭当前标签页
+              closeCurrentTab()
+            } else {
+              message.warning(res?.message || '操作失败!')
+            }
+          })
+        }
+    });
+  }
+  return res
 }

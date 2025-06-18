@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue"
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import * as bdc from '/@/views/bdc/public/bdc'
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
@@ -103,10 +103,16 @@ let _vueRefs: any = computed(() => { return props.vueRefs })
 let _jdmc: any = computed(() => { return props.jdmc })
 // 左侧基础按钮
 let leftBtnList = ref<any>([])
+// 左侧copy
+let leftBtnListCopy = ref<any>([])
 // 中侧按钮
 let middleBtnList = ref<any>([])
+// 中侧Copy
+let middleBtnListCopy = ref<any>([])
 // 右侧按钮
 let rightBtnList = ref<any>([])
+// 右侧Copy
+let rightBtnListCopy = ref<any>([])
 // 按钮间隔
 const spaceSize = 16
 // 保存loading
@@ -130,6 +136,9 @@ watch(() => props.btnList, (newVal: any) => {
   leftBtnList.value = newVal && newVal.left ? newVal.left : []
   middleBtnList.value = newVal && newVal.center ? newVal.center : []
   rightBtnList.value = newVal && newVal.right ? newVal.right : []
+  leftBtnListCopy.value = JSON.parse(JSON.stringify(leftBtnList.value))
+  middleBtnListCopy.value = JSON.parse(JSON.stringify(middleBtnList.value))
+  rightBtnListCopy.value = JSON.parse(JSON.stringify(rightBtnList.value))
   nextTick(() => {
     maxVisibleButtons.value = getMaxMiddleBtnCount()
   })
@@ -140,7 +149,38 @@ watch(() => props.btnList, (newVal: any) => {
 
 onMounted(() => {
   loading.value = props.spinning
+  eventBus.on('setHiddenBtnList',getHiddenBtnList)
+  eventBus.emit('getHiddenBtnList')
 })
+
+onBeforeUnmount(() => {
+  eventBus.off('setHiddenBtnList',getHiddenBtnList)
+})
+
+/**
+ * 设置按钮
+ * @param btnList
+ */
+function getHiddenBtnList(btnList: any) {
+  // 如果没有设置 默认都是显示 
+  if (btnList && btnList.length > 0) {
+    leftBtnList.value = filterButtonsByAnwz('left', btnList, leftBtnListCopy.value);
+    rightBtnList.value = filterButtonsByAnwz('right', btnList, rightBtnListCopy.value);
+    middleBtnList.value = filterButtonsByAnwz('center', btnList, middleBtnListCopy.value);
+  } else {
+    leftBtnList.value = leftBtnListCopy.value
+    rightBtnList.value = rightBtnListCopy.value
+    middleBtnList.value = middleBtnListCopy.value
+  }
+}
+
+function filterButtonsByAnwz(anwz: string, btnList: any[], allCopyList: any[]) {
+  const removeNames = btnList
+    .filter(item => item.anwz === anwz)
+    .map(item => item.btnName);
+
+  return allCopyList.filter(item => !removeNames.includes(item.btnName));
+}
 
 function getMaxMiddleBtnCount() {
   let count = 0
