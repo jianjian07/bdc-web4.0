@@ -1903,11 +1903,11 @@ export function addContract(arr: any) {
  * 提交合同逻辑检查
  * @param params
  */
-export function verifyHtLogic(htbh) {
+export function verifyHtLogic(htlsh) {
   return new Promise((resolve) => {
     defHttp.post({
       url: '/api/zrzy-bdc/clf/ht/verifyHtLogic',
-      params: { htbh: htbh }
+      params: { htlsh: htlsh }
     }, { withToken: true }).then((res) => {
       if (res && res.success) {
         // 通过
@@ -1927,12 +1927,12 @@ export function verifyHtLogic(htbh) {
  * 提交合同
  * @param arr
  */
-export function submitContract(htbh) {
+export function submitContract(htlsh) {
   return new Promise(async (resolve) => {
     // 逻辑检查
-    let check = await verifyHtLogic(htbh)
+    let check = await verifyHtLogic(htlsh)
     if (check) {
-      const res = await updateHtZt(htbh, 'tijiao')
+      const res = await updateHtZt(htlsh, 'tijiao')
       return resolve(res)
     }
   })
@@ -1941,7 +1941,7 @@ export function submitContract(htbh) {
  * 更新合同状态
  * @param czlx
  */
-export function updateHtZt(htbh, czlx) {
+export function updateHtZt(htlsh, czlx) {
   return new Promise((resolve) => {
     let url = '/api/zrzy-bdc/clf/ht/updateHtZt'
     let str = ''
@@ -1956,7 +1956,7 @@ export function updateHtZt(htbh, czlx) {
         str = '撤销'
         break;
     }
-    defHttp.post({ url: url, params: { htbh: htbh, czlx: czlx } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: url, params: { htlsh: htlsh, czlx: czlx } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success(str + '成功!')
         resolve(true)
@@ -1970,12 +1970,12 @@ export function updateHtZt(htbh, czlx) {
 
 /**
  * 通过合同编号删除合同
- * @param htbh
+ * @param htlsh
  */
-export function deleteHtByHtbh(htbh) {
+export function deleteHtByHtbh(htlsh) {
   return new Promise((resolve) => {
     let url = '/api/zrzy-bdc/clf/ht/deleteHtByHtbh'
-    defHttp.delete({ url: url, params: { htbh: htbh } }, { withToken: true }).then((res) => {
+    defHttp.delete({ url: url, params: { htlsh: htlsh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success('删除成功!')
         resolve(true)
@@ -1990,33 +1990,27 @@ export function deleteHtByHtbh(htbh) {
 /**
  * 根据合同编号提取附件
  */
-export async function addFjByHtbh(demoRefs: any, loading: any) {
-  const route = router.currentRoute.value;
-  const slbh = route.query.slbh
-  if (!slbh) {
-    message.error("未获取到受理编号，请检查!")
-    return
-  }
-  if (loading) {
-    loading.value = true
-  }
-  // 过滤掉计费表单 避免保存
-  let filter = demoRefs.filter(demo => demo.id != '87')
-  let _result = await getFormInfo(filter)
-  let htbh = _result[0].data[0].bdc_bdcdj.htbh
-  if (htbh) {
+export async function addFjByHtbh(loading: any) {
+    const route = router.currentRoute.value;
+    const slbh = route.query.slbh
+    if (!slbh) {
+        message.error("未获取到受理编号，请检查!")
+        return
+    }
+    if (loading) {
+        loading.value = true
+    }
     defHttp.post({
-      url: '/api/zrzy-bdc/clf/ht/copyFjByHtbh',
-      params: { htbh: htbh, slbh: slbh }
+        url: '/api/zrzy-bdc/clf/ht/copyFjByHtbh',
+        params: { slbh: slbh }
     }, { withToken: true }).then((res) => {
-      if (res.success) {
-        message.success(res.result)
-      } else {
-        message.error(res.message)
-      }
+        if (res.success) {
+            message.success(res.result)
+        } else {
+            message.error(res.message)
+        }
     })
-  }
-  loading.value = false
+    loading.value = false
 }
 
 /**
