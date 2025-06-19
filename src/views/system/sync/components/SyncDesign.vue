@@ -381,16 +381,25 @@ function handleChangeDataSource(type) {
  * @param type
  */
 function getTables(dbKey, type) {
-  defHttp.get({ url: api.getTables, params: { dbKey: dbKey } }, { withToken: true }).then((res) => {
+  if (dbKey) {
+    defHttp.get({ url: api.getTables, params: { dbKey: dbKey } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      if (type == 'source') {
-        viewTables.value.source.view = res.result.view
-        viewTables.value.source.table = res.result.table
-      } else {
-        viewTables.value.target.table = res.result.table
+        if (type == 'source') {
+          viewTables.value.source.view = res.result.view
+          viewTables.value.source.table = res.result.table
+        } else {
+          viewTables.value.target.table = res.result.table
+        }
       }
+    })
+  } else {
+    if (type == 'source') {
+      viewTables.value.source.view = []
+      viewTables.value.source.table = []
+    } else {
+      viewTables.value.target.table = []
     }
-  })
+  }
 }
 
 /**
@@ -556,6 +565,7 @@ function handleModalOk(value) {
  */
 function handleComplete() {
   let obj = JSON.parse(JSON.stringify(formState.value))
+  console.log('obj',obj)
   obj.tableCheckRow = obj.tableCheckRow.map((row) => {
     row.businessKey = row.businessKeyArr?.join(',') || ''
     row.type = 'table'
@@ -576,7 +586,7 @@ function handleComplete() {
   obj.viewNewIds = obj.viewCheckRow.map(v => v.id).filter(v => v)
   obj.tableNewIds = obj.tableCheckRow.map(v => v.id).filter(v => v)
   obj.tableList = [...obj.tableCheckRow, ...obj.viewCheckRow]
-  obj.delIds = [...obj.viewOriginalIds.filter(item => !obj.viewNewIds.includes(item)), ...obj.tableOriginalIds.filter(item => !obj.tableNewIds.includes(item))]
+  obj.delIds = [...(obj.viewOriginalIds || []).filter(item => !obj.viewNewIds.includes(item)), ...(obj.tableOriginalIds || []).filter(item => !obj.tableNewIds.includes(item))]
   // 定义需要删除的临时属性数组
   const tempProps = [
     'tableCheckRow', 'viewCheckRow',
