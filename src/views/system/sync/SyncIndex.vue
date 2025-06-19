@@ -183,12 +183,12 @@ function start(record) {
   defHttp.post({ url: api.start, params: { code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
     if (res.success) {
       record.jobId = res.result
-      message.success('启动成功')
+      message.success('启动「' + record.name + '」成功')
     } else {
-      message.error('启动失败' + res?.message)
+      message.error('启动「' + record.name + '」失败：' + res?.message, 5)
     }
   }).catch(err => {
-    message.error('启动失败' + err)
+    message.error('启动「' + record.name + '」失败' + err)
   })
 }
 /**
