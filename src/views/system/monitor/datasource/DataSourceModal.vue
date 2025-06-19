@@ -4,7 +4,8 @@
             <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
             <a-button type="primary" @click="onOk">确定</a-button>
         </template>
-        <a-form :model="formData" ref="formRef" name="basic" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" autocomplete="off">
+        <a-form :model="formData" ref="formRef" name="basic" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }"
+            autocomplete="off">
             <a-form-item label="数据源编码" name="code" :rules="[{ required: true, message: '请输入数据源编码' }]">
                 <a-input v-model:value="formData.code" />
             </a-form-item>
@@ -21,16 +22,17 @@
                 <a-input v-model:value="formData.dbDriver" />
             </a-form-item>
             <a-form-item label="主机" name="hostName" :rules="[{ required: true, message: '请输入主机' }]">
-                <a-input v-model:value="formData.hostName" @change="setDbUrl"/>
+                <a-input v-model:value="formData.hostName" @change="setDbUrl" />
             </a-form-item>
             <a-form-item label="端口号" name="port" :rules="[{ required: true, message: '请输入端口号' }]">
-                <a-input v-model:value="formData.port" @change="setDbUrl"/>
+                <a-input v-model:value="formData.port" @change="setDbUrl" />
             </a-form-item>
             <a-form-item label="数据库" name="dbName" :rules="[{ required: true, message: '请输入数据库名' }]">
-                <a-input v-model:value="formData.dbName" @change="setDbUrl"/>
+                <a-input v-model:value="formData.dbName" @change="setDbUrl" />
             </a-form-item>
-            <a-form-item v-if="formData.dbType == '1'" label="模式名" name="schema" :rules="[{ required: true, message: '请输入模式名' }]">
-                <a-input v-model:value="formData.schema" @change="setDbUrl"/>
+            <a-form-item v-if="formData.dbType == '1' || formData.dbType == '5'" label="模式名" name="schema"
+                :rules="[{ required: true, message: '请输入模式名' }]">
+                <a-input v-model:value="formData.schema" @change="setDbUrl" />
             </a-form-item>
             <a-form-item label="数据源地址" name="dbUrl" :rules="[{ required: true, message: '请输入数据源地址' }]">
                 <a-input v-model:value="formData.dbUrl" />
@@ -125,6 +127,7 @@ function onTestConnection() {
     })
 }
 function syncChange(value: any, syn: string) {
+
     const dbType = value.label
     formData.value["dbType"] = value.key
     formData.value[syn] = dbType
@@ -146,19 +149,22 @@ const dataSources = [
  * 拼接数据源地址
  */
 function setDbUrl() {
-  let dbTypeLabel = getDictItemsByCode('database').filter((_v: any) => _v.dictCode == formData.value.dbType)[0]?.dictName || ''
-  let url = ''
-  let host = formData.value.hostName || ''
-  let port = formData.value.port || ''
-  let db = formData.value.dbName || ''
-  let schema = formData.value.schema || ''
-  
-  switch (dbTypeLabel) {
-    case 'PostgreSQL':
-      url = `jdbc:postgresql://${host}:${port}/${db}?currentSchema=${schema}`
-      break;
-  }
-  formData.value.dbUrl = url
+    let dbTypeLabel = getDictItemsByCode('database').filter((_v: any) => _v.dictCode == formData.value.dbType)[0]?.dictName || ''
+    let url = ''
+    let host = formData.value.hostName || ''
+    let port = formData.value.port || ''
+    let db = formData.value.dbName || ''
+    let schema = formData.value.schema || ''
+
+    switch (dbTypeLabel) {
+        case 'PostgreSQL':
+            url = `jdbc:postgresql://${host}:${port}/${db}?currentSchema=${schema}`
+            break;
+        case 'Oracle':
+            url = `jdbc:oracle:thin:@${host}:${port}:${db}`
+            break;
+    }
+    formData.value.dbUrl = url
 }
 
 function onClose() {

@@ -415,21 +415,21 @@ async function sendApi() {
     delete select.jsonContent
   }
   // let saveRes = await saveApi(true)
-  let saveRes = true
-  if (saveRes) {
-    let response: any = ''
-    if (select.apiType == 2) {
-      // 调用magicApi的请求接口
-      response = await sendMagicApi(sendParams)
-    } else {
-      // 调用通用的接口请求接口
-      response = await sendExCommonApi(sendParams)
-    }
-    props.selectItem.responseBody = response
+  // let saveRes = true
+  // if (saveRes) {
+  let response: any = ''
+  if (select.apiType == 2) {
+    // 调用magicApi的请求接口
+    response = await sendMagicApi(sendParams)
   } else {
-    props.selectItem.responseBody = '请求失败'
-    message.warning('请求失败')
+    // 调用通用的接口请求接口
+    response = await sendExCommonApi(sendParams)
   }
+  props.selectItem.responseBody = response
+  // } else {
+  //   props.selectItem.responseBody = '请求失败'
+  //   message.warning('请求失败')
+  // }
   loading.value = false
 }
 
