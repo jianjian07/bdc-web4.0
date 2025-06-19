@@ -9,4 +9,7 @@ import PermissionList from "/@/views/system/permission/modules/PermissionList.vu
 </script>
 
 <style scoped lang="less">
+.jj-permission-index {
+  padding: 10px;
+}
 </style>

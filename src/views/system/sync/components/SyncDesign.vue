@@ -376,7 +376,7 @@ function handleChangeDataSource(type) {
 }
 
 /**
- * 获取表和试图
+ * 获取表和视图
  * @param dbKey
  * @param type
  */
@@ -565,7 +565,6 @@ function handleModalOk(value) {
  */
 function handleComplete() {
   let obj = JSON.parse(JSON.stringify(formState.value))
-  console.log('obj',obj)
   obj.tableCheckRow = obj.tableCheckRow.map((row) => {
     row.businessKey = row.businessKeyArr?.join(',') || ''
     row.type = 'table'
