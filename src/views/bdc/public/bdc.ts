@@ -2047,7 +2047,7 @@ export async function handTerminate(demoRefs: any, loading: any, jdmc: string, e
     Modal.confirm({
         title: '提示',
         icon: createVNode(ExclamationCircleOutlined),
-        content: createVNode('div', { style: 'color:red;' }, '是否不予登记?'),
+        content: createVNode('div', { style: 'color:red;' }, '是否不予登记？确认后案件将强制归档！'),
         onOk() {
           let url = '/api/zrzy-bdc/bdc/process/terminate'
           const route = router.currentRoute.value;
