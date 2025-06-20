@@ -24,9 +24,9 @@
             <a-col :md="12">
               <a-form-item label="源数据源" name="sourceDb" :rules="[{ required: true, message: '请选择源数据源!' }]"
                 :label-col="labelCol" :wrapper-col="wrapperCol">
-                <a-select v-model:value="formState.sourceDb" :options="dataSourceOptions" allow-clear
-                  placeholder="请选择源数据源" show-search :dropdownMatchSelectWidth="false"
-                  @change="handleChangeDataSource('source')"></a-select>
+                <a-select v-model:value="formState.sourceDb"
+                  :options="dataSourceOptions.filter(t => t.dbTypeText != 'Oracle')" allow-clear placeholder="请选择源数据源"
+                  show-search :dropdownMatchSelectWidth="false" @change="handleChangeDataSource('source')"></a-select>
               </a-form-item>
             </a-col>
             <a-col :md="12">
@@ -383,7 +383,7 @@ function handleChangeDataSource(type) {
 function getTables(dbKey, type) {
   if (dbKey) {
     defHttp.get({ url: api.getTables, params: { dbKey: dbKey } }, { withToken: true }).then((res) => {
-    if (res && res.success) {
+      if (res && res.success) {
         if (type == 'source') {
           viewTables.value.source.view = res.result.view
           viewTables.value.source.table = res.result.table
@@ -654,7 +654,6 @@ function handleChangeTargetTable(value, item) {
 function handleClickBusinessKey(item) {
   if (!item.notIdentityColumns || item.notIdentityColumns.length === 0) {
     defHttp.get({ url: api.getColumName, params: { dbKey: formState.value.sourceDb, tableName: item.sourceTable } }, { withToken: true }).then((res) => {
-      debugger
       if (res && res.code == 200) {
         item.notIdentityColumns = res.result.map((m) => {
           m.label = m.columnName
