@@ -7,7 +7,8 @@
             </a-form-item>
 
             <a-form-item label="值" name="dictCode" :rules="[{ required: true, message: '请输入字典编码,只能为字母!' }]">
-                <a-input v-model:value="formData.dictCode" :readOnly="formData.id" :style="formData.id ? 'cursor: not-allowed' : ''"/>
+                <a-input v-model:value="formData.dictCode" :readOnly="formData.id"
+                    :disabled="formData.id ? true : false" />
             </a-form-item>
 
             <a-form-item label="状态" name="status" :rules="[{ required: true, message: '请选择字典状态' }]">
