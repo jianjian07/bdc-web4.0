@@ -260,7 +260,8 @@ function addDir() {
     apiType: '1',
     bz: '',
     children: [],
-    orderNum: props.apiTreeData.length + 1
+    orderNum: props.apiTreeData.length + 1,
+    isResultJson: true
   }
   props.apiTreeData?.push(dir)
   selectedKeys.value = [dir.id]

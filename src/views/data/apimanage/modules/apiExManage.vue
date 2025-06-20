@@ -67,6 +67,9 @@
                 <a-radio value="1">输出</a-radio>
               </a-radio-group>
             </a-form-item>
+            <a-form-item label="返回值序列化">
+              <a-checkbox v-model:checked="pane.isResultJson" />
+            </a-form-item>
             <a-form-item label="目录排序">
               <a-input-number v-model:value="pane.orderNum" />
             </a-form-item>
