@@ -504,7 +504,9 @@ function deleteCatalogOrFile(item: any, type: String = '') {
     if (res?.success) {
       message.success(type == 'folder' ? '目录删除成功' : '文件删除成功')
       loadFileList(false)
-      previewData.value.previewUrl = ''
+      if (previewData.value.previewUrl) {
+        previewData.value.previewUrl = ''
+      }
     } else {
       message.warning(res?.message)
     }
