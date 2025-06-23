@@ -298,8 +298,8 @@ function checkShowForCqZh(regType, fwInfo) {
 
 export function getYwStr(type, item) {
   const statusMap = {
-    yb: { cqzt: '不动产权', ygzt: '预告', dyzt: '抵押', cfzt: '查封' },
-    zb: { zbcqzt: '不动产权', zbygzt: '预告', zbdyzt: '抵押', zbcfzt: '查封' }
+    yb: { cqzt: '不动产权', ygzt: '预告', dyzt: '抵押', cfzt: '查封', jzqzt: '居住权' },
+    zb: { zbcqzt: '不动产权', zbygzt: '预告', zbdyzt: '抵押', zbcfzt: '查封', zbjzqzt: '居住权' }
   };
 
   const mapping = statusMap[type];
@@ -308,7 +308,15 @@ export function getYwStr(type, item) {
   let result = [];
   for (let key in mapping) {
     if (item[key]) {
-      result.push(mapping[key]);
+      // 临时处理预告预抵合并办理
+      if (mapping[key] == '预告') {
+        let ywblqkArr = item.ywblqk.replace(/,+$/, '').split(',');
+        for (let i = 0; i < ywblqkArr.length; i++) {
+            result.push(mapping[key])
+        }
+      } else {
+         result.push(mapping[key]);
+      }
     }
   }
   return result.join(',');                 
