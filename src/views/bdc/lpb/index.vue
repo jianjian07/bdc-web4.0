@@ -216,9 +216,9 @@
               <a-button type="primary" size="small">
                 登记簿
               </a-button>
-              <a-button type="primary" size="small">
-                打印
-              </a-button>
+<!--              <a-button type="primary" size="small">-->
+<!--                打印-->
+<!--              </a-button>-->
             </a-space>
           </div>
           <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
@@ -375,7 +375,8 @@ const fwKeys = [
   { label: '房屋性质', value: 'fwxz', dict: 'fwxz' },
   { label: '建筑面积(㎡)', value: 'jzmj' },
   { label: '土地独用面积(㎡)', value: 'dytdmj' },
-  { label: '土地分摊面积(㎡)', value: 'ftjzmj' }
+  { label: '土地分摊面积(㎡)', value: 'ftjzmj' },
+  { label: '测绘状态', value: 'chzt', dict: 'chzt'  }
 ]
 
 enum api {

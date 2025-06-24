@@ -5,6 +5,10 @@ export function checkShowForSingle(regType, fwInfo) {
   let djdl = regType.substr(0, 2)
   switch (djdl) {
     case '01':
+      // 实测楼盘表
+      if (fwInfo && fwInfo.chzt != '1') {
+        return false
+      }
       return checkShowForCq(regType, fwInfo)
     case '02':
       let dydj = regType.substr(0, 3)
@@ -14,6 +18,10 @@ export function checkShowForSingle(regType, fwInfo) {
         return checkShowForZjDy(regType, fwInfo)
       }
     case '03':
+      // 预测楼盘表
+      if (fwInfo && fwInfo.chzt != '2') {
+        return false
+      }
       let ygdj = regType.substr(0, 3)
       if (ygdj === '030') {
         return checkShowForYgCq(regType, fwInfo)
@@ -21,17 +29,7 @@ export function checkShowForSingle(regType, fwInfo) {
         return checkShowForYgDy(regType, fwInfo)
       }
     case '04':
-      if (regType === '0401') {
-        return checkShowForCfdj(regType, fwInfo)
-      } else if (regType === '0400') {
-        return checkShowForYcfdj(regType, fwInfo)
-      } else if (regType === '0403') {
-        return checkShowForLhcfdj(regType, fwInfo)
-      } else {
-        return checkShowForJcfdj(regType, fwInfo)
-      }
-    default:
-      return true
+      return checkShowForCf(regType, fwInfo)
   }
 }
 
@@ -92,14 +90,16 @@ function checkShowForCq(regType, fwInfo) {
       return false
     }
   } else {
-    if (fwInfo.cfzt || fwInfo.zbcfzt) {
+    // 预查封、预查封续查封、预查封轮候查封可以走产权首次、转移
+    // 无法判断续查封是否为预查封，放开楼盘表勾选限制，走业务约束
+    if ((fwInfo.cfzt || fwInfo.zbcfzt) && (cqxl != '01' && cqxl != '02')) {
       return false
     }
     switch (cqxl) {
       case '01' :
         return !fwInfo || !(fwInfo.zbcqzt || fwInfo.cqzt)
       default:
-        return fwInfo.cqzt && !fwInfo.zbcqzt && !fwInfo.cfzt && !fwInfo.zbcfzt && !fwInfo.dyzt && !fwInfo.zbdyzt
+        return fwInfo.cqzt && !fwInfo.zbcqzt && !fwInfo.dyzt && !fwInfo.zbdyzt
     }
   }
 }
@@ -175,6 +175,23 @@ function checkShowForYgDy(regType, fwInfo) {
     }
   }
 }
+// 查封类
+function checkShowForCf(regType, fwInfo) {
+  switch (regType) {
+    case '0401':
+      return checkShowForCfdj(regType, fwInfo);
+    case '0400':
+      // 预测楼盘表
+      if (fwInfo && fwInfo.chzt != '2') {
+        return false
+      }
+      return checkShowForYcfdj(regType, fwInfo);
+      // case '0403':
+      //   return checkShowForLhcfdj(regType, fwInfo);
+    default:
+      return checkShowForJcfdj(regType, fwInfo);
+  }
+}
 
 // 正式查封 
 function checkShowForCfdj(regType, fwInfo) {
@@ -190,7 +207,7 @@ function checkShowForCfdj(regType, fwInfo) {
 function checkShowForYcfdj(regType, fwInfo) {
   if (fwInfo === null) {
     return true
-  } else if (((fwInfo.ygzt && !fwInfo.zbygzt) || (!fwInfo.cqzt && !fwInfo.zbcqzt && !fwInfo.zbygzt)) && !fwInfo.cfzt && !fwInfo.zbcfzt) {
+  } else if (fwInfo.chzt == '2' && (fwInfo.ygzt || (!fwInfo.cqzt && !fwInfo.zbcqzt)) && !fwInfo.zbygzt && !fwInfo.cfzt && !fwInfo.zbcfzt) {
     return true
   } else {
     return false
