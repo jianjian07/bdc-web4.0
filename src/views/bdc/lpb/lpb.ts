@@ -207,7 +207,7 @@ function checkShowForCfdj(regType, fwInfo) {
 function checkShowForYcfdj(regType, fwInfo) {
   if (fwInfo === null) {
     return true
-  } else if (fwInfo.chzt == '2' && (fwInfo.ygzt || (!fwInfo.cqzt && !fwInfo.zbcqzt)) && !fwInfo.zbygzt && !fwInfo.cfzt && !fwInfo.zbcfzt) {
+  } else if ((fwInfo.ygzt || (!fwInfo.cqzt && !fwInfo.zbcqzt)) && !fwInfo.zbygzt) {
     return true
   } else {
     return false

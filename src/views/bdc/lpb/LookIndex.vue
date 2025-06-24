@@ -208,7 +208,8 @@ const fwKeys = [
   { label: '房屋性质', value: 'fwxz', dict: 'fwxz' },
   { label: '建筑面积(㎡)', value: 'jzmj' },
   { label: '土地独用面积(㎡)', value: 'dytdmj' },
-  { label: '土地分摊面积(㎡)', value: 'ftjzmj' }
+  { label: '土地分摊面积(㎡)', value: 'ftjzmj' },
+  { label: '测绘状态', value: 'chzt', dict: 'chzt'  }
 ]
 
 enum api {

@@ -356,7 +356,7 @@ console.log('date1:' + date1)
 const date2 = new Date().getTime()
 console.log('date2:' + date2)
 console.log('时间差:' + (date2 - date1))
-let regType = ref('0101')
+let regType = ref<string>()
 
 // 详细信息
 const fwKeys = [
@@ -414,7 +414,7 @@ function getSlsqModel() {
   let slbh = route.query.slbh
   defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then(async (res) => {
     if (res && res.success) {
-      regType.value = res.result?.regtype || '0101'
+      regType.value = res.result?.regtype
     }
     await initCurrentCase()
     loadList()
@@ -428,6 +428,11 @@ function initCurrentCase() {
   return new Promise((resolve, reject) => {
     let route = router.currentRoute.value
     let slbh = route.query.slbh
+    if (!slbh) {
+      message.warning("未获取到受理编号，请刷新地址重试！")
+      resolve(false)
+      return
+    }
     defHttp.get({ url: api.dyxx, params: { slbh: slbh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         currentCase.value = res.result
@@ -486,6 +491,9 @@ function loadList(flag?: boolean) {
 }
 
 async function loadFwxx(isFilter = false, initCheck = false) {
+  if (!regType.value) {
+    message.warning("未获取到登记类型，请刷新地址重试！")
+  }
   if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
     const res = await defHttp.get({ url: api.lpb, params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
     if (res && res.result) {
@@ -705,7 +713,7 @@ function getClass(fwInfo) {
  * @param fwInfo
  */
 function checkShow(fwInfo) {
-  if (fwInfo && fwInfo.shbw) {
+  if (regType.value && fwInfo && fwInfo.shbw) {
     if (regType.value.split(',').length == 1) {
       return checkShowForSingle(regType.value, fwInfo)
     } else {
