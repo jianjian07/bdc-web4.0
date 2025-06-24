@@ -635,8 +635,10 @@ function del(pane, record, index) {
 function onClickCode(pane) {
   if (!pane.code) {
     let url = pane.url
-    let _arr = url.split('/')
-    pane.code = _arr[_arr.length - 1]
+    if (url) {
+      let _arr = url.split('/')
+      pane.code = _arr[_arr.length - 1]
+    }
   }
 }
 
