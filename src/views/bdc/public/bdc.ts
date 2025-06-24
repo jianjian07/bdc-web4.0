@@ -2072,110 +2072,31 @@ export async function handTerminate(demoRefs: any, loading: any, jdmc: string, e
  * @param num
  * @param options round 是否四舍五入小数
  */
-export function numberToChinese(num, options = { round: true }) {
-  if (typeof num === "string") {
-    num = parseFloat(num);
-    if (isNaN(num)) throw new Error("请输入有效的数字");
+export function numberToChinese(money, options = { round: true }) {
+  if (typeof money === "string") {
+    money = parseFloat(money);
+    if (isNaN(money)) throw new Error("请输入有效的数字");
   }
-  
-  if (!Number.isFinite(num) || num < 0) {
+  if (!Number.isFinite(money) || money < 0) {
     throw new Error("请输入有效的非负数字");
   }
-  
-  const digits = ["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"];
-  const units = ["", "拾", "佰", "仟"];
-  const bigUnits = ["", "万", "亿", "万亿", "兆"]; // 扩展支持兆级
-  const decimalUnits = ["角", "分"];
-  
-   // 处理整数部分
-  const convertInteger = (integerPart) => {
-    if (integerPart === 0) return digits[0];
-
-    let str = "";
-    let unitPos = 0;
-    let needZero = false;
-    let tempNum = integerPart;
-    
-    while (tempNum > 0) {
-      const section = tempNum % 10000;
-      if (needZero) str = digits[0] + str;
-
-      const sectionStr = convertSection(section);
-      str = (section !== 0 ? sectionStr + bigUnits[unitPos] : sectionStr) + str;
-
-      needZero = section < 1000 && section > 0;
-      tempNum = Math.floor(tempNum / 10000);
-      unitPos = unitPos < bigUnits.length - 1 ? unitPos + 1 : 0; // 循环使用单位
-    }
-    return str;
-  };
-  
-  // 处理四位分段
-  const convertSection = (section) => {
-    let str = "";
-    let zero = true;
-
-    [...section.toString().padStart(4, "0")].reverse().forEach((v, i) => {
-      v = parseInt(v);
-      if (v === 0) {
-        if (!zero && i !== 0) {
-          // 末位不补零
-          zero = true;
-          str = digits[v] + str;
-        }
-      } else {
-        zero = false;
-        str = digits[v] + units[i] + str;
-      }
-    });
-    return str.replace(/零+$/, ""); // 去除末尾零
-  };
-  
-  // 处理小数部分
-  const convertDecimal = (decimalPart) => {
-    let decimalStr = "";
-    let hasJiao = false,
-      hasFen = false;
-
-    [...decimalPart.toString().padStart(2, "0")].forEach((digit, i) => {
-      digit = parseInt(digit);
-      if (i === 0 && digit > 0) {
-        // 角位
-        decimalStr += digits[digit] + decimalUnits[i];
-        hasJiao = true;
-      } else if (i === 1 && digit > 0) {
-        // 分位
-        decimalStr += digits[digit] + decimalUnits[i];
-        hasFen = true;
-      }
-    })
-    
-    
-    // 处理零角但分位存在的情况
-    if (!hasJiao && hasFen) {
-      decimalStr = digits[0] + decimalUnits[0] + decimalStr;
-    }
-    return decimalStr;
-  }
-  
-  // 主流程
-  const integerPart = Math.floor(num);
-  let decimalPart;
   if (options.round) {
-    decimalPart = Math.round((num - integerPart) * 100);
+    money = Math.round(money * 100) / 100;
   } else {
-    decimalPart = Math.floor((num - integerPart) * 100);
+    money = Math.floor(money * 100) / 100;
   }
-
-  let result = convertInteger(integerPart) + "元";
-  if (decimalPart > 0) {
-    result += convertDecimal(decimalPart);
-  } else {
-    result += "整";
+  let cnMoney = "零元整";
+  let strOutput = "";
+  let strUnit = '仟佰拾亿仟佰拾万仟佰拾元角分';
+  money += "00";
+  let intPos = money.indexOf('.');
+  if (intPos >= 0) {
+     money = money.substring(0, intPos) + money.substr(intPos + 1, 2);
   }
-
-  return result
-    .replace(/(零.)+/g, "零") // 合并连续零
-    .replace(/零元/, "元")
-    .replace(/^元/, "零元"); // 处理纯小数情况
+  strUnit = strUnit.substr(strUnit.length - money.length);
+  for (let i = 0; i < money.length; i++) {
+     strOutput += '零壹贰叁肆伍陆柒捌玖'.substr(money.substr(i, 1), 1) + strUnit.substr(i, 1);
+  }
+  cnMoney = strOutput.replace(/零角零分$/, '整').replace(/零[仟佰拾]/g, '零').replace(/零{2,}/g, '零').replace(/零([亿|万])/g, '$1').replace(/零+元/, '元').replace(/亿零{0,3}万/, '亿').replace(/^元/, "零元");
+  return cnMoney;
 }

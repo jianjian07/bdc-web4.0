@@ -1,6 +1,6 @@
 <template>
   <div class="look-lpb" style="width: 100%; text-align: center; height: 100%; overflow: hidden">
-    <a-tabs v-model:activeKey="currentZrzInfo.zbm" tab-position="left" animated @change="handleChange" :style="{ height: '100%' }">
+    <a-tabs :activeKey="currentZrzInfo.zbm" tab-position="left" animated @change="handleChange" :style="{ height: '100%' }">
       <a-tab-pane v-for="(item,index) in zrzTableData" :key="item.zbm" :tab="item.dh">
         <div class="legend-tool-bar">
           <div class="legend-icon">
@@ -225,7 +225,11 @@ onMounted(() => {
   }
 })
 
-function handleChange() {
+function handleChange(value) {
+  let find = zrzTableData.value.find(f => f.zbm == value)
+  if (find) {
+    currentZrzInfo.value = find
+  }
   loadFwxx()
 }
 
