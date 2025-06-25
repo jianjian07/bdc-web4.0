@@ -9,6 +9,7 @@
             prefix="￥"
             :min="0"
             style="width: 100%"
+            @blur="onBlurJsfj"
           />
         </template>
         <template v-else-if="column.dataIndex == 'bnmj'">
@@ -18,6 +19,7 @@
             :min="0"
             :max="record.jzmj"
             style="width: 100%"
+            @blur="onBlurBnmj"
           />
         </template>
         <template v-else>
@@ -25,12 +27,12 @@
         </template>
       </template>
     </a-table>
-    <a-table :columns="totalColumns" :data-source="totalDataSource" :pagination="false" bordered></a-table>
+    <a-table :loading="loading" :columns="totalColumns" :data-source="totalDataSource" :pagination="false" bordered></a-table>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue"
+import { computed, nextTick, onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { router } from "/@/router"
 import { message } from "ant-design-vue"
@@ -138,123 +140,113 @@ let dataSource = ref<any>([
     ykjfy: ''
   }
 ])
-
-// 避免频繁重算
-const localFields = reactive({
-  nsj: null,
-  jsfj: null,
-  ykjfy: null,
-  bnmj: null,
-  jzmj: null
-})
-
-watch(
-  () => dataSource.value[0],
-  (val) => {
-    if (!val) return
-    localFields.nsj = val.nsj
-    localFields.jsfj = val.jsfj
-    localFields.ykjfy = val.ykjfy
-    localFields.bnmj = val.bnmj
-    localFields.jzmj = val.jzmj
-  },
-  { deep: true, immediate: true }
-)
-
+let loading = ref<boolean>(false)
 const totalDataSource = ref<any[]>([])
 
-// 防抖计算
+// 防抖计算 异步分段
 const updateTotalDataSource = debounce(() => {
+  loading.value = true
   if (mountedFlag.value === false) {
     totalDataSource.value = []
+    loading.value = false
     return
-  } 
+  }
 
   // 后端有数据且不是用户修改时
   if (backTotalDataSource.value.length > 0 && !isUserChange.value) {
     totalDataSource.value = backTotalDataSource.value
+    loading.value = false
     return
   }
 
-  const source = localFields
+  const source = dataSource.value[0]
   if (!source.jsfj || !source.jzmj) {
     totalDataSource.value = []
+    nextTick(() => {
+      isUserChange.value = false
+      loading.value = false
+    })
     return
-  } else {
-    const result: any = []
-    
-    let num = 1
-    let jscs = Number(source.nsj) - Number(source.jsfj) - Number(source.ykjfy)
-    let jsfj = Number(source.jsfj)
-    let jsmj = Number(source.bnmj)
+  }
+ 
+  const jscs = Number(source.nsj) - Number(source.jsfj) - Number(source.ykjfy)
+  const jsfj = Number(source.jsfj)
+  const jsmj = Number(source.bnmj)
 
-    let currentJscs = jscs
-    let prevJscs = Number(source.nsj)
+  let currentJscs = jscs
+  let prevJscs = Number(source.nsj)
+  let num = 1
 
-    while (currentJscs > 0) {
-      let sybl = 5 + (num - 1) * 10
-      const currentFj = jscs >= jsfj ? jsfj : currentJscs
-      // 计算房价*计算面积*收益比例
+  const result: any[] = []
+
+  function processChunk() {
+    let count = 0
+    const MAX_CHUNK = 100  // 每轮最多算多少条
+
+    while (currentJscs > 0 && count < MAX_CHUNK) {
+      const sybl = 5 + (num - 1) * 10
+      const currentFj = currentJscs >= jsfj ? jsfj : currentJscs
       const syje = currentFj * jsmj * (sybl / 100)
 
-      let jscsStr = ''
-      if (num == 1) {
-        jscsStr = `${formatNumberStr(source.nsj)} - ${formatNumberStr(source.jsfj)} - ${formatNumberStr(source.ykjfy)} = ${formatNumberStr(jscs)}`
-      } else {
-        jscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
-      }
+      const jscsStr = num === 1
+        ? `${formatNumberStr(source.nsj)} - ${formatNumberStr(source.jsfj)} - ${formatNumberStr(source.ykjfy)} = ${formatNumberStr(jscs)}`
+        : `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
 
-      const item = {
+      result.push({
         jscs: currentJscs,
-        jscsStr: jscsStr,
+        jscsStr,
         jsfj: currentFj,
         jsfjStr: `￥${formatNumberStr(currentFj)}`,
-        jsmj: jsmj,
+        jsmj,
         jsmjStr: formatNumberStr(jsmj),
-        sybl: sybl,
+        sybl,
         syblStr: `${formatNumberStr(sybl)}%`,
-        syje: syje,
+        syje,
         syjeStr: `￥${formatNumberStr(syje)}`,
         sxh: num
-      }
-
-      result.push(item)
+      })
 
       prevJscs = currentJscs
       currentJscs = currentJscs - jsfj
       num++
+      count++
 
       if (currentJscs <= 0 || currentJscs < jsfj) {
-        // 最后一轮
-        const finalSybl = 5 + (num - 1) * 10;
-        const finalSyje = currentJscs * jsmj * (finalSybl / 100);
-        const finalJscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`;
+        const finalSybl = 5 + (num - 1) * 10
+        const finalSyje = currentJscs * jsmj * (finalSybl / 100)
+        const finalJscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
 
         result.push({
           jscs: currentJscs,
           jscsStr: finalJscsStr,
           jsfj: currentJscs,
           jsfjStr: `￥${formatNumberStr(currentJscs)}`,
-          jsmj: jsmj,
+          jsmj,
           jsmjStr: formatNumberStr(jsmj),
           sybl: finalSybl,
           syblStr: `${formatNumberStr(finalSybl)}%`,
           syje: finalSyje,
           syjeStr: `￥${formatNumberStr(finalSyje)}`,
           sxh: num
-        });
-        break;
+        })
+        currentJscs = 0 // 终止循环
       }
     }
-    totalDataSource.value = result
-  }
-}, 300)
 
-watch(
-  () => ({ ...localFields }), // 解构防止引用不变
-  () => updateTotalDataSource(),
-  { deep: true }
-)
+    if (currentJscs > 0) {
+      // 下一批延迟执行 防止阻塞
+      setTimeout(processChunk, 0)
+    } else {
+      totalDataSource.value = result
+      nextTick(() => {
+        isUserChange.value = false
+        loading.value = false
+      })
+    }
+  }
+
+  processChunk()
+}, 300)
 
 const emit = defineEmits(['update:jsfjg','update:bnmj'])
 
@@ -265,55 +257,30 @@ let backTotalDataSource = ref<any>([])
 // 是否是用户手动修改数据
 let isUserChange = ref<boolean>(false)
 
+// 纳税价相关用户操作在表单blur事件中触法计算 这里只监听赋值
 watch(() => props.nsj, (newVal) => {
   if (mountedFlag.value) {
     dataSource.value[0].nsj = newVal || 0.00
-    isUserChange.value = true
   }
 })
 
-watch(() => props.jzmj, (newVal) => {
-  if (mountedFlag.value) {
-    dataSource.value[0].jzmj = newVal || 0.00
-    dataSource.value[0].bnmj = dataSource.value[0].bnmj || dataSource.value[0].jzmj
-    isUserChange.value = true
-  }
-})
+// 建筑面积只读 不会更改
+// watch(() => props.jzmj, (newVal) => {
+//   if (mountedFlag.value) {
+//     dataSource.value[0].jzmj = newVal || 0.00
+//     dataSource.value[0].bnmj = dataSource.value[0].bnmj || dataSource.value[0].jzmj
+//   }
+// })
 
+// 应扣减费用 金额表格发生变化计算
 watch(() => props.ykjfy, (newVal) => {
   if (mountedFlag.value) {
     dataSource.value[0].ykjfy = newVal || 0.00
     isUserChange.value = true
+    updateTotalDataSource()
   }
 })
 
-watch(() => props.jsfjg, (newVal) => {
-  if (mountedFlag.value) {
-    dataSource.value[0].jsfj = newVal || 2940.00
-    isUserChange.value = true
-  }
-})
-
-watch(() => props.bnmj, (newVal) => {
-  if (mountedFlag.value) {
-    dataSource.value[0].bnmj = newVal || dataSource.value[0].jzmj || 0.00
-    isUserChange.value = true
-  }
-})
-
-watch(() => dataSource.value[0].jsfj, (newVal) => {
-  if (mountedFlag.value) {
-    isUserChange.value = true
-    emit('update:jsfjg',newVal)
-  }
-})
-
-watch(() => dataSource.value[0].bnmj, (newVal) => {
-  if (mountedFlag.value) {
-    isUserChange.value = true
-    emit('update:bnmj',newVal)
-  }
-})
 
 enum api {
   list = '/api/zrzy-bdc/clf/ht/getSyjmxListByHtlsh',
@@ -342,6 +309,7 @@ function initData() {
     if (res && res.success) {
       backTotalDataSource.value = res.result.map((item) => {
         return {
+          id: item.id,
           htbh: item.htbh,
           htlsh: item.htlsh,
           jscsStr: item.jscs,
@@ -357,6 +325,7 @@ function initData() {
       message.error(res.message)
       mountedFlag.value = true
     }
+    updateTotalDataSource()
   })
 }
 
@@ -376,10 +345,11 @@ function formatNumberStr(num) {
  */
 function saveData() {
   return new Promise((resolve, reject) => {
-    if (!isUserChange.value) {
+    if (totalDataSource.value == backTotalDataSource.value) {
       resolve(true)
-      return
+      return 
     }
+    
     const htlsh = router.currentRoute.value.query.htlsh
     let data = totalDataSource.value.map((item) => {
       return {
@@ -406,8 +376,35 @@ function saveData() {
   })
 }
 
+function onBlurJsfj(e) {
+  isUserChange.value = true
+  if (!dataSource.value[0].jsfj && dataSource.value[0].jsfj != 0.00) {
+    dataSource.value[0].jsfj = 2940.00
+  }
+  updateTotalDataSource()
+  emit('update:jsfjg',dataSource.value[0].jsfj)
+}
+
+function onBlurBnmj(e) {
+  isUserChange.value = true
+  if (!dataSource.value[0].bnmj && dataSource.value[0].bnmj != 0.00) {
+    dataSource.value[0].bnmj = 0.00
+  }
+  updateTotalDataSource()
+  emit('update:bnmj',dataSource.value[0].bnmj)
+}
+
+/**
+ * 父组件调用
+ */
+function onUserChange() {
+  isUserChange.value = true
+  updateTotalDataSource()
+}
+
 defineExpose({
-  saveData
+  saveData,
+  onUserChange
 })
 
 </script>
