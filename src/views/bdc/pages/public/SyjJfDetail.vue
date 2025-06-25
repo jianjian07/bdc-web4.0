@@ -376,10 +376,15 @@ function formatNumberStr(num) {
  */
 function saveData() {
   return new Promise((resolve, reject) => {
+    if (!isUserChange.value) {
+      resolve(true)
+      return
+    }
+    const htlsh = router.currentRoute.value.query.htlsh
     let data = totalDataSource.value.map((item) => {
-      return { 
+      return {
         htbh: props.htbh,
-        htlsh: router.currentRoute.value.query.htlsh,
+        htlsh: htlsh,
         jscs: item.jscsStr,
         jsfj: item.jsfjStr,
         jsmj: item.jsmjStr,
@@ -388,7 +393,7 @@ function saveData() {
         sxh: item.sxh
       }
     })
-    defHttp.post({ url: api.save, data: data }, { withToken: true }).then((res) => {
+    defHttp.post({ url: api.save, data: data, params: { htlsh: htlsh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(true)
       } else {
