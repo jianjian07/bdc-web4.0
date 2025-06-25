@@ -3,16 +3,10 @@
     <a-table style="margin-bottom: 10px" :columns="baseColumns" :data-source="dataSource" :pagination="false" bordered>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex == 'jsfj'">
-          <a-input-number
+           <a-input-number
             v-model:value="record[column.dataIndex]"
             :precision="2"
-            :formatter="value => {
-              const num = Number(value || 0).toFixed(2);
-              const parts = num.split('.');
-              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-              return `￥${parts.join('.')}`;
-            }"
-            :parser="value => value.replace(/[￥,\s]/g, '')"
+            prefix="￥"
             :min="0"
             style="width: 100%"
           />
@@ -21,13 +15,6 @@
           <a-input-number
             v-model:value="record[column.dataIndex]"
             :precision="2"
-            :formatter="value => {
-              const num = Number(value || 0).toFixed(2);
-              const parts = num.split('.');
-              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-              return `${parts.join('.')}`;
-            }"
-            :parser="value => value.replace(/,/g, '')"
             :min="0"
             :max="record.jzmj"
             style="width: 100%"
@@ -43,10 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, onMounted, reactive, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { router } from "/@/router"
 import { message } from "ant-design-vue"
+import { debounce } from 'lodash-es'
 
 const props = defineProps({
   nsj: {
@@ -151,43 +139,71 @@ let dataSource = ref<any>([
   }
 ])
 
-const totalDataSource = computed(() => {
+// 避免频繁重算
+const localFields = reactive({
+  nsj: null,
+  jsfj: null,
+  ykjfy: null,
+  bnmj: null,
+  jzmj: null
+})
+
+watch(
+  () => dataSource.value[0],
+  (val) => {
+    if (!val) return
+    localFields.nsj = val.nsj
+    localFields.jsfj = val.jsfj
+    localFields.ykjfy = val.ykjfy
+    localFields.bnmj = val.bnmj
+    localFields.jzmj = val.jzmj
+  },
+  { deep: true, immediate: true }
+)
+
+const totalDataSource = ref<any[]>([])
+
+// 防抖计算
+const updateTotalDataSource = debounce(() => {
   if (mountedFlag.value === false) {
-    return []
+    totalDataSource.value = []
+    return
   } 
-  
+
   // 后端有数据且不是用户修改时
   if (backTotalDataSource.value.length > 0 && !isUserChange.value) {
-    return backTotalDataSource.value
+    totalDataSource.value = backTotalDataSource.value
+    return
   }
-  
-  const source = dataSource.value[0]
+
+  const source = localFields
   if (!source.jsfj || !source.jzmj) {
-    return []
+    totalDataSource.value = []
+    return
   } else {
     const result: any = []
-   
+    
     let num = 1
     let jscs = Number(source.nsj) - Number(source.jsfj) - Number(source.ykjfy)
     let jsfj = Number(source.jsfj)
     let jsmj = Number(source.bnmj)
-    
+
     let currentJscs = jscs
     let prevJscs = Number(source.nsj)
-    
+
     while (currentJscs > 0) {
       let sybl = 5 + (num - 1) * 10
       const currentFj = jscs >= jsfj ? jsfj : currentJscs
       // 计算房价*计算面积*收益比例
       const syje = currentFj * jsmj * (sybl / 100)
-      
+
       let jscsStr = ''
       if (num == 1) {
         jscsStr = `${formatNumberStr(source.nsj)} - ${formatNumberStr(source.jsfj)} - ${formatNumberStr(source.ykjfy)} = ${formatNumberStr(jscs)}`
       } else {
         jscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
       }
-      
+
       const item = {
         jscs: currentJscs,
         jscsStr: jscsStr,
@@ -201,19 +217,19 @@ const totalDataSource = computed(() => {
         syjeStr: `￥${formatNumberStr(syje)}`,
         sxh: num
       }
-      
+
       result.push(item)
-      
+
       prevJscs = currentJscs
       currentJscs = currentJscs - jsfj
       num++
-      
+
       if (currentJscs <= 0 || currentJscs < jsfj) {
         // 最后一轮
         const finalSybl = 5 + (num - 1) * 10;
         const finalSyje = currentJscs * jsmj * (finalSybl / 100);
         const finalJscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`;
-  
+
         result.push({
           jscs: currentJscs,
           jscsStr: finalJscsStr,
@@ -230,9 +246,15 @@ const totalDataSource = computed(() => {
         break;
       }
     }
-    return result
+    totalDataSource.value = result
   }
-})
+}, 300)
+
+watch(
+  () => ({ ...localFields }), // 解构防止引用不变
+  () => updateTotalDataSource(),
+  { deep: true }
+)
 
 const emit = defineEmits(['update:jsfjg','update:bnmj'])
 
@@ -258,7 +280,7 @@ watch(() => props.jzmj, (newVal) => {
   }
 })
 
-watch(() => props.ykjfy, (newVal,oldValue) => {
+watch(() => props.ykjfy, (newVal) => {
   if (mountedFlag.value) {
     dataSource.value[0].ykjfy = newVal || 0.00
     isUserChange.value = true
