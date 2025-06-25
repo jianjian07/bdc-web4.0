@@ -329,7 +329,9 @@ export function getYwStr(type, item) {
       if (mapping[key] == '预告') {
         let ywblqkArr = item.ywblqk.replace(/,+$/, '').split(',');
         for (let i = 0; i < ywblqkArr.length; i++) {
+          if (ywblqkArr[i].includes('YGZT')) {
             result.push(mapping[key])
+          }
         }
       } else {
          result.push(mapping[key]);
