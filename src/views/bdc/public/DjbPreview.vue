@@ -108,7 +108,7 @@ function onSelect(keys, e) {
  */
 function setUrl(id) {
   let domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
-  let url = `${domain}jmreport/view/${id}${queryString ? `&token=${token}` : `?token=${token}`}`
+  let url = `${domain}jmreport/view/${id}${queryString}${queryString ? `&token=${token}` : `?token=${token}`}`
   iframeUrl.value = url
 }
 </script>

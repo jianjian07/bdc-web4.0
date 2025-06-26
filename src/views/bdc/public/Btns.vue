@@ -221,6 +221,7 @@ async function handleClick(btn) {
       const _jdmcStr = _jdmc.value
       const _on = eventBus?.on
       // 修正非 JSON 格式字符串
+      btn.bz = btn.bz || ''
       let correctedBz = btn.bz
         .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
         .replace(/'/g, '"'); // 单引号变双引号

@@ -249,6 +249,7 @@ async function handleClick(btn) {
     let _publicFun = publicVueFun // 定义打包识别方法
     console.log('_publicFun', _publicFun) // 需要输出被用到一次 不然打包后eval获取不到
     const _on = eventBus?.on // 防止被打包剔除
+    btn.bz = btn.bz || ''
     let correctedBz = btn.bz
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
