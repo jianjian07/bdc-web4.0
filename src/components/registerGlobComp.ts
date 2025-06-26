@@ -54,7 +54,8 @@ import {
     Flex,
     Transfer,
     Steps,
-    AutoComplete
+    AutoComplete,
+    Calendar
 } from 'ant-design-vue';
 
 export function registerGlobComp(app: App) {
@@ -112,4 +113,5 @@ export function registerGlobComp(app: App) {
         .use(Transfer)
         .use(Steps)
         .use(AutoComplete)
+        .use(Calendar)
 }
