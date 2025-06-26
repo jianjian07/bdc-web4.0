@@ -210,17 +210,16 @@
           <span @click="onClose" style="padding: 0 5px;cursor: pointer">x</span>
         </div>
         <div class="lpb-info-content">
-          <div class="lpb-info-title lpb-info-row">{{ checkFw.bdcdyh }}</div>
-          <div class="lpb-info-btn lpb-info-row">
-            <a-space>
-              <a-button type="primary" size="small">
-                登记簿
-              </a-button>
-<!--              <a-button type="primary" size="small">-->
-<!--                打印-->
-<!--              </a-button>-->
-            </a-space>
+          <div class="lpb-info-title lpb-info-row">
+            <a @click="queryHis(checkFw.bdcdyh)">{{ checkFw.bdcdyh }}</a>
           </div>
+<!--          <div class="lpb-info-btn lpb-info-row">-->
+<!--            <a-space>-->
+<!--              <a-button type="primary" size="small">-->
+<!--                登记簿-->
+<!--              </a-button>-->
+<!--            </a-space>-->
+<!--          </div>-->
           <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
             <template v-for="(item) in fwKeys">
               <a-form-item :label="item.label">
@@ -260,6 +259,8 @@ import { message } from "ant-design-vue"
 import { checkShowForSingle, checkShowForZh, getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
 import { extractDataLpb } from '/@/utils/bdc/bdc';
 import { router } from "/@/router"
+import { cModal } from "/@/components/cModal/index"
+import { closeCurrentTab } from "/@/views/bdc/public/bdc.ts";
 
 // 查询条件
 let zrzData = ref<any>({
@@ -810,6 +811,22 @@ function onClose() {
 function getMycStr(myc) {
   if (!myc) return '';
   return myc.endsWith('层') ? myc : myc + '层';
+}
+
+/**
+ * 查看单元历史回溯
+ * @param bdcdyh
+ */
+function queryHis(bdcdyh) {
+  cModal({
+    title: '历史回溯',
+    width: 1000,
+    filePath: 'views/bdc/query/Dycx',
+    formData: {
+      bdcdyh: bdcdyh
+    },
+    footer: false
+  })
 }
 </script>
 

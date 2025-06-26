@@ -106,17 +106,9 @@
               <span @click="onClose" style="padding: 0 5px;cursor: pointer">x</span>
             </div>
             <div class="lpb-info-content">
-              <div class="lpb-info-title lpb-info-row">{{ checkFw.bdcdyh }}</div>
-                <div class="lpb-info-btn lpb-info-row">
-                  <a-space>
-                    <a-button type="primary" size="small">
-                      登记簿
-                    </a-button>
-                    <a-button type="primary" size="small">
-                      打印
-                    </a-button>
-                  </a-space>
-                </div>
+              <div class="lpb-info-title lpb-info-row">
+                <a @click="queryHis(checkFw.bdcdyh)">{{ checkFw.bdcdyh }}</a>
+              </div>
                 <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
                   <template v-for="(item) in fwKeys">
                     <a-form-item :label="item.label">
@@ -332,6 +324,13 @@ function onClose() {
   checkFw.value = null
 }
 
+/**
+ * 查看单元历史回溯
+ * @param bdcdyh
+ */
+function queryHis(bdcdyh){
+  router.push('/query/dyxx?bdcdyh=' + bdcdyh)
+}
 </script>
 
 <style lang="less" scoped>

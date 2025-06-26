@@ -10,7 +10,7 @@
         </a-form-item>
       </a-form>
     </div>
-    <a-divider style="height: 2px;" />
+    <a-divider style="height: 2px;" v-if="isShowSearch"/>
     <div :class="isShowSearch ? 'bdc-dycx-main' : 'bdc-dycx-main-no-search'">
       <h2 style="text-align: center;margin-bottom: 20px">不动产单元查询</h2>
       <a-spin :spinning="spinning">
@@ -19,21 +19,27 @@
             <template #dot>
               <div class="slot-dot-start">登记情况</div>
             </template>
-            <span style="font-weight: bold;position: absolute;left: -340px;font-size: 14px">{{ bdcdyh }}</span>
+            <span style="font-weight: bold;position: absolute;left: -370px;font-size: 18px">{{ bdcdyh }}</span>
           </a-timeline-item>
           <a-timeline-item style="height: 50px">
             <template #dot><span style="font-weight: bold">至今</span></template>
           </a-timeline-item>
           <a-timeline-item v-for="(item, index) in hisData" :color="index == 0 ? 'green' : 'blue'">
             <template #dot><ClockCircleOutlined style="font-size: 16px" /></template>
-            <span style="position: absolute;left: -165px;top: 1px;">{{ item.djsj }}</span>
+            <span style="position: absolute;left: -165px;top: 1px;font-size: 14px">{{ item.djsj }}</span>
             <div style="padding-bottom: 10px">
-              <span @click="handleView(item)" :class="index == 0 ? 'his-title-first' : 'his-title-other'"
-                  :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', textDecoration: 'underline', cursor: 'pointer' }">
+              <template v-if="route.query.bdcdyh">
+                <span @click="handleView(item)" class="his-title-other"
+                      :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', cursor: 'pointer' }">
                 {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
+              </template>
+              <template v-else>
+              <span :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px' }">
+                {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
+              </template>
               <br/>
               <span>{{ item.qszt == 0 ? '' : '证号：' }}{{ item.bdcqzh }}</span><span
-                :style="{margin: item.qszt == 0?'0px 0px':'0px 10px'}">业务号：{{ item.ywh }}</span>
+                :style="{margin: item.qszt == 0?'0px 0px':'0px 10px', fontSize: '14px'}">业务号：{{ item.ywh }}</span>
             </div>
 
           </a-timeline-item>
@@ -50,6 +56,13 @@ import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { router } from "/@/router"
 import { ClockCircleOutlined } from '@ant-design/icons-vue'
+
+const props = defineProps({
+  formData: {
+    type: Object,
+    default: {}
+  }
+})
 const route = useRoute();
 // 是否显示查询框
 let isShowSearch = ref<boolean>(true)
@@ -70,9 +83,11 @@ enum api {
 
 onMounted(() => {
   let query = route.query
-  if (query.bdcdyh) {
+  // formData为弹窗传入参数，弹窗模式不允许跳转办理详情
+  let bdcdyhParam = query.bdcdyh || props.formData.bdcdyh
+  if (bdcdyhParam) {
     isShowSearch.value = false
-    bdcdyh.value = query.bdcdyh
+    bdcdyh.value = bdcdyhParam
     initData()
   }
 })
@@ -184,6 +199,7 @@ function handleView(item) {
   &:hover {
     color: #7bb372!important;
     transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),margin 0.3s,color 0.3s;
+    text-decoration: underline
   }
 }
 </style>
