@@ -28,13 +28,13 @@
             <template #dot><ClockCircleOutlined style="font-size: 16px" /></template>
             <span style="position: absolute;left: -165px;top: 1px;font-size: 14px">{{ item.djsj }}</span>
             <div style="padding-bottom: 10px">
-              <template v-if="route.query.bdcdyh">
-                <span @click="handleView(item)" class="his-title-other"
-                      :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', cursor: 'pointer' }">
+              <template v-if="props.formData.bdcdyh">
+              <span :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px' }">
                 {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
               </template>
               <template v-else>
-              <span :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px' }">
+                <span @click="handleView(item)" class="his-title-other"
+                      :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px', cursor: 'pointer' }">
                 {{ item.djlb }}{{ item.qszt == 0 ? '（在办）' : '' }}</span>
               </template>
               <br/>
