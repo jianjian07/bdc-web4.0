@@ -94,7 +94,11 @@ export async function extractData(options: any) {
             }
             break;
         default:
-            console.log('查找不到该流程')
+            for (let index = 0; index < data.length; index++) {
+                const dyh = data[index];
+                dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, ssywh: dyh.ywh, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
+            }
+            // console.log('查找不到该流程')
             break;
     }
     options.okLoading.value = true
