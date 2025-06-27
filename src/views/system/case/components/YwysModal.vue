@@ -119,7 +119,7 @@ function onChange(value, selectedOptions) {
 
 function isObtainTwoData(formdata, data) {
   for (let i = 0; i < data.length; i++) {
-    if (data[i].lcid == formdata.lcid && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt) {
+    if (data[i].lcid == formdata.lcid && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt && data[i].lclx == formdata.lclx ) {
       return true
     }
   }
