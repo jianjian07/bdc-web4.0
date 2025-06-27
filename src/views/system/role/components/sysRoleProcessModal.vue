@@ -47,6 +47,8 @@ let treeData = ref<any>([])
 let currentRecord = ref<any>()
 // 当前案卷类型
 let currentAjlx = ref<string>('')
+// 所有父节点
+let allParentNodes = ref<any>([])
 
 enum api {
   processlist = '/api/zrzy-bdc/bdc/flow/flowList',
@@ -54,42 +56,36 @@ enum api {
   checkList = '/api/zrzy-system/role/roleProcessList'
 }
 
-watch(() => searchName.value, (newV) => {
+watch(() => searchName.value, (newVal) => {
   onSearch()
-})
-
-watch(() => currentAjlx.value, (newVal) => {
-  if (newVal) {
-    initData()
-  }
-}, {
-  immediate: true
 })
 
 defineExpose({
   edit
 })
 
-// onMounted(() => {
-//   initData()
-// })  
-
 /**
  * 加载流程列表
  */
 function initData() {
-  if (currentAjlx.value == '1') {
-    defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        treeData.value = setPidList(res.result)
-      } else {
-        message.warning(res?.message)
-      }
-    })
-  } else {
-    let arr = getTreeDictItemsByCode('bllc')
-    treeData.value = setBlList(arr)
-  }
+  return new Promise((resolve) => {
+    allParentNodes.value = []
+    if (currentAjlx.value == '1') {
+      defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          treeData.value = setPidList(res.result)
+          resolve(true)
+        } else {
+          message.warning(res?.message)
+          resolve(false)
+        }
+      })
+    } else {
+      let arr = getTreeDictItemsByCode('bllc')
+      treeData.value = setBlList(arr)
+      resolve(true)
+    }
+  })
 }
 
 function setBlList(newArr, parentId?: any) {
@@ -102,6 +98,7 @@ function setBlList(newArr, parentId?: any) {
     item.key = item.value
 
     if (item.children) {
+      allParentNodes.value.push(item)
       item.children = setBlList(item.children, pid)
     }
     return item
@@ -117,12 +114,14 @@ function setPidList(newArr, parentId?: any) {
     }
     let pid = item.value
     if (item.children) {
+      allParentNodes.value.push(item)
       item.children = setPidList(item.children, pid)
     }
     return item
   })
   return newData
 }
+
 
 /**
  * 获取所有包含关键字节点的父节点
@@ -272,8 +271,9 @@ function reset() {
  * 编辑
  * @param record
  */
-function edit(record, ajlx) {
+async function edit(record, ajlx) {
   currentAjlx.value = ajlx
+  await initData()
   modalVisible.value = true
   currentRecord.value = record
   getCheckedList(record.id, ajlx)
@@ -285,7 +285,8 @@ function getCheckedList(roleId, ajlx) {
   confirmLoading.value = true
   defHttp.get({ url: api.checkList, params: { roleId, ajlx } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      checkedKeys.value = res.result.map(m => m.lcid)
+      let keys = res.result.map(m => m.lcid)
+      checkedKeys.value = formatCheckedKeys(keys)
     } else {
       message.warning(res?.message)
     }
@@ -293,6 +294,29 @@ function getCheckedList(roleId, ajlx) {
   }).catch(err => {
     confirmLoading.value = false
   })
+}
+
+/**
+ * 处理选中的节点，如果有父节点但与实际树不匹配则去掉
+ * @param keys
+ */
+function formatCheckedKeys(keys) {
+  const keySet = new Set(keys)
+
+  allParentNodes.value.forEach(parentNode => {
+    const children = parentNode.children || []
+    const childKeys = children.map(child => child.key)
+    
+    if (
+      keySet.has(parentNode.key) &&
+      childKeys.length > 0 &&
+      !childKeys.every(k => keySet.has(k))
+    ) {
+      keySet.delete(parentNode.key)
+    }
+  })
+
+  return Array.from(keySet)
 }
 </script>
 
