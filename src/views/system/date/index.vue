@@ -171,8 +171,8 @@ enum api {
 
 const validRange = computed(() => {
   return [
-    dayjs(`${currentYear.value}-01-01`),
-    dayjs(`${currentYear.value}-12-31`)
+    dayjs(`${currentYear.value}-01-01 00:00:00`),
+    dayjs(`${currentYear.value}-12-31 23:59:59`),
   ]
 })
 
@@ -381,6 +381,7 @@ function onChangeCheckbox(event, type, current) {
   let checked = event.target.checked
   workdays.value = workdays.value.filter(item => item !== current.format('YYYY-MM-DD'))
   holidays.value = holidays.value.filter(item => item !== current.format('YYYY-MM-DD'))
+  console.log('checked',checked)
   if (checked) {
     if (type === 'workday') {
       workdays.value.push(current.format('YYYY-MM-DD'))
