@@ -74,6 +74,8 @@ watch(() => props.lcid, (newValue, _oldValue) => {
     if (newValue) {
       getFlowInfo(props.lcid)
     }
+}, {
+  immediate: true,
 })
 
 function getFlowInfo(lcid: string) {
