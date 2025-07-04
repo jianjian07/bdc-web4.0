@@ -95,7 +95,7 @@ function initQlrXx() {
   bdcdyh.value = props.formData.bdcdyh
   let taskId = route.query.taskId || props.formData.taskId
   let slbh = route.query.slbh
-  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { slbh: slbh, ywh: ywh.value, bdcdyh: bdcdyh.value, taskId: taskId } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: '/api/zrzy-bdc/flow/vue/getChildPageConfig', params: { slbh: slbh, ywh: ywh.value, bdcdyh: bdcdyh.value, taskId: taskId, db: route.query.db } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       qlr.value = res.result.qlrModelList || []
       regType.value = res.result.regType || ''
