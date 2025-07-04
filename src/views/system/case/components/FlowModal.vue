@@ -69,8 +69,13 @@ let flowInfo: any = ref({
 });
 const emit = defineEmits(['setBaseInfo'])
 
-flowInfo.value.lcid = props.lcid;
-getFlowInfo(props.lcid)
+watch(() => props.lcid, (newValue, _oldValue) => {
+    flowInfo.value.lcid = newValue
+    if (newValue) {
+      getFlowInfo(props.lcid)
+    }
+})
+
 function getFlowInfo(lcid: string) {
     defHttp.get({ url: api.queryByLcidUrl, params: { lcid: lcid } }, { withToken: true }).then((res) => {
         if (res.success) {
@@ -95,10 +100,6 @@ function handleAdd() {
         }
     })
 }
-watch(() => props.lcid, (newValue, _oldValue) => {
-    flowInfo.value.lcid = newValue
-    getFlowInfo(newValue)
-});
 </script>
 
 <style scoped lang="less"></style>
