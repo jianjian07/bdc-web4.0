@@ -24,6 +24,9 @@
         <a-form-item label="流程前缀(补录)">
             <a-input v-model:value="flowInfo.prefix" />
         </a-form-item>
+        <a-form-item label="流程时限(小时)">
+           <a-input-number v-model:value="flowInfo.lcsx"/>
+        </a-form-item>
         <a-form-item label="顺序号">
             <a-input-number v-model:value="flowInfo.orderNum" :min="1" :max="100" />
         </a-form-item>
