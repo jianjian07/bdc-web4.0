@@ -1191,8 +1191,8 @@ export function editCfOrJfCase(slbh, type) {
 export function importCfCase() {
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
-  fileInput.style.display = 'none'; 
-  
+  fileInput.style.display = 'none';
+
   document.body.appendChild(fileInput);
 
   // 监听用户选择文件后
@@ -1202,10 +1202,10 @@ export function importCfCase() {
       alert('请选择一个文件');
       return;
     }
-    
+
     const formData = new FormData();
     formData.append('file', file);
-    
+
     defHttp.post(
       {
         url: '/api/zrzy-bdc/bdc/bdcCftz/importExcel',
@@ -1214,17 +1214,17 @@ export function importCfCase() {
       },
       { withToken: true, withTimeout: false }
     ).then((res: any) => {
-      if (res && res.success) { 
+      if (res && res.success) {
         message.success('导入成功!')
       } else {
         message.warning(res?.message || '导入失败!')
       }
-      
+
       // 清理掉临时创建的 input
       document.body.removeChild(fileInput);
     })
   });
-  
+
   fileInput.click();
 }
 
@@ -1539,11 +1539,12 @@ export function updateQlrxxList(obj) {
  * 获取权利人共有情况
  */
 export function getQlrGyqk() {
+  debugger
   let gyqk = ''
   let usefulQlrList = []
   for (const key in qlrxxObj) {
     let qlrlxmc = qlrxxObj[key].qlrlxmc
-    if (['权利人', '抵押权人', '预告权利人', '预告抵押权人'].includes(qlrlxmc)) {
+    if (['权利人', '抵押权人', '预告权利人'].includes(qlrlxmc)) {
       usefulQlrList = qlrxxObj[key].list
     }
   }
@@ -1991,26 +1992,26 @@ export function deleteHtByHtbh(htlsh) {
  * 根据合同编号提取附件
  */
 export async function addFjByHtbh(loading: any) {
-    const route = router.currentRoute.value;
-    const slbh = route.query.slbh
-    if (!slbh) {
-        message.error("未获取到受理编号，请检查!")
-        return
+  const route = router.currentRoute.value;
+  const slbh = route.query.slbh
+  if (!slbh) {
+    message.error("未获取到受理编号，请检查!")
+    return
+  }
+  if (loading) {
+    loading.value = true
+  }
+  defHttp.post({
+    url: '/api/zrzy-bdc/clf/ht/copyFjByHtbh',
+    params: { slbh: slbh }
+  }, { withToken: true }).then((res) => {
+    if (res.success) {
+      message.success(res.result)
+    } else {
+      message.error(res.message)
     }
-    if (loading) {
-        loading.value = true
-    }
-    defHttp.post({
-        url: '/api/zrzy-bdc/clf/ht/copyFjByHtbh',
-        params: { slbh: slbh }
-    }, { withToken: true }).then((res) => {
-        if (res.success) {
-            message.success(res.result)
-        } else {
-            message.error(res.message)
-        }
-    })
-    loading.value = false
+  })
+  loading.value = false
 }
 
 /**
@@ -2045,23 +2046,23 @@ export async function handTerminate(demoRefs: any, loading: any, jdmc: string, e
   let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
   if (res && res.status && res.validate) {
     Modal.confirm({
-        title: '提示',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: createVNode('div', { style: 'color:red;' }, '是否不予登记？确认后案件将强制归档！'),
-        onOk() {
-          let url = '/api/zrzy-bdc/bdc/process/terminate'
-          const route = router.currentRoute.value;
-          const slbh = route.query.slbh
-          defHttp.get({ url: url, params: { slbh: slbh } }, { withToken: true }).then((res) => {
-            if (res && res.success) {
-              message.success('操作成功!')
-              // 关闭当前标签页
-              closeCurrentTab()
-            } else {
-              message.warning(res?.message || '操作失败!')
-            }
-          })
-        }
+      title: '提示',
+      icon: createVNode(ExclamationCircleOutlined),
+      content: createVNode('div', { style: 'color:red;' }, '是否不予登记？确认后案件将强制归档！'),
+      onOk() {
+        let url = '/api/zrzy-bdc/bdc/process/terminate'
+        const route = router.currentRoute.value;
+        const slbh = route.query.slbh
+        defHttp.get({ url: url, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+          if (res && res.success) {
+            message.success('操作成功!')
+            // 关闭当前标签页
+            closeCurrentTab()
+          } else {
+            message.warning(res?.message || '操作失败!')
+          }
+        })
+      }
     });
   }
   return res
@@ -2091,11 +2092,11 @@ export function numberToChinese(money, options = { round: true }) {
   money += "00";
   let intPos = money.indexOf('.');
   if (intPos >= 0) {
-     money = money.substring(0, intPos) + money.substr(intPos + 1, 2);
+    money = money.substring(0, intPos) + money.substr(intPos + 1, 2);
   }
   strUnit = strUnit.substr(strUnit.length - money.length);
   for (let i = 0; i < money.length; i++) {
-     strOutput += '零壹贰叁肆伍陆柒捌玖'.substr(money.substr(i, 1), 1) + strUnit.substr(i, 1);
+    strOutput += '零壹贰叁肆伍陆柒捌玖'.substr(money.substr(i, 1), 1) + strUnit.substr(i, 1);
   }
   cnMoney = strOutput.replace(/零角零分$/, '整').replace(/零[仟佰拾]/g, '零').replace(/零{2,}/g, '零').replace(/零([亿|万])/g, '$1').replace(/零+元/, '元').replace(/亿零{0,3}万/, '亿').replace(/^元/, "零元");
   return cnMoney;
