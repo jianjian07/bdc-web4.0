@@ -5,11 +5,30 @@
                 <img src="/@/assets/images/login/bg06.jpg" class="rounded">
             </a-col>
             <a-col :span="12" style="padding-top: 10px;">
-                <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }">
+                <!--  layout="vertical" -->
+                <!-- :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" -->
+                <a-form style="margin: 10px;" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
                     <a-form-item label="IP">
                         <a-input v-model:value="initData.clientIp" />
                     </a-form-item>
+                    <a-form-item label="数据库密码加密">
+                        <a-row style="height: 100%;">
+                            <a-col :span="18" style="">
+                                <a-input v-model:value="initData.dbPwd" allowClear />
+                            </a-col>
+                            <a-col :span="6">
+                                <a-space>
+                                    <a-button type="primary" html-type="submit" @click="encryptDbPwd">加密</a-button>
+                                    <a-button type="primary" html-type="submit" @click="decryptDbPwd">解密</a-button>
+                                </a-space>
+                            </a-col>
+                        </a-row>
+
+                        <a-textarea v-model:value="initData.encryptDbPwd" :auto-size="{ minRows: 2, maxRows: 5 }"
+                            style="margin-top: 8px;" />
+                    </a-form-item>
                 </a-form>
+
             </a-col>
         </a-row>
     </div>
@@ -20,11 +39,26 @@ import { defHttp } from '/@/utils/http/axios';
 import { ref } from 'vue';
 
 let initData = ref<any>({})
-defHttp.get({ url: '/api/zrzy-system/sys/license/get' }, { withToken: false }).then((res) => {
+enum api {
+    getUrl = '/api/zrzy-system/sys/common/get',
+    encryptUrl = '/api/zrzy-system/sys/common/encrypt',
+    decryptUrl = '/api/zrzy-system/sys/common/decrypt',
+}
+defHttp.get({ url: api.getUrl }, { withToken: false }).then((res) => {
     if (res && res.success) {
         initData.value = res.result
     }
 })
+function encryptDbPwd() {
+    defHttp.get({ url: api.encryptUrl, params: { str: initData.value.dbPwd } }, { withToken: false }).then((res) => {
+        initData.value.encryptDbPwd = res
+    })
+}
+function decryptDbPwd() {
+    defHttp.get({ url: api.decryptUrl, params: { str: initData.value.dbPwd } }, { withToken: false }).then((res) => {
+        initData.value.encryptDbPwd = res
+    })
+}
 </script>
 
 <style scoped lang="less">
