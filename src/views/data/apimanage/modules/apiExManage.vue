@@ -70,6 +70,9 @@
             <a-form-item label="返回值序列化">
               <a-checkbox v-model:checked="pane.isResultJson" />
             </a-form-item>
+            <a-form-item label="返回值结构">
+              <a-textarea v-model:value="pane.apiResponse" :auto-size="{ minRows: 5 }" />
+            </a-form-item>
             <a-form-item label="目录排序">
               <a-input-number v-model:value="pane.orderNum" />
             </a-form-item>
