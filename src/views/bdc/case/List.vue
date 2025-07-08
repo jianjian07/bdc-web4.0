@@ -116,7 +116,8 @@ let pagination = ref({
     pageSize: 10,
     showTotal: () => {
         return `共 ${pagination.value.total} 条数据`
-    }
+    },
+    showSizeChanger: false
 })
 loadData()
 function loadData() {
