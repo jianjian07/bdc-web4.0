@@ -30,9 +30,9 @@
             <a-form-item label="数据库" name="dbName" :rules="[{ required: true, message: '请输入数据库名' }]">
                 <a-input v-model:value="formData.dbName" @change="setDbUrl" />
             </a-form-item>
-            <a-form-item v-if="formData.dbType == '1' || formData.dbType == '5'" label="模式名" name="schema"
+            <a-form-item v-if="formData.dbType == '1' || formData.dbType == '5'" label="模式名" name="schemaName"
                 :rules="[{ required: true, message: '请输入模式名' }]">
-                <a-input v-model:value="formData.schema" @change="setDbUrl" />
+                <a-input v-model:value="formData.schemaName" @change="setDbUrl" />
             </a-form-item>
             <a-form-item label="数据源地址" name="dbUrl" :rules="[{ required: true, message: '请输入数据源地址' }]">
                 <a-input v-model:value="formData.dbUrl" />
@@ -134,7 +134,7 @@ function syncChange(value: any, syn: string) {
     const datasourceInfo: any = dataSources.find((item) => item.dbType == dbType)
     formData.value.dbDriver = datasourceInfo.dbDriver
     formData.value.dbUrl = datasourceInfo.dbUrl
-    formData.value.schema = ''
+    formData.value.schemaName = ''
     setDbUrl()
 }
 const dataSources = [
@@ -154,11 +154,11 @@ function setDbUrl() {
     let host = formData.value.hostName || ''
     let port = formData.value.port || ''
     let db = formData.value.dbName || ''
-    let schema = formData.value.schema || ''
+    let schemaName = formData.value.schemaName || ''
 
     switch (dbTypeLabel) {
         case 'PostgreSQL':
-            url = `jdbc:postgresql://${host}:${port}/${db}?currentSchema=${schema}`
+            url = `jdbc:postgresql://${host}:${port}/${db}?currentSchema=${schemaName}`
             break;
         case 'Oracle':
             url = `jdbc:oracle:thin:@${host}:${port}:${db}`
