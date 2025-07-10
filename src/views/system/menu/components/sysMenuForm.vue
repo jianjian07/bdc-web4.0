@@ -136,13 +136,26 @@ let formState = ref<any>({
   subsystemId: props.sysId
 })
 formState.value.type = props.powerType
-const rules = ref<any>({
+const rules = computed(() => ({
   type: [{ required: true, message: '请输入菜单类型!' }],
-  name: [{ required: true, message: formState.type == 2 ? '请输入按钮名称' : '请输入菜单名称!' }],
-  path: [{ required: true, message: '请输入路由地址!' }, { pattern: /^\//, message: '请填写正确的格式' }],
+  name: [{ required: !!formState.value.path, message: formState.value.type == 2 ? '请输入按钮名称' : '请输入菜单名称!' }],
+  path: [{ required: formState.value.type == 0, message: '请输入路由地址!' },
+      {
+        validator: (rule, value) => {
+          if (!value) return Promise.resolve()
+          
+          if (formState.value.type === 0 || formState.value.pid === '0') {
+            if (!/^\/.*/.test(value)) {
+              return Promise.reject('一级路由应以 / 开头')
+            }
+          } 
+    
+          return Promise.resolve()
+        },
+      }],
   component: [{ required: true, message: '请输入组件路径!' }],
   pid: [{ required: true, message: '请选择上级类目!' }]
-})
+}))
 // 是否展示图标
 let iconShow = ref<boolean>(false)
 // 当前选中的图标
