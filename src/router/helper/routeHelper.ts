@@ -122,12 +122,14 @@ function getComponentName(item) {
     
     
 
+    const pathSuffix = item.path?.split('/').filter(Boolean).pop() || item.id?.slice(-6) || 'default';
+    
     // 处理 index.vue 的情况
     if (fileName === 'index') {
-        const parentName = nameParts[nameParts.length - 2] || 'index';
-        item.meta.componentName = `${item.componentName ? item.componentName + '-' : ''}${parentName}Index${dynamicId}${queryId ? '-' + queryId : ''}`;
+        const parentName = nameParts[nameParts.length - 2] || 'index'
+        item.meta.componentName = `${item.componentName ? item.componentName + '-' : ''}${parentName}Index-${pathSuffix}${dynamicId}${queryId ? '-' + queryId : ''}`;
     } else {
-        item.meta.componentName = `${item.componentName ? item.componentName + '-' : ''}${fileName}${dynamicId ? '-' + dynamicId : ''}${queryId ? '-' + queryId : ''}`;
+        item.meta.componentName = `${item.componentName ? item.componentName + '-' : ''}${fileName}-${pathSuffix}${dynamicId ? '-' + dynamicId : ''}${queryId ? '-' + queryId : ''}`;
     }
 
     return item.meta.componentName;
