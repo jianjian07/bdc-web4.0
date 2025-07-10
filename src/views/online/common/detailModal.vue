@@ -13,7 +13,8 @@
   </a-form>
 </template>
 
-<script setup lang="ts">import { computed, toRefs } from "vue";
+<script setup lang="ts">
+import { computed, toRefs } from "vue";
 
 const props = defineProps({
   formData: {
