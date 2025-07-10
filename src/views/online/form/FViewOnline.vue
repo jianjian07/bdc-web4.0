@@ -1,5 +1,14 @@
 <template>
-  <CFViewer :style="isRouterPage ? 'padding: 20px' : ''" ref="fView" :id="formId" :p-router="router" :p-route="route" :reload="reload" :disabled="_disabled" formType="form" :p-formData="{ bdc: bdc, ...formData }"></CFViewer>
+  <Suspense>
+    <template #default>
+      <CFViewer :style="isRouterPage ? 'padding: 20px' : ''" ref="fView" :id="formId" :p-router="router" :p-route="route" :reload="reload" :disabled="_disabled" formType="form" :p-formData="{ bdc: bdc, ...formData }"></CFViewer>
+    </template>
+    <template #fallback>
+      <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+        <a-spin size="large" />
+      </div>
+    </template>
+  </Suspense>
 </template>
 
 <script lang="ts" setup>

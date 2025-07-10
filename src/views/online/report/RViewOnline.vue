@@ -1,5 +1,14 @@
 <template>
-  <CRViewer ref="rView" :id="code" :p-router="router" :p-route="route" :p-formData="{ bdc: bdc, ...formData }"></CRViewer>
+  <Suspense>
+    <template #default>
+      <CRViewer ref="rView" :id="code" :p-router="router" :p-route="route" :p-formData="{ bdc: bdc, ...formData }"></CRViewer>
+    </template>
+    <template #fallback>
+      <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+        <a-spin size="large" />
+      </div>
+    </template>
+  </Suspense>
 </template>
 
 <script lang="ts" setup>
