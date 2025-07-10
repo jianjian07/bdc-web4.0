@@ -28,6 +28,25 @@
           <div v-if="column.dataIndex == 'czjg'">
             {{ getDictItemsByCode('shyjczjg').find(f => f.value == record[column.dataIndex])?.label }}
           </div>
+          <template v-if="column.key === 'yjzt'">
+                        <span>
+                          <a-space>
+                            <a-tag color="orange" v-if="record.yjzt == 1">
+                                <template #icon>
+                                    <RollbackOutlined/>
+                                </template>
+                                预警
+                            </a-tag>
+                            <a-tag color="red" v-else-if="record.yjzt == 2">
+                                <template #icon>
+                                    <AlertOutlined/>
+                                </template>
+                                超时
+                            </a-tag>
+                            <a-tag color="green" v-else>正常</a-tag>
+                          </a-space>
+                        </span>
+          </template>
         </template>
       </a-table>
     </a-card>
@@ -43,6 +62,7 @@ import NodeInfoModal from "/@/views/bdc/task/components/NodeInfoModal.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useRoute } from "vue-router"
+import { AlertOutlined, RollbackOutlined, SolutionOutlined } from "@ant-design/icons-vue";
 const route = useRoute()
 
 const props = defineProps({
@@ -74,19 +94,28 @@ const columns = [{
 }, {
   title: '节点id',
   dataIndex: 'jdid',
-  key: 'jdid'
+  key: 'jdid',
+  width: 150
+}, {
+  title: '状态',
+  dataIndex: 'yjzt',
+  key: 'yjzt',
+  width: 80
 }, {
   title: '开始时间',
   dataIndex: 'blkssj',
-  key: 'blkssj'
+  key: 'blkssj',
+   width: 150
 }, {
   title: '结束时间',
   dataIndex: 'bljssj',
-  key: 'bljssj'
+  key: 'bljssj',
+   width: 150
 }, {
   title: '负责人',
   dataIndex: 'blr',
-  key: 'blr'
+  key: 'blr',
+  width: 100
 }, {
   title: '处理结果',
   dataIndex: 'czjg',
