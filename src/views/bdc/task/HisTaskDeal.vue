@@ -6,7 +6,7 @@
           <SlidersOutlined />
           <span>流程图</span>
         </template>
-        <process-module :processInstanceId="processInstanceId"></process-module>
+        <process-module :formData="formData" :processInstanceId="processInstanceId"></process-module>
       </a-tab-pane>
       
       <a-tab-pane key="2">

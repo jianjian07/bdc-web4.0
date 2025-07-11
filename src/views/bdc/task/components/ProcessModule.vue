@@ -69,6 +69,10 @@ const props = defineProps({
   processInstanceId: {
     type: String,
     default: ''
+  },
+  formData: {
+    type: Object,
+    default: null
   }
 })
 
@@ -180,7 +184,7 @@ function initImg() {
  */
 function initTableData() {
   loading.value = true
-  let slbh = route.query.slbh
+  let slbh = route.query.slbh || props.formData?.slbh
   defHttp.get({ url: api.list, params: { slbh: slbh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       tableData.value = res.result

@@ -6,7 +6,7 @@
           <div style="cursor: pointer;" @click="onClickItem(record)">
             <template v-if="column.dataIndex === 'bdcdjzmh'">
               <a-tooltip :title="record.bdcdjzmh">
-                <div style="width: 100%; text-align: left;" class="text-ellipsis" @click="onClickItem(record)">{{ record.bdcdjzmh }}</div>
+                <div style="width: 100%; text-align: left;" class="text-ellipsis">{{ record.bdcdjzmh }}</div>
               </a-tooltip>
             </template>
             <template v-if="column.dataIndex === 'expireday'">
@@ -93,6 +93,7 @@ function onChange(pag: any, callback: any) {
 }
 
 function onClickItem(item) {
+  console.log('item', item)
   let modal = cModal({
     title: `【${item.bdcdjzmh}】`,
     width: 1000,
