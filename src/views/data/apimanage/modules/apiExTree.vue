@@ -21,6 +21,7 @@
                 {{ node.name.substr(0, node.name.indexOf(searchValue)) }}
                 <span style="color: #f50">{{ searchValue }}</span>
                 {{ node.name.substr(node.name.indexOf(searchValue) + searchValue.length) }}
+                <span style="color: #5094f9;font-weight: 600;">（{{ node.children.length }}个）</span>
               </span>
               <span v-else style="margin-left:5px">{{ node.name }}</span>
             </div>
