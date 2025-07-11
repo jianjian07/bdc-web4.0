@@ -38,7 +38,7 @@ let _formData = reactive<any>({
 })
 
 onMounted(() => {
-  _formData.slbh = props.formData?.ywh || route?.query?.slbh || 'CQSC202412090000534'
+  _formData.slbh = props.formData?.ywh || route?.query?.slbh || ''
   if (props.formData.isNeedDefault !== null && props.formData.isNeedDefault !== undefined) {
     _formData.isNeedDefault = props.formData.isNeedDefault
   }
