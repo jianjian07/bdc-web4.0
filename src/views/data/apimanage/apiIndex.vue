@@ -1,7 +1,8 @@
 <template>
   <div class="api-editor">
     <a-spin tip="加载中..." :spinning="loading">
-      <api-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @set-save-fun="saveFun"></api-tree>
+      <api-tree :apiType="2" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @set-save-fun="saveFun"
+        @reload="initData"></api-tree>
     </a-spin>
     <api-manage ref="manageRef" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"
       @load="initData"></api-manage>

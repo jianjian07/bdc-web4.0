@@ -392,7 +392,7 @@ let fileList: any = ref([])
 
 // 自定义上传
 const handleImportJson = () => {
-    importJson(fileList.value, { formType: 'form' }, loadData)
+    importJson(fileList.value, { formType: 'form' }, "", loadData)
 };
 </script>
 <style lang="less" scoped>

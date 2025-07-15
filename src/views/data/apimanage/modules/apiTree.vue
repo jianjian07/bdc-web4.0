@@ -1,5 +1,12 @@
 <template>
   <div class="api-editor-tree">
+    <a-upload name="file" v-model:file-list="fileList" :max-count="1" :headers="{ authorization: 'authorization-text' }"
+      :showUploadList="false" :customRequest="importApi" style="margin: auto 2px;">
+      <a-button>
+        <upload-outlined></upload-outlined>
+        导入接口
+      </a-button>
+    </a-upload>
     <div class="api-editor-search">
       <a-input-search v-model:value="searchValue" placeholder="搜索目录/接口" @search="onSearch" />
       <a-button style="margin-left: 8px" @click="handleExpand">
@@ -44,6 +51,9 @@
                     <a-menu-item>
                       <a-popconfirm title="你确定要删除该目录吗?" @confirm="delDir(node)">删除</a-popconfirm>
                     </a-menu-item>
+                    <a-menu-item>
+                      <a @click="exportApi(node, 'dir')">导出</a>
+                    </a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
@@ -63,9 +73,13 @@
                 </span>
                 <span class="left-name" v-else style="margin-left:4px">{{ node.name }}</span>
               </a-tooltip>
-              <!--              <span style="margin-left:10px">{{ node.apiName }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
+              <a-button style="margin-left: 8px;" @click="exportApi(node, 'api')">
+                <template #icon>
+                  <DownloadOutlined style="font-size: 10px" />
+                </template>
+              </a-button>
               <a-popconfirm title="你确定要删除该接口吗?" @confirm.stop="delApi(node)">
                 <a-button style="margin-left: 8px;">
                   <template #icon>
@@ -95,7 +109,8 @@ import {
   FolderOutlined,
   EllipsisOutlined,
   ColumnHeightOutlined,
-  VerticalAlignMiddleOutlined
+  VerticalAlignMiddleOutlined,
+  DownloadOutlined
 } from '@ant-design/icons-vue'
 import { guid } from "/@/utils"
 import { defHttp } from "/@/utils/http/axios"
@@ -107,6 +122,7 @@ import {
   getParentId,
   removeMagicApiById
 } from "/@/views/data/apimanage/modules/apiUtil"
+import { exprotJson, importJson } from "/@/views/online/utils/file"
 // 搜索目录/接口
 let searchValue = ref<string>('')
 // 是否展开/收缩
@@ -134,14 +150,20 @@ const props = defineProps({
   selectItem: {
     type: Object,
     default: {}
+  },
+  apiType: {
+    type: Number,
+    default: 1
   }
 })
 
-const emit = defineEmits(['update:selectItem', 'setSaveFun'])
+const emit = defineEmits(['update:selectItem', 'setSaveFun', 'reload'])
 
 enum api {
   delDir = '/api/zrzy-api/api/dir/delete',
-  delApi = '/api/zrzy-api/api/inner/delete'
+  delApi = '/api/zrzy-api/api/inner/delete',
+  exportUrl = '/api/zrzy-api/api/inner/exportJson',
+  importUrl = '/api/zrzy-api/api/inner/importJson'
 }
 
 watch(() => props.apiTreeData, (newVal: any) => {
@@ -149,7 +171,34 @@ watch(() => props.apiTreeData, (newVal: any) => {
 }, {
   immediate: true
 })
-
+/*导入导出 start*/
+/**
+ * 导出接口
+ * @param item
+ */
+function exportApi(item: any, eType: string) {
+  if (item.id.includes('新增')) {
+    message.error('请先保存接口')
+  } else {
+    const params = { id: item.id, eType: eType }
+    exprotJson(params, item.name, api.exportUrl)
+  }
+}
+/**
+ * 导入json
+ */
+let fileList: any = ref([])
+/**
+ * 导入接口
+ * @param item
+ */
+function importApi() {
+  importJson(fileList.value, { importType: 'copy' }, api.importUrl, reloadTree)
+}
+function reloadTree() {
+  emit('reload')
+}
+/*导入导出 end*/
 watch(() => props.selectItem, (newVal: any) => {
   selectedKeys.value = newVal ? [newVal.id] : []
   // 新增目录/接口后替换id
@@ -264,10 +313,11 @@ function addDir() {
     apiKeys: [],
     isEncrypt: '0',
     encryptType: '',
-    apiType: '2',
+    apiType: props.apiType,
     bz: '',
     children: [],
-    orderNum: props.apiTreeData.length + 1
+    orderNum: props.apiTreeData.length + 1,
+    isResultJson: true
   }
   props.apiTreeData?.push(dir)
   selectedKeys.value = [dir.id]
@@ -337,7 +387,7 @@ async function addApi(dir) {
       pid: dir.id,
       code: '',
       name: '新增接口',
-      apiType: 1,
+      apiType: props.apiType,
       dirId: dir.id,
       dirName: dir.name,
       dirCode: dir.code,
@@ -509,7 +559,7 @@ function onDrop(info) {
 <style lang="less" scoped>
 @media (max-width: 1520px) {
   .api-editor-tree {
-    width: 300px !important;
+    width: 400px !important;
   }
 
   .api-row-content {
@@ -520,7 +570,7 @@ function onDrop(info) {
 }
 
 .api-editor-tree {
-  width: 350px;
+  width: 400px;
   height: 100%;
   padding: 10px;
   border-right: 1px solid #f9f9f9;
@@ -528,6 +578,7 @@ function onDrop(info) {
   .api-editor-search {
     display: flex;
     margin-bottom: 10px;
+    padding-top: 10px;
   }
 
   .api-editor-tree-content {

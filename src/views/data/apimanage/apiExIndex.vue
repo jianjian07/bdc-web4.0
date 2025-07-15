@@ -1,8 +1,8 @@
 <template>
   <div class="api-ex-index">
     <a-spin tip="加载中..." :spinning="loading">
-      <api-ex-tree :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"
-        @set-save-fun="saveFun"></api-ex-tree>
+      <api-tree :apiType="1" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem" @reload="initData"
+        @set-save-fun="saveFun"></api-tree>
     </a-spin>
     <api-ex-manage ref="manageRef" :apiTreeData="apiTreeData" v-model:selectItem="currentSelectItem"
       @load="initData"></api-ex-manage>
@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import ApiExTree from "/@/views/data/apimanage/modules/apiExTree.vue"
+import ApiTree from "/@/views/data/apimanage/modules/apiTree.vue"
 import ApiExManage from "/@/views/data/apimanage/modules/apiExManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"

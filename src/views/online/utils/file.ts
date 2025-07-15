@@ -1,14 +1,14 @@
 // 导入导出
 import { h } from "vue";
 import { defHttp } from "/@/utils/http/axios";
-import { Modal, message, notification } from "ant-design-vue";
+import { Checkbox, Modal, message, notification } from "ant-design-vue";
 import { formatToDateTime } from "./dateUtil";
 enum Api {
     exportJson = '/api/zrzy-form/export/exportJson',
     importJson = '/api/zrzy-form/export/importJson'
 }
 // 自定义上传
-export const importJson = (fileList: any, params: any, callback: any) => {
+export const importJson = (fileList: any, params: any, url?: string, callback?: any) => {
     if (fileList.length == 0) {
         message.error('请选择文件')
         return;
@@ -19,7 +19,7 @@ export const importJson = (fileList: any, params: any, callback: any) => {
     })
     defHttp.post(
         {
-            url: Api.importJson,
+            url: url || Api.importJson,
             data: fileData,
             params: params,
             headers: { "Content-Type": "multipart/form-data" },
@@ -41,13 +41,26 @@ export const importJson = (fileList: any, params: any, callback: any) => {
         } else {
             if (res.result) {
                 Modal.confirm({
-                    title: res?.message,
+                    title: '导入提示',
                     okText: '确定',
                     okType: 'danger',
                     cancelText: '取消',
+                    content:
+                        h('div', [
+                            h('div', { style: 'margin-bottom: 12px;white-space: pre-line;' }, res?.message || '文件已存在'),
+                            // 仅当 params.importType 存在时才渲染 Checkbox
+                            params.importType !== undefined
+                                ? h(Checkbox, {
+                                    style: 'margin-top: 8px; color: red;',
+                                    onChange: (e) => {
+                                        params.importType = e.target.checked ? 'replace' : 'copy';
+                                    },
+                                }, '替换所有')
+                                : null, // 不渲染 Checkbox
+                        ]),
                     onOk() {
                         params.isOk = true
-                        importJson(fileList, params, callback)
+                        importJson(fileList, params, url, callback)
                     },
                     onCancel() {
                     },
