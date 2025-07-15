@@ -1,7 +1,7 @@
 <template>
   <Suspense>
     <template #default>
-      <CFViewer :style="isRouterPage ? 'padding: 20px' : ''" ref="fView" :id="formId" :p-router="router" :p-route="route" :reload="reload" :disabled="_disabled" formType="form" :p-formData="{ bdc: bdc, ...formData }"></CFViewer>
+      <CFViewer :style="isRouterPage ? 'padding: 20px' : ''" ref="fView" :id="formId" :p-router="router" :p-route="route" :reload="reload" :disabled="_disabled" formType="form" :p-formData="{ bdc: bdc, ...formData }" v-bind="attrs"></CFViewer>
     </template>
     <template #fallback>
       <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
@@ -18,6 +18,7 @@ import * as bdc from '/@/views/bdc/public/bdc'
 const route = useRoute();
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
+const attrs = useAttrs()
 import { ref, useAttrs } from "vue"
 import { useUserStore } from "/@/store/modules/user"
 const { disabled } = useAttrs()

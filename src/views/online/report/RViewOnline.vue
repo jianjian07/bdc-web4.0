@@ -1,7 +1,7 @@
 <template>
   <Suspense>
     <template #default>
-      <CRViewer ref="rView" :id="code" :p-router="router" :p-route="route" :p-formData="{ bdc: bdc, ...formData }"></CRViewer>
+      <CRViewer ref="rView" :id="code" :p-router="router" :p-route="route" :p-formData="{ bdc: bdc, ...formData }" v-bind="attrs"></CRViewer>
     </template>
     <template #fallback>
       <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
@@ -15,11 +15,12 @@
 import { useRoute } from "vue-router"
 import { router } from "/@/router"
 import * as bdc from '/@/views/bdc/public/bdc'
-import { onMounted, provide, ref } from "vue"
+import { onMounted, provide, ref, useAttrs } from "vue"
 import { createScopedBus } from "/@/views/online/utils/scopeEventBus.ts"
 import { updateCModalScopeBus } from "/@/components/cModal/index.ts"
 import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
 const eventBus = createScopedBus()
+const attrs = useAttrs()
 updateCModalScopeBus(eventBus)
 updateCDrawerScopeBus(eventBus)
 provide('scopedEventBus', eventBus)
