@@ -2101,3 +2101,30 @@ export function numberToChinese(money, options = { round: true }) {
   cnMoney = strOutput.replace(/零角零分$/, '整').replace(/零[仟佰拾]/g, '零').replace(/零{2,}/g, '零').replace(/零([亿|万])/g, '$1').replace(/零+元/, '元').replace(/亿零{0,3}万/, '亿').replace(/^元/, "零元");
   return cnMoney;
 }
+
+/**
+ * 获取指纹
+ */
+ export function getFingerPrint(){
+  const route = router.currentRoute.value
+  defHttp.post({ url: 'http://localhost:8888/web/hardware/fingerEnter' }, { withToken: true }).then((res) => {
+    if (!res || res.code!='200') {
+      message.warning(res?.message || '获取指纹失败!')
+    } else {
+      let _data: any = {
+        slbh: route.query.slbh,
+        fingerImage: res.base64
+      }
+      defHttp.post({
+        url: '/api/zrzy-bdc/bdc/public/saveYwImage',
+        params: _data
+      }, { withToken: true }).then((res: any) => {
+        if (res && res.success) {
+          message.success('获取指纹成功!')
+        }else {
+          message.warning(res?.message || '保存指纹失败!')
+        }
+      })
+    }
+  })
+}
