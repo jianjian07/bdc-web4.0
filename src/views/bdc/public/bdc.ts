@@ -2128,3 +2128,37 @@ export function numberToChinese(money, options = { round: true }) {
     }
   })
 }
+
+export function getSignature(){
+  let modal = cModal({
+    title: '电子签名',
+    // width: 1000,
+    isFullScreen: true,
+    filePath: 'views/signature/index',
+    onOk: (res: any) => {
+      if (res && res.onSubmit) {
+        let str = res.onSubmit()
+        if (str) {
+            const base64 = str.replace(/^data:image\/png;base64,/, '');
+            const route = router.currentRoute.value
+          
+            let _data: any = {
+              slbh: route.query.slbh,
+              signatureImage: base64
+            }
+            defHttp.post({
+              url: '/api/zrzy-bdc/bdc/public/saveYwImage',
+              data: _data
+            }, { withToken: true }).then((res: any) => {
+              if (res && res.success) {
+                message.success('电子签名成功!')
+                modal.destroy()
+              } else {
+                message.warning(res?.message || '电子签名失败!')
+              }
+            })
+        }
+      }
+    }
+  })
+}
