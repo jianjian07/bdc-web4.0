@@ -75,6 +75,11 @@
               </a-tooltip>
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
+              <a-button style="margin-left: 8px;" @click="copyApi(node)">
+                <template #icon>
+                  <SwitcherOutlined style="font-size: 10px" />
+                </template>
+              </a-button>
               <a-button style="margin-left: 8px;" @click="exportApi(node, 'api')">
                 <template #icon>
                   <DownloadOutlined style="font-size: 10px" />
@@ -110,7 +115,8 @@ import {
   EllipsisOutlined,
   ColumnHeightOutlined,
   VerticalAlignMiddleOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  SwitcherOutlined
 } from '@ant-design/icons-vue'
 import { guid } from "/@/utils"
 import { defHttp } from "/@/utils/http/axios"
@@ -162,6 +168,7 @@ const emit = defineEmits(['update:selectItem', 'setSaveFun', 'reload'])
 enum api {
   delDir = '/api/zrzy-api/api/dir/delete',
   delApi = '/api/zrzy-api/api/inner/delete',
+  copyUrl = '/api/zrzy-api/api/inner/copy',
   exportUrl = '/api/zrzy-api/api/inner/exportJson',
   importUrl = '/api/zrzy-api/api/inner/importJson'
 }
@@ -199,6 +206,28 @@ function reloadTree() {
   emit('reload')
 }
 /*导入导出 end*/
+function copyApi(item: any) {
+  defHttp.get({ url: api.copyUrl, params: { id: item.id } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      message.success('复制成功')
+      let api = res.result
+      let find = props.apiTreeData.find(f => f.id == item.dirId)
+      api.apiHeaders = JSON.parse(api.requestHeader)
+      api.apiParameters = JSON.parse(api.requestParam)
+      api.apiBody = JSON.parse(api.requestBody)
+      api.apiDataSource = JSON.parse(api.apiSql)
+      api.pid = item.dirId
+      find.children.push(api)
+      selectedKeys.value = [api.id]
+      emit('update:selectItem', api)
+      let expands = JSON.parse(JSON.stringify(expandedKeys.value))
+      expands.push(item.dirId)
+      expandedKeys.value = Array.from(new Set(expands))
+    } else {
+      message.warning('复制失败')
+    }
+  })
+}
 watch(() => props.selectItem, (newVal: any) => {
   selectedKeys.value = newVal ? [newVal.id] : []
   // 新增目录/接口后替换id
