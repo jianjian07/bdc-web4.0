@@ -51,7 +51,7 @@ const setRef = (el: any, formId: string) => {
   }
 }
 // 是否显示权利人
-let showQlr = ref<boolean>(true)
+let showQlr = ref<boolean>(false)
 // 权利人信息
 let qlr = ref<any>()
 // 业务号
@@ -70,9 +70,11 @@ const props = defineProps({
 
 watch(() => props.formData.sfybz, (newVal, oldVal) => {
   console.log('弹窗表单', props.formData)
-  showQlr.value = !!(props.formData.sfybz == '0')
-  if (showQlr.value) {
+  let show = !!(props.formData.sfybz == '0')
+  if (show) {
     initQlrXx()
+  } else {
+    showQlr.value = false
   }
   // 外网转现提取弹窗用到 弹窗增加动态数据源参数
   if (props.formData.db && !route.query.db) {
@@ -102,6 +104,9 @@ function initQlrXx() {
     } else {
       message.warning('获取权利人配置出错')
     }
+    nextTick(() => {
+      showQlr.value = true
+    })
   })
 }
 
