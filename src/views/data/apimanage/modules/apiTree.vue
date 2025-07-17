@@ -2,9 +2,9 @@
   <div class="api-editor-tree">
     <a-upload name="file" v-model:file-list="fileList" :max-count="1" :headers="{ authorization: 'authorization-text' }"
       :showUploadList="false" :customRequest="importApi" style="margin: auto 2px;">
-      <a-button>
-        <upload-outlined></upload-outlined>
+      <a-button type="primary" ghost>
         导入接口
+        <ArrowRightOutlined />
       </a-button>
     </a-upload>
     <div class="api-editor-search">
@@ -116,7 +116,8 @@ import {
   ColumnHeightOutlined,
   VerticalAlignMiddleOutlined,
   DownloadOutlined,
-  SwitcherOutlined
+  SwitcherOutlined,
+  ArrowRightOutlined
 } from '@ant-design/icons-vue'
 import { guid } from "/@/utils"
 import { defHttp } from "/@/utils/http/axios"
