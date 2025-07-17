@@ -527,11 +527,13 @@ function onShowSpPanel() {
 }
 
 :deep(.ant-input-disabled) {
-  background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02);
+  color: rgba(0,0,0,0.88);
 }
 
 :deep(.ant-input[disabled]) {
-  background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02);
+  color: rgba(0,0,0,0.88);
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input)) {

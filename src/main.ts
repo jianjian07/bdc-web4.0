@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './style.css'
+import '/@/assets/less/base.less'
 import App from './App.vue'
 import { registerGlobComp } from './components/registerGlobComp'
 
