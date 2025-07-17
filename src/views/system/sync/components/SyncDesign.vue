@@ -385,10 +385,10 @@ function getTables(dbKey, type) {
     defHttp.get({ url: api.getTables, params: { dbKey: dbKey } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         if (type == 'source') {
-          viewTables.value.source.view = res.result.view
-          viewTables.value.source.table = res.result.table
+          viewTables.value.source.view = res.result.view || []
+          viewTables.value.source.table = res.result.table || []
         } else {
-          viewTables.value.target.table = res.result.table
+          viewTables.value.target.table = res.result.table || []
         }
       }
     })
@@ -467,6 +467,7 @@ function selectAll(type) {
  * @param type
  */
 function isAllChecked(type) {
+  console.log('viewTables.value.source',viewTables.value.source)
   const allItems = viewTables.value.source[type].map(i => i.tablename);
   const selectedItems = formState.value[`${type}Check`] || [];
   if (allItems.length === 0) {
