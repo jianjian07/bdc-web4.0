@@ -182,7 +182,7 @@ export async function handOver(demoRefs: any, loading: any, jdmc: string, eventB
     const route = router.currentRoute.value;
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
     let checkRes: any = true
-    if (['收件', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
+    if (['收件','受理', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
       checkRes = await checkSeal(slbh, loading)
     }
     if (checkRes) {
@@ -1482,6 +1482,27 @@ export function getRegionOptions() {
   })
 }
 
+/**
+ * 获取子系统选项
+ */
+export function getSystemList() {
+  return new Promise((resolve) => {
+    defHttp.get(
+        {
+          url: '/api/zrzy-system/sys/sysSubsystem/list',
+          params: { pageSize: 1000, pageNo: 1 }
+        },
+        { withToken: true }
+    ).then((res: any) => {
+      if (res && res.success) {
+        resolve(res.result.records || [])
+      } else {
+        resolve([])
+      }
+    })
+  })
+}
+
 export function cc() {
   message.success('ccccc')
 }
@@ -1737,7 +1758,7 @@ async function getHandleCkbzBtn() {
           return []
         }
         let text = "窗口补正"
-        if (nodeName == '收件') {
+        if (nodeName == '收件' || nodeName == '受理') {
           if (beforeTask.deleteReason == '窗口补正') {
             // 2.收件节点，如果是发起的“窗口补正”，则展示按钮“完成补正”
             text = "完成补正"
