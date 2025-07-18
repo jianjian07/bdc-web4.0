@@ -158,6 +158,7 @@ watch(() => props.value, (val: any) => {
   } else {
     code.value = val
   }
+  refresh()
 }, {
   immediate: true
 })
@@ -218,6 +219,15 @@ function formatXml(str) {
     console.error("XML 格式化失败:", error.message);
     code.value = str
   }
+}
+
+/**
+ * 刷新
+ */
+function refresh() {
+  nextTick(() => {
+    cmRef.value?.refresh();
+  })
 }
 </script>
 
