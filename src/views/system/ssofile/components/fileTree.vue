@@ -210,6 +210,8 @@
     </div>
     <div v-if="filePreview" class="filePreview">
       <div class="oprBtns">
+        <a v-if="previewData.preIndex>-1" @click="preFile">上一个</a>
+        <a v-if="previewData.nextIndex<fileIndexList.length" @click="nextFile">下一个</a>
         <a v-if="previewData.previewUrl" @click="downLoadFile">下载</a>
         <a @click="closePreview">关闭</a>
       </div>
@@ -248,6 +250,8 @@ let uploadFiles = ref<any>([])
 let editableData: any = ref([])
 let editOrder: any = ref(false)
 let expandAll: any = ref(true)
+
+let fileIndexList: any = []
 
 const urlList = {
   queryAll: '/api/zrzy-bdc/bdcdj/upfiles/file/queryMaterialTreeList', // 所有附件目录树和附件
@@ -317,6 +321,18 @@ function loadFileList(getDefault: Boolean = true) {
         loadDefaultList()
       } else {
         ssoFileList.value = res?.result
+        //遍历附件，增加index，方便上一个下一个跳转
+        fileIndexList=[];
+        ssoFileList.value.forEach((material: any) => {
+          if(material.fileType=='folder' && material.children.length>0){
+            material.children.forEach((file: any) => {
+              fileIndexList.push(file);
+              file.preIndex=fileIndexList.length-2;
+              file.nextIndex=fileIndexList.length;
+            })
+          }
+        })
+
       }
 
     } else {
@@ -532,6 +548,14 @@ function closePreview() {
   if(!props.modalPreview) {
     eventBus.emit('previewFile', false)
   }
+}
+//上个附件
+function preFile(){
+  previewFile(fileIndexList[previewData.value.preIndex]);
+}
+//下个附件
+function nextFile(){
+  previewFile(fileIndexList[previewData.value.nextIndex]);
 }
 
 function downLoadFile() {
