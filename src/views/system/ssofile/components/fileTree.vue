@@ -527,7 +527,7 @@ function deleteCatalogOrFile(item: any, type: String = '') {
 function previewFile(data: any) {
   // 后端返回kkFile路径预览附件
   if(!props.modalPreview) {
-    eventBus.emit('previewFile', true)
+    eventBus?.emit('previewFile', true)
   }
   loading.value = true
   filePreview.value = true
@@ -546,7 +546,7 @@ function previewFile(data: any) {
 function closePreview() {
   filePreview.value = false
   if(!props.modalPreview) {
-    eventBus.emit('previewFile', false)
+    eventBus?.emit('previewFile', false)
   }
 }
 //上个附件
@@ -794,6 +794,15 @@ function delFile(data, type?: string | undefined) {
 
       a {
         padding-right: 8px;
+      }
+    }
+    
+    :deep(.ant-spin-nested-loading) {
+      height: 100%;
+      
+      .ant-spin-container {
+        height: 100%;
+        overflow: auto;
       }
     }
 

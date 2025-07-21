@@ -4,7 +4,7 @@
       <span class="title">
         材料信息
       </span>
-      <template v-if="manage == undefined && Object.keys(formData).length == 0">
+      <template v-if="manage == undefined && route?.query?.manage == undefined && Object.keys(formData).length == 0">
         <a-button type="primary" size="middle" @click="changeState">{{ isManage ? '返回' : '管理' }}</a-button>
       </template>
     </div>
@@ -59,6 +59,9 @@ onMounted(() => {
   if(props.formData.manage != undefined) {
     isManage.value = props.formData.manage
     modalPreview.value = true
+  }
+  if (route?.query?.manage != undefined) {
+    isManage.value = route?.query?.manage == 'true'
   }
 })
 

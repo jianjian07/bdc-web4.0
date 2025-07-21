@@ -440,6 +440,18 @@ export async function showFile(demoRefs: any, loading: any, jdmc: string, eventB
 }
 
 /**
+ * 附件按钮（新标签页）
+ * @param params
+ */
+export function showFileNewBlank(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
+  let query = router.currentRoute.value.query
+  const urlSearchParams = new URLSearchParams(query)
+  urlSearchParams.set('manage', params?.manage ?? false) // 设置 manage 参数
+  const queryString = urlSearchParams.toString()
+  window.open('/ssofile/blankIndex?' + queryString, '_blank')
+}
+
+/**
  * 审批过程按钮
  * @param demoRefs
  * @param loading
