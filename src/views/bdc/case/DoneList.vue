@@ -79,7 +79,7 @@
           <template v-if="column.key === 'currentNode'">
             {{ record.currentNode }}【
             <span style="color: orangered">
-              {{ record.currentAssignee }}
+              {{ record.currentUserName }}
             </span>
             】
           </template>
