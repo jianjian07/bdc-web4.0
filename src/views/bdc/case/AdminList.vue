@@ -102,6 +102,7 @@ const columns = [
     { title: "任务id", dataIndex: "taskId", align: "center" },
     { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 100 },
     { title: "案卷名称", dataIndex: "ajmc", align: "center", key: "ajmc" },
+    { title: "登记类别", dataIndex: "processDefinitionName", align: "center", key: "processDefinitionName" },
     { title: "受理编号", dataIndex: "slbh", align: "center" },
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },
