@@ -1,17 +1,17 @@
 <template>
   <div class="baseContent">
     <div class="sectionOne">
-      <div class="panelOne">
-        <a-card class="userBox1" v-for="info in baseInfo" :key="info.key" @click="onClickEntry(info.route)"
-          :bordered="false">
-          <div class="baseInfo">
-            <div class="infoItem">
-              <span>{{ info.label }}</span>
-              <span :style="{ color: info.color }">{{ info.value }}</span>
-            </div>
-          </div>
-        </a-card>
-      </div>
+<!--      <div class="panelOne">-->
+<!--        <a-card class="userBox1" v-for="info in baseInfo" :key="info.key" @click="onClickEntry(info.route)"-->
+<!--          :bordered="false">-->
+<!--          <div class="baseInfo">-->
+<!--            <div class="infoItem">-->
+<!--              <span>{{ info.label }}</span>-->
+<!--              <span :style="{ color: info.color }">{{ info.value }}</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </a-card>-->
+<!--      </div>-->
       <div class="panelTwo">
         <a-card class="userBox" :bordered="false">
           <div class="commonEntry">
@@ -399,7 +399,8 @@ function handleAdd(entry: any) {
     }
 
     .panelTwo {
-      width: 60%;
+      //width: 60%;
+      width: 100%;
       padding-left: 8px;
     }
   }

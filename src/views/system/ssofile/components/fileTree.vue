@@ -6,13 +6,14 @@
         <a-button type="primary" @click="addFile">新增附件</a-button>
         <a-button type="primary" @click="handleOrder">{{ editOrder ? '保存目录顺序' : '编辑目录顺序' }}</a-button>
         <a-button type="primary" @click="showExe">工具上传</a-button>
+        <a-button v-if="checkedKeys.length" type="primary" @click="batchDel">批量删除</a-button>
         <a-tooltip title="刷新附件" placement="right">
           <a-button style="margin-right: 5px" size="small" :icon="h(ReloadOutlined)"
                       @click.stop="loadFileList(false)" />
         </a-tooltip>
       </div>
-      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="false"
-        show-icon :default-expand-all="expandAll" @drop="onDrop" :draggable="isManage && editOrder" style="width: 100%">
+      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="false" :checkable="true"
+        show-icon :default-expand-all="expandAll" @drop="onDrop" :draggable="isManage && editOrder" v-model:checkedKeys="checkedKeys" style="width: 100%">
         <template #icon="">
         </template>
         <template #title="{ dataRef }">
@@ -141,9 +142,10 @@
                 <a-input v-if="editableData[dataRef.id]" v-model:value="editableData[dataRef.id].materialName"
                   style="margin: -5px 0" size="small" @click.stop="" />
                 <template v-else>
-                  <a-tooltip :title="dataRef.materialName">
+                  <a-tooltip :title="dataRef.materialName + `（${ dataRef.children.length }个）`">
                     <div class="text-ellipsis">
-                      {{ dataRef.materialName }}
+                      {{ dataRef.materialName }} 
+                      <span style="color: #5094f9;font-weight: 600;">（{{ dataRef.children.length }}个）</span>
                     </div>
                   </a-tooltip>
                 </template>
@@ -208,6 +210,8 @@
     </div>
     <div v-if="filePreview" class="filePreview">
       <div class="oprBtns">
+        <a v-if="previewData.preIndex>-1" @click="preFile">上一个</a>
+        <a v-if="previewData.nextIndex<fileIndexList.length" @click="nextFile">下一个</a>
         <a v-if="previewData.previewUrl" @click="downLoadFile">下载</a>
         <a @click="closePreview">关闭</a>
       </div>
@@ -220,14 +224,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h, onMounted, watch, inject } from 'vue'
+import { ref, h, onMounted, watch, inject, createVNode } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue'
 import { cModal } from "/@/components/cModal/index"
 import { cloneDeep } from 'lodash-es';
 import { Base64 } from 'js-base64';
-import Icon, { EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined, ReloadOutlined } from '@ant-design/icons-vue';
+import Icon, {
+  EditOutlined,
+  DeleteOutlined,
+  UploadOutlined,
+  EyeOutlined,
+  ReloadOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons-vue'
 import { useUserStoreWithOut } from "/@/store/modules/user"
+import { findNode } from "/@/views/online/utils/commonUtils.ts"
 const eventBus = inject('scopedEventBus', null)
 
 let ssoFileList: any = ref([])
@@ -238,6 +250,8 @@ let uploadFiles = ref<any>([])
 let editableData: any = ref([])
 let editOrder: any = ref(false)
 let expandAll: any = ref(true)
+
+let fileIndexList: any = []
 
 const urlList = {
   queryAll: '/api/zrzy-bdc/bdcdj/upfiles/file/queryMaterialTreeList', // 所有附件目录树和附件
@@ -259,6 +273,7 @@ const baseApi = ref('')
 const kkFileApi = ref('')
 const proxyBaseApi = ref('')
 let loading = ref(false)
+let checkedKeys = ref([])
 
 const props = defineProps({
   isManage: {
@@ -306,6 +321,18 @@ function loadFileList(getDefault: Boolean = true) {
         loadDefaultList()
       } else {
         ssoFileList.value = res?.result
+        //遍历附件，增加index，方便上一个下一个跳转
+        fileIndexList=[];
+        ssoFileList.value.forEach((material: any) => {
+          if(material.fileType=='folder' && material.children.length>0){
+            material.children.forEach((file: any) => {
+              fileIndexList.push(file);
+              file.preIndex=fileIndexList.length-2;
+              file.nextIndex=fileIndexList.length;
+            })
+          }
+        })
+
       }
 
     } else {
@@ -494,23 +521,7 @@ function deleteCatalogOrFile(item: any, type: String = '') {
       })
     });
   }
-  defHttp.put(
-    {
-      url: urlList.deleteCatalogOrFile,
-      data: data
-    },
-    { withToken: true }
-  ).then((res: any) => {
-    if (res?.success) {
-      message.success(type == 'folder' ? '目录删除成功' : '文件删除成功')
-      loadFileList(false)
-      if (previewData.value.previewUrl) {
-        previewData.value.previewUrl = ''
-      }
-    } else {
-      message.warning(res?.message)
-    }
-  })
+  delFile(data,type)
 }
 
 function previewFile(data: any) {
@@ -537,6 +548,14 @@ function closePreview() {
   if(!props.modalPreview) {
     eventBus.emit('previewFile', false)
   }
+}
+//上个附件
+function preFile(){
+  previewFile(fileIndexList[previewData.value.preIndex]);
+}
+//下个附件
+function nextFile(){
+  previewFile(fileIndexList[previewData.value.nextIndex]);
 }
 
 function downLoadFile() {
@@ -655,6 +674,54 @@ function showExe() {
   window.location.href = exeUrl;
 }
 
+/**
+ * 批量删除
+ */
+function batchDel() {
+  Modal.confirm({
+    title: '提示',
+    icon: createVNode(ExclamationCircleOutlined),
+      content: createVNode('div', { style: 'color:red;' }, '确认要删除所选的目录或附件吗？这将会删除目录下的所有附件！'),
+      onOk() {
+        let keys = checkedKeys.value.map((key) => {
+        let find = findNode(ssoFileList.value, key, 'id') 
+          if (find) {
+            return { id: key, fileType: find.fileType || '' }
+          } else {
+            return null
+          }
+        })
+        delFile(keys, 'all')
+      },
+      
+  });
+}
+
+/**
+ * 删除文件
+ * @param data
+ * @param type
+ */
+function delFile(data, type?: string | undefined) {
+   defHttp.put(
+    {
+      url: urlList.deleteCatalogOrFile,
+      data: data
+    },
+    { withToken: true }
+  ).then((res: any) => {
+    if (res?.success) {
+      message.success(type == 'all' ? '删除成功' :(type == 'folder' ? '目录删除成功' : '文件删除成功'))
+      loadFileList(false)
+      if (previewData.value.previewUrl) {
+        previewData.value.previewUrl = ''
+      }
+      checkedKeys.value = []
+    } else {
+      message.warning(res?.message)
+    }
+  })
+}
 </script>
 
 <style scoped lang="less">
@@ -674,6 +741,7 @@ function showExe() {
 
     button {
       margin-right: 2px;
+      margin-bottom: 5px;
       padding-left: 5px;
       padding-right: 5px;
     }
@@ -682,7 +750,7 @@ function showExe() {
   .treeList {
     width: 100%;
     min-width: 300px;
-    max-width: 350px;
+    max-width: 380px;
 
     .customTitle {
       height: 30px;

@@ -41,14 +41,14 @@
               </template>
             </a-select>
           </div>
-          <a-input-search v-if="handleDirection == 1 && treeData.length == 1 && roleNum == 0"
-                          placeholder="请输入承办人员名称"
+          <a-input-search v-if="handleUserType == 1"
+                          placeholder="请输入承办人员名称" v-model:value="searchValue"
                           enterButton @search="onSearch" style="margin-bottom: 10px">
           </a-input-search>
           <a-spin :class="treeData.length ? 'tree-spin' : ''" :spinning="treeSpinning">
             <a-tree v-if="!treeSpinning && treeData.length" multiple :show-icon="true" :block-node="true"
-                    :selected-keys="selectedKeys" :default-expand-all="true" :auto-expand-parent="true"
-                    :tree-data="treeData"
+                    :selected-keys="selectedKeys" :default-expand-all="false" :auto-expand-parent="false"
+                    :tree-data="treeData"  v-model:expandedKeys="expandedKeys"
                     @select="onSelectTreeNode">
               <template #icon="{ dataRef }">
                 <TeamOutlined v-if="dataRef.iconName == 'team'"/>
@@ -69,7 +69,7 @@
           <div v-if="selectedNodes.length" class="selected-nodes-content">
             <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
                  @mouseleave="hoverNodeIndex = -1">
-              <span :title="item.title">{{ item.title }}</span>
+              <span :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
               <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 15px;"
                                    @click="onClickNode(item.key)"/>
             </div>
@@ -141,9 +141,11 @@ let selectedNodes = ref<any>([])
 // 悬浮节点
 let hoverNodeIndex = ref<number>(-1)
 // 搜索词
-let searchKeys = []
+let searchValue = ref('')
 // 回退节点
 let rejectModelNode = ref<any>(null)
+// 展开节点
+let expandedKeys = ref<any>([])
 
 enum api {
   getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
@@ -410,6 +412,8 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
 function resetData() {
   selectedKeys.value = []
   selectedNodes.value = []
+  searchValue.value = ''
+  expandedKeys.value = []
   treeData.value = []
 }
 
@@ -431,14 +435,17 @@ function transUserList(roleListI, value, roleFlag, roleNumber, nextUserName) {
           title: roleListI[value][j].userList[k].realname,
           key: value + ',' + roleListI[value][j].roleId + ',' + roleListI[value][j].userList[k].username,
           value: roleListI[value][j].userList[k].username,
+          roleName: roleListI[value][j].roleName,
           iconName: 'user'
         })
       }
+      console.log('2', roleListI[value][j])
       roleNode.push({
         title: roleListI[value][j].roleName,
         key: value + ',' + roleListI[value][j].roleId,
         value: roleListI[value][j].roleId,
         iconName: 'team',
+        roleName: roleListI[value][j].roleName,
         children: child
       })
       roleFlag = true
@@ -455,7 +462,8 @@ function transUserList(roleListI, value, roleFlag, roleNumber, nextUserName) {
             title: userListItem.realname,
             key: value + ',' + role.roleId + ',' + userListItem.username,
             value: userListItem.username,
-            iconName: 'user'
+            iconName: 'user',
+            roleName: role.roleName,
           })
         } else {
           userList.push({
@@ -474,7 +482,8 @@ function transUserList(roleListI, value, roleFlag, roleNumber, nextUserName) {
         key: value + ',' + role.roleId,
         value: role.roleId,
         children: userList,
-        iconName: 'team'
+        iconName: 'team',
+        roleName: role.roleName,
       })
       roleFlag = true
       roleNumber += 1
@@ -704,6 +713,9 @@ function onRejectModelChange(value) {
  */
 function onChangeDirection(e) {
   let obj: any = {}
+  expandedKeys.value = []
+  searchValue.value = ''
+  handleUserType.value = 1
   // 重新初始化用户树
   if (e.target.value == 3) {
     let nodeName
@@ -762,39 +774,6 @@ function onChangeUserType(e) {
 }
 
 /**
- * 搜索
- */
-function onSearch(value) {
-  if (value) {
-    searchKeys = []
-    likeSearch(treeData.value, value)
-    for (let i = 0; i < searchKeys.length; i++) {
-      selectedKeys.value.push(searchKeys[i])
-    }
-    setSelectNode()
-  }
-}
-
-/**
- * 模糊查询
- * @param arr
- * @param value
- */
-function likeSearch(arr, value) {
-  let n = value.toLowerCase()
-  arr.forEach(item => {
-    if (item.children) {
-      likeSearch(item.children, value)
-    } else {
-      if (item.title.toLowerCase().indexOf(n) !== -1) {
-        searchKeys.push(item.key)
-      }
-    }
-  })
-}
-
-
-/**
  * 选择树节点
  */
 function onSelectTreeNode(keys, info) {
@@ -845,13 +824,89 @@ function getBroNodes(arr, key, addNodes) {
 }
 
 /**
+ * 搜索
+ * @param value
+ */
+function onSearch(value) {
+  if (!value) return
+
+  if (treeData.value.length > 0) {
+    const matchedKeys = []
+    const newExpandedKeys = []
+
+    for (let i = 0; i < treeData.value.length; i++) {
+      if (likeSearch(treeData.value[i], value, matchedKeys, newExpandedKeys)) {
+        break  // 只匹配第一个顶层节点
+      }
+    }
+
+    // 追加选中节点，避免重复
+    matchedKeys.forEach(k => {
+      if (!selectedKeys.value.includes(k)) {
+        selectedKeys.value.push(k)
+      }
+    })
+
+    // 追加展开节点，整体替换触发视图更新
+    expandedKeys.value = Array.from(new Set([...expandedKeys.value, ...newExpandedKeys]))
+
+    setSelectNode()
+  }
+}
+
+/**
+ * 查找节点  纯粹查找，收集匹配的叶子节点key和需要展开的父节点key，放到传入的两个数组里
+ * @param node
+ * @param value
+ * @param matchedKeys
+ * @param expandedKeys
+ * @param path
+ */
+function likeSearch(node, value, resultKeys, expandedCollect, path = []) {
+  let found = false
+  const keyword = value.toLowerCase()
+
+  function dfs(n, curPath) {
+    if (!n) return
+
+    const currentPath = [...curPath, n.key]
+
+    const isLeaf = !n.children || n.children.length === 0
+
+    if (isLeaf && n.title?.toLowerCase().includes(keyword)) {
+      resultKeys.push(n.key)
+      
+      const parentKeys = currentPath.slice(0, -1)
+      parentKeys.forEach(k => {
+        if (!expandedCollect.includes(k)) {
+          expandedCollect.push(k)
+        }
+      })
+
+      found = true
+    }
+
+    // 继续遍历子节点
+    if (n.children && n.children.length > 0) {
+      for (const child of n.children) {
+        dfs(child, currentPath)
+      }
+    }
+  }
+
+  dfs(node, path)
+  return found
+}
+
+/**
  * 设置移交对象
  */
 function setSelectNode() {
-  let nodes: any = []
+  const nodes: any[] = []
+
   selectedKeys.value.forEach(key => {
-    let find = findNode(treeData.value, key, 'key')
-    if (find) {
+    const find = findNode(treeData.value, key, 'key')
+    if (find && !nodes.some(n => n.key === key)) {
       nodes.push(find)
     }
   })

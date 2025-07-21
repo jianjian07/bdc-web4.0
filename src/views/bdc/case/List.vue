@@ -73,7 +73,7 @@
                             </template>
                             <a @click="handleCase(record)">办理</a>
                             <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
-                            <a v-if="record.taskName == '收件'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
+                            <a v-if="record.taskName == '收件' || record.taskName == '受理'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
                         </a-space>
                     </template>
                 </template>

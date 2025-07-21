@@ -129,9 +129,10 @@
                
               </icon>
               <div v-if="dataRef.parentId == '0'">
-                <a-tooltip :title="dataRef.materialName">
+                <a-tooltip :title="dataRef.materialName + `（${ dataRef.children.length }个）`">
                   <div class="text-ellipsis">
                     {{ dataRef.materialName }}
+                     <span style="color: #5094f9;font-weight: 600;">（{{ dataRef.children.length }}个）</span>
                   </div>
                 </a-tooltip>
               </div>
