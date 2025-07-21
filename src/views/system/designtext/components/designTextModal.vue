@@ -13,6 +13,9 @@
       <a-form-item label="角色" name="roles">
         <a-select v-model:value="formState.rolesArr" :options="roleOptions" :field-names="{ label: 'name', value: 'id' }" mode="multiple" @change="handleChangeRoles"/>
       </a-form-item>
+      <a-form-item label="是否公开" name="isOpenCheck">
+        <a-checkbox v-model:checked="formState.isOpenCheck">公开</a-checkbox>
+      </a-form-item>
       <a-form-item label="状态" name="zt">
         <a-select v-model:value="formState.zt" :options="getDictItemsByCode('sfys')"/>
       </a-form-item>
@@ -71,7 +74,7 @@ watch(() => props.formData, (val) => {
     Object.keys(formState).forEach(ele => {
        formState[ele] = val.record[ele]
     })
-    
+    formState['isOpenCheck'] = formState['isOpen'] == 1
     formState['rolesArr'] = formState['roles'].includes(',') ? formState['roles'].split(',') : [formState['roles']]
   }
 }, {
@@ -91,6 +94,7 @@ function onSubmit() {
       .then(() => {
         
         formState.roles = formState.rolesArr.join(',')
+        formState.isOpen = formState.isOpenCheck ? 1 : 0
         formState.createTime = formState.createTime || dayjs().format("YYYY-MM-DD HH:mm:ss")
         formState.createBy = formState.createBy || useUserStore().getUserInfo.username
         formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
