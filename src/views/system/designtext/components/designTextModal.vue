@@ -45,7 +45,9 @@ let formState: any = reactive({
   designType: '',
   roles: '',
   rolesArr: [],
-  zt: ''
+  zt: '',
+  isOpenCheck: false,
+  isOpen: '0'
 })
 
 const labelCol = { style: { width: '130px' } };
