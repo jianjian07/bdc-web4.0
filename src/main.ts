@@ -48,8 +48,18 @@ async function bootstrap() {
     const app = createApp(App)
     // 定义弹窗中自己的动态组件加载
     const modules = import.meta.glob('/src/**/*.vue');
+    let fontSize = window?.settingConfig?.fontSize || 13
+    const configTheme:any = {
+      token: {
+        colorPrimary: '#5094F9',
+        colorPrimaryBg: '#e6f4ff',
+        fontSize: fontSize
+      },
+    }
     // 提供 `modules` 让 A 组件内部使用
     app.provide('projModules', modules);
+    app.provide('appTheme', configTheme);
+    
     // 配置存储 先挂载pinna实例
     setupStore(app)
     // 注册全局

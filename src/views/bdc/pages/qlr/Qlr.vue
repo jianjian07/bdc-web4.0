@@ -1,6 +1,6 @@
 <template>
   <div class="qlr">
-    <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc +'信息'" :showArrow="true" classname="title-css8"
+    <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc +'信息'" :showArrow="true" :classname="titleClassName"
                       collapseType="row" style='width:100%'>
       <div v-if="qlrxx?.btnId?.includes('1') && !disabled" class="qlr-add">
         <a-button @click="handleAdd">新增</a-button>
@@ -112,6 +112,7 @@ let pagination = ref({
   current: 1,
   pageSize: 10,
 })
+let titleClassName = 'title-css' + (window?.settingConfig?.qlrTitleClassNum || 8)
 
 enum api {
   list = '/api/zrzy-bdc/bdc/qlr/list',
@@ -392,6 +393,10 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
+.qlr {
+  margin-bottom: 10px;
+}
+
 .qlr-add {
   margin-bottom: 10px;
   display: flex;

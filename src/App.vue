@@ -1,11 +1,24 @@
+<template>
+  <a-config-provider :locale="zhCN" :theme="{
+    token: {
+      colorPrimary: '#5094F9',
+      colorPrimaryBg: '#e6f4ff',
+      fontSize: fontSize
+    },
+  }">
+    <lock-screen v-if="userStore.getIsLocked == 'true'"></lock-screen>
+    <RouterView v-else/>
+  </a-config-provider>
+</template>
 <script setup lang="ts">
 import { useUserStoreWithOut } from "/@/store/modules/user"
-import zhCN from 'ant-design-vue/es/locale/zh_CN';
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import LockScreen from "/@/views/sys/lock/LockScreen.vue"
 import { onMounted, onBeforeUnmount } from "vue"
 import { router } from "/@/router"
 import { checkAndApplyMemorialEffect } from "/@/settings/initSetting"
 const userStore = useUserStoreWithOut()
+let fontSize = window?.settingConfig?.fontSize || 13
 
 // 页面加载时的逻辑
 onMounted(() => {
@@ -32,20 +45,6 @@ onMounted(() => {
   }
 });
 
-</script>
-
-<template>
-  <a-config-provider :locale="zhCN" :theme="{
-    token: {
-      colorPrimary: '#5094F9',
-      fontSize: 13
-    },
-  }">
-    <lock-screen v-if="userStore.getIsLocked == 'true'"></lock-screen>
-    <RouterView v-else/>
-  </a-config-provider>
-</template>
-<script lang="ts">
 </script>
 <style scoped>
 .logo {

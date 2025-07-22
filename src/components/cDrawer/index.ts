@@ -37,9 +37,19 @@ export function cDrawer (options?: cDrawerModel) {
   
   // 定义弹窗中自己的动态组件加载 
   const modules = import.meta.glob('/src/**/*.vue');
+  let fontSize = window?.settingConfig?.fontSize || 13
+  const configTheme:any = {
+    token: {
+      colorPrimary: '#5094F9',
+      colorPrimaryBg: '#e6f4ff',
+      fontSize: fontSize
+    },
+  }
+  
   app = createApp(CommonDrawer, { ...options });
   app.provide('projModules', modules);
-  app.provide('scopedEventBus',scopeBus)
+  app.provide('appTheme', configTheme);
+  app.provide('scopedEventBus',scopeBus);
   registerGlobComp(app)
   app.use(router)
   app.use(formImagining)
