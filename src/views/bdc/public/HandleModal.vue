@@ -30,7 +30,7 @@
             </a-col>
           </a-row>
           <a-divider orientation="left">承办人员</a-divider>
-          <div v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
+          <div style="margin-bottom: 5px" v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
             <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange"
                       :dropdownMatchSelectWidth="false">
               <template v-for="(item, index) in formState.taskData.histListNode">
@@ -531,6 +531,17 @@ async function handleOk() {
   let nextnodeUserNameList: any = []
   let nextnodeUserIdList: any = []
   let nextnode = ''
+  
+  const roleNames = selectedNodes.value
+    .map(n => n.roleName)
+    .filter(Boolean)
+
+  const uniqueRoles = [...new Set(roleNames)]
+
+  if (uniqueRoles.length > 1) {
+    message.warning(`请选择同一角色的人员，当前包含多个角色：${uniqueRoles.join('、')}`)
+    return
+  }
   if (selectedNodes.value.length) {
     if (handleUserType.value == 1) {
       nextnodeUserNameList = []
@@ -777,21 +788,31 @@ function onChangeUserType(e) {
  * 选择树节点
  */
 function onSelectTreeNode(keys, info) {
-  let currentNode = info.node.dataRef
-  let currentNodeKey = currentNode.key
+  const currentNode = info.node.dataRef
+  const currentNodeKey = currentNode.key
+
+  // 判断是否是叶子节点
   if (!currentNode.children) {
-    if (selectedUsefulKeys.value.length > 0) {
-      let find = selectedUsefulKeys.value.find(item => item == currentNodeKey)
-      if (find) {
-        selectedKeys.value = keys
-      } else {
-        selectedKeys.value = [currentNodeKey]
-      }
+    // 获取当前节点的兄弟节点（包括自己）
+    const currentGroupKeys = getBroNodes(treeData.value, currentNodeKey, [])
+
+    // 判断当前选中的 keys 中是否有不在同一组（兄弟节点）的
+    const hasOtherGroup = selectedKeys.value.some(k => !currentGroupKeys.includes(k))
+
+    if (hasOtherGroup) {
+      // 清除其他组，只保留当前组中选中的
+      selectedKeys.value = keys.filter(k => currentGroupKeys.includes(k))
     } else {
-      selectedKeys.value = keys
+      const idx = selectedKeys.value.indexOf(currentNodeKey)
+      if (idx > -1) {
+        // 取消选中
+        selectedKeys.value.splice(idx, 1)
+      } else {
+        selectedKeys.value.push(currentNodeKey)
+      }
     }
-    // 不允许跨节点选择 其兄弟节点和自己可选择
-    selectedUsefulKeys.value = getBroNodes(treeData.value, currentNodeKey, [])
+    
+    selectedUsefulKeys.value = currentGroupKeys
     setSelectNode()
   }
 }
@@ -835,19 +856,17 @@ function onSearch(value) {
     const newExpandedKeys = []
 
     for (let i = 0; i < treeData.value.length; i++) {
-      if (likeSearch(treeData.value[i], value, matchedKeys, newExpandedKeys)) {
-        break  // 只匹配第一个顶层节点
-      }
+      likeSearch(treeData.value[i], value, matchedKeys, newExpandedKeys)
     }
 
-    // 追加选中节点，避免重复
+    // 选中匹配的叶子节点
     matchedKeys.forEach(k => {
       if (!selectedKeys.value.includes(k)) {
         selectedKeys.value.push(k)
       }
     })
 
-    // 追加展开节点，整体替换触发视图更新
+    // 展开所有相关父节点
     expandedKeys.value = Array.from(new Set([...expandedKeys.value, ...newExpandedKeys]))
 
     setSelectNode()

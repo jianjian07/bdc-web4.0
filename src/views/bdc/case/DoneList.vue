@@ -79,7 +79,7 @@
           <template v-if="column.key === 'currentNode'">
             {{ record.currentNode }}【
             <span style="color: orangered">
-              {{ record.currentAssignee }}
+              {{ record.currentUserName }}
             </span>
             】
           </template>
@@ -129,7 +129,7 @@ let currentLcid = ""
 const columns = [
   { title: "案卷编号", dataIndex: "slbh", align: "center" },
   { title: "案卷名称", dataIndex: "xmmc", align: "center", key: 'xmmc' },
-  { title: "案卷类型", dataIndex: "ajlx", align: "center" },
+  { title: "登记类别", dataIndex: "ajlx", align: "center" },
   { title: "办理时间", dataIndex: "endTime", align: "center" },
   { title: "办理节点", dataIndex: "nodeName", align: "center" },
   { title: "当前在办情况", dataIndex: "currentNode", align: "center", key: 'currentNode' },

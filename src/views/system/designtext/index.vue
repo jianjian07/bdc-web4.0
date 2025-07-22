@@ -112,6 +112,7 @@ const columns = [
     { title: "设计内容", dataIndex: "designContent" },
     { title: "角色", dataIndex: "roles", width: 250 },
     { title: "状态", dataIndex: "zt", width: 100 },
+    { title: "创建人", dataIndex: "realName", width: 100 },
     { title: '操作', key: 'action', width: 150 }
 ]
 

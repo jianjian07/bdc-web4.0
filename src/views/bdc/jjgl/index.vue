@@ -97,7 +97,7 @@ const columns = [
     align: "center",
   },
   {
-    title: '流程名称',
+    title: '登记类别',
     align: 'center',
     width: 200,
     dataIndex: 'prcocessDefinitionName'

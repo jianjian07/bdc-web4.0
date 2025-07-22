@@ -185,6 +185,29 @@ const updateTotalDataSource = debounce(() => {
 
     while (currentJscs > 0 && count < MAX_CHUNK) {
       const sybl = 5 + (num - 1) * 10
+      
+      if (currentJscs <= jsfj) {
+        const finalSybl = 5 + (num - 1) * 10
+        const finalSyje = currentJscs * jsmj * (finalSybl / 100)
+        const finalJscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
+
+        result.push({
+          jscs: currentJscs,
+          jscsStr: finalJscsStr,
+          jsfj: currentJscs,
+          jsfjStr: `￥${formatNumberStr(currentJscs)}`,
+          jsmj,
+          jsmjStr: formatNumberStr(jsmj),
+          sybl: finalSybl,
+          syblStr: `${formatNumberStr(finalSybl)}%`,
+          syje: finalSyje,
+          syjeStr: `￥${formatNumberStr(finalSyje)}`,
+          sxh: num
+        })
+        currentJscs = 0 // 终止循环
+        break;
+      }
+      
       const currentFj = currentJscs >= jsfj ? jsfj : currentJscs
       const syje = currentFj * jsmj * (sybl / 100)
 
@@ -210,27 +233,6 @@ const updateTotalDataSource = debounce(() => {
       currentJscs = currentJscs - jsfj
       num++
       count++
-
-      if (currentJscs <= 0 || currentJscs < jsfj) {
-        const finalSybl = 5 + (num - 1) * 10
-        const finalSyje = currentJscs * jsmj * (finalSybl / 100)
-        const finalJscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
-
-        result.push({
-          jscs: currentJscs,
-          jscsStr: finalJscsStr,
-          jsfj: currentJscs,
-          jsfjStr: `￥${formatNumberStr(currentJscs)}`,
-          jsmj,
-          jsmjStr: formatNumberStr(jsmj),
-          sybl: finalSybl,
-          syblStr: `${formatNumberStr(finalSybl)}%`,
-          syje: finalSyje,
-          syjeStr: `￥${formatNumberStr(finalSyje)}`,
-          sxh: num
-        })
-        currentJscs = 0 // 终止循环
-      }
     }
 
     if (currentJscs > 0) {
