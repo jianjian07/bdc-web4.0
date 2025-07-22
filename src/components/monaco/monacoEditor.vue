@@ -109,7 +109,10 @@ watch(
     }
 )
 onMounted(() => {
-    init()
+  init()
+  nextTick(() => {
+    editor?.layout()
+  })
 })
 
 const format = (): void => {
@@ -127,6 +130,10 @@ const format = (): void => {
   position: relative;
   width: v-bind(width);
   height: v-bind(height);
+  
+  :deep(.monaco-editor) {
+    user-select: text !important;
+  }
 }
 
 .codeEditBox {
