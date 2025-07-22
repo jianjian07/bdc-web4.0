@@ -239,7 +239,7 @@ async function itemRecall(record: any) {
     url: api.caseDoneRecall,
     data: record
   }, { withToken: true }).then(res => {
-    if (res && res.success) {
+    if (res && res.success && res.result == '撤回成功') {
       message.success(res.result)
       // 刷新数据
       pagination.value.current = 1
