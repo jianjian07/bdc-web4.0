@@ -58,10 +58,10 @@
         </a-card>
       </div>
       <div class="itemList">
-        <a-card class="userBox" title="更新说明" :bordered="false">
-          <template #extra><a @click="onClickEntry('/tzgg/index', { category: '4' })">更多...</a></template>
-          <div class="tzList">
-            <tzggList type="list" category="4"></tzggList>
+        <a-card class="userBox" title="预查封信息" :bordered="false">
+          <template #extra><a @click="onClickEntry('/online/report/view/1947906380530249730')">更多...</a></template>
+          <div class="ycfList">
+            <ycf-list></ycf-list>
           </div>
         </a-card>
       </div>
@@ -77,6 +77,7 @@ import tzggList from '/@/views/system/tzgg/index.vue';
 import dydqList from './components/dydqList.vue'
 import cfdqList from './components/cfdqList.vue'
 import { addFlow } from "/@/views/bdc/utils/case";
+import YcfList from "/@/views/dashboard/Analysis/components/YcfList.vue"
 
 let baseInfo: any = reactive([
   {
@@ -448,29 +449,29 @@ function handleAdd(entry: any) {
       padding-right: 8px;
       padding-top: 10px;
       padding-bottom: 5px;
-      width: 60%;
+      width: 55%;
     }
 
     .itemList:nth-of-type(2) {
       padding-left: 8px;
       padding-top: 10px;
       padding-bottom: 5px;
-      width: 40%;
+      width: 45%;
     }
 
     .itemList:nth-of-type(3) {
       padding-right: 8px;
       padding-top: 10px;
-      width: 60%;
+      width: 55%;
     }
 
     .itemList:nth-of-type(4) {
       padding-left: 8px;
       padding-top: 10px;
-      width: 40%;
+      width: 45%;
     }
 
-    .dqList {
+    .dqList, .ycfList {
       height: 100%;
       overflow: hidden;
       display: flex;
