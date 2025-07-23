@@ -10,6 +10,13 @@
           </a-col>
         </a-row>
         <a-row :gutter="24">
+          <a-col :span="24">
+            <a-form-item label="异常id" name="traceId">
+              <a-input v-model:value="props.data.traceId" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item label="请求方式" name="requestMethod">
               <a-tag color="purple" style="font-size: 13px">{{ props.data.requestMethod }}</a-tag>
@@ -29,7 +36,7 @@
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item label="请求参数" name="requestParams">
-              <a-input v-model:value="props.data.requestParams" />
+              <a-textarea v-model:value="props.data.requestParams" :autoSize="{ minRows: 1, maxRows: 6 }"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -50,17 +57,17 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
-          <a-col :span="24">
-            <a-form-item label="异常信息" name="exceptionMessage">
-              <a-textarea v-model:value="props.data.exceptionMessage" :rows="6" />
-            </a-form-item>
-          </a-col>
-        </a-row>
+<!--        <a-row :gutter="24">-->
+<!--          <a-col :span="24">-->
+<!--            <a-form-item label="异常信息" name="exceptionMessage">-->
+<!--              <a-textarea v-model:value="props.data.exceptionMessage" :rows="6" />-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--        </a-row>-->
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item label="堆栈信息" name="stackTrace">
-              <a-textarea v-model:value="props.data.stackTrace" :rows="20" />
+              <a-textarea v-model:value="props.data.stackTrace" :rows="24" />
             </a-form-item>
           </a-col>
         </a-row>

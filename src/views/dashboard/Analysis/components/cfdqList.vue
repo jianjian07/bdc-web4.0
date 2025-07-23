@@ -53,7 +53,7 @@ const columns = [
   },
   {
     dataIndex: 'qlrmc',
-    title: '权利人/被查封人',
+    title: '被查封人',
     align: 'center',
     width: '40%',
     ellipsis: true

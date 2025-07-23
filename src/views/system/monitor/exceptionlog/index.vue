@@ -74,14 +74,14 @@ let pagination = ref({
 })
 const columns = [
   { title: '编号', dataIndex: "exceptionId", width: 40 },
-  { title: '异常id', dataIndex: "traceId", width: 80 },
+  { title: '异常id', dataIndex: "traceId", ellipsis: true, width: 100 },
   { title: "ip地址", dataIndex: "ipAddress", ellipsis: true, width: 80 },
   { title: '异常类型', dataIndex: "exceptionType", ellipsis: true, width: 100 },
-  { title: '接口地址', dataIndex: "requestUri", ellipsis: true, width: 280 },
-  { title: '请求参数', dataIndex: "requestParams", ellipsis: true, width: 200 },
+  { title: '接口地址', dataIndex: "requestUri", ellipsis: true, width: 240 },
+  { title: '请求参数', dataIndex: "requestParams", ellipsis: true, width: 120 },
   { title: "请求时间", dataIndex: "createTime", ellipsis: true, width: 100 },
   { title: '请求人', dataIndex: "createBy", ellipsis: true, width: 50 },
-  { title: '操作', dataIndex: 'action', key: 'action', width: 60 }
+  { title: '操作', dataIndex: 'action', key: 'action', width: 50 }
 ]
 /** 弹出框打开状态 */
 let open = ref(false)
