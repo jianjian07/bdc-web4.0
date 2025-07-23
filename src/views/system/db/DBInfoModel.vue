@@ -9,8 +9,7 @@
             sqlInfo.createTime }}
         </p>
         <a-form-item label="执行脚本">
-            <monaco-editor v-model="sqlInfo.sqlContent" language="sql" theme="vs"
-                style="width: 100%;border: 1px solid #e5e7eb;" height="500px">
+            <monaco-editor v-model="sqlInfo.sqlContent" language="sql" theme="vs" style="width: 100%;" height="500px">
             </monaco-editor>
         </a-form-item>
         <p style="color: #6c727f !important;">回滚人：{{ sqlInfo.updateBy }}
@@ -18,8 +17,8 @@
             sqlInfo.updateTime }}
         </p>
         <a-form-item label="回滚脚本">
-            <monaco-editor v-model="sqlInfo.rollbackSqlContent" language="sql" theme="vs"
-                style="width: 100%;border: 1px solid #e5e7eb;" height="500px">
+            <monaco-editor v-model="sqlInfo.rollbackSqlContent" language="sql" theme="vs" style="width: 100%;"
+                height="500px">
             </monaco-editor>
         </a-form-item>
 

@@ -416,6 +416,7 @@ async function sendApi() {
     headers: headers,
     params: params,
     body: body,
+    dparams: select.dparams
   }
   if (select.jsonContent) {
     delete select.jsonContent

@@ -301,7 +301,7 @@ export function sendExCommonApi(sendParams) {
       resolve('body 参数格式错误：' + parseErr);
       return
     }
-    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.body) }, { withToken: true, isTransformResponse: false }).then((res) => {
+    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.dparams) }, { withToken: true, isTransformResponse: false }).then((res) => {
       if (res.status == 200) {
         resolve(JSON.stringify(res.data))
         message.success('请求成功')
@@ -391,11 +391,11 @@ export function validateNoIllegalChars(str) {
   if (illegalChars.length > 0) {
     const visibleChars = illegalChars.map((ch) =>
       ch === '\t' ? '\\t' :
-      ch === '\n' ? '\\n' :
-      ch === '\r' ? '\\r' :
-      ch === ' '  ? '[空格]' :
-      ch === '　' ? '[全角空格]' :
-      ch
+        ch === '\n' ? '\\n' :
+          ch === '\r' ? '\\r' :
+            ch === ' ' ? '[空格]' :
+              ch === '　' ? '[全角空格]' :
+                ch
     );
     return `不能包含非法字符：${visibleChars.join(' ')}`;
   }
