@@ -11,8 +11,7 @@
         </a-form-item>
         <a-form-item label="sql内容">
             <!-- <a-textarea v-model:value="sqlInfo.sqlContent" placeholder="sql语句" :rows="8" /> -->
-            <monaco-editor v-model="sqlInfo.sqlContent" language="sql" theme="vs"
-                style="width: 100%;border: 1px solid #e5e7eb;" height="500px">
+            <monaco-editor v-model="sqlInfo.sqlContent" language="sql" theme="vs" style="width: 100%;" height="500px">
             </monaco-editor>
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
