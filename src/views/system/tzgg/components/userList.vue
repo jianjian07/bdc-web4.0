@@ -84,6 +84,7 @@ function loadData() {
     if (res.code == 200) {
       datalist.value = res.result.records
       pagination.value.current = res.result.current
+      pagination.value.total = res.result.total
     } else {
       datalist.value = []
     }
