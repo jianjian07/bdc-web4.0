@@ -140,7 +140,7 @@ enum api {
   tasklist = '/api/zrzy-system/sys/sysTzgg/list',
   delUrl = "/api/zrzy-system/sys/sysTzgg/delete",
   deleteBatch = "/api/zrzy-system/sys/sysTzgg/deleteBatch",
-  pubUrl = '/api/zrzy-system/sys/sysTzgg/edit'
+  pubUrl = '/api/zrzy-system/sys/sysTzgg/updateStatusById'
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -398,15 +398,8 @@ function batchDelete() {
 * @param id 
 */
 function handlePublish(record: any, type: any) {
-  let params = { ...record }
-  params.sendStatus = type
-  if (type == '1') {
-    params.sendTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
-  } else {
-    params.cancelTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
-  }
   defHttp.put(
-      { url: api.pubUrl, params: params }, { withToken: true }
+      { url: api.pubUrl, params: { id: record.id, sendStatus: type }}, { withToken: true }
   ).then((res: any) => {
       if (res?.success) {
           message.success(type == '1' ? '发布成功！' : '撤销成功！')
