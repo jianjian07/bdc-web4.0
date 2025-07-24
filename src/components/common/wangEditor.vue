@@ -76,7 +76,7 @@ const handleCreated = (editor) => {
 }
 
 const handleChange = (editor) => {
-  emit('editorValue', editor.getText())
+  emit('editorValue', editor.getHtml())
 }
 
 
