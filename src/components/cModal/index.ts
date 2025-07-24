@@ -4,6 +4,7 @@ import { registerGlobComp } from "/@/components/registerGlobComp"
 import formImagining from 'form-imagining'
 import { cModalModel } from "/@/components/cModal/model"
 import { router } from "/@/router";
+import { getGlobalFontSize } from "/@/main.ts"
 
 let scopeBus = null
 
@@ -37,7 +38,7 @@ export function cModal (options?: cModalModel) {
   
   // 定义弹窗中自己的动态组件加载 
   const modules = import.meta.glob('/src/**/*.vue');
-  let fontSize = window?.settingConfig?.fontSize || 13
+  const fontSize = getGlobalFontSize()
   const configTheme:any = {
     token: {
       colorPrimary: '#5094F9',

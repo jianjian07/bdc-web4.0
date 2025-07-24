@@ -42,13 +42,24 @@ function fetchNacosConfig() {
     })
 }
 
+/**
+ * 获取全局字体大小
+ */
+export function getGlobalFontSize() {
+    const raw = window?.settingConfig?.fontSize;
+    const size = raw !== null && raw !== '' && !isNaN(Number(raw))
+      ? Number(raw)
+      : 13;
+    return size;
+}
+
 async function bootstrap() {
     // 加载nacos配置
     await fetchNacosConfig()
     const app = createApp(App)
     // 定义弹窗中自己的动态组件加载
     const modules = import.meta.glob('/src/**/*.vue');
-    let fontSize = window?.settingConfig?.fontSize || 13
+    const fontSize = getGlobalFontSize()
     const configTheme:any = {
       token: {
         colorPrimary: '#5094F9',

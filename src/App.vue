@@ -17,8 +17,9 @@ import LockScreen from "/@/views/sys/lock/LockScreen.vue"
 import { onMounted, onBeforeUnmount } from "vue"
 import { router } from "/@/router"
 import { checkAndApplyMemorialEffect } from "/@/settings/initSetting"
+import { getGlobalFontSize } from "/@/main.ts"
 const userStore = useUserStoreWithOut()
-let fontSize = window?.settingConfig?.fontSize || 13
+const fontSize = getGlobalFontSize()
 
 // 页面加载时的逻辑
 onMounted(() => {
