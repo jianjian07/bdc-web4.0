@@ -41,7 +41,7 @@
           type="info" />
         <div class="sys-role-table-body">
           <a-table :columns="columns" :data-source="roleList" :pagination="pagination" :row-selection="rowSelection"
-            :scroll="{ y: 300 }" rowKey="id" @change="onChange($event, loadRole)">
+            :scroll="{ y: 300 }" rowKey="id" @change="onChange($event, loadRole)" :customRow="customRow" :selectedKeys="selectedKeys">
             <template #bodyCell="{ column, text, record, index }">
               <template v-if="column.dataIndex === 'index'">
                 {{ index + 1 }}
@@ -116,7 +116,9 @@ let roleDeptModal = ref()
 let activeCollapseKey = ref<any>()
 // 流程弹窗
 let roleProcessModal = ref()
-
+// 当前选择
+let selectedKeys = ref<any>([])
+// 选中的流程
 const checkedKeys = ref<any>([]);
 const columns = [
   {
@@ -155,15 +157,30 @@ const columns = [
   },
 
 ]
+
 // 列表项是否可选择
-const rowSelection = ref({
-  checkStrictly: false,
-  type: 'radio',
-  onChange: (selectedRowKeys, selectedRows) => {
-    currentRole.value = selectedRows
-    getRoleSysMenuKeys(selectedRowKeys[0])
+const rowSelection = computed(() => {
+  return {
+    checkStrictly: false,
+    selectedRowKeys: selectedKeys.value,
+    type: 'radio',
+    onChange: (selectedRowKeys, selectedRows) => {
+      currentRole.value = selectedRows
+      selectedKeys.value = selectedRowKeys
+      getRoleSysMenuKeys(selectedRowKeys[0])
+    }
   }
 })
+
+const customRow = (record: any) => {
+  return {
+    onClick: (event) => {
+      selectedKeys.value = [record['id']]
+      currentRole.value = [record]
+      getRoleSysMenuKeys(record['id'])
+    }
+  }
+}
 
 onMounted(() => {
   loadRole()
