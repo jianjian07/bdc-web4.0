@@ -282,7 +282,8 @@ function handleChooseUser() {
     width: 1200,
     filePath: 'views/bdc/task/components/UserChosen',
     formData: {
-      currentKeys: formState.value.agentid ? [formState.value.agentid] : []
+      currentKeys: formState.value.agentid ? [formState.value.agentid] : [],
+      filterKeyName: 'username'
     },
     onOk: async (res: any) => {
       if (res && res.selectedRow) {
