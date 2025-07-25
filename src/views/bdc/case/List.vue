@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 import { defHttp } from "/@/utils/http/axios"
-import { ref, createVNode } from 'vue';
+import { ref, createVNode, onMounted } from 'vue'
 import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, ExclamationCircleOutlined, SolutionOutlined } from '@ant-design/icons-vue';
 import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
@@ -120,7 +120,11 @@ let pagination = ref({
     },
     showSizeChanger: false
 })
-loadData()
+
+onMounted(() => {
+  loadData()
+})
+
 function loadData() {
     spinning.value = true
     defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh } }, { withToken: true }).then(res => {

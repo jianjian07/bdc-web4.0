@@ -1,5 +1,5 @@
 <template>
-    <div class="table-header-css" style="text-align: left;padding:5px ;overflow: hidden;">
+    <div class="table-header-css" style="text-align: left;padding:5px 0;overflow: hidden;">
         <div style="float: left;">
             <a-space>
                 <slot name="toolbar">
@@ -262,27 +262,17 @@ const rowSelection = computed(() => {
         },
         onSelectAll(selected: any, _selectionRows: any, changeRows: any) {
             if (selected) {
-                selectedRow.value = selectedRow.value.concat(changeRows)
+              // 合并并去重
+              const existingIds = new Set(selectedRow.value.map((item: any) => item[props.keyName]))
+              const newRows = changeRows.filter((item: any) => !existingIds.has(item[props.keyName]))
+              selectedRow.value = selectedRow.value.concat(newRows)
+            } else {
+              // 过滤掉被取消选中的行
+              const removeIds = new Set(changeRows.map((item: any) => item[props.keyName]))
+              selectedRow.value = selectedRow.value.filter((item: any) => !removeIds.has(item[props.keyName]))
             }
-            if (!selected) {
-                let selectionRows = JSON.parse(JSON.stringify(selectedRow.value))
-                const delIndex: any = []
-                selectionRows.forEach((item: any, index: any) => {
-                    changeRows.forEach((val: any) => {
-                        if (item[props.keyName] === val[props.keyName]) {
-                            delIndex.push(index)
-                        }
-                    })
-                })
-                delIndex.forEach((item: any) => {
-                    delete selectionRows[item]
-                })
-                selectionRows = selectionRows.filter((item: any) => {
-                    return item !== undefined
-                })
-                selectedRow.value = selectionRows
-            }
-            selectedValue.value = selectedRow.value.map((m: any) => m[props.keyName])
+          
+            selectedValue.value = selectedRow.value.map((item: any) => item[props.keyName])
             emit('row-change', selectedRow.value)
         },
     }
