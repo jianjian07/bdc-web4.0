@@ -131,6 +131,7 @@ function loadData() {
     params: {
       pageNo: 1,
       pageSize: 100,
+      issy: 1,
       msgCategory: props.category,
       sendStatus: 1
     },

@@ -317,7 +317,8 @@ function initData() {
       page.value.total = res.result.total
       if (props.formData.currentKeys && props.formData.currentKeys.length) {
         selectedRow.value = props.formData.currentKeys.map((key) => {
-          let find = userList.value.find(f => f.username == key)
+          let filterKeyName = props.formData.filterKeyName ? props.formData.filterKeyName : 'username'
+          let find = userList.value.find(f => f[filterKeyName] == key)
           return find
         })
         selectedRowKeys.value = selectedRow.value.map(s => s?.id)
