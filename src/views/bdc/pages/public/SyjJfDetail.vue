@@ -3,23 +3,23 @@
     <a-table style="margin-bottom: 10px" :columns="baseColumns" :data-source="dataSource" :pagination="false" bordered>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex == 'jsfj'">
-           <a-input-number
-            v-model:value="record[column.dataIndex]"
-            :precision="2"
-            prefix="￥"
-            :min="0"
-            style="width: 100%"
-            @blur="onBlurJsfj"
+          <a-input-number
+              v-model:value="record[column.dataIndex]"
+              :precision="2"
+              prefix="￥"
+              :min="0"
+              style="width: 100%"
+              @blur="onBlurJsfj"
           />
         </template>
         <template v-else-if="column.dataIndex == 'bnmj'">
           <a-input-number
-            v-model:value="record[column.dataIndex]"
-            :precision="2"
-            :min="0"
-            :max="record.jzmj"
-            style="width: 100%"
-            @blur="onBlurBnmj"
+              v-model:value="record[column.dataIndex]"
+              :precision="2"
+              :min="0"
+              :max="record.jzmj"
+              style="width: 100%"
+              @blur="onBlurBnmj"
           />
         </template>
         <template v-else>
@@ -27,7 +27,8 @@
         </template>
       </template>
     </a-table>
-    <a-table :loading="loading" :columns="totalColumns" :data-source="totalDataSource" :pagination="false" bordered></a-table>
+    <a-table :loading="loading" :columns="totalColumns" :data-source="totalDataSource" :pagination="false"
+             bordered></a-table>
   </div>
 </template>
 
@@ -40,11 +41,11 @@ import { debounce } from 'lodash-es'
 
 const props = defineProps({
   nsj: {
-    type: [String,Number],
+    type: [String, Number],
     default: ''
   },
   jzmj: {
-    type: [String,Number],
+    type: [String, Number],
     default: ''
   },
   ykjfy: {
@@ -168,7 +169,7 @@ const updateTotalDataSource = debounce(() => {
     })
     return
   }
- 
+
   const jscs = Number(source.nsj) - Number(source.jsfj) - Number(source.ykjfy)
   const jsfj = Number(source.jsfj)
   const jsmj = Number(source.bnmj)
@@ -185,39 +186,17 @@ const updateTotalDataSource = debounce(() => {
 
     while (currentJscs > 0 && count < MAX_CHUNK) {
       const sybl = 5 + (num - 1) * 10
-      
-      if (currentJscs <= jsfj) {
-        const finalSybl = 5 + (num - 1) * 10
-        const finalSyje = currentJscs * jsmj * (finalSybl / 100)
-        const finalJscsStr = `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
 
-        result.push({
-          jscs: currentJscs,
-          jscsStr: finalJscsStr,
-          jsfj: currentJscs,
-          jsfjStr: `￥${formatNumberStr(currentJscs)}`,
-          jsmj,
-          jsmjStr: formatNumberStr(jsmj),
-          sybl: finalSybl,
-          syblStr: `${formatNumberStr(finalSybl)}%`,
-          syje: finalSyje,
-          syjeStr: `￥${formatNumberStr(finalSyje)}`,
-          sxh: num
-        })
-        currentJscs = 0 // 终止循环
-        break;
-      }
-      
       const currentFj = currentJscs >= jsfj ? jsfj : currentJscs
       const syje = currentFj * jsmj * (sybl / 100)
 
-      const jscsStr = num === 1
-        ? `${formatNumberStr(source.nsj)} - ${formatNumberStr(source.jsfj)} - ${formatNumberStr(source.ykjfy)} = ${formatNumberStr(jscs)}`
-        : `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
+      const finalJscsStr = num === 1
+          ? `${formatNumberStr(source.nsj)} - ${formatNumberStr(source.jsfj)} - ${formatNumberStr(source.ykjfy)} = ${formatNumberStr(jscs)}`
+          : `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
 
       result.push({
         jscs: currentJscs,
-        jscsStr,
+        jscsStr: finalJscsStr,
         jsfj: currentFj,
         jsfjStr: `￥${formatNumberStr(currentFj)}`,
         jsmj,
@@ -233,10 +212,14 @@ const updateTotalDataSource = debounce(() => {
       currentJscs = currentJscs - jsfj
       num++
       count++
+
+      if (currentJscs <= 0) {
+        currentJscs = 0
+        break
+      }
     }
 
     if (currentJscs > 0) {
-      // 下一批延迟执行 防止阻塞
       setTimeout(processChunk, 0)
     } else {
       totalDataSource.value = result
@@ -250,7 +233,7 @@ const updateTotalDataSource = debounce(() => {
   processChunk()
 }, 300)
 
-const emit = defineEmits(['update:jsfjg','update:bnmj'])
+const emit = defineEmits(['update:jsfjg', 'update:bnmj'])
 
 // 初始化加载
 let mountedFlag = ref<boolean>(false)
@@ -301,12 +284,12 @@ function initData() {
     nsj: props.nsj || 0.00,
     jsfj: props.jsfjg || 2940.00,
     jzmj: props.jzmj || 0.00,
-    bnmj: props.bnmj || props.jzmj || 0.00 ,
+    bnmj: props.bnmj || props.jzmj || 0.00,
     ykjfy: props.ykjfy || 0.00
   }
-  
-  const route = router.currentRoute.value;
-  
+
+  const route = router.currentRoute.value
+
   defHttp.get({ url: api.list, params: { htlsh: route.query.htlsh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       backTotalDataSource.value = res.result.map((item) => {
@@ -336,7 +319,7 @@ function initData() {
  * @param num
  */
 function formatNumberStr(num) {
-  if (!num && num !==0) {
+  if (!num && num !== 0) {
     num = 0
   }
   return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -349,9 +332,9 @@ function saveData() {
   return new Promise((resolve, reject) => {
     if (totalDataSource.value == backTotalDataSource.value) {
       resolve(true)
-      return 
+      return
     }
-    
+
     const htlsh = router.currentRoute.value.query.htlsh
     let data = totalDataSource.value.map((item) => {
       return {
@@ -384,7 +367,7 @@ function onBlurJsfj(e) {
     dataSource.value[0].jsfj = 2940.00
   }
   updateTotalDataSource()
-  emit('update:jsfjg',dataSource.value[0].jsfj)
+  emit('update:jsfjg', dataSource.value[0].jsfj)
 }
 
 function onBlurBnmj(e) {
@@ -393,7 +376,7 @@ function onBlurBnmj(e) {
     dataSource.value[0].bnmj = 0.00
   }
   updateTotalDataSource()
-  emit('update:bnmj',dataSource.value[0].bnmj)
+  emit('update:bnmj', dataSource.value[0].bnmj)
 }
 
 /**
