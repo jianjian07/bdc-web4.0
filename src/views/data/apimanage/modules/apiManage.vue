@@ -733,12 +733,12 @@ defineExpose({
 <style lang="less" scoped>
 @media (max-width: 1520px) {
   .api-editor-manage {
-    width: calc(100% - 300px) !important;
+    width: calc(100% - 400px) !important;
   }
 }
 
 .api-editor-manage {
-  width: calc(100% - 350px);
+  width: calc(100% - 400px);
   height: 100%;
   padding: 10px;
 
