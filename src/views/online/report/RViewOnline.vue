@@ -15,7 +15,8 @@
 import { useRoute } from "vue-router"
 import { router } from "/@/router"
 import * as bdc from '/@/views/bdc/public/bdc'
-import { onMounted, provide, ref, useAttrs } from "vue"
+import { onBeforeUnmount, onMounted, provide, ref, useAttrs } from "vue"
+import { resetValidateInfos } from "form-imagining"
 import { createScopedBus } from "/@/views/online/utils/scopeEventBus.ts"
 import { updateCModalScopeBus } from "/@/components/cModal/index.ts"
 import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
@@ -52,7 +53,11 @@ if (code == "-1") {
 }
 
 onMounted(() => {
-  
+  resetValidateInfos()
+})
+
+onBeforeUnmount(() => {
+  resetValidateInfos()
 })
 
 </script>
