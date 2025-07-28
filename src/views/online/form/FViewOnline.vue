@@ -19,7 +19,8 @@ const route = useRoute();
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 const attrs = useAttrs()
-import { ref, useAttrs } from "vue"
+import { onBeforeUnmount, onMounted, ref, useAttrs } from "vue"
+import { resetValidateInfos } from "form-imagining"
 import { useUserStore } from "/@/store/modules/user"
 const { disabled } = useAttrs()
 const props = defineProps({
@@ -56,6 +57,14 @@ if (formId == "-1") {
     }
     isRouterPage.value = true
 }
+
+onMounted(() => {
+  resetValidateInfos()
+})
+
+onBeforeUnmount(() => {
+  resetValidateInfos()
+})
 
 defineExpose({
   fView
