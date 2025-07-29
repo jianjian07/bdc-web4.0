@@ -107,7 +107,7 @@ const columns = [
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },
     { title: "时长", dataIndex: "durationStr", align: "center" },
-    { title: "提交人", dataIndex: "processApplyUserName", align: "center" },
+    { title: "办理人", dataIndex: "processApplyUserName", align: "center" },
     { title: "提交时间", dataIndex: "taskBeginTime", align: "center" },
     { title: '操作', key: 'action', width: 200, align: "center" }
 ]

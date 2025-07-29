@@ -181,11 +181,12 @@ function checkShowForCf(regType, fwInfo) {
     case '0401':
       return checkShowForCfdj(regType, fwInfo);
     case '0400':
-      // 预测楼盘表
-      if (fwInfo && fwInfo.chzt != '2') {
-        return false
-      }
-      return checkShowForYcfdj(regType, fwInfo);
+      // 现场要求，条件放开，走业务约束
+      // if (fwInfo && fwInfo.chzt != '2') {
+      //   return false
+      // }
+      // return checkShowForYcfdj(regType, fwInfo);
+      return true
       // case '0403':
       //   return checkShowForLhcfdj(regType, fwInfo);
     default:
