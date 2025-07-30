@@ -36,34 +36,36 @@
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'ajmc'">
                         <a @click="itemView(record)">{{ record.ajmc }}</a>
-                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName+"督办：" +record.taskSuperviseRemark }}】</span>
-                        <span v-if="record.taskUrgent" style="color: red;">【{{  record.taskUrgentUserRealName+"加急：" +record.taskUrgentRemark }}】</span>
+                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName + "督办："
+            + record.taskSuperviseRemark }}】</span>
+                        <span v-if="record.taskUrgent" style="color: red;">【{{ record.taskUrgentUserRealName + "加急："
+            + record.taskUrgentRemark }}】</span>
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>
-                          <a-space>
-                            <a-tag color="orange" v-if="record.taskTimeStatus == 1">
-                                <template #icon>
-                                    <RollbackOutlined />
-                                </template>
-                                预警
-                            </a-tag>
-                            <a-tag color="red" v-if="record.taskTimeStatus == 2">
-                                <template #icon>
-                                    <AlertOutlined />
-                                </template>
-                                超时
-                            </a-tag>
-                            <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
-                            <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
-                              <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
-                                <template #icon>
-                                  <SolutionOutlined />
-                                </template>
-                                {{ record.taskOwnerName }}
-                              </a-tag>
-                            </a-tooltip>
-                          </a-space>
+                            <a-space>
+                                <a-tag color="orange" v-if="record.taskTimeStatus == 1">
+                                    <template #icon>
+                                        <RollbackOutlined />
+                                    </template>
+                                    预警
+                                </a-tag>
+                                <a-tag color="red" v-if="record.taskTimeStatus == 2">
+                                    <template #icon>
+                                        <AlertOutlined />
+                                    </template>
+                                    超时
+                                </a-tag>
+                                <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
+                                <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
+                                    <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
+                                        <template #icon>
+                                            <SolutionOutlined />
+                                        </template>
+                                        {{ record.taskOwnerName }}
+                                    </a-tag>
+                                </a-tooltip>
+                            </a-space>
                         </span>
                     </template>
                     <template v-if="column.key === 'action'">
@@ -73,7 +75,8 @@
                             </template>
                             <a @click="handleCase(record)">办理</a>
                             <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
-                            <a v-if="record.taskName == '收件' || record.taskName == '受理'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
+                            <a v-if="record.taskName == '收件' || record.taskName == '受理'"
+                                @click="handleDelete(record.slbh, record.ajmc)">删除</a>
                         </a-space>
                     </template>
                 </template>
@@ -107,7 +110,7 @@ const columns = [
     { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
     { title: "当前节点", dataIndex: "taskName", align: "center" },
     { title: "时长", dataIndex: "durationStr", align: "center" },
-    { title: "办理人", dataIndex: "processApplyUserName", align: "center" },
+    { title: "提交人", dataIndex: "processApplyUserName", align: "center" },
     { title: "提交时间", dataIndex: "taskBeginTime", align: "center" },
     { title: '操作', key: 'action', width: 200, align: "center" }
 ]
@@ -122,7 +125,7 @@ let pagination = ref({
 })
 
 onMounted(() => {
-  loadData()
+    loadData()
 })
 
 function loadData() {
@@ -174,7 +177,7 @@ function handleCase(record: any) {
  * @param record
  */
 function itemView(record: any) {
-  router.push('/task/hisTaskDeal?slbh=' + record.slbh)
+    router.push('/task/hisTaskDeal?slbh=' + record.slbh)
 }
 
 /**
@@ -182,30 +185,30 @@ function itemView(record: any) {
  * @param record
  */
 function handleEntruster(record: any) {
-  let modal = cModal({
-    title: '选择用户',
-    width: 1200,
-    filePath: 'views/bdc/task/components/UserChosen',
-    onOk: async (res: any) => {
-      if (res && res.selectedRow) {
-        let params = {
-          taskId: record.taskId,
-          taskAssigneeUserId: res.selectedRow[0].username
+    let modal = cModal({
+        title: '选择用户',
+        width: 1200,
+        filePath: 'views/bdc/task/components/UserChosen',
+        onOk: async (res: any) => {
+            if (res && res.selectedRow) {
+                let params = {
+                    taskId: record.taskId,
+                    taskAssigneeUserId: res.selectedRow[0].username
+                }
+                defHttp.put({ url: api.taskEntrust, params: params }, { withToken: true }).then((res) => {
+                    if (res && res.success) {
+                        message.success('委托成功!')
+                        loadData()
+                        modal.destroy()
+                    } else {
+                        message.warning('委托失败!')
+                    }
+                })
+            } else {
+                message.warning('请先选择委托的用户!')
+            }
         }
-        defHttp.put({ url: api.taskEntrust, params: params }, { withToken: true }).then((res) => {
-          if (res && res.success) {
-            message.success('委托成功!')
-            loadData()
-            modal.destroy()
-          } else {
-            message.warning('委托失败!')
-          }
-        })
-      } else {
-        message.warning('请先选择委托的用户!')
-      }
-    }
-  })
+    })
 }
 
 /**
