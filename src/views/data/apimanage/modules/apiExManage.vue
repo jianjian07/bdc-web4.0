@@ -88,54 +88,65 @@
                   <a-input v-model:value="pane.name" style="border: 0px;padding:0px 4px" />
                 </a-breadcrumb-item>
               </a-breadcrumb>
-              <div class="api-editor-manage-interface-options">
-                <div class="api-editor-manage-interface-header">
-                  <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px">
-                    <a-radio-group :value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
-                      <a-radio-button :value="3">通用接口</a-radio-button>
-                      <a-radio-button :value="2">magicapi</a-radio-button>
-                      <a-radio-button :value="1">自定义</a-radio-button>
-                    </a-radio-group>
-                  </a-form-item>
-                  <!--                  <a-form-item label="版本" style="margin-right: 20px;">-->
-                  <!--                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>-->
-                  <!--                  </a-form-item>-->
-                  <a-form-item label="接口标识" style="margin-right: 20px;">
-                    <a-input v-model:value="pane.code" style="width: 200px" placeholder="接口标识"
-                      @click="onClickCode(pane)"></a-input>
-                  </a-form-item>
-                  <a-form-item label="排序" style="margin-right: 20px;">
-                    <a-input v-model:value="pane.orderNum" style="width: 50px" placeholder="排序"></a-input>
-                  </a-form-item>
-                  <a-form-item label="是否返回值解密">
-                    <a-radio-group v-model:value="pane.isResultDecrypt">
-                      <a-radio :value="1">是</a-radio>
-                      <a-radio :value="0">否</a-radio>
-                    </a-radio-group>
-                  </a-form-item>
-                </div>
-              </div>
-
-              <div class="api-editor-manage-interface-url">
-                <a-input v-model:value="pane.url" @change="onChangeUrl">
-                  <template #addonBefore>
-                    <a-select v-model:value="pane.method" style="width: 100px">
-                      <a-select-option value="POST">
-                        <span class="api-type api-type-POST">POST</span>
-                      </a-select-option>
-                      <a-select-option value="GET">
-                        <span class="api-type api-type-GET">GET</span>
-                      </a-select-option>
-                      <a-select-option value="PUT">
-                        <span class="api-type api-type-PUT">PUT</span>
-                      </a-select-option>
-                    </a-select>
-                  </template>
-                </a-input>
-                <a-button style="margin-left:10px" :loading="saveLoading" @click="saveApi(false)">保存</a-button>
-                <a-button style="margin-left:10px" type="primary" :loading="loading" @click="sendApi">发送</a-button>
-
-              </div>
+              <a-row>
+                <a-col :span="22">
+                  <div class="api-editor-manage-interface-header">
+                    <a-form-item label="接口类型" style="flex: 1; margin-right: 20px; margin-bottom: 0px">
+                      <a-radio-group :value="pane.apiType" @change="(event) => handleChangeApiType(pane, event)">
+                        <a-radio-button :value="3">通用接口</a-radio-button>
+                        <a-radio-button :value="2">magicapi</a-radio-button>
+                        <a-radio-button :value="1">自定义</a-radio-button>
+                      </a-radio-group>
+                    </a-form-item>
+                    <!--                  <a-form-item label="版本" style="margin-right: 20px;">-->
+                    <!--                    <a-select :options="getDictItemsByCode('version_code')" v-model:value="pane.version"></a-select>-->
+                    <!--                  </a-form-item>-->
+                    <a-form-item label="接口标识" style="margin-right: 20px;">
+                      <a-input v-model:value="pane.code" style="width: 200px" placeholder="接口标识"
+                        @click="onClickCode(pane)"></a-input>
+                    </a-form-item>
+                    <a-form-item label="排序" style="margin-right: 20px;">
+                      <a-input v-model:value="pane.orderNum" style="width: 50px" placeholder="排序"></a-input>
+                    </a-form-item>
+                    <a-form-item label="是否返回值解密">
+                      <a-radio-group v-model:value="pane.isResultDecrypt">
+                        <a-radio :value="1">是</a-radio>
+                        <a-radio :value="0">否</a-radio>
+                      </a-radio-group>
+                    </a-form-item>
+                  </div>
+                </a-col>
+                <a-col :span="2">
+                  <a-button style="margin-left:10px" type="primary" ghost :loading="saveLoading"
+                    @click="saveApi(false)">
+                    <SaveOutlined />
+                    保存
+                  </a-button>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col :span="22">
+                  <a-input v-model:value="pane.url" @change="onChangeUrl">
+                    <template #addonBefore>
+                      <a-select v-model:value="pane.method" style="width: 100px">
+                        <a-select-option value="POST">
+                          <span class="api-type api-type-POST">POST</span>
+                        </a-select-option>
+                        <a-select-option value="GET">
+                          <span class="api-type api-type-GET">GET</span>
+                        </a-select-option>
+                        <a-select-option value="PUT">
+                          <span class="api-type api-type-PUT">PUT</span>
+                        </a-select-option>
+                      </a-select>
+                    </template>
+                  </a-input>
+                </a-col>
+                <a-col :span="2">
+                  <a-button style="margin-left:10px" type="primary" :loading="loading"
+                    @click="sendApi">发&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;送</a-button>
+                </a-col>
+              </a-row>
             </div>
             <div class="bottom">
               <div class="api-editor-manage-interface-param">
@@ -172,7 +183,7 @@ import ApiExParam from "/@/views/data/apimanage/modules/apiExParam.vue"
 import ApiResult from "/@/views/data/apimanage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { PlusOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, SaveOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
   apiTreeData: {

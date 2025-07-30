@@ -98,7 +98,7 @@
       </a-tree>
     </div>
     <div class="api-editor-dir-add">
-      <a-button style="width: 100%" type="dashed" @click="addDir">
+      <a-button style="width: 100%" type="primary" ghost @click="addDir">
         <plus-outlined />
         新建
       </a-button>

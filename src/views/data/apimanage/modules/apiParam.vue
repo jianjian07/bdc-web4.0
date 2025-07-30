@@ -22,16 +22,8 @@
       <a-tab-pane key="remark" tab="接口说明" class="api-param-pane" forceRender>
         <a-textarea v-model:value="apiData.bz" placeholder="请输入接口说明" style="height: 100%" />
       </a-tab-pane>
-      <a-tab-pane key="dparam" tab="动态参数-测试接口" class="api-param-pane" forceRender>
-        <monaco-editor v-model="apiData.dparams" height="100%" language="json" style="width: 100%;overflow: auto"
-          theme="vs">
-        </monaco-editor>
-      </a-tab-pane>
       <a-tab-pane key="callback" tab="串行接口">
-        <a-form
-          ref="formRef"
-          :label-col="{ span: 3 }"
-          :wrapper-col="{ span: 18 }">
+        <a-form ref="formRef" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }">
           <a-form-item label="类路径">
             <a-input v-model:value="apiData.className"></a-input>
           </a-form-item>
@@ -39,6 +31,11 @@
             <a-input v-model:value="apiData.methodName"></a-input>
           </a-form-item>
         </a-form>
+      </a-tab-pane>
+      <a-tab-pane key="dparam" tab="动态参数-在线测试" class="api-param-pane" forceRender>
+        <monaco-editor v-model="apiData.dparams" height="100%" language="json" style="width: 100%;overflow: auto"
+          theme="vs">
+        </monaco-editor>
       </a-tab-pane>
     </a-tabs>
   </div>
