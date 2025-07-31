@@ -28,7 +28,10 @@
                 </a-col>
                 <a-col :span="24">
                     <a-form-item label="异常信息">
-                        <a-textarea v-model:value="data.errorMessage" />
+                        <monaco-editor v-model="data.errorMessage" height="300px" language="json"
+                            style="width: 100%;overflow: auto" theme="vs">
+                        </monaco-editor>
+                        <!-- <a-textarea v-model:value="data.errorMessage" /> -->
                     </a-form-item>
                 </a-col>
             </a-row>
