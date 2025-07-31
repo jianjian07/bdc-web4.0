@@ -282,10 +282,10 @@ export const useUserStore = defineStore({
         item.label = item.dictName
         item.value = item.dictCode
         item.labelplus = item.dictName + '(' + item.dictCode + ')';
-        if (parent && !parent.status) {
-          item.status = 0
+        if (parent && (!parent.status || item.status == '0')) {
+          item.status = '0'
         }
-        if (!item.status) {
+        if (!item.status || item.status == '0') {
           item.class = 'option-hidden'
         }
         if (item.children) {
