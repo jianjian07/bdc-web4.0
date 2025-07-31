@@ -349,7 +349,7 @@ export function sendCommonApi(sendParams) {
       body: JSON.parse(sendParams.body),
       dparams: sendParams.dparams ? JSON.parse(sendParams.dparams) : null
     }
-    defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true }).then((res) => {
+    defHttp.post({ url: '/api/zrzy-api/api/execute/invokeByDir', data: data }, { withToken: true, withTimeout: false }).then((res) => {
       if (res && res.success) {
         resolve(JSON.stringify(res.result))
         message.success('请求成功')
