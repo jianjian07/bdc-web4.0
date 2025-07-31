@@ -394,8 +394,13 @@ function handleModal(type: any, record: any = null) {
       }
       modal.destroy()
     },
-    onCancel: () => {
-      modal.destroy()
+    onCancel: async (res: any) => {
+      if (res && res.onCancel) {
+        let cancelRes = await res.onCancel()
+        if (cancelRes) {
+          modal.destroy()
+        }
+      }
     }
   })
 }

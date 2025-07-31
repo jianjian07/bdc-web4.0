@@ -16,6 +16,8 @@ import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
 
 import setDirectives from './directives/index'
 import { defHttp } from "/@/utils/http/axios"
+import { registerUploadAttachmentModule } from "/@/components/common/wangEditor/upload-attachment.ts"
+import { registerImageModule } from "/@/components/common/wangEditor/image-attachment.ts"
 
 /**
  * 读取nacos配置
@@ -70,7 +72,10 @@ async function bootstrap() {
     // 提供 `modules` 让 A 组件内部使用
     app.provide('projModules', modules);
     app.provide('appTheme', configTheme);
-    
+    // 注册自定义图片
+    registerImageModule()
+    // 注册富文本组件附件上传按钮
+    registerUploadAttachmentModule()
     // 配置存储 先挂载pinna实例
     setupStore(app)
     // 注册全局

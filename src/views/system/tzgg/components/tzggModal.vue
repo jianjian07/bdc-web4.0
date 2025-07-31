@@ -55,20 +55,25 @@
       />
     </a-form-item>
     <a-form-item label="内容" name="msgContent">
-      <WangEditor @editorValue="setContent" :readOnly="formDisabled" :content="formState.msgContent"></WangEditor>
+      <WangEditor ref="wangEditorRef" @editorValue="setContent" :readOnly="formDisabled" :id="formState.id" :content="formState.msgContent"></WangEditor>
     </a-form-item>
   </a-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { defHttp } from '/@/utils/http/axios'
 import { message } from 'ant-design-vue'
-import WangEditor from '/@/components/common/wangEditor.vue'
+import WangEditor from '/@/components/common/wangEditor/wangEditor.vue'
 import { cModal } from "/@/components/cModal/index"
 import dayjs from 'dayjs'
 import { useUserStore } from "/@/store/modules/user"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils'
+import {
+  currentFileIds,
+  getDeletedFileIds,
+  getUploadedFileIds,
+} from "/@/components/common/wangEditor/upload-attachment.ts"
 
 const formRef = ref()
 let formState: any = reactive({
@@ -120,11 +125,13 @@ const stateRules: any = {
 let formDisabled = ref(false)
 const labelCol = { style: { width: '130px' } }
 const wrapperCol = { span: 19 }
+let wangEditorRef = ref()
+
 const api = {
   add: '/api/zrzy-system/sys/sysTzgg/add',
-  edit: '/api/zrzy-system/sys/sysTzgg/edit'
+  edit: '/api/zrzy-system/sys/sysTzgg/edit',
+  delFile: '/api/zrzy-system/common/upfiles/deleteFj',
 }
-
 
 const props = defineProps({
   formData: {
@@ -278,9 +285,29 @@ function getDays(startDate, endDate) {
   return result
 }
 
-
-const onSubmit = () => {
-  return new Promise((resolve, reject) => {
+const onSubmit = async () => {
+  return new Promise(async (resolve, reject) => {
+    const deletedIds = getDeletedFileIds() || []
+    const uploadedIds = getUploadedFileIds() || []
+    const currentIds = new Set(currentFileIds.value || [])
+    
+    // 新上传但未保留的
+    const unkeptUploadedIds = uploadedIds.filter(id => !currentIds.has(id))
+    
+    // 需要删除的所有ID
+    const allDelIds = [...deletedIds, ...unkeptUploadedIds]
+    
+    // 去重（防止重复）
+    const uniqueDelIds = Array.from(new Set(allDelIds))
+    
+    let delRes = true
+    if (uniqueDelIds.length > 0) {
+      delRes = await deleteAttachment(uniqueDelIds)
+    }
+    if (!delRes) {
+      resolve(false)
+      return
+    }
     let url = props.formData.type == 'new' ? api.add : api.edit
     let method = props.formData.type == 'new' ? 'post' : 'put'
     formRef.value
@@ -313,8 +340,42 @@ const onSubmit = () => {
   })
 }
 
+async function onCancel() {
+  // 删除所有新上传但未保留的附件
+  const uploadedIds = getUploadedFileIds() || []
+  return await deleteAttachment(uploadedIds)
+}
+
+/**
+ * 删除附件
+ * @param delIds
+ */
+function deleteAttachment(delIds) {
+  return new Promise((resolve) => {
+    if (delIds.length > 0) {
+      Promise.all(delIds.map(id => {
+        return defHttp.delete({ url: api.delFile, params: { id } }, { withToken: true }).then((res) => {
+          if (res && res.code == 200) {
+            message.success('已删除新上传的附件')
+          } else {
+            message.error(res?.message || '删除附件出错!')
+          }
+        })
+      })).then(() => {
+        resolve(true)
+      }).catch(() => {
+        message.error('删除附件失败，请稍后重试')
+        resolve(false)
+      })
+    } else {
+      resolve(true)
+    }
+  })
+}
+
 defineExpose({
-  onSubmit
+  onSubmit,
+  onCancel
 })
 
 </script>
