@@ -152,7 +152,7 @@ let parentDmlx = ref('')
 function design(record: any) {
     dictData.value = record
     parentId.value = record.id
-    parentDmlx.value = record.dictCode
+    parentDmlx.value = record.dmlx ? record.dmlx : record.dictCode
     drawerOpen.value = true
 }
 
