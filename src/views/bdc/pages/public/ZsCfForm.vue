@@ -109,6 +109,8 @@ async function handleOk() {
         ywlx: 2,
         slbh: data.slbh,
         lcid: "",
+        gllx: "cftz",
+        glid: props.formData.record.id0,
         dyhList: [
           {
             bdcdyh,
