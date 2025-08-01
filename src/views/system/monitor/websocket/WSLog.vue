@@ -39,7 +39,7 @@ let socket: any = null;
 // let logContent = ref("")
 function start() {
     let a = currentTag.value
-    let b = window.settingConfig.baseDomain + "/" + a + "/cdc/log"
+    let b = window.settingConfig.wsbaseDomain + "/" + a + "/cdc/log"
     socket = new WebSocket(b);
     socket.onopen = function (event) {
         socket.send("---------------开启实时日志---------------");
