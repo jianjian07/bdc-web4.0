@@ -665,7 +665,7 @@ function validateApiTransfer(obj) {
     let arr = str ? str.split(',') : []
     for (let i = 0; i < arr.length; i++) {
       let find: any = getTransferRuleByCode(arr[i])
-      if (find) {
+      if (find && find.ywlx == 'transfer' && find.ruleType == 'api') {
         let content = find.content
         const scope: any = { defHttp, Modal, createVNode, ExclamationCircleOutlined }; // 显式用一下，保证vite不会剔除
   
