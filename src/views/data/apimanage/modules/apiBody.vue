@@ -27,18 +27,19 @@
               <a-input v-model:value="record[column.dataIndex]" @change="defaultValueChange($event, record)" />
             </template>
             <template v-else-if="column.dataIndex == 'isEncrypt'">
-               <div style="display: flex;justify-content: center">
-                 <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
-               </div>
+              <div style="display: flex;justify-content: center">
+                <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+              </div>
               <!-- <a-select v-model:value="record[column.dataIndex]" :options="getDictItemsByCode('yn')"
                 style="width: 100%">
               </a-select>
               <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" /> -->
             </template>
             <template v-else-if="column.dataIndex == 'isString'">
-               <div style="display: flex;justify-content: center">
-                  <a-checkbox v-model:checked="record[column.dataIndex]" :disabled="record['dataType'].toLowerCase() !== 'object' && record['dataType'].toLowerCase() !== 'array'"></a-checkbox>
-               </div>
+              <div style="display: flex;justify-content: center">
+                <a-checkbox v-model:checked="record[column.dataIndex]"
+                  :disabled="record['dataType'].toLowerCase() !== 'object' && record['dataType'].toLowerCase() !== 'array'"></a-checkbox>
+              </div>
             </template>
             <template v-else-if="column.dataIndex == 'operate'">
               <div class="operate-btn">
@@ -130,7 +131,7 @@ const columns = [
     width: 100
   },
   {
-    title: '是否转为字符串',
+    title: '字符',
     dataIndex: 'isString',
     key: 'isString',
     width: 45
@@ -147,7 +148,7 @@ const columns = [
     width: 150
   },
   {
-    title: '是否加密',
+    title: '加密',
     dataIndex: 'isEncrypt',
     key: 'isEncrypt',
     width: 45
