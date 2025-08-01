@@ -29,7 +29,7 @@
         <a-radio value="L">低</a-radio>
       </a-radio-group>
     </a-form-item>
-    <a-form-item v-show="showGSSJ" label="公示开始时间" name="startTime">
+    <a-form-item v-show="showGSSJ" label="公示时间" name="startTime">
       <div style="display: flex">
         <a-date-picker
             format="YYYY/MM/DD HH:mm:ss"
@@ -37,23 +37,34 @@
             v-model:value="formState.startTime"
             @change="onGSSJChange"
         />
-        <span style="display: flex; align-items: center; padding-left: 8px">
+        <span style="display: flex; align-items: center; padding:0 8px">
           <span> 起 </span>
           <span style="padding: 0 8px;">
             <a-input v-model:value="workDay" @change="onWorkDayChange"></a-input>
           </span>
-          <span> 个工作日</span>
+          <span> 个工作日 </span>
+        </span>
+        <a-form-item name="endTime" style="margin-bottom: 0">
+          <a-date-picker
+            format="YYYY/MM/DD HH:mm:ss"
+            value-format="YYYY/MM/DD HH:mm:ss"
+            v-model:value="formState.endTime"
+            @change="onGSSJChange"
+        />
+          </a-form-item>
+        <span style="display: flex; align-items: center; padding-left: 8px">
+          止
         </span>
       </div>
     </a-form-item>
-    <a-form-item v-show="showGSSJ" label="公示结束时间" name="endTime">
-      <a-date-picker
-          format="YYYY/MM/DD HH:mm:ss"
-          value-format="YYYY/MM/DD HH:mm:ss"
-          v-model:value="formState.endTime"
-          @change="onGSSJChange"
-      />
-    </a-form-item>
+<!--    <a-form-item v-show="showGSSJ && false" label="公示结束时间" name="endTime">-->
+<!--      <a-date-picker-->
+<!--          format="YYYY/MM/DD HH:mm:ss"-->
+<!--          value-format="YYYY/MM/DD HH:mm:ss"-->
+<!--          v-model:value="formState.endTime"-->
+<!--          @change="onGSSJChange"-->
+<!--      />-->
+<!--    </a-form-item>-->
     <a-form-item label="内容" name="msgContent">
       <WangEditor ref="wangEditorRef" @editorValue="setContent" :readOnly="formDisabled" :id="formState.id" :content="formState.msgContent"></WangEditor>
     </a-form-item>

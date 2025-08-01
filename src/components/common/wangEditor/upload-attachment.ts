@@ -291,7 +291,7 @@ function renderAttachment(elem: SlateElement, children: VNode[] | null, editor: 
     ]),
 
 
-    // 预览按钮
+    // 下载按钮
     h('button', {
       style: {
         border: '1px solid #409EFF',
@@ -307,7 +307,7 @@ function renderAttachment(elem: SlateElement, children: VNode[] | null, editor: 
           window.open(url, '_blank')
         }
       }
-    }, '预览')
+    }, '下载')
   ])
 
   return container
