@@ -106,7 +106,7 @@ async function handleOk() {
       }
 
       const _data = {
-        ywlx: 2,
+        ywlx: 1,
         slbh: data.slbh,
         lcid: "",
         gllx: "cftz",
