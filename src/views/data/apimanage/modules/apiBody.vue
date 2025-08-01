@@ -27,11 +27,18 @@
               <a-input v-model:value="record[column.dataIndex]" @change="defaultValueChange($event, record)" />
             </template>
             <template v-else-if="column.dataIndex == 'isEncrypt'">
-              <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+               <div style="display: flex;justify-content: center">
+                 <a-checkbox v-model:checked="record[column.dataIndex]"></a-checkbox>
+               </div>
               <!-- <a-select v-model:value="record[column.dataIndex]" :options="getDictItemsByCode('yn')"
                 style="width: 100%">
               </a-select>
               <a-input v-model:value="record[column.dataIndex]" @change="encryptTypeChange($event, record)" /> -->
+            </template>
+            <template v-else-if="column.dataIndex == 'isString'">
+               <div style="display: flex;justify-content: center">
+                  <a-checkbox v-model:checked="record[column.dataIndex]" :disabled="record['dataType'].toLowerCase() !== 'object' && record['dataType'].toLowerCase() !== 'array'"></a-checkbox>
+               </div>
             </template>
             <template v-else-if="column.dataIndex == 'operate'">
               <div class="operate-btn">
@@ -123,6 +130,12 @@ const columns = [
     width: 100
   },
   {
+    title: '是否转为字符串',
+    dataIndex: 'isString',
+    key: 'isString',
+    width: 45
+  },
+  {
     title: '参数值',
     dataIndex: 'fieldValue',
     key: 'fieldValue'
@@ -137,7 +150,7 @@ const columns = [
     title: '是否加密',
     dataIndex: 'isEncrypt',
     key: 'isEncrypt',
-    width: 100
+    width: 45
   },
   {
     title: '参数描述',
@@ -158,7 +171,7 @@ const dicts = [
     key: 'dataType', data: [
       { value: 'Array', label: 'Array' },
       { value: 'Object', label: 'Object' },
-      { value: 'Any', label: 'Any' },
+      // { value: 'Any', label: 'Any' },
       { value: 'String', label: 'String' },
       { value: 'Boolean', label: 'Boolean' },
       { value: 'Integer', label: 'Integer' },
@@ -257,6 +270,7 @@ function handleAddRow(record) {
       defaultValue: "",
       isMust: false,
       isEncrypt: false,
+      isString: false,
       encryptType: "",
       description: ""
     }
@@ -281,6 +295,7 @@ function handleAddChildRow(record) {
     defaultValue: "",
     isMust: false,
     isEncrypt: false,
+    isString: false,
     encryptType: "",
     description: "-"
   }
@@ -499,6 +514,7 @@ function jsonToView(bodyStr, srcObj) {
       defaultValue: srcObj.defaultValue || '',
       isMust: srcObj.isMust || false,
       isEncrypt: srcObj.isEncrypt || false,
+      isString: srcObj.isString || false,
       encryptType: srcObj.encryptType || '',
       description: srcObj.description || '',
       children: processBody(obj, objToMap(srcObj))
@@ -517,6 +533,7 @@ function processBody(content, srcObj) {
     defaultValue: '',
     isMust: false,
     isEncrypt: false,
+    isString: false,
     encryptType: '',
     description: '',
     children: []
@@ -534,6 +551,7 @@ function processBody(content, srcObj) {
           defaultValue: srcObj[index]?.defaultValue || '',
           isMust: srcObj[index]?.isMust === true,
           isEncrypt: srcObj[index]?.isEncrypt === true,
+          isString: srcObj[index]?.isString === true,
           encryptType: srcObj[index]?.encryptType || '',
           description: srcObj[index]?.description || (Array.isArray(value) || typeof value === 'object' ? '' : value),
           fieldValue: simpleObject ? (value || srcObj[index]?.defaultValue) + '' : (srcObj[index]?.defaultValue || '-'),
@@ -577,6 +595,7 @@ function processBody(content, srcObj) {
         defaultValue: srcObj[name]?.defaultValue || '',
         isMust: srcObj[name]?.isMust === true,
         isEncrypt: srcObj[name]?.isEncrypt === true,
+        isString: srcObj[name]?.isString === true,
         encryptType: srcObj[name]?.encryptType || '',
         description: srcObj[name]?.description || ((Array.isArray(value) || typeof value === 'object') ? '' : value),
         fieldValue: simpleObject ? (value || srcObj[name]?.defaultValue) + '' : srcObj[name]?.defaultValue || '-',
