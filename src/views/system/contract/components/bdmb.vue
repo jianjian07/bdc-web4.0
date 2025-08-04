@@ -3,7 +3,7 @@
     
   <a-layout>
     <a-layout-sider
-      :style="{background: '#efefef',
+      :style="{ background: '#efefef',
         textAlign: 'left',
         color: '#000',
         lineHeight: '30px',
@@ -19,7 +19,7 @@
         padding: '0px 40px',
         height: '700px',
         overflow: 'auto'}" id="contentToConvert">
-      <div ref="formRef" class="cici-form-css"><a-form :label-col="{ style: { width:'180px'} }" :labelWrap="true" :disabled="formDisabled">
+      <div ref="formRef" class="cici-form-css" style="font-family: 'semi';"><a-form :label-col="{ style: { width:'180px'} }" :labelWrap="true" :disabled="formDisabled">
     <div class="paragraphPanel pdfPageContent pdfPageFont">
   <a-form class="form-container" :label-col="{ style: { width:'180px'} }" style="display: flex; flex-direction: column;  ">
     <div class="paragraphPanel ">
@@ -1736,5 +1736,8 @@ console.log('pageLength.value', pageLength.value)
 
     <style scoped lang="less">
     @import url('/@/assets/less/form.less');
+    *{
+      font-family: simsun;
+    }
     </style>
     

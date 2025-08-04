@@ -1,9 +1,6 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import './fonts/st.js'
-import './fonts/ht.js'
-import './fonts/htBold.js'
-import './fonts/stBold.js'
+import './fonts/simsun-normal.ts'
  
 export async function generatePdfByID(title, id, text) {
   let element :any = document.getElementById(id)
@@ -91,15 +88,14 @@ export function generatePdfByName(title, className, text) {
   }, 200)
 }
 
-export async function generatePdfByHtml(title, id, text) {
+export async function generatePdfByHtml(title, id, text = '') {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const element :any = document.getElementsByClassName(id)[0]
   // const element :any = document.getElementById(id)
-
-  pdf.addFont('Semi.ttf', 'Semi', 'normal')
-  pdf.addFont('ht.ttf', 'ht', 'normal')
-  pdf.addFont('htBold.ttf', 'htBold', 'normal')
-  pdf.addFont('stBold.ttf', 'stBold', 'normal')
+  // pdf.addFont('Semi.ttf', 'Semi', 'normal')
+  // pdf.addFont('ht.ttf', 'ht', 'normal')
+  // pdf.addFont('htBold.ttf', 'htBold', 'normal')
+  // pdf.addFont('stBold.ttf', 'stBold', 'normal')
 
   pdf.html(element, {
     callback: async function (pdf) {
