@@ -1624,7 +1624,10 @@ export function getQlrFj() {
  */
 export function plReport(ids) {
   return new Promise((resolve, reject) => {
-    defHttp.post({ url: '/api/zrzy-report/bdc/report/reReportBatch', data: ids }, { withToken: true }).then((res) => {
+      defHttp.post({ url: '/api/zrzy-report/bdc/report/reReportBatch', data: ids }, {
+          withToken: true,
+          withTimeout: false
+      }).then((res) => {
       if (res && res.success) {
         message.success('上报成功!' + res?.message)
         resolve(true)
@@ -1643,7 +1646,7 @@ export function plReport(ids) {
 export function reReport(id, type = 'business') {
   return new Promise((resolve) => {
     let url = type == 'register' ? '/api/zrzy-report/bdc/register/reReport' : '/api/zrzy-report/bdc/report/reReport'
-    defHttp.post({ url: url, params: { id: id } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: url, params: { id: id } }, { withToken: true, withTimeout: false }).then((res) => {
       if (res && res.success) {
         message.success('上报成功!' + res?.message)
         resolve(true)
