@@ -48,7 +48,7 @@
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, ref, nextTick } from 'vue';
 import { generatePdfByHtml, generatePdfByID, generatePdfByName } from './genPdf.ts'
-import QRCode from 'qrcode'
+// import QRCode from 'qrcode'
 
 const value = ref<number>(1);
 let inputValue1 = ref('')
@@ -599,31 +599,30 @@ function print(){
   })
 }
 
-function genQrCode(data: any) {
-  console.log(data)
-  var canvasHtml = document.createElement("canvas");
-  canvasHtml.setAttribute('id', 'qrCode');
-  document.getElementsByClassName('canvasContent')[0].appendChild(canvasHtml)
-  let text = `
-合同编号：YS20231000004
-卖出人：新疆润江房地产(123456789987654321)
-买受人：
-坐落：昌吉市126区2丘1栋2单元26层2601
-单元间号：2601
-建筑面积：142.84平方米
-成交总价：0.000元（人民币）
-签订时间：2023/10/19 19:55:06
-`
-  QRCode.toCanvas(document.getElementById('qrCode'), text, {width: 150}, function (error) {
-    if (error) console.error(error)
-    console.log('success!');
-  })
-}
+// function genQrCode(data: any) {
+//   console.log(data)
+//   var canvasHtml = document.createElement("canvas");
+//   canvasHtml.setAttribute('id', 'qrCode');
+//   document.getElementsByClassName('canvasContent')[0].appendChild(canvasHtml)
+//   let text = `
+// 合同编号：YS20231000004
+// 卖出人：新疆润江房地产(123456789987654321)
+// 买受人：
+// 坐落：昌吉市126区2丘1栋2单元26层2601
+// 单元间号：2601
+// 建筑面积：142.84平方米
+// 成交总价：0.000元（人民币）
+// 签订时间：2023/10/19 19:55:06
+// `
+//   QRCode.toCanvas(document.getElementById('qrCode'), text, {width: 150}, function (error) {
+//     if (error) console.error(error)
+//     console.log('success!');
+//   })
+// }
 
 </script>
 
 <style lang="less" scoped>
-@import url('/@/views/system/contract/components/mb.less');
 #contentToConvert {
   width: 851px;
   font-family: 'st';
