@@ -34,13 +34,17 @@ let _formData = reactive<any>({
   slbh: '',
   processId: '',
   nodeId: '',
-  isNeedDefault: true
+  isNeedDefault: true,
+  db: ''
 })
 
 onMounted(() => {
   _formData.slbh = props.formData?.ywh || route?.query?.slbh || ''
   if (props.formData.isNeedDefault !== null && props.formData.isNeedDefault !== undefined) {
     _formData.isNeedDefault = props.formData.isNeedDefault
+  }
+  if (route?.query?.db) {
+    _formData.db = route?.query?.db
   }
 })
 

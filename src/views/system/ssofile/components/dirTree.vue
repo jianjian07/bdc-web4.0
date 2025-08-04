@@ -217,7 +217,7 @@ function loadDirList() {
   defHttp.get(
     {
       url: urlList.dirList,
-      params: { slbh: props.formData.slbh } // 查询参数：受理编号 流程实例ID
+      params: { slbh: props.formData.slbh, db: props.formData.db } // 查询参数：受理编号 流程实例ID
     },
     { withToken: true }
   ).then((res: any) => {
@@ -249,7 +249,7 @@ function loadFileList(node) {
     defHttp.get(
       {
         url: urlList.queryAll,
-        params: { slbh: node.dirkey } // 查询参数：dirkey
+        params: { slbh: node.dirkey, db: props.formData.db } // 查询参数：dirkey
       },
       { withToken: true }
     ).then((res: any) => {
@@ -276,7 +276,7 @@ function previewFile(data: any) {
     format = arr[arr.length - 1]
   }
   let base = ['jpg','png','jpeg'].includes(format) ? proxyBaseApi.value : baseApi.value
-  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
+  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&db=${props.formData.db}&fullfilename=${data.title}`))
   previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
 }
 
