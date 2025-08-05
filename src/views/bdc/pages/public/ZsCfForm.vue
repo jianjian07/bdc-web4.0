@@ -104,9 +104,23 @@ async function handleOk() {
         spinning.value = false;
         return resolve(false);
       }
-
+      let ywlx = '2'
+      let qllx = '4'
+      const dylx = bdcdyh.substring(19, 20)
+      switch (dylx) {
+        case 'W':
+          ywlx = '1'
+          qllx = '3'
+          break;
+        case 'L':
+          ywlx = '3'
+          qllx = '12'
+          break;
+        default:
+          break;
+      }
       const _data = {
-        ywlx: 1,
+        ywlx: ywlx,
         slbh: data.slbh,
         lcid: "",
         gllx: "cftz",
@@ -116,7 +130,7 @@ async function handleOk() {
             bdcdyh,
             ssywh: '',
             bdcqzh: '',
-            qllx: '4'
+            qllx: qllx
           }
         ]
       };
