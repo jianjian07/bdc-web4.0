@@ -116,13 +116,8 @@ const columns = [
   {
     title: '参数名',
     dataIndex: 'fieldName',
-    key: 'fieldName'
-  },
-  {
-    title: '必填',
-    dataIndex: 'isMust',
-    key: 'isMust',
-    width: 45
+    key: 'fieldName',
+    width: 200
   },
   {
     title: '参数类型',
@@ -131,21 +126,10 @@ const columns = [
     width: 100
   },
   {
-    title: '字符',
-    dataIndex: 'isString',
-    key: 'isString',
+    title: '必填',
+    dataIndex: 'isMust',
+    key: 'isMust',
     width: 45
-  },
-  {
-    title: '参数值',
-    dataIndex: 'fieldValue',
-    key: 'fieldValue'
-  },
-  {
-    title: '默认值',
-    dataIndex: 'defaultValue',
-    key: 'defaultValue',
-    width: 150
   },
   {
     title: '加密',
@@ -153,6 +137,24 @@ const columns = [
     key: 'isEncrypt',
     width: 45
   },
+  {
+    title: '字符',
+    dataIndex: 'isString',
+    key: 'isString',
+    width: 45
+  },
+  // {
+  //   title: '参数值',
+  //   dataIndex: 'fieldValue',
+  //   key: 'fieldValue'
+  // },
+  {
+    title: '默认值',
+    dataIndex: 'defaultValue',
+    key: 'defaultValue',
+    width: 150
+  },
+
   {
     title: '参数描述',
     dataIndex: 'description',

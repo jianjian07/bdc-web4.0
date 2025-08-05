@@ -43,24 +43,47 @@
     </div>
     <div class="api-data-source-form">
       <div v-if="selectedKeys.length" class="data-source-form-body">
-        <a-flex :vertical="aa === 'vertical'" gap="small">
-          <a-form-item label="属性名称" :label-col="{ style: { width: '80px' } }">
-            <a-input v-model:value="selectedNode.title"></a-input>
-          </a-form-item>
-          <a-form-item label="keyName" :label-col="{ style: { width: '80px' } }">
-            <a-input v-model:value="selectedNode.keyName"></a-input>
-          </a-form-item>
-          <a-form-item label="类型" :label-col="{ style: { width: '80px' } }">
-            <a-radio-group v-model:value="selectedNode.type">
-              <a-radio value="sql">sql</a-radio>
-              <a-radio value="mybatis">mybatis</a-radio>
-            </a-radio-group>
-          </a-form-item>
-        </a-flex>
-
-        <CodeEditor :fullScreen="true" language="javascript" :value="selectedNode.content" @codeValue="getCodeValue"
-          style="height: 300px;">
-        </CodeEditor>
+        <a-form-item label="数据源类型" :label-col="{ style: { width: '80px' } }">
+          <a-radio-group v-model:value="selectedNode.dsType" @change="handleDsTypeChange">
+            <a-radio value="sql">sql</a-radio>
+            <a-radio value="api">接口</a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <div v-if="selectedNode.dsType === 'sql'">
+          <a-flex :vertical="aa === 'vertical'" gap="small">
+            <a-form-item label="属性名称" :label-col="{ style: { width: '80px' } }">
+              <a-input v-model:value="selectedNode.title"></a-input>
+            </a-form-item>
+            <a-form-item label="keyName" :label-col="{ style: { width: '80px' } }">
+              <a-input v-model:value="selectedNode.keyName"></a-input>
+            </a-form-item>
+            <a-form-item label="SQL类型" :label-col="{ style: { width: '80px' } }">
+              <a-radio-group v-model:value="selectedNode.type">
+                <a-radio value="mybatis">mybatis</a-radio>
+                <a-radio value="sql">sql</a-radio>
+              </a-radio-group>
+            </a-form-item>
+          </a-flex>
+          <CodeEditor :fullScreen="true" language="javascript" :value="selectedNode.content" @codeValue="getCodeValue"
+            style="height: 300px;">
+          </CodeEditor>
+        </div>
+        <div v-else>
+          <a-form ref="formRef" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }">
+            <a-form-item label="属性名称">
+              <a-input v-model:value="selectedNode.title"></a-input>
+            </a-form-item>
+            <a-form-item label="keyName">
+              <a-input v-model:value="selectedNode.keyName"></a-input>
+            </a-form-item>
+            <a-form-item label="类路径">
+              <a-input v-model:value="selectedNode.className"></a-input>
+            </a-form-item>
+            <a-form-item label="方法名">
+              <a-input v-model:value="selectedNode.methodName"></a-input>
+            </a-form-item>
+          </a-form>
+        </div>
       </div>
       <a-empty v-else description="请先选择数据源" />
 
@@ -95,10 +118,13 @@ let expandedRowKeys = ref<any[]>([])
 onMounted(() => {
   if (props.apiData?.apiDataSource?.length) {
     selectedNode.value = props.apiData.apiDataSource[0]
+    selectedNode.value.dsType = selectedNode.value.dsType || 'sql';
     selectedKeys.value = [props.apiData.apiDataSource[0].id]
   }
 })
-
+function handleDsTypeChange(e: any) {
+  selectedNode.value.dsType = e.target.value
+}
 /**
  * 添加
  */
@@ -111,8 +137,9 @@ function handleAdd() {
     pid: '-1',
     level: 0,
     title: id,
+    dsType: 'sql',
     // isMain: isMain ? '0' : '1',
-    type: 'sql',
+    type: 'mybatis',
     content: '',
     children: []
   }
@@ -155,6 +182,7 @@ function del(node) {
 function handleSelectTreeItem(selectedKey, e) {
   selectedKeys.value = [e.node.dataRef.id]
   selectedNode.value = e.node.dataRef
+  selectedNode.value.dsType = selectedNode.value.dsType || 'sql';
 }
 
 /**
