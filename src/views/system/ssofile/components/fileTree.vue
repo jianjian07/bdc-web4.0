@@ -2,15 +2,27 @@
   <div class="ssoFileTree">
     <div class="treeList">
       <div class="addNewBtn" v-if="isManage">
-        <a-button type="primary" @click="addCatalog">新增目录</a-button>
-        <a-button type="primary" @click="addFile">新增附件</a-button>
-        <a-button type="primary" @click="handleOrder">{{ editOrder ? '保存目录顺序' : '编辑目录顺序' }}</a-button>
-        <a-button type="primary" @click="showExe">工具上传</a-button>
-        <a-button v-if="checkedKeys.length" type="primary" @click="batchDel">批量删除</a-button>
-        <a-tooltip title="刷新附件" placement="right">
-          <a-button style="margin-right: 5px" size="small" :icon="h(ReloadOutlined)"
-                      @click.stop="loadFileList(false)" />
-        </a-tooltip>
+        <div>
+          <a-tooltip title="新增目录" placement="top">
+            <a-button type="primary" :icon="h(PlusOutlined)" @click="addCatalog">目录</a-button>
+          </a-tooltip>
+          <a-tooltip title="新增附件" placement="top">
+            <a-button type="primary" :icon="h(PlusOutlined)" @click="addFile">附件</a-button>
+          </a-tooltip>
+          <a-tooltip :title="editOrder ? '保存目录顺序' : '编辑目录顺序'" placement="top">
+            <a-button type="primary" v-if="editOrder" :icon="h(CheckOutlined)" @click="handleOrder">目录顺序</a-button>
+             <a-button type="primary" v-else :icon="h(EditOutlined)" @click="handleOrder">目录顺序</a-button>
+          </a-tooltip>
+          <a-tooltip title="工具上传" placement="top">
+            <a-button type="primary" :icon="h(UploadOutlined)" @click="showExe">工具</a-button>
+          </a-tooltip>
+          <a-button type="primary" v-if="checkedKeys.length" :icon="h(DeleteOutlined)" @click="batchDel">删除</a-button>
+        </div>
+        <div>
+          <a-tooltip title="刷新附件" placement="right">
+            <a-button style="margin-right: 5px" size="small" :icon="h(ReloadOutlined)" @click.stop="loadFileList(false)" />
+          </a-tooltip>
+        </div>
       </div>
       <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="false" :checkable="true"
         show-icon :default-expand-all="expandAll" @drop="onDrop" :draggable="isManage && editOrder" v-model:checkedKeys="checkedKeys" style="width: 100%">
@@ -236,7 +248,9 @@ import Icon, {
   UploadOutlined,
   EyeOutlined,
   ReloadOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  PlusOutlined,
+  CheckOutlined
 } from '@ant-design/icons-vue'
 import { useUserStoreWithOut } from "/@/store/modules/user"
 import { findNode } from "/@/views/online/utils/commonUtils.ts"

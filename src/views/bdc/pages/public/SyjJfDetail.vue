@@ -9,6 +9,7 @@
               prefix="￥"
               :min="0"
               style="width: 100%"
+              :disabled="disabled"
               @blur="onBlurJsfj"
           />
         </template>
@@ -19,6 +20,7 @@
               :min="0"
               :max="record.jzmj"
               style="width: 100%"
+              :disabled="disabled"
               @blur="onBlurBnmj"
           />
         </template>
@@ -27,6 +29,7 @@
         </template>
       </template>
     </a-table>
+    
     <a-table :loading="loading" :columns="totalColumns" :data-source="totalDataSource" :pagination="false"
              bordered></a-table>
   </div>
@@ -63,6 +66,10 @@ const props = defineProps({
   htbh: {
     type: String,
     default: ''
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 

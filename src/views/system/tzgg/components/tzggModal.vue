@@ -44,7 +44,7 @@
           </span>
           <span> 个工作日 </span>
         </span>
-        <a-form-item name="endTime" style="margin-bottom: 0">
+        <a-form-item name="endTime" class="endTime-form-item">
           <a-date-picker
             format="YYYY/MM/DD HH:mm:ss"
             value-format="YYYY/MM/DD HH:mm:ss"
@@ -392,5 +392,7 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
-
+.endTime-form-item {
+  margin-bottom: 0; 
+}
 </style>
