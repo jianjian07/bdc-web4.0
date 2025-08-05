@@ -184,7 +184,7 @@ function updateZscfStatus(slbh) {
  */
 function validateBdcdyh(bdcdyh) {
   return new Promise((resolve, reject) => {
-    defHttp.get({ url: api.check, params: { bdcdyh: bdcdyh } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.check, params: { bdcdyh: bdcdyh,bdcqzh: props.formData.record.cqzh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(true)
       } else {
