@@ -1,6 +1,11 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import './fonts/simsun-normal.ts'
+import JsPDF from "jspdf"
+import { useAppStore } from "/@/store/modules/app.ts"
+import { nextTick } from "vue"
+import { formatToDate } from "/@/views/online/utils/dateUtil.ts"
+import { message } from "ant-design-vue"
  
 export async function generatePdfByID(title, id, text) {
   let element :any = document.getElementById(id)
@@ -91,13 +96,23 @@ export function generatePdfByName(title, className, text) {
 export async function generatePdfByHtml(title, id, text = '') {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const element :any = document.getElementsByClassName(id)[0]
-  // const element :any = document.getElementById(id)
-  // pdf.addFont('Semi.ttf', 'Semi', 'normal')
-  // pdf.addFont('ht.ttf', 'ht', 'normal')
-  // pdf.addFont('htBold.ttf', 'htBold', 'normal')
-  // pdf.addFont('stBold.ttf', 'stBold', 'normal')
+  if (!element) {
+    message.warning('没有找到导出元素!')
+    return
+  }
+
+  await nextTick()
+
+  const appStore = useAppStore()
+  appStore.setMaskShow(true)
+  appStore.setMaskText('正在导出 PDF，请稍候...')
 
   pdf.html(element, {
+    // html2canvas: {
+    //   useCORS: true,
+    //   allowTaint: false,
+    //   logging: true, // 日志调试
+    // },
     callback: async function (pdf) {
       const pageLength = pdf.internal.pages.filter(ele => {
         return !!ele
@@ -108,10 +123,10 @@ export async function generatePdfByHtml(title, id, text = '') {
         addFooter(pdf, 105, 287, footer) // A4大小，210mm x 297mm
         addWatermark(pdf, 30, 230, text)
       }
-      await  pdf.save(title + '.pdf')
-
+      await pdf.save(title + '-' + formatToDate(new Date().getTime()) + '.pdf')
+      appStore.setMaskShow(false)
       const blob = pdf.output('blob'); //可用于文件上传
-
+    
       console.log('blob', blob)
     },
     margin: [20, 20, 20, 20], //上下左右各20mm
@@ -136,4 +151,74 @@ function addFooter(pdf, width, height, text) {
   pdf.setTextColor(0, 0, 0, 1);
   pdf.setGState(pdf.GState({opacity: 1}))
   pdf.text(text, width, height, { align: 'center' });
+}
+
+/**
+ * 绘制canvas导出pdf
+ * @param title
+ * @param id
+ */
+export async function downloadPdfByCanvas(title: string, id: string) {
+  const origin = document.getElementsByClassName(id)[0] as HTMLElement
+  if (!origin) {
+    message.warning('没有找到导出元素!')
+    return
+  }
+
+  await nextTick()
+
+  const appStore = useAppStore()
+  appStore.setMaskShow(true)
+  appStore.setMaskText('正在导出 PDF，请稍候...')
+
+  // 克隆 DOM，防止污染原结构
+  const clone = origin.cloneNode(true) as HTMLElement
+  clone.style.height = 'auto'
+  clone.style.maxHeight = 'none'
+  clone.style.overflow = 'visible'
+  clone.style.position = 'absolute'
+  clone.style.top = '-9999px'
+  clone.style.left = '-9999px'
+  clone.style.zIndex = '-9999'
+  clone.style.width = origin.offsetWidth + 'px'
+
+  document.body.appendChild(clone)
+
+  await nextTick()
+
+  const canvas = await html2canvas(clone, {
+    useCORS: true,
+    allowTaint: false,
+    scale: 2
+  })
+
+  document.body.removeChild(clone)
+
+  const contentWidth = canvas.width
+  const contentHeight = canvas.height
+  const pageWidth = 595.28
+  const pageHeight = 841.89
+  const imgWidth = pageWidth
+  const imgHeight = (imgWidth / contentWidth) * contentHeight
+  const pageData = canvas.toDataURL('image/jpeg', 1.0)
+  const pdf = new jsPDF('p', 'pt', 'a4')
+
+  let remainingHeight = imgHeight
+  let position = 0
+
+  if (remainingHeight <= pageHeight) {
+    pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
+  } else {
+    while (remainingHeight > 0) {
+      pdf.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
+      remainingHeight -= pageHeight
+      position -= pageHeight
+      if (remainingHeight > 0) {
+        pdf.addPage()
+      }
+    }
+  }
+
+  pdf.save(`${title}.pdf`)
+  appStore.setMaskShow(false)
 }
