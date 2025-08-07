@@ -40,7 +40,7 @@
 <!--              </component>-->
             </template>
             <template v-if="qlr && isAllFinished">
-              <qlr-list v-show="showQlr" :qlr="qlr" :jdmc="jdmc" :regType="regType"></qlr-list>
+              <qlr-list v-if="showQlr" :qlr="qlr" :jdmc="jdmc" :regType="regType"></qlr-list>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
           </div>
@@ -228,7 +228,6 @@ let slbh = route.query.slbh
  * 获取表单配置
  */
 function getFormConfig() {
-
   let jdid = route.query.nodeId
   let taskId = route.query.taskId
   defHttp.get({ url: api.getFlowConfig, params: { slbh: slbh, jdid: jdid, taskId: taskId } }, { withToken: true }).then((res) => {
@@ -241,6 +240,13 @@ function getFormConfig() {
       formList.value = formConfig.value?.vueList || []
       jdmc.value = formConfig.value.jdmc || '收件'
       let qlrList = Array.isArray(formConfig.value.qlrList) ? formConfig.value.qlrList : [formConfig.value.qlrList]
+      // 统赋按钮仅在弹窗表单时展示
+      qlrList.forEach(item => {
+        item.btnId = (item.btnId || '')
+          .split(',')
+          .filter(i => i !== '6')
+          .join(',')
+      })
       qlr.value = formConfig.value.qlrList ? qlrList : []
       regType.value = res.result.regType
       isPl.value = formConfig.value.vueList.length > 0 ? (formConfig.value.vueList[0].ispl == '1') : false

@@ -40,7 +40,7 @@
 <!--              </component>-->
             </template>
             <template v-if="qlr && isAllFinished">
-              <qlr-list v-show="showQlr" :qlr="qlr"></qlr-list>
+              <qlr-list v-if="showQlr" :qlr="qlr"></qlr-list>
             </template>
             <!-- <tdxx-list></tdxx-list> -->
           </div>
@@ -229,6 +229,12 @@ function getFormConfig() {
       formBtnList.value = formConfig.value?.btnList.filter(btn => btn.anwz == 'form') || []
       formList.value = formConfig.value?.vueList || []
       let qlrList = Array.isArray(formConfig.value.qlrList) ? formConfig.value.qlrList : [formConfig.value.qlrList]
+      qlrList.forEach(item => {
+        item.btnId = (item.btnId || '')
+          .split(',')
+          .filter(i => i !== '6')
+          .join(',')
+      })
       qlr.value = formConfig.value.qlrList ? qlrList : []
       regType.value = res.result.regType
     }

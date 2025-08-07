@@ -2,8 +2,13 @@
   <div class="qlr">
     <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc +'信息'" :showArrow="true" :classname="titleClassName"
                       collapseType="row" style='width:100%'>
-      <div v-if="qlrxx?.btnId?.includes('1') && !disabled" class="qlr-add">
-        <a-button @click="handleAdd">新增</a-button>
+      <div class="qlr-add-tool">
+        <a-space>
+          <a-popconfirm v-if="qlrxx?.btnId?.includes('6') && !disabled" title="是否确定统赋？" :disabled="disabled" ok-text="确定" cancel-text="取消" @confirm="handleTf">
+             <a-button>统赋</a-button>
+          </a-popconfirm>
+          <a-button v-if="qlrxx?.btnId?.includes('1') && !disabled" @click="handleAdd">新增</a-button>
+        </a-space>
       </div>
       <a-table :columns="columns" :data-source="tableData" :pagination="pagination" rowKey="zjh"
                @change="onTableChange">
@@ -116,6 +121,7 @@ let titleClassName = 'title-css' + (window?.settingConfig?.qlrTitleClassNum || 8
 
 enum api {
   list = '/api/zrzy-bdc/bdc/qlr/list',
+  tf = '/api/zrzy-bdc/bdc/qlr/batchAddQlr',
 }
 
 const emit = defineEmits(['getTbxx', 'getList'])
@@ -385,6 +391,34 @@ function handleDel(record) {
   })
 }
 
+/**
+ * 统赋
+ */
+function handleTf() {
+  if (tableData.value.length == 0) {
+    message.warning('请先添加权利人')
+    return
+  }
+  let query = route.query
+  let _data = {
+    ywh: props.ywh,
+    bdcdyh: props.bdcdyh,
+    slbh: query.slbh,
+    qlrlb: props.qlrxx.qlrlxmc,
+    sxh: props.qlrxx.sxh,
+  }
+  defHttp.post({
+        url: api.tf,
+        data: _data
+    }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      message.success('统赋成功')
+    } else {
+      message.warning(res?.message || '统赋失败')
+    }
+  })
+}
+
 defineExpose({
   initData,
   tableData,
@@ -397,7 +431,7 @@ defineExpose({
   margin-bottom: 10px;
 }
 
-.qlr-add {
+.qlr-add-tool {
   margin-bottom: 10px;
   display: flex;
   justify-content: end;

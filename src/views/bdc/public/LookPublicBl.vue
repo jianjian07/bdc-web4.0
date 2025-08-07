@@ -111,6 +111,12 @@ function getFormConfig() {
       let formConfig = res.result
       formList.value = formConfig?.vueList || []
       let qlrList = Array.isArray(formConfig.qlrList) ? formConfig.qlrList : [formConfig.qlrList]
+      qlrList.forEach(item => {
+        item.btnId = (item.btnId || '')
+          .split(',')
+          .filter(i => i !== '6')
+          .join(',')
+      })
       qlr.value = formConfig.qlrList ? qlrList : []
     } else {
       message.warning('获取表单配置出错')
