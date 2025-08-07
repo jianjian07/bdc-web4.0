@@ -301,6 +301,11 @@ export function sendExCommonApi(sendParams) {
       resolve('body 参数格式错误：' + parseErr);
       return
     }
+    if (sendParams.dparams == '') {
+      message.warning('动态参数不能为空!')
+      resolve('动态参数不能为空');
+      return;
+    }
     defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.dparams) }, { withToken: true, isTransformResponse: false }).then((res) => {
       if (res.status == 200) {
         resolve(JSON.stringify(res.data))
@@ -336,8 +341,8 @@ export function sendCommonApi(sendParams) {
     try {
       JSON.parse(sendParams.dparams);
     } catch (err) {
-      message.warning('dparams 参数格式错误：请检查 JSON 格式是否正确');
-      resolve('dparams 参数格式错误：' + err);
+      message.warning('动态参数格式错误：请检查 JSON 格式是否正确');
+      resolve('动态参数格式错误：' + err);
       return;
     }
     let data = {
