@@ -30,6 +30,7 @@
            <a-checkbox value="3">查看</a-checkbox>
            <a-checkbox value="4">删除</a-checkbox>
            <a-checkbox value="5">家庭成员</a-checkbox>
+           <a-checkbox value="6">统赋</a-checkbox>
          </a-checkbox-group>
       </a-form-item>
       <a-form-item ref="sxh" label="顺序号" name="sxh" :rules="[{ required: true, message: '请输入顺序号' }]">
