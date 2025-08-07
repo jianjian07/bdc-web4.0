@@ -5,7 +5,7 @@
         <template #overlay>
           <a-menu>
             <a-menu-item key="1" @click="batchDelete">
-              <DeleteOutlined />
+              <DeleteOutlined style="margin-right: 8px"/>
               删除
             </a-menu-item>
           </a-menu>
