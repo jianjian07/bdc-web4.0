@@ -289,7 +289,8 @@ function handleAdd() {
  * @param record
  */
 function handleLook(record) {
-  let formId = (['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人','异议申请人'].includes(props.qlrxx.qlrlxmc))
+  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人','异议申请人']
+  let formId = gyfsQlrArr.includes(props.qlrxx.qlrlxmc)
       ? ( props.formType == 'modal' ? '117' : '109' )
       : ( props.formType == 'modal' ? '116' : '55' )
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
