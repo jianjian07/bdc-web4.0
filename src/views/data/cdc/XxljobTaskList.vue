@@ -208,7 +208,12 @@ async function loadData() {
  * 重置
 */
 function refreshData() {
-    formData.value = {}
+    formData.value = {
+      triggerStatus: '-1',
+      jobDesc: '',
+      executorHandler: '',
+      author: ''
+    }
     loadData()
 }
 /**

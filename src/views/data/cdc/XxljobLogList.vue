@@ -196,7 +196,12 @@ async function loadData() {
  * 重置
 */
 function refreshData() {
-    formData.value = {}
+    formData.value = {
+      logStatus: '-1',
+      filterTime: '',
+      jobGroup: 0,
+      jobId: '',
+    }
     loadData()
 }
 /**
