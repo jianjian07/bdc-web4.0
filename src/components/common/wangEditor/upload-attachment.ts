@@ -166,7 +166,7 @@ class UploadAttachment implements IButtonMenu {
 
         if (res.code === 200 && res.result?.length > 0) {
           const { fileName, filePath, fileSize, id } = res.result[0]
-          const downloadUrl = `${window.settingConfig.baseDomain}/zrzy-system/common/upfiles/download?filePath=${encodeURIComponent(filePath)}&fileName=${encodeURIComponent(fileName)}`
+          const downloadUrl = `${window.settingConfig.proxyBaseDomain}/zrzy-system/common/upfiles/download?filePath=${encodeURIComponent(filePath)}&fileName=${encodeURIComponent(fileName)}`
           addFileId(id) // 维护当前id集合
           addUploadedFileId(String(id)) // 新上传集合
 

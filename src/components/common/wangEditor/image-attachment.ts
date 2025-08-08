@@ -162,7 +162,7 @@ export async function customBrowseAndUploadFunc(insertFn: Function, editor: IDom
           const filePath = file.filePath
           const fileName = file.fileName
           const id = file.id
-          const downloadUrl = `${(window as any).settingConfig?.baseDomain || ''}/zrzy-system/common/upfiles/download?filePath=${encodeURIComponent(
+          const downloadUrl = `${(window as any).settingConfig?.proxyBaseDomain || ''}/zrzy-system/common/upfiles/download?filePath=${encodeURIComponent(
             filePath
           )}&fileName=${encodeURIComponent(fileName)}`
 
