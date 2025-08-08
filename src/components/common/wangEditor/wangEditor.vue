@@ -125,7 +125,7 @@ let imageObserver: MutationObserver | null = null
  * 创建
  * @param editor
  */
-const handleCreated = (editor) => {
+const handleCreated = async (editor) => {
   editorRef.value = editor 
   // 初始化 data-id 集合
   initDataIds()
@@ -135,17 +135,16 @@ const handleCreated = (editor) => {
   if (container) {
     // 先同步一次 DOM
     syncImageDataIdToDom(editor)
-    nextTick(() => {
-      // 监听 DOM 变化
-      imageObserver = new MutationObserver(() => {
-        // 同步data-id 和 资源比对和删除
-        syncImageDataIdToDom(editor)
-        updateCurrentFileIds(container)
-      })
-      imageObserver.observe(container, {
-        childList: true,
-        subtree: true,
-      })
+    await nextTick()
+    // 监听 DOM 变化
+    imageObserver = new MutationObserver(() => {
+      // 同步data-id 和 资源比对和删除
+      syncImageDataIdToDom(editor)
+      updateCurrentFileIds(container)
+    })
+    imageObserver.observe(container, {
+      childList: true,
+      subtree: true,
     })
   }
 
