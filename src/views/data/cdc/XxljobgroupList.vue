@@ -108,7 +108,7 @@ enum Api {
  * 表格数据加载
 */
 async function loadData() {
-    defHttp.get({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
+    defHttp.get({ url: Api.list, params: { start: (pagination.value.current - 1) * pagination.value.pageSize, length: pagination.value.pageSize, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
         if (res.status != 200) return;
         const { data, recordsTotal } = res.data
         datalist.value = data

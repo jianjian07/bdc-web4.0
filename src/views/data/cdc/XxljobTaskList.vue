@@ -195,7 +195,7 @@ function loadJobGroup() {
 */
 async function loadData() {
     let jobGroupValue = (jobGroup.value == '' || jobGroup.value == undefined) ? -1 : jobGroup.value
-    defHttp.post({ url: Api.list, params: { start: pagination.value.current - 1, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
+    defHttp.post({ url: Api.list, params: { start: (pagination.value.current - 1) * pagination.value.pageSize, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
         if (res.status != 200) return;
         const { data, recordsTotal } = res.data
         datalist.value = data

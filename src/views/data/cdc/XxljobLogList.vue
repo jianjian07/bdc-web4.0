@@ -9,9 +9,9 @@
                             :field-names="{ label: 'title', value: 'id' }" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="3" :offset="0">
+                <a-col :span="4" :offset="0">
                     <a-form-item label="状态">
-                        <a-select ref="select" v-model:value="formData.logStatus">
+                        <a-select ref="select" v-model:value="formData.logStatus" style="width: 100%;">
                             <a-select-option value="-1">全部</a-select-option>
                             <a-select-option value="1">成功</a-select-option>
                             <a-select-option value="2">失败</a-select-option>
@@ -29,7 +29,7 @@
                         <a-input v-model:value="formData.executorHandler" allowClear />
                     </a-form-item>
                 </a-col> -->
-                <a-col :span="3" :offset="0">
+                <a-col :span="4" :offset="0">
                     <a-form-item label="任务ID">
                         <a-input v-model:value="jobId" allowClear />
                     </a-form-item>
@@ -43,7 +43,7 @@
 
 
                 <a-col :span="4" :offset="0">
-                    <a-form-item style="text-align: center;">
+                    <a-form-item style="text-align: center;margin-left: 10px">
                         <a-space>
                             <a-button type="primary" @click="loadData">
                                 <template #icon>
