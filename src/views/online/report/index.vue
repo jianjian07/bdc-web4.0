@@ -279,7 +279,14 @@ const rowSelection: any = {
  */
 function handleExprotJson() {
     const params = { ids: selectedAllKeys.value.join(','), formType: 'report' }
-    exprotJson(params, "报表")
+    let title = "报表"
+    if (!params.ids.includes(',')) {
+        const foundItem = datalist.value.find(item => item.id === params.ids);
+        if (foundItem) {
+            title = foundItem.title;
+        }
+    }
+    exprotJson(params, title)
 }
 /**
  * 导入json

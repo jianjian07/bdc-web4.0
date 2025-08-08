@@ -69,17 +69,24 @@ export async function extractData(options: any) {
             }
             break;
         case '0103,0102':
-            // 分割合并只能选择其中一条
-            const caseData = data[0]
-            const oldBdcdyh = caseData.bdcdyh ? caseData.bdcdyh.split(',') : ['']
-            const oldCqzh = caseData.bdcqzh ? caseData.bdcqzh.split(',') : ['']
-            const oldYwh = caseData.ssywh ? caseData.ssywh.split(',') : ['']
-            for (let index = 0; index < oldBdcdyh.length; index++) {
-                dyhList.push({
-                    bdcdyh: oldBdcdyh[index],
-                    bdcqzh: oldCqzh.length > index ? oldCqzh[index] : oldCqzh[0],
-                    ssywh: oldYwh.length > index ? oldYwh[index] : oldYwh[0]
-                })
+            if (options.exParams != undefined && options.exParams.lclx == 'fghb') {
+                // 分割合并只能选择其中一条
+                const caseData = data[0]
+                const oldBdcdyh = caseData.bdcdyh ? caseData.bdcdyh.split(',') : ['']
+                const oldCqzh = caseData.bdcqzh ? caseData.bdcqzh.split(',') : ['']
+                const oldYwh = caseData.ssywh ? caseData.ssywh.split(',') : ['']
+                for (let index = 0; index < oldBdcdyh.length; index++) {
+                    dyhList.push({
+                        bdcdyh: oldBdcdyh[index],
+                        bdcqzh: oldCqzh.length > index ? oldCqzh[index] : oldCqzh[0],
+                        ssywh: oldYwh.length > index ? oldYwh[index] : oldYwh[0]
+                    })
+                }
+            } else {
+                for (let index = 0; index < data.length; index++) {
+                    const dyh = data[index];
+                    dyhList.push({ bdcdyh: dyh.bdcdyh, zddm: dyh.zddm, bdcqzh: dyh.bdcqzh, qllx: dyh.qllx })
+                }
             }
             break;
         case '0211':
@@ -102,7 +109,7 @@ export async function extractData(options: any) {
             break;
     }
     options.okLoading.value = true
-    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }): true
+    let check = checkFlag ? await checkLogic({ slbh: slbh, bdcModels: dyhList }) : true
     options.okLoading.value = false
     if (check) {
         let _data: any =
