@@ -42,7 +42,7 @@ getSqlInfo()
  * 执行sql
  */
 function getSqlInfo() {
-    defHttp.get({ url: '/api/zrzy-system/sys/db/getById', params: { id: props.formData.id } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: '/api/zrzy-bdc/sys/db/getById', params: { id: props.formData.id } }, { withToken: true }).then((res) => {
         if (res.success) {
             sqlInfo.value = res.result
         } else {

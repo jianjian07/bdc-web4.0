@@ -102,6 +102,12 @@ let sqlInfo: any = ref({})
 let dataSources = ref([])
 getDataSources()
 getSqlInfo()
+enum api {
+    checkExecUrl = '/api/zrzy-bdc/sys/db/checkExec',
+    infoUrl = '/api/zrzy-bdc/sys/db/info',
+    execSqlUrl = '/api/zrzy-bdc/sys/db/execSql',
+    rollbackUrl = '/api/zrzy-bdc/sys/db/rollback',
+}
 function jumpUrl() {
     router.push('/online/report/view/1947246854286385154')
 }
@@ -110,7 +116,7 @@ async function getDataSources() {
     dataSources.value = res.result
 }
 function handleDb() {
-    defHttp.post({ url: '/api/zrzy-system/sys/db/checkExec', data: sqlInfo.value }, { withToken: true }).then((res) => {
+    defHttp.post({ url: api.checkExecUrl, data: sqlInfo.value }, { withToken: true }).then((res) => {
         if (res.success) {
             sqlInfo.value.status = res.result.status
         } else {
@@ -124,7 +130,7 @@ function handleDb() {
  * 执行sql
  */
 function getSqlInfo() {
-    defHttp.get({ url: '/api/zrzy-system/sys/db/info' }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.infoUrl }, { withToken: true }).then((res) => {
         if (res.success) {
             sqlInfo.value = res.result
             // message.success('执行成功')
@@ -140,7 +146,7 @@ function getSqlInfo() {
  * 执行sql
  */
 function execSql() {
-    defHttp.post({ url: '/api/zrzy-system/sys/db/execSql', data: sqlInfo.value }, { withToken: true }).then((res) => {
+    defHttp.post({ url: api.execSqlUrl, data: sqlInfo.value }, { withToken: true }).then((res) => {
         if (res.success) {
             sqlInfo.value = res.result
             message.success('执行成功')
@@ -152,7 +158,7 @@ function execSql() {
     })
 }
 function rollbackSql() {
-    defHttp.post({ url: '/api/zrzy-system/sys/db/rollback', params: { id: sqlInfo.value.id } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: api.rollbackUrl, params: { id: sqlInfo.value.id } }, { withToken: true }).then((res) => {
         if (res.success) {
             message.success('回滚成功')
         } else {
