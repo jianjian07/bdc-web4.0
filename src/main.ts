@@ -7,7 +7,7 @@ import { registerGlobComp } from './components/registerGlobComp'
 import { setupStore } from './store';
 import { router, setupRouter } from './router';
 import { setupRouterGuard } from './router/guard';
-import { initGlobalSetting } from './settings/initSetting';
+import { fetchNacosConfig, getGlobalFontSize, initGlobalSetting } from './settings/initSetting'
 import checkTimeout from '/@/utils/sysUtil'
 import formImagining from 'form-imagining'
 import 'form-imagining/dist/style.css'
@@ -15,45 +15,8 @@ import 'ant-design-vue/dist/reset.css';
 import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
 
 import setDirectives from './directives/index'
-import { defHttp } from "/@/utils/http/axios"
 import { registerUploadAttachmentModule } from "/@/components/common/wangEditor/upload-attachment.ts"
 import { registerImageModule } from "/@/components/common/wangEditor/image-attachment.ts"
-
-/**
- * 读取nacos配置
- */
-function fetchNacosConfig() {
-    return new Promise((resolve) => {
-        defHttp.get({ 
-            url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public',
-            responseType: 'json',
-            headers: { 
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-        }, { withToken: true }).then((res) => {
-            if (res) {
-                window.settingConfig = res
-                if (window.settingConfig.appTitle) {
-                    document.title = window.settingConfig.appTitle;
-                }
-            } else {
-                alert('nacos配置读取失败！')
-            }
-            resolve(true)
-        })
-    })
-}
-
-/**
- * 获取全局字体大小
- */
-export function getGlobalFontSize() {
-    const raw = window?.settingConfig?.fontSize;
-    const size = raw !== null && raw !== '' && !isNaN(Number(raw))
-      ? Number(raw)
-      : 13;
-    return size;
-}
 
 async function bootstrap() {
     // 加载nacos配置

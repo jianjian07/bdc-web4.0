@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from "vue"
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 
@@ -138,6 +138,10 @@ defineExpose({
 onMounted(() => {
   isFinish.value = true
   show()
+})
+
+onBeforeUnmount(() => {
+  close()
 })
 
 /**

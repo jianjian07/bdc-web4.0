@@ -4,7 +4,7 @@ import { registerGlobComp } from "/@/components/registerGlobComp"
 import formImagining from 'form-imagining'
 import { cDrawerModel } from "/@/components/cDrawer/model"
 import { router } from "/@/router";
-import { getGlobalFontSize } from "/@/main.ts"
+import { getGlobalFontSize } from "/@/settings/initSetting.ts"
 
 let scopeBus = null
 
@@ -89,7 +89,10 @@ export function cDrawer (options?: cDrawerModel) {
     close()
     setTimeout(() => {
       instance = app.unmount()
-    },200)
+      if (div.parentNode) {
+        div.parentNode.removeChild(div)
+      }
+    },0)
   }
 
   return {

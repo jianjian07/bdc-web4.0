@@ -3,14 +3,15 @@ import { Persistent } from "/@/utils/cache/persistent"
 import { PROJ_CFG_KEY } from "/@/enums/cacheEnum"
 import { deepMerge } from "/@/utils"
 import projectSetting from "/@/settings/projectSetting"
-import { useAppStore } from "/@/store/modules/app"
+import { useAppStoreWithOut } from "/@/store/modules/app"
 import { message } from "ant-design-vue"
+import { defHttp } from "/@/utils/http/axios"
 
 /**
  * 初始化全局配置
  */
 export function initGlobalSetting() {
-  const appStore = useAppStore();
+  const appStore = useAppStoreWithOut();
   let config: ProjectConfig = Persistent.getLocal(PROJ_CFG_KEY) as ProjectConfig;
   config = deepMerge(projectSetting, config || {});
   appStore.setProjectConfig(config);
@@ -59,4 +60,40 @@ export function toggleBlackWhite() {
     appElement.classList.add('black-white-app')
   }
   message.info('主题已切换!')
+}
+
+/**
+ * 读取nacos配置
+ */
+export function fetchNacosConfig() {
+    return new Promise((resolve) => {
+        defHttp.get({ 
+            url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public',
+            responseType: 'json',
+            headers: { 
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+        }, { withToken: true }).then((res) => {
+            if (res) {
+                window.settingConfig = res
+                if (window.settingConfig.appTitle) {
+                    document.title = window.settingConfig.appTitle;
+                }
+            } else {
+                alert('nacos配置读取失败！')
+            }
+            resolve(true)
+        })
+    })
+}
+
+/**
+ * 获取全局字体大小
+ */
+export function getGlobalFontSize() {
+    const raw = window?.settingConfig?.fontSize;
+    const size = raw !== null && raw !== '' && !isNaN(Number(raw))
+      ? Number(raw)
+      : 13;
+    return size;
 }

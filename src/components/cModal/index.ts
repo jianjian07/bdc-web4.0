@@ -4,7 +4,7 @@ import { registerGlobComp } from "/@/components/registerGlobComp"
 import formImagining from 'form-imagining'
 import { cModalModel } from "/@/components/cModal/model"
 import { router } from "/@/router";
-import { getGlobalFontSize } from "/@/main.ts"
+import { getGlobalFontSize } from "/@/settings/initSetting.ts"
 
 let scopeBus = null
 
@@ -88,7 +88,10 @@ export function cModal (options?: cModalModel) {
     close()
     setTimeout(() => {
       instance = app.unmount()
-    },200)
+      if (div.parentNode) {
+        div.parentNode.removeChild(div)
+      }
+    },0)
   }
 
   return {

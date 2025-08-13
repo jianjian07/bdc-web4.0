@@ -19,12 +19,8 @@
 
 <script setup lang="ts">
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
-import { Editor as SlateEditor, Node, Transforms, Element as SlateElement } from 'slate'
-import { SlateTransforms } from '@wangeditor/editor'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { onBeforeUnmount, ref, shallowRef, onMounted, watch, nextTick } from 'vue'
-import { defHttp } from "/src/utils/http/axios"
-import { message } from "ant-design-vue"
 import {
   currentFileIds,
   initialFileIds,
@@ -35,7 +31,6 @@ import {
   setImageId, srcToDataIdMap,srcToStyleMap,
   syncImageDataIdToDom
 } from "/@/components/common/wangEditor/image-attachment.ts"
-import { IDomEditor } from "@wangeditor/editor"
 
 const props = defineProps({
   mode: {
@@ -104,8 +99,9 @@ const emit = defineEmits(['editorValue', 'ready'])
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
   const editor = editorRef.value
-  if (editor == null) return
-  editor.destroy()
+  if (editor) {
+    editor.destroy()
+  }
   
   if (imageObserver) {
     imageObserver.disconnect()
@@ -138,6 +134,7 @@ const handleCreated = async (editor) => {
     await nextTick()
     // 监听 DOM 变化
     imageObserver = new MutationObserver(() => {
+      if (!editorRef.value) return
       // 同步data-id 和 资源比对和删除
       syncImageDataIdToDom(editor)
       updateCurrentFileIds(container)
