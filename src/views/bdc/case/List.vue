@@ -12,9 +12,10 @@
                         <a-input v-model:value="formData.slbh" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="4" :offset="0">
+                <a-col :span="8" :offset="0">
                     <a-form-item style="text-align: center;">
                         <a-space>
+                            <a-checkbox v-model:checked="formData.isLikeSlbh">模糊查询</a-checkbox>
                             <a-button type="primary" @click="searchData">
                                 <template #icon>
                                     <component :is="SearchOutlined"></component>
@@ -96,7 +97,9 @@ enum api {
     taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust'
 }
 let datalist = ref([]);
-let formData: any = ref({})
+let formData: any = ref({
+  isLikeSlbh: true
+})
 let spinning = ref<boolean>(true);
 const columns = [
     { title: "任务id", dataIndex: "taskId", align: "center" },
@@ -127,7 +130,7 @@ onMounted(() => {
 
 function loadData() {
     spinning.value = true
-    defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh } }, { withToken: true }).then(res => {
+    defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, isLikeSlbh: formData.value.isLikeSlbh ? 1 : 0 }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh } }, { withToken: true }).then(res => {
         if (res.success) {
             const result = res.result
             datalist.value = result.records
@@ -158,7 +161,9 @@ function onChange(pag: any, callback: any) {
  * 重置
 */
 function clear() {
-    formData.value = {}
+    formData.value = {
+      isLikeSlbh: true
+    }
     loadData()
 }
 /**
