@@ -98,7 +98,7 @@ enum api {
 }
 let datalist = ref([]);
 let formData: any = ref({
-  isLikeSlbh: true
+  isLikeSlbh: false
 })
 let spinning = ref<boolean>(true);
 const columns = [
