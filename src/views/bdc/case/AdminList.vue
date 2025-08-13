@@ -12,7 +12,7 @@
                         <a-input v-model:value="formData.slbh" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8" :offset="0">
+                <a-col :span="6" :offset="0">
                     <a-form-item style="text-align: center;">
                         <a-space>
                             <a-checkbox v-model:checked="formData.isLikeSlbh">模糊查询</a-checkbox>
