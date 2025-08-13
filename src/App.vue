@@ -14,10 +14,9 @@
 import { useUserStoreWithOut } from "/@/store/modules/user"
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import LockScreen from "/@/views/sys/lock/LockScreen.vue"
-import { onMounted, onBeforeUnmount } from "vue"
+import { onMounted } from "vue"
 import { router } from "/@/router"
-import { checkAndApplyMemorialEffect } from "/@/settings/initSetting"
-import { getGlobalFontSize } from "/@/main.ts"
+import { checkAndApplyMemorialEffect, getGlobalFontSize } from "/@/settings/initSetting"
 const userStore = useUserStoreWithOut()
 const fontSize = getGlobalFontSize()
 
