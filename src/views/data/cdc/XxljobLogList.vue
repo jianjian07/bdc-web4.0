@@ -67,14 +67,14 @@
         </a-form>
     </div>
     <div class="wonder-table-css">
-        <div class="wonder-table-toolbar">
-            <a-button type="primary" @click="addData">
-                <template #icon>
-                    <plus-outlined />
-                </template>
-                新增
-            </a-button>
-        </div>
+<!--        <div class="wonder-table-toolbar">-->
+<!--            <a-button type="primary" @click="addData">-->
+<!--                <template #icon>-->
+<!--                    <plus-outlined />-->
+<!--                </template>-->
+<!--                新增-->
+<!--            </a-button>-->
+<!--        </div>-->
         <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
             @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
@@ -133,8 +133,9 @@ const columns = [
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 let datalist: any = ref([]);
+let jobGroup: any = ref([]);
 let formData: any = ref({
-    jobGroup: 0,
+    // jobGroup: 0,
     jobId: '',
     logStatus: '-1',
     filterTime: ''
@@ -183,7 +184,8 @@ async function loadData() {
     let endTime = dayjs(timeValue.value[1]).format(dateFormat)
     formData.value.filterTime = startTime + ' - ' + endTime
     formData.value.jobId = jobId.value == "" ? 0 : jobId.value
-    defHttp.get({ url: Api.list, params: { start: (pagination.value.current - 1) * pagination.value.pageSize, length: pagination.value.pageSize, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
+    let jobGroupValue = (jobGroup.value == '' || jobGroup.value == undefined) ? 0 : jobGroup.value
+    defHttp.get({ url: Api.list, params: { start: (pagination.value.current - 1) * pagination.value.pageSize, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
         if (res.status != 200) return;
         const { data, recordsTotal } = res.data
         datalist.value = data
@@ -199,9 +201,9 @@ function refreshData() {
     formData.value = {
       logStatus: '-1',
       filterTime: '',
-      jobGroup: 0,
       jobId: '',
     }
+    jobGroup.value = undefined
     loadData()
 }
 /**

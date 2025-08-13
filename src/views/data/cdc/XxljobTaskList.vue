@@ -151,7 +151,7 @@ const columns = [
     { title: '操作', key: 'action', width: 250 }
 ]
 let datalist: any = ref([]);
-let jobGroup = ref('');
+let jobGroup = ref<any>('');
 let formData: any = ref({
     // jobGroup: '',
     triggerStatus: '-1',
@@ -214,6 +214,7 @@ function refreshData() {
       executorHandler: '',
       author: ''
     }
+    jobGroup.value = undefined
     loadData()
 }
 /**
