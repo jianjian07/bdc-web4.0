@@ -1645,7 +1645,7 @@ export function plReport(ids) {
  */
 export function reReport(id, type = 'business') {
   return new Promise((resolve) => {
-    let url = type == 'register' ? '/api/zrzy-report/bdc/register/reReport' : '/api/zrzy-report/bdc/report/reReport'
+    let url = type == 'register' ? '/api/zrzy-report/bdc/report/register/reReport' : '/api/zrzy-report/bdc/report/reReport'
     defHttp.post({ url: url, params: { id: id } }, { withToken: true, withTimeout: false }).then((res) => {
       if (res && res.success) {
         message.success('上报成功!' + res?.message)
