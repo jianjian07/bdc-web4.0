@@ -36,7 +36,7 @@ const props = defineProps({
         default: {}
     }
 });
-let sqlInfo: any = ref('')
+let sqlInfo: any = ref({})
 getSqlInfo()
 /**
  * 执行sql
