@@ -1,6 +1,5 @@
 import { defineStore } from "pinia"
 import { store } from "/@/store"
-import { router } from "/@/router"
 import { nextTick } from "vue"
 
 interface TabsState {
@@ -10,7 +9,8 @@ interface TabsState {
   isFullScreen: boolean,
   cacheTabList: any[],
   reloadTab: boolean,
-  routerChangeObj: any
+  routerChangeObj: any,
+  isFromTab: any
 }
 
 export const useTabsStore = defineStore({
@@ -29,7 +29,9 @@ export const useTabsStore = defineStore({
     // 刷新tab
     reloadTab: false,
     // 路由变化
-    routerChangeObj: null
+    routerChangeObj: null,
+    // tab锁
+    isFromTab: false,
   }),
   getters: {
     getTabList(): any {
@@ -53,7 +55,7 @@ export const useTabsStore = defineStore({
       return this.isFullScreen
     },
     getCacheTabs(): any {
-      return this.cacheTabList
+      return this.tabList.filter(tab => tab.meta.cache);
     },
     getReloadTab(): boolean {
       return this.reloadTab
@@ -88,7 +90,7 @@ export const useTabsStore = defineStore({
         }
       }
       this.setCacheTabList()
-    },
+    }, 
     resetTabList() {
       this.tabList = []
       this.setCacheTabList()
@@ -108,15 +110,18 @@ export const useTabsStore = defineStore({
     setRouterChangeObj(obj) {
       this.routerChangeObj = obj
     },
+    setFromTab(flag: boolean) {
+      this.isFromTab = flag
+    },
     refreshTab() {
       let find = this.cacheTabList.find(cacheTab => cacheTab.fullPath == this.getCurrentTab.fullPath)
       if (find) {
         // 去掉相同的缓存路由
         this.cacheTabList = this.cacheTabList.filter(cacheTab => cacheTab.name != find.name)
       }
-      this.setReloadTab(true)
       nextTick(() => {
         // 删除后在添加
+        this.setReloadTab(true)
         this.setCacheTabList()
       })
     },

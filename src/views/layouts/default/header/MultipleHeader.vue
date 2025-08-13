@@ -46,13 +46,14 @@ import { PageEnum } from "/@/enums/pageEnum";
 import { REDIRECT_ROUTE } from "/@/router/routes/basic"
 // 路由
 const router = useRouter()
+
 // 监听当前路由
 watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
-  if (!oldValue) {
+  if (!oldValue && tabList.value.length === 0) {
     tabStore.resetTabList()
   }
   if (tabList.value.length > 0) {
-    if (newValue.fullPath !== activeKeys.value && ((newValue.name != REDIRECT_ROUTE.name) && (newValue.name != REDIRECT_ROUTE.children[0].name))) {
+    if (newValue.fullPath !== activeKeys.value && ((newValue.name != REDIRECT_ROUTE.name) && (newValue.name != REDIRECT_ROUTE.children?.[0]?.name))) {
       tabStore.addTab(newValue)
     }
   } else {
@@ -92,7 +93,7 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
         })
       }
       // 重载界面不设置
-      if ((newValue.name != REDIRECT_ROUTE.name) && (newValue.name != REDIRECT_ROUTE.children[0].name)) {
+      if ((newValue.name != REDIRECT_ROUTE.name) && (newValue.name != REDIRECT_ROUTE.children?.[0]?.name)) {
         tabStore.addTab(newValue)
       }
     }
@@ -104,13 +105,19 @@ watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
 
 watch(() => activeKeys.value, (newVal, oldVal) => {
   tabStore.setRouterChangeObj({ old: oldVal, new: newVal })
-  if (newVal.includes('?')) {
-    let params: any = getUrl(newVal)
-    router.replace({ path: newVal, query: params })
+  if (tabStore.isFromTab) {
+    // console.log('tab操作')
+    tabStore.setFromTab(false) 
+    if (newVal.includes('?')) {
+      let params: any = getUrl(newVal)
+      router.replace({ path: newVal, query: params })
+    } else {
+      router.replace({ path: newVal })
+    }
+    return // 避免循环导航
   } else {
-    router.replace({ path: newVal })
+    // console.log('路由操作')
   }
-
 })
 
 /**
@@ -144,6 +151,7 @@ function getClosable(index) {
  */
 function handleChange(key) {
   tabStore.setTabActiveKey(key)
+  tabStore.setFromTab(true)
 }
 
 /**
@@ -156,6 +164,7 @@ function handleEdit(targetKey: string | MouseEvent, action: string) {
     let find = tabList.value.find((f: any) => f.fullPath == targetKey)
     if (find) {
       tabStore.removeTab(find)
+      tabStore.setFromTab(true)
     }
   }
 }

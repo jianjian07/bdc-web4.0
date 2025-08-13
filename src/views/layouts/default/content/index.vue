@@ -7,7 +7,7 @@
       <Suspense>
         <RouterView>
           <template #default="{ Component, route }">
-            <keep-alive :include="caches">
+            <keep-alive :include="caches" :key="keepAliveKey">
               <component :is="Component" v-if="isReload" :key="`${route.fullPath}_${reloadKey}`" />
             </keep-alive>
           </template>
@@ -17,24 +17,52 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import { computed, nextTick, ref, watch } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
-import { useRoute } from 'vue-router'
-import { router } from "/@/router"
-const route = useRoute()
 const tabStore = useTabsStore()
 const { getTabsShow } = useTabsSetting()
 let isRouterAlive = computed(() => tabStore.getRouterAlive)
 const fullscreen = computed(() => tabStore.getIsFullScreen)
 let isReload = ref<boolean>(true)
 const reloadKey = ref(Date.now())
+const router = useRouter()
+const caches = ref<string[]>([])
+const keepAliveKey = ref(Date.now())
 
-const caches = computed(() => {
-  return tabStore.getCacheTabs.map(tab => {
-    return tab.meta.componentName
-  }).filter(Boolean)
+// 记录 只有新增加时才重置
+const seenComponentTypes = new Set<string>()
+
+watch(() => tabStore.getCacheTabs, (newTabs) => {
+  const newCaches = newTabs.map(tab => {
+    return tab.meta?.componentName
+  }).filter(Boolean) as string[]
+  
+  // 是否有新的组件
+  const hasNewComponentType = newCaches.some(componentName => 
+    !seenComponentTypes.has(componentName)
+  )
+  
+  if (hasNewComponentType) {
+    newCaches.forEach(componentName => seenComponentTypes.add(componentName))
+    
+    // 重置keep-alive实例
+    keepAliveKey.value = Date.now()
+    
+    // 更新缓存列表
+    caches.value = [...seenComponentTypes]
+  } else {
+    // 不删除已见过的组件
+    const allKnownComponents = Array.from(seenComponentTypes)
+    if (JSON.stringify(caches.value.sort()) !== JSON.stringify(allKnownComponents.sort())) {
+      // console.log('更新缓存列表，但不重置keep-alive')
+      caches.value = allKnownComponents
+    }
+  }
+}, {
+  immediate: true,
+  deep: true 
 })
 
 watch(() => tabStore.getReloadTab, (newV) => {
@@ -49,20 +77,6 @@ watch(() => tabStore.getReloadTab, (newV) => {
 }, {
   deep: true
 })
-
-// router.onError((error) => {
-//   console.error('路由导航错误:', error);
-// });
-//
-// watch(
-//   () => route.fullPath,
-//   (newPath, oldPath) => {
-//     console.log('路由切换:', oldPath, '->', newPath);
-//     if (!router.hasRoute(route.name ?? '')) {
-//     console.warn('当前路由不在 matcher 中:', newPath, route.name)
-//   }
-//   }
-// );
 
 </script>
 <style lang="less" scoped>
