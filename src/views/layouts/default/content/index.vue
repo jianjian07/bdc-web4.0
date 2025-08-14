@@ -78,6 +78,37 @@ watch(() => tabStore.getReloadTab, (newV) => {
   deep: true
 })
 
+const originalWarn = console.warn
+console.warn = function(...args) {
+  if (args[0] && typeof args[0] === 'string' && 
+      args[0].includes('No match found for location with path')) {
+
+    // 从警告信息中提取目标路径
+    const match = args[0].match(/No match found for location with path "([^"]+)"/)
+    const targetPath = match ? match[1] : ''
+    // console.log('matcher为损坏状态', ...args)
+    // 标记matcher为损坏状态
+    window.routerMatcherBroken = true
+
+     setTimeout(() => {
+      const lastParams = window.getLastPushParams?.()
+      if (lastParams) {
+        // 使用保存的完整参数进行替换
+        if (typeof lastParams === 'string') {
+          router.replace(lastParams)
+        } else {
+          router.replace({ ...lastParams })
+        }
+      } else if (targetPath) {
+        router.replace(targetPath)
+      }
+    }, 100)
+
+    return 
+  }
+  originalWarn.apply(console, args)
+}
+
 </script>
 <style lang="less" scoped>
 .content-main {
