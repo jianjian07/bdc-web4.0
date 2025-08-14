@@ -116,7 +116,7 @@ watch(() => activeKeys.value, (newVal, oldVal) => {
     }
     return // 避免循环导航
   } else {
-    // console.log('路由操作')
+    //console.log('路由操作')
   }
 })
 
@@ -150,8 +150,8 @@ function getClosable(index) {
  * @param key
  */
 function handleChange(key) {
-  tabStore.setTabActiveKey(key)
   tabStore.setFromTab(true)
+  tabStore.setTabActiveKey(key)
 }
 
 /**
@@ -164,7 +164,6 @@ function handleEdit(targetKey: string | MouseEvent, action: string) {
     let find = tabList.value.find((f: any) => f.fullPath == targetKey)
     if (find) {
       tabStore.removeTab(find)
-      tabStore.setFromTab(true)
     }
   }
 }

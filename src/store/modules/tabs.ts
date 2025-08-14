@@ -79,6 +79,7 @@ export const useTabsStore = defineStore({
         this.tabList.splice(tabIndex, 1)
         if (this.tabActiveKey === tab.fullPath) {
           // 旧标签页存在则跳转到旧标签页
+          this.setFromTab(true)
           const oldPath = this.routerChangeObj?.old;
           const oldIndex = this.tabList.findIndex(f => f.fullPath === oldPath);
         
@@ -163,6 +164,7 @@ export const useTabsStore = defineStore({
     },
     closeAllTab() {
       // 只保留第一个
+      this.setFromTab(true)
       let length = this.tabList.length
       this.tabList.splice(1, length - 1)
       this.tabActiveKey = this.tabList[0].fullPath

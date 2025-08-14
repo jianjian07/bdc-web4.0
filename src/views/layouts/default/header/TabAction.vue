@@ -128,7 +128,6 @@ function handleClickTabAction(action) {
       tabStore.closeCurrentTab(tab)
       break;
   }
-  tabStore.setFromTab(true)
 }
 
 </script>
