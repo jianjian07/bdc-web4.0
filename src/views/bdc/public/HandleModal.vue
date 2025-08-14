@@ -88,23 +88,22 @@ import {
   CloseCircleOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue'
-import { computed, createVNode, inject, onBeforeUnmount, onMounted, ref } from "vue"
+import { createVNode, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue"
 import { findNode, getTransferRuleByCode } from "/@/views/online/utils/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
 import { Modal, message } from "ant-design-vue"
-import { useRoute } from "vue-router"
-import { closeCurrentTab } from "/@/views/bdc/public/bdc.ts";
 import { useUserStore } from "/@/store/modules/user.ts"
+import { currentRoute } from "/@/router"
 const eventBus = inject('scopedEventBus', null)
 const userStore = useUserStore()
-const route = useRoute();
+const route = currentRoute;
 const props = defineProps({
   formData: {
     type: Object,
     default: {}
   }
 })
-// 开启弹窗
+// 开启弹窗 
 let open = ref<boolean>(false)
 // 加载状态
 let spinning = ref<boolean>(false)
@@ -266,10 +265,11 @@ function getTaskInfo() {
           getShjg()
         }
         // setTransTree()
+        resolve(true)
       } else {
         message.warning('获取流程数据失败:' + res?.message)
+        resolve(false)
       }
-      resolve(true)
     })
   })
 }
@@ -395,6 +395,9 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
             treeData.value = transTree
             treeDataCopy.value = JSON.parse(JSON.stringify(treeData.value))
             roleNum.value = roleNumber
+            // 取第一个第一级父节点
+            const firstRootNode = transTree[0] || []
+            expandedKeys.value = firstRootNode.children ? collectParentKeys(firstRootNode) : []
             treeSpinning.value = false
           }
         }
@@ -408,6 +411,14 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
   })
 }
 
+const collectParentKeys = (node) => {
+  const keys = []
+  if (node.children && node.children.length > 0) {
+    keys.push(node.key) // 当前节点是父节点，加入key
+    node.children.forEach(child => keys.push(...collectParentKeys(child)))
+  }
+  return keys
+}
 
 function resetData() {
   selectedKeys.value = []
@@ -779,8 +790,16 @@ function onChangeUserType(e) {
       }
     }
     treeData.value = tree
+    const firstRootNode = tree[0] || []
+    nextTick(() => {
+      expandedKeys.value = firstRootNode.children ? collectParentKeys(firstRootNode) : []
+    })
   } else {
     treeData.value = treeDataCopy.value
+    const firstRootNode = treeDataCopy.value[0] || []
+    nextTick(() => {
+      expandedKeys.value = firstRootNode.children ? collectParentKeys(firstRootNode) : []
+    })
   }
 }
 
