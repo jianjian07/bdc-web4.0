@@ -51,7 +51,7 @@ export function cModal (options?: cModalModel) {
   app.provide('appTheme', configTheme);
   app.provide('scopedEventBus',scopeBus)
   registerGlobComp(app)
-  app.use(router)
+  // app.use(router)
   app.use(formImagining)
   instance = app.mount(div);
   
@@ -102,6 +102,3 @@ export function cModal (options?: cModalModel) {
     update
   }
 }
-
-
-

@@ -12,8 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from "vue-router"
-import { router } from "/@/router"
+import { currentRoute, router } from "/@/router"
 import * as bdc from '/@/views/bdc/public/bdc'
 import { onBeforeUnmount, onMounted, provide, ref, useAttrs } from "vue"
 import { resetValidateInfos } from "form-imagining"
@@ -22,6 +21,7 @@ import { updateCModalScopeBus } from "/@/components/cModal/index.ts"
 import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
 const eventBus = createScopedBus()
 const attrs = useAttrs()
+const route = currentRoute;
 updateCModalScopeBus(eventBus)
 updateCDrawerScopeBus(eventBus)
 provide('scopedEventBus', eventBus)
@@ -42,7 +42,6 @@ defineExpose({
   rView
 })
 
-const route = useRoute();
 let code: string = props.formData.formId || props.id ; 
 if (code == "-1") {
     if (route.params.code == undefined) {

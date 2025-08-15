@@ -258,9 +258,9 @@ import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlin
 import { message } from "ant-design-vue"
 import { checkShowForSingle, checkShowForZh, getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
 import { extractDataLpb } from '/@/utils/bdc/bdc';
-import { router } from "/@/router"
 import { cModal } from "/@/components/cModal/index"
-import { closeCurrentTab } from "/@/views/bdc/public/bdc.ts";
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 
 // 查询条件
 let zrzData = ref<any>({
@@ -391,7 +391,6 @@ enum api {
 const emit = defineEmits(['ok'])
 
 onMounted(async () => {
-  let route = router.currentRoute.value
   let slbh = route.query.slbh
   if (slbh) {
     getSlsqModel()
@@ -411,7 +410,6 @@ function handleLoad() {
 
 // 获取登记类型
 function getSlsqModel() {
-  let route = router.currentRoute.value
   let slbh = route.query.slbh
   defHttp.get({ url: api.model, params: { slbh: slbh } }, { withToken: true }).then(async (res) => {
     if (res && res.success) {
@@ -427,7 +425,6 @@ function getSlsqModel() {
  */
 function initCurrentCase() {
   return new Promise((resolve, reject) => {
-    let route = router.currentRoute.value
     let slbh = route.query.slbh
     if (!slbh) {
       message.warning("未获取到受理编号，请刷新地址重试！")

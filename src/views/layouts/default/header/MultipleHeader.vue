@@ -26,6 +26,7 @@ import { computed, defineAsyncComponent, ref, watch } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { RedoOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue';
 import { useRouter } from "vue-router"
+import { router } from "/@/router"
 import { usePermissionStore } from "/@/store/modules/permission"
 const TabAction = defineAsyncComponent(() => import("/@/views/layouts/default/header/TabAction.vue"));
 const tabStore = useTabsStore()
@@ -45,7 +46,7 @@ const menuFirst = menuList[0]
 import { PageEnum } from "/@/enums/pageEnum";
 import { REDIRECT_ROUTE } from "/@/router/routes/basic"
 // 路由
-const router = useRouter()
+// const router = useRouter()
 
 // 监听当前路由
 watch(() => router.currentRoute.value, (newValue: any, oldValue) => {
@@ -116,7 +117,7 @@ watch(() => activeKeys.value, (newVal, oldVal) => {
     }
     return // 避免循环导航
   } else {
-    //console.log('路由操作')
+    // console.log('路由操作')
   }
 })
 

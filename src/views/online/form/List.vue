@@ -5,7 +5,7 @@
 <script setup lang="ts">
 // import CGenerateForm from './modules/GenerateForm.vue';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { currentRoute } from "/@/router"
 const data: any = {
     "list": [
         {
@@ -214,7 +214,7 @@ const data: any = {
 }
 
 onMounted(() => {
-    const route = useRoute();
+    const route = currentRoute;
     const code = ref(route.params?.code);
     console.log('code:', code.value)
 })

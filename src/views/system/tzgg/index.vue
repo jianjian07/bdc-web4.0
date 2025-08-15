@@ -6,9 +6,9 @@
 <script setup lang="ts">
 import contentList from './components/contentList.vue';
 import tableList from './components/tableList.vue';
-import { useRoute } from "vue-router"
+import { currentRoute } from "/@/router"
 
-const route = useRoute()
+const route = currentRoute;
 
 const props = defineProps({
   type: {

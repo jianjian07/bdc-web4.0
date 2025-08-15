@@ -19,10 +19,9 @@ import { sendSaveFun, getMultipleRef, sendQlrSaveFun, sendPlJcf } from "/@/views
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos, getFormInfo } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
-import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
-import { router } from "/@/router"
-const route = useRoute();
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })

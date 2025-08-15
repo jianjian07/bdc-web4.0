@@ -4,7 +4,7 @@ import { cModal } from "/@/components/cModal/index"
 import { computed, createVNode, nextTick } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
-import { router } from "/@/router"
+import { currentRoute, router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import { checkLogic } from "/@/utils/bdc/bdc"
 import {
@@ -20,10 +20,13 @@ import { guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { useAppStore } from "/@/store/modules/app.ts"
+import { downloadPdfByCanvas, generatePdfByHtml } from "/@/views/system/contract/genPdf.ts"
 
 const userStore = useUserStore()
 // 权利人信息
 let qlrxxObj = {}
+// route
+let route = currentRoute
 
 enum api {
   configList = '/api/zrzy-dzzw/caseConfig/getCaseState',
@@ -179,7 +182,6 @@ export async function baseSave(demoRefs: any, loading: any, jdmc: string, eventB
 export async function handOver(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
   let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
   if (res && res.status && res.validate) {
-    const route = router.currentRoute.value;
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
     let checkRes: any = true
     if (['收件','受理', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
@@ -230,7 +232,7 @@ export function closeCurrentTab() {
     const currentTab = computed(() => tabStore.getCurrentTab)
     tabStore.removeTab(currentTab.value)
     setTimeout(() => {
-      if (tabStore.getCurrentTab.fullPath == '/bdc/case/list') {
+      if (tabStore.getCurrentTab.fullPath == '/bdc/case/list' || tabStore.getCurrentTab.fullPath == '/bdc/case/AdminList') {
         const tabStore = useTabsStore()
         tabStore.refreshTab()
         // router.push('/refresh')
@@ -257,7 +259,6 @@ export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus
     } else {
       let el: any = document.getElementById('qszt') as HTMLElement
       if (el) {
-        const route = router.currentRoute.value;
         let query = route.query
         if (query.jf == '1') {
           // 解封界面 状态提交改为2
@@ -289,7 +290,6 @@ export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus
  * 查封台账更新业务办理情况
  */
 function updateYwblqk() {
-  const route = router.currentRoute.value;
   let slbh = route.query.slbh
   return new Promise((resolve, reject) => {
     defHttp.put({ url: '/api/zrzy-bdc/bdc/bdcCftz/updateYwblqkBySlbh', params: { slbh: slbh } }, { withToken: true }).then((res) => {
@@ -444,7 +444,7 @@ export async function showFile(demoRefs: any, loading: any, jdmc: string, eventB
  * @param params
  */
 export function showFileNewBlank(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
-  let query = router.currentRoute.value.query
+  let query = route.query
   const urlSearchParams = new URLSearchParams(query)
   urlSearchParams.set('manage', params?.manage ?? false) // 设置 manage 参数
   const queryString = urlSearchParams.toString()
@@ -479,7 +479,6 @@ export function reloadTable(eventBus: any) {
  */
 export async function print(params: { code: string, [key: string]: string | number }) {
   // let domain = window._CONFIG['domianURL']
-  const route = router.currentRoute.value;
   const routeSlbh = route.query.slbh?.toString(); // 从路由获取的 slbh
   let domain = ''
   let url: any = ''
@@ -539,7 +538,6 @@ function getReportUrl(data) {
  * @returns
  */
 export async function register(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
-  const route = router.currentRoute.value;
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
   const callback = params?.callback
@@ -661,7 +659,6 @@ function djb(slbh: string, cType: string, loading?: any, callback?: any) {
  * @returns
  */
 export function savaGd() {
-  const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   return new Promise((resolve, reject) => {
     defHttp.post({
@@ -677,7 +674,6 @@ export function savaGd() {
   })
 }
 export function baseGd(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
-  const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   const taskId = route.query.taskId?.toString()
   return new Promise(async (resolve, reject) => {
@@ -718,7 +714,6 @@ export function baseGd(demoRefs: any, loading: any, jdmc: string, eventBus: any,
  * @param fields
  */
 export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any, basicInfo: any) {
-  let route = router.currentRoute.value
   if (viewData.value && fields) {
     if (fields.includes('.')) {
       let key = fields.split('.')
@@ -743,7 +738,6 @@ export async function setQlqtqkBySlbh(viewData: any, fields: any, params: any, b
  * @param fields
  */
 export async function setQlqtqkByYwh(viewData: any, fields: any, params: any, basicInfo: any) {
-  let route = router.currentRoute.value
   if (viewData.value && fields) {
     if (fields.includes('.')) {
       let key = fields.split('.')
@@ -829,7 +823,6 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any =
  */
 export function batchQlqt() {
   return new Promise((resolve, reject) => {
-    let route = router.currentRoute.value
     let slbh = route.query.slbh
     defHttp.post({
       url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/updateQlqtBatch',
@@ -921,7 +914,6 @@ function manageQLQT(qlqtConfig: string, viewData: any, basicInfo: any) {
  */
 export function createCard() {
   return new Promise((resolve, reject) => {
-    let route = router.currentRoute.value
     let slbh = route.query.slbh
     defHttp.post({ url: '/api/zrzy-bdc/bdc/card/getCard', params: { slbh: slbh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
@@ -1135,16 +1127,19 @@ export function logOffDataByYwh(ywh, djlx) {
  * @param fields
  */
 export function getPayMan(viewData, tableName, field) {
-  const route = router.currentRoute.value;
   const slbh = route.query.slbh?.toString()
   if (!viewData.value[tableName][field]) {
-    defHttp.get({ url: '/api/zrzy-bdc/bdc/sf/getPayMan', params: { slbh: slbh } }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        viewData.value[tableName][field] = res.result
-      } else {
-        message.warning('获取缴费单位出错')
-      }
-    })
+    if (slbh) {
+      defHttp.get({ url: '/api/zrzy-bdc/bdc/sf/getPayMan', params: { slbh: slbh } }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          viewData.value[tableName][field] = res.result
+        } else {
+          message.warning('获取缴费单位出错!')
+        }
+      })
+    } else {
+      console.log('受理编号未获取到!')
+    }
   }
 }
 
@@ -1153,7 +1148,6 @@ export function getPayMan(viewData, tableName, field) {
  * @param record
  */
 export function previewDjb(record?: any) {
-  const route = router.currentRoute.value
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
     router.push({ path: '/djb/preview', query: { slbh: slbh, ywh: record?.ywh } })
@@ -1165,7 +1159,6 @@ export function previewDjb(record?: any) {
  * @param record
  */
 export function lookDjb(record?: any) {
-  const route = router.currentRoute.value
   const slbh = route.query.slbh?.toString()
   if (record || slbh) {
     router.push({ path: '/djb/print', query: { slbh: slbh, ywh: record?.ywh } })
@@ -1426,7 +1419,6 @@ export function handleWwsjFun(options) {
  */
 export async function relateData(options: any) {
   return new Promise((resolve, reject) => {
-    const route = router.currentRoute.value;
     const { data } = options
     const slbh = route.query.slbh?.toString()
     let dyhList: any = []
@@ -1745,7 +1737,6 @@ export function getQyxxList(qlrmc, zjh) {
  */
 async function getHandleCkbzBtn() {
   return new Promise((resolve) => {
-    const route = router.currentRoute.value;
     const slbh = route.query.slbh
     if (!slbh) {
       resolve([])
@@ -2028,7 +2019,6 @@ export function deleteHtByHtbh(htlsh) {
  * 根据合同编号提取附件
  */
 export async function addFjByHtbh(loading: any) {
-  const route = router.currentRoute.value;
   const slbh = route.query.slbh
   if (!slbh) {
     message.error("未获取到受理编号，请检查!")
@@ -2055,7 +2045,6 @@ export async function addFjByHtbh(loading: any) {
  */
 export function updateHtztBySlbh() {
   return new Promise((resolve) => {
-    const route = router.currentRoute.value;
     const slbh = route.query.slbh
     if (!slbh) {
       message.error("未获取到受理编号，请检查!")
@@ -2087,7 +2076,6 @@ export async function handTerminate(demoRefs: any, loading: any, jdmc: string, e
       content: createVNode('div', { style: 'color:red;' }, '是否不予登记？确认后案件将强制归档！'),
       onOk() {
         let url = '/api/zrzy-bdc/bdc/process/terminate'
-        const route = router.currentRoute.value;
         const slbh = route.query.slbh
         defHttp.get({ url: url, params: { slbh: slbh } }, { withToken: true }).then((res) => {
           if (res && res.success) {
@@ -2142,7 +2130,6 @@ export function numberToChinese(money, options = { round: true }) {
  * 获取指纹
  */
  export function getFingerPrint(){
-  const route = router.currentRoute.value
   defHttp.post({ url: 'http://localhost:8888/web/hardware/fingerEnter' }, { withToken: true }).then((res) => {
     if (!res || res.code!='200') {
       message.warning(res?.message || '获取指纹失败!')
@@ -2176,7 +2163,6 @@ export function getSignature(){
         let str = res.onSubmit()
         if (str) {
             const base64 = str.replace(/^data:image\/png;base64,/, '');
-            const route = router.currentRoute.value
           
             let _data: any = {
               slbh: route.query.slbh,
@@ -2197,4 +2183,9 @@ export function getSignature(){
       }
     }
   })
+}
+
+export function downloadPdf(params: any) {
+  // generatePdfByHtml(params.title, params.className, params.text)
+  // downloadPdfByCanvas(params.title, params.className, params.text)
 }

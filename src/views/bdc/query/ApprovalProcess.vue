@@ -32,10 +32,10 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
 import { CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons-vue"
-import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-const route = useRoute()
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 // 列表
 let list = ref<any>([])
 

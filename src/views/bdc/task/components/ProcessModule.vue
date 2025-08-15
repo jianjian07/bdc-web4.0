@@ -61,9 +61,9 @@ import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import NodeInfoModal from "/@/views/bdc/task/components/NodeInfoModal.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { useRoute } from "vue-router"
 import { AlertOutlined, RollbackOutlined, SolutionOutlined } from "@ant-design/icons-vue";
-const route = useRoute()
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 
 const props = defineProps({
   processInstanceId: {

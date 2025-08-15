@@ -34,8 +34,8 @@ import LookPublic from "/@/views/bdc/public/LookPublic.vue"
 import { defHttp } from "/@/utils/http/axios"
 const ProcessModule = defineAsyncComponent(() => import("/@/views/bdc/task/components/ProcessModule.vue"))
 const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/LookIndex.vue"))
-import { useRoute } from "vue-router"
-const route = useRoute();
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 // 当前选中tab
 let activeKey = ref<string>('1')
 // 历史流程节点

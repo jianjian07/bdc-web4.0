@@ -29,16 +29,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from "vue-router"
 import { onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { isJsonData } from "/@/views/online/utils/commonUtils"
 import { useUserStore } from "/@/store/modules/user"
+import { currentRoute } from "/@/router"
 const userStore = useUserStore();
 const token = userStore.getToken
 
-const route = useRoute()
+const route = currentRoute;
 // 加载
 let spinning = ref<boolean>(false)
 // 打印清单列表

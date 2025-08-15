@@ -43,13 +43,13 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { Base64 } from "js-base64"
 import { message } from "ant-design-vue"
 import { DownloadOutlined } from '@ant-design/icons-vue';
+import { currentRoute } from "/@/router"
 
-const route = useRoute()
+const route = currentRoute;
 // 加载
 let spinning = ref<boolean>(false)
 // 登记簿列表

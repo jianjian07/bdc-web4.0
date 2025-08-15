@@ -19,17 +19,17 @@ import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
 import { resetValidateInfos, eventBus } from "form-imagining"
 import { defHttp } from "/@/utils/http/axios"
 const modules = import.meta.glob('/src/**/*.vue')
-import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
 import { updateCModalScopeBus } from "/@/components/cModal/index"
 import { createScopedBus } from "/@/views/online/utils/scopeEventBus"
 import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
 import { getMultipleRef } from "/@/views/bdc/public/bdc.ts"
+import { currentRoute } from "/@/router"
 const eventBus = createScopedBus()
 updateCModalScopeBus(eventBus)
 updateCDrawerScopeBus(eventBus)
 provide('scopedEventBus', eventBus)
-const route = useRoute();
+const route = currentRoute;
 const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })

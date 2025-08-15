@@ -80,9 +80,9 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { cloneDeep } from 'lodash-es';
 import { getTreeDictItemsByCode } from '/@/views/online/utils/commonUtils';
-import { useRoute } from "vue-router"
+import { currentRoute } from "/@/router"
 
-const route = useRoute()
+const route = currentRoute;
 
 let dataSource: any = ref([])
 const editableData: any = reactive({});

@@ -140,9 +140,6 @@ onMounted(() => {
   show()
 })
 
-onBeforeUnmount(() => {
-  close()
-})
 
 /**
  * 设置loading

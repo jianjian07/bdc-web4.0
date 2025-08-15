@@ -69,7 +69,6 @@ import {
   ref
 } from 'vue'
 import { defHttp } from '/@/utils/http/axios'
-import { useRoute } from 'vue-router'
 import { extractData, extractDataLpb } from '/@/utils/bdc/bdc'
 import { isJsonData } from "/@/views/online/utils/commonUtils"
 import QlrList from '/@/views/bdc/pages/qlr/QlrList.vue'
@@ -81,6 +80,7 @@ import RViewOnline from "/@/views/online/report/RViewOnline.vue"
 import { message } from "ant-design-vue"
 import { updateCModalScopeBus } from "/@/components/cModal/index"
 import { updateCDrawerScopeBus } from "/@/components/cDrawer/index.ts"
+import { currentRoute } from "/@/router"
 const eventBus = createScopedBus()
 updateCModalScopeBus(eventBus)
 updateCDrawerScopeBus(eventBus)
@@ -92,7 +92,7 @@ const generateForm = computed(() => {
 })
 const LookLpb = defineAsyncComponent(() => import("/@/views/bdc/lpb/index.vue"))
 const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/index.vue"))
-const route = useRoute();
+const route = currentRoute;
 let open = ref(false)
 // 表单配置
 let formConfig = ref<any>({})

@@ -17,9 +17,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import fileTree from './components/fileTree.vue';
-import { useRoute } from 'vue-router'
+import { currentRoute } from "/@/router"
 
-const route = useRoute();
+const route = currentRoute;
 let isManage: any = ref(false)
 let modalPreview: any = ref(false)
 

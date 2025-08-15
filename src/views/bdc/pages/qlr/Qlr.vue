@@ -39,11 +39,11 @@
 import { onMounted, ref } from "vue"
 import { cModal } from "/@/components/cModal/index"
 import { defHttp } from "/@/utils/http/axios"
-import { useRoute } from "vue-router"
 import { message } from "ant-design-vue"
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
+import { currentRoute } from "/@/router"
 
-const route = useRoute()
+const route = currentRoute;
 
 const props = defineProps({
   qlrxx: {

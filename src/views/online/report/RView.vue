@@ -23,10 +23,9 @@ import {
 } from "/@/views/online/utils/wonder-report"
 import { getSelectAllCheck, setSelectAllCheck, syncChange, getMatchTag, saveRow, editRow, cancelRow, delRow, addNewRow } from "/@/views/online/utils/wonder1.0.1"
 import { getReport } from '.';
-import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
 import { message, Modal } from 'ant-design-vue';
-import { router } from "/@/router";
+import { currentRoute, router } from "/@/router"
 import * as bdc from '/@/views/bdc/public/bdc'
 const VNodes = useVNodes();
 const props = defineProps({
@@ -39,7 +38,7 @@ const props = defineProps({
         default: {}
     }
 })
-const route = useRoute();
+const route = currentRoute;
 let code: string = props.formData.formId || props.id ; 
 if (code == "-1") {
     if (route.params.code == undefined) {

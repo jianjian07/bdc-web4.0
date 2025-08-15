@@ -12,10 +12,9 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from "vue-router"
-import { router } from "/@/router"
+import { currentRoute, router } from "/@/router"
 import * as bdc from '/@/views/bdc/public/bdc'
-const route = useRoute();
+const route = currentRoute;
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 const attrs = useAttrs()

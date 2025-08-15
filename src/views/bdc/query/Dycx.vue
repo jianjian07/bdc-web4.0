@@ -51,10 +51,9 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { router } from "/@/router"
+import { currentRoute, router } from "/@/router"
 import { ClockCircleOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
@@ -63,7 +62,7 @@ const props = defineProps({
     default: {}
   }
 })
-const route = useRoute();
+const route = currentRoute;
 // 是否显示查询框
 let isShowSearch = ref<boolean>(true)
 // 查询栏

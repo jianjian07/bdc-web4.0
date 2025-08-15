@@ -3,7 +3,6 @@ import { createApp } from "vue"
 import { registerGlobComp } from "/@/components/registerGlobComp"
 import formImagining from 'form-imagining'
 import { cDrawerModel } from "/@/components/cDrawer/model"
-import { router } from "/@/router";
 import { getGlobalFontSize } from "/@/settings/initSetting.ts"
 
 let scopeBus = null
@@ -52,7 +51,7 @@ export function cDrawer (options?: cDrawerModel) {
   app.provide('appTheme', configTheme);
   app.provide('scopedEventBus',scopeBus);
   registerGlobComp(app)
-  app.use(router)
+  // app.use(router)
   app.use(formImagining)
   instance = app.mount(div);
   

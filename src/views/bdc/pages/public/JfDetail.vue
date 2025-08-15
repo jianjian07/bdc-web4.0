@@ -39,10 +39,10 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { validateRules, setInputStatus } from "/@/views/online/utils/commonUtils"
-import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-const route = useRoute()
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 const columns = [
   {
     title: '缴费项目',
@@ -140,12 +140,16 @@ function getJfxmOptions() {
  */
 function initData() {
   let slbh = route.query.slbh
-  defHttp.get({ url: api.list, params: { slbh: slbh } }, { withToken: true }).then((res) => {
-    if (res && res.success) {
-      jfxx.value = res.result
-      getYjje()
-    }
-  })
+  if (slbh) {
+    defHttp.get({ url: api.list, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        jfxx.value = res.result
+        getYjje()
+      }
+    })
+  } else {
+    console.log('受理编号未获取到!')
+  }
 }
 
 /**

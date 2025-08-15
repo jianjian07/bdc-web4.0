@@ -32,8 +32,8 @@ import { useAppStore } from '/@/store/modules/app';
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
-import { useRoute } from 'vue-router';
 import { PageEnum } from "/@/enums/pageEnum";
+import { currentRoute } from "/@/router"
 // const LayoutHeader = defineAsyncComponent(() => import("/@/views/layouts/default/header/index.vue"));
 // const LayoutMultipleHeader = defineAsyncComponent(() => import("/@/views/layouts/default/header/MultipleHeader.vue"));
 const LayoutContent = defineAsyncComponent(() => import("./content/index.vue"));
@@ -47,7 +47,7 @@ const fullscreen = computed(() => tabStore.getIsFullScreen)
 const { getCollapsed } = useMenuSetting();
 // 蒙版相关
 let { maskShow, maskText } = toRefs(appStore.$state)
-const route = useRoute();
+const route = currentRoute;
 let prefixCls = 'default-layout'
 let showMenuList = ref(true)
 const layoutClass = () => {

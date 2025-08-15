@@ -9,10 +9,10 @@ export default {
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router';
 import { defHttp } from '/@/utils/http/axios';
+import { currentRoute } from "/@/router"
 
-const route = useRoute();
+const route = currentRoute;
 const code = ref(route.params?.code.toString());
 let id = code.value.toString()
 let show = ref(false)

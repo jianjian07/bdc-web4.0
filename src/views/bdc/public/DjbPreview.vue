@@ -30,13 +30,13 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import { useRoute } from "vue-router"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useUserStore } from "/@/store/modules/user"
+import { currentRoute } from "/@/router"
 const userStore = useUserStore();
 const token = userStore.getToken
-const route = useRoute()
+const route = currentRoute;
 // 加载
 let spinning = ref<boolean>(false)
 // 登记簿列表

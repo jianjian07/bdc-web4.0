@@ -26,7 +26,6 @@ import {
 } from '/@/views/online/utils/commonUtils'
 import { initTable } from "/@/views/online/utils/wonder-report";
 import { getForm } from '.';
-import { useRoute } from 'vue-router';
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
 import { InfoCircleOutlined } from '@ant-design/icons-vue';
@@ -58,6 +57,7 @@ import {
   getFormInfo
 } from "/@/views/online/utils/wonder1.0.1"
 import { useUserStore } from "/@/store/modules/user"
+import { currentRoute } from "/@/router"
 // import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 const props: any = defineProps({
     id: {
@@ -100,7 +100,7 @@ watch(() => props.reload, async (newVal) => {
 })
 const { isSaved, caseCode, disabled } = useAttrs()
 const VNodes = useVNodes();
-const route = useRoute();
+const route = currentRoute;
 const userStore = useUserStore();
 // const userInfo = computed(() => userStore.getUserInfo)
 const userInfo = userStore.getUserInfo

@@ -9,9 +9,9 @@
 import { toRefs } from "vue"
 const appStore = useAppStore()
 let prefixCls = 'default-layout'
-import { useRoute } from 'vue-router'
 import { useAppStore } from "/@/store/modules/app"
-const route = useRoute()
+import { currentRoute } from "/@/router"
+const route = currentRoute;
 // 蒙版相关
 let { maskShow, maskText } = toRefs(appStore.$state)
 </script>

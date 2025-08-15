@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router';
+import { currentRoute } from "/@/router"
 
-const route = useRoute();
+const route = currentRoute;
 const code = ref(route.params?.code.toString());
 let id = code.value.toString()
 let show  = ref(false)

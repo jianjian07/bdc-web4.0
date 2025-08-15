@@ -1449,11 +1449,11 @@ import { getData,getDataByApi,initTable, initCTableV2, initAllCTableV2, validate
 import tableSelectProps from "/@/components/form-widget/widget/tableSelectOptions"
 import { cModal } from "/@/components/cModal/index"
 import { Modal, message } from 'ant-design-vue';
-import { useRoute } from 'vue-router';
 import dayjs from 'dayjs';
+import { currentRoute } from "/@/router"
 
 const formId=142;
-const route = useRoute();
+const route = currentRoute;
 const VNodes = useVNodes();
 let datalist: any = ref([]);
 let formRef = ref()
