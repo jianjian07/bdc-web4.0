@@ -467,7 +467,7 @@ function loadSfxxx(sfxbh: string) {
         rec.sfjm = rec.sfjm ? rec.sfjm + '' : null
         rec.jmfs = rec.jmfs ? rec.jmfs + '' : null
         sxtjxx.value = res.result.bdcSfConfigsxList.map((item) => {
-          item.sxtj = item.sxtj.includes(',') ? item.sxtj.split(',') : item.sxtj
+          item.sxtj = item.sxtj.includes(',') ? item.sxtj.split(',') : (item.sxtj ? item.sxtj : [])
           return item
         })
         if (rec.djlx) {
