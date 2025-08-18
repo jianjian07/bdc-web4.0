@@ -7,11 +7,19 @@
                         <a-range-picker v-model:value="formData.createTime" />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="标志">
-                        <a-input v-model:value="formData.flag" placeholder="数据id" allowClear />
-                    </a-form-item>
-                </a-col>
+              <a-col :span="7" :offset="0">
+                <a-form-item label="接口名">
+                  <a-input v-model:value="formData.remark" placeholder="模糊查询" allowClear/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="4" :offset="0">
+                <a-form-item label="标志">
+                  <a-select v-model:value="formData.flag" placeholder="--请选择--" allowClear>
+                    <a-select-option value="成功">成功</a-select-option>
+                    <a-select-option value="失败">失败</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
                 <a-col :span="4" :offset="0">
                     <a-form-item style="text-align: center;">
                         <a-space>
@@ -100,10 +108,19 @@ async function loadData() {
         delete formData.value.startTime
         delete formData.value.endTime
     }
-    defHttp.get({ url: url, params: { page: pagination.value.current, size: pagination.value.pageSize, startTime: formData.value.startTime, endTime: formData.value.endTime, flag: formData.value.flag } }, { withToken: true }).then((res) => {
-        datalist.value = res.result.records
-        pagination.value.total = res.result.total
-    }).catch(err => {
+  defHttp.get({ url: url,
+    params: {
+      page: pagination.value.current,
+      size: pagination.value.pageSize,
+      startTime: formData.value.startTime,
+      endTime: formData.value.endTime,
+      flag: formData.value.flag,
+      remark: formData.value.remark
+    }
+  }, { withToken: true }).then((res) => {
+    datalist.value = res.result.records
+    pagination.value.total = res.result.total
+  }).catch(err => {
         console.info(err)
     })
 }
