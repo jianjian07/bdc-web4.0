@@ -291,7 +291,7 @@ function downLoadFile() {
       url: urlList.downLoadFile,
       params: { id: previewData.value.id },
       responseType: "blob"
-    }, { withToken: true })
+    }, { withToken: true, withTimeout: false })
     .then((res: any) => {
       if (res.size == 0) {
         message.error('下载附件出错！')
