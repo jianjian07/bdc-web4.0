@@ -54,7 +54,9 @@
                       </a-space>
                   </template>
                   <template v-if="column.dataIndex === 'isUrgent'">
-                    {{ record.isUrgent === '1' ? '已加急' : '未加急' }}
+                      <a-tag :color="record.isUrgent === '1' ? 'green' : 'red'">
+                         {{ record.isUrgent === '1' ? '已加急' : '未加急' }}
+                      </a-tag>
                   </template>
               </template>
           </a-table>

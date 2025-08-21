@@ -51,10 +51,12 @@
                         </a-popconfirm>
                         <a v-if="record.isSupervise!=''&& record.isSupervise==='0'"
                           @click="handleOper(record)">督办</a>
-                      </a-space>
+                      </a-space> 
                   </template>
                   <template v-if="column.dataIndex === 'isSupervise'">
-                    {{ record.isSupervise === '1' ? '已督办' : '未督办' }}
+                      <a-tag :color="record.isSupervise === '1' ? 'green' : 'red'">
+                          {{ record.isSupervise === '1' ? '已督办' : '未督办' }}
+                      </a-tag>
                   </template>
               </template>
           </a-table>
