@@ -1,8 +1,8 @@
 <template>
   <div class="bdc-dycx">
     <div class="bdc-dycx-search" v-if="isShowSearch">
-      <a-form layout="inline">
-        <a-form-item :model="formState" label="不动产单元号">
+      <a-form ref="formRef" :model="formState" layout="inline">
+        <a-form-item name="bdcdyh" label="不动产单元号" required :rules="[{ required: true, message: '请输入不动产单元号!' }]">
           <a-input v-model:value="formState.bdcdyh" placeholder="请输入不动产单元号" style="width: 300px;"></a-input>
         </a-form-item>
         <a-form-item>
@@ -19,7 +19,7 @@
             <template #dot>
               <div class="slot-dot-start">登记情况</div>
             </template>
-            <span style="font-weight: bold;position: absolute;left: -370px;font-size: 18px">{{ bdcdyh }}</span>
+            <span style="font-weight: bold;position: absolute;left: -400px;font-size: 18px">{{ bdcdyh }}</span>
           </a-timeline-item>
           <a-timeline-item style="height: 50px">
             <template #dot><span style="font-weight: bold">至今</span></template>
@@ -75,6 +75,7 @@ let bdcdyh = ref<any>('')
 let hisData = ref<any>()
 // loading
 let spinning = ref<boolean>(false)
+let formRef = ref<any>()
 
 enum api {
   list = '/api/zrzy-bdc/bdc/query/getListByBdcdyh'
@@ -94,7 +95,14 @@ onMounted(() => {
 /**
  * 初始化
  */
-function initData() {
+async function initData() {
+  if (isShowSearch.value) {
+    await formRef.value.validate()
+  }
+  if (!bdcdyh.value) {
+    message.error("请输入不动产单元号")
+    return
+  }
   spinning.value = true
   defHttp.get({ url: api.list, params: { bdcdyh: bdcdyh.value } }, { withToken: true }).then((res) => {
     if (res && res.success) {
