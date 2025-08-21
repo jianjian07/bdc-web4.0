@@ -206,23 +206,7 @@ function showUserModal() {
     onOk: async (res: any) => {
       if (res && res.selectedRow) {
         formState.userIds = res.selectedRow.map(m => m.id).join(',')
-        const names = res.selectedRow.map(m => m.realName)
-        alertMessage.value = '已选择 0 人'
-        if (names.length) {
-          alertMessage.value = '已选择'
-          for (let i = 0; i < names.length; i++) {
-            if (i == 0) {
-              alertMessage.value += ` ${names[i]}`
-            } else if (i < 3) {
-              alertMessage.value += `、${names[i]}`
-            } else {
-              break
-            }
-          }
-          if (names.length > 3) {
-            alertMessage.value += ` 等 ${names.length} 人`
-          }
-        }
+        alertMessage.value = `已选择 ${res.selectedRow.length || 0} 人`
         modal.destroy()
       } else {
         message.warning('请先选择用户!')

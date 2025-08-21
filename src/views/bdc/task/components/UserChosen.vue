@@ -319,7 +319,7 @@ function initData() {
         selectedRow.value = props.formData.currentKeys.map((key) => {
           let filterKeyName = props.formData.filterKeyName ? props.formData.filterKeyName : 'username'
           let find = userList.value.find(f => f[filterKeyName] == key)
-          return find
+          return find ? find : { id: key }
         })
         selectedRowKeys.value = selectedRow.value.map(s => s?.id)
       }
