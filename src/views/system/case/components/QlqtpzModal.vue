@@ -68,7 +68,8 @@ let formState: any = ref({
 let djlxOption: any = reactive([])
 
 const rules: any = {
-  lcid: { required: true, message: '请选择流程类型', trigger: 'blur'}
+  lcid: { required: true, message: '请选择流程类型', trigger: 'blur'},
+  sjnr: { required: true, message: '设计内容不能为空!', trigger: 'blur'}
 }
 
 const urlList = {

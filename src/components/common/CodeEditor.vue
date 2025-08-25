@@ -58,7 +58,10 @@ import 'codemirror/addon/hint/show-hint.css'
 import "codemirror/addon/selection/active-line"
 import "codemirror/addon/edit/matchbrackets"
 import "codemirror/addon/display/autorefresh"
-import xmlFormatter from "xml-formatter";
+// XML 自动补全相关
+import "codemirror/addon/fold/xml-fold";
+import "codemirror/addon/edit/closetag";
+import "codemirror/addon/edit/matchtags";
 import { XMLFormatterOptions } from "xml-formatter/src/index"
 
 
@@ -144,7 +147,10 @@ let cmOptions = ref({
     gutters: ["CodeMirror-lint-markers"],
     lint: false,
     autoRefresh: true,
-    readOnly: props.readOnly
+    readOnly: props.readOnly,
+    // XML 自动补全配置
+    autoCloseTags: true,
+    matchTags: {bothTags: true},
   })
 
 const cmRef = ref<CmComponentRef>();
@@ -153,12 +159,14 @@ let code: any = ref('')
 const emit = defineEmits(['codeValue'])
 
 watch(() => props.value, (val: any) => {
-  if (mode.value == 'xml' && val) {
-    formatXml(val)
-  } else {
-    code.value = val
+  if (val && val !== code.value) {
+    if (mode.value == 'xml' && val) {
+      formatXml(val)
+    } else {
+      code.value = val
+    }
+    refresh()
   }
-  refresh()
 }, {
   immediate: true
 })
@@ -181,13 +189,17 @@ watch(() => mode.value, (val: any) => {
       cmOptions.value.lint = true
     }
   }
-  if (mode.value == 'xml') {
+  if (mode.value == 'xml' && code.value) {
      formatXml(code.value)
   }
 }, {
   immediate: true
 })
 
+watch(() => fullCoder.value, () => {
+// 监听 fullCoder 变化，在全屏状态切换时刷新编辑器
+  refresh();
+});
 onMounted(() => {
   setTimeout(() => {
     showEditor.value = true
