@@ -232,6 +232,7 @@ async function handleClick(btn) {
       let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
       let _params = `(_vueRefs.value, loading, _jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
       if (btn.anwz == 'center') {
+        params = params || {}
         params.regType = props.regType
         _params = `(${params ? JSON.stringify(params) : params})`
       }
