@@ -18,9 +18,9 @@
             </a-button>
             <template v-for="(btn, index) in visibleButtons" :key="index">
               <template v-if="btn.funName == 'batchQlqt'">
-<!--                <template v-if="!sfybz && isPl">-->
-<!--                  <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>-->
-<!--                </template>-->
+                <!--                <template v-if="!sfybz && isPl">-->
+                <!--                  <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>-->
+                <!--                </template>-->
                 <template v-if="!sfybz">
                   <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
                 </template>
@@ -96,7 +96,11 @@ const props = defineProps({
   jdmc: {
     type: String,
     default: ''
-  }
+  },
+  regType: {
+    type: String,
+    default: ''
+  },
 })
 const eventBus = inject('scopedEventBus', null)
 let _vueRefs: any = computed(() => { return props.vueRefs })
@@ -149,12 +153,12 @@ watch(() => props.btnList, (newVal: any) => {
 
 onMounted(() => {
   loading.value = props.spinning
-  eventBus.on('setHiddenBtnList',getHiddenBtnList)
+  eventBus.on('setHiddenBtnList', getHiddenBtnList)
   eventBus.emit('getHiddenBtnList')
 })
 
 onBeforeUnmount(() => {
-  eventBus.off('setHiddenBtnList',getHiddenBtnList)
+  eventBus.off('setHiddenBtnList', getHiddenBtnList)
 })
 
 /**
@@ -228,6 +232,7 @@ async function handleClick(btn) {
       let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
       let _params = `(_vueRefs.value, loading, _jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
       if (btn.anwz == 'center') {
+        params.regType = props.regType
         _params = `(${params ? JSON.stringify(params) : params})`
       }
       await eval(`bdc[btn.funName]` + _params)

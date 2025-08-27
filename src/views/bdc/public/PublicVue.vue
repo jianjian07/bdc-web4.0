@@ -1,7 +1,8 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ slbh }}-{{ jdmc }}：{{ formConfig.ajmc }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl" :jdmc="jdmc" :isAllFinished="isAllFinished"/>
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :sfybz="showQlr" :isPl="isPl"
+      :jdmc="jdmc" :isAllFinished="isAllFinished" :regType="regType" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
@@ -26,18 +27,20 @@
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
               <template v-if="form.bdlb == '0'">
-                <component v-bind:is="generateForm" :id="form.formId" :key="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setRef(el, form.formId)" :reload="reload" >
+                <component v-bind:is="generateForm" :id="form.formId" :key="form.formId" :formCode="form.vfd"
+                  :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setRef(el, form.formId)"
+                  :reload="reload">
                 </component>
               </template>
               <template v-else>
-                <component v-bind:is="component(form.vfd)" :id="form.formId" :key="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setCRef(el, form.formId)" :reload="reload" >
+                <component v-bind:is="component(form.vfd)" :id="form.formId" :key="form.formId" :formCode="form.vfd"
+                  :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setCRef(el, form.formId)"
+                  :reload="reload">
                 </component>
               </template>
-<!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
-<!--                :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setRef" :reload="reload" >-->
-<!--              </component>-->
+              <!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
+              <!--                :formCode="form.vfd" :disabled="form.iszd == '1'" :jdmc="jdmc" :ref="setRef" :reload="reload" >-->
+              <!--              </component>-->
             </template>
             <template v-if="qlr && isAllFinished">
               <qlr-list v-if="showQlr" :qlr="qlr" :jdmc="jdmc" :regType="regType"></qlr-list>
@@ -46,7 +49,8 @@
           </div>
         </div>
         <div v-if="showFilePanel || showSpPanel" class="split-line" id="drag-line" @mousedown="onDragStart"></div>
-        <div v-if="showFilePanel || showSpPanel" :class="['right-content']" :style="{ width: rightWidth + 'px', height: '100%' }">
+        <div v-if="showFilePanel || showSpPanel" :class="['right-content']"
+          :style="{ width: rightWidth + 'px', height: '100%' }">
           <div v-if="showFilePanel" style="width: 100%; height: 100%">
             <SsoFile :manage="isManage" />
           </div>
@@ -209,7 +213,7 @@ function initBusEvent() {
   eventBus.on('onChangeQlr', onChangeQlrShow)
   eventBus.on('previewFile', onPreviewFile)
   eventBus.on('showFile', onShowFile)
-  eventBus.on('showSpPanel',onShowSpPanel)
+  eventBus.on('showSpPanel', onShowSpPanel)
 }
 
 function removeBusEvent() {
@@ -288,7 +292,7 @@ let ywlx = ref('1')
  * @param spinning 
  * @param params 
  */
-function openList(demoRefs, spinning, jdmc, eventBus ,params?: any) {
+function openList(demoRefs, spinning, jdmc, eventBus, params?: any) {
   const { vtype, reportId } = params
   eType.value = vtype != undefined ? vtype : ''
   formId.value = reportId != undefined ? reportId : ''
@@ -534,12 +538,12 @@ function onShowSpPanel() {
 
 :deep(.ant-input-disabled) {
   background-color: rgba(0, 0, 0, 0.02);
-  color: rgba(0,0,0,0.88);
+  color: rgba(0, 0, 0, 0.88);
 }
 
 :deep(.ant-input[disabled]) {
   background-color: rgba(0, 0, 0, 0.02);
-  color: rgba(0,0,0,0.88);
+  color: rgba(0, 0, 0, 0.88);
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input)) {
