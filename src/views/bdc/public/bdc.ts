@@ -2125,62 +2125,20 @@ export function numberToChinese(money, options = { round: true }) {
   cnMoney = strOutput.replace(/零角零分$/, '整').replace(/零[仟佰拾]/g, '零').replace(/零{2,}/g, '零').replace(/零([亿|万])/g, '$1').replace(/零+元/, '元').replace(/亿零{0,3}万/, '亿').replace(/^元/, "零元");
   return cnMoney;
 }
-
 /**
- * 获取指纹
+ * 手写签名
+ * @param 获取regtype
  */
- export function getFingerPrint(){
-  defHttp.post({ url: 'http://localhost:8888/web/hardware/fingerEnter' }, { withToken: true }).then((res) => {
-    if (!res || res.code!='200') {
-      message.warning(res?.message || '获取指纹失败!')
-    } else {
-      let _data: any = {
-        slbh: route.query.slbh,
-        fingerImage: res.base64
-      }
-      defHttp.post({
-        url: '/api/zrzy-bdc/bdc/public/saveYwImage',
-        params: _data
-      }, { withToken: true }).then((res: any) => {
-        if (res && res.success) {
-          message.success('获取指纹成功!')
-        }else {
-          message.warning(res?.message || '保存指纹失败!')
-        }
-      })
-    }
-  })
-}
-
-export function getSignature(){
+export function getSignature(params?: any){
   let modal = cModal({
     title: '电子签名',
     // width: 1000,
     isFullScreen: true,
+    footer:false,
     filePath: 'views/signature/index',
-    onOk: (res: any) => {
-      if (res && res.onSubmit) {
-        let str = res.onSubmit()
-        if (str) {
-            const base64 = str.replace(/^data:image\/png;base64,/, '');
-          
-            let _data: any = {
-              slbh: route.query.slbh,
-              signatureImage: base64
-            }
-            defHttp.post({
-              url: '/api/zrzy-bdc/bdc/public/saveYwImage',
-              data: _data
-            }, { withToken: true }).then((res: any) => {
-              if (res && res.success) {
-                message.success('电子签名成功!')
-                modal.destroy()
-              } else {
-                message.warning(res?.message || '电子签名失败!')
-              }
-            })
-        }
-      }
+    formData: {
+      slbh: route.query.slbh,
+      regType: params.regType,
     }
   })
 }
