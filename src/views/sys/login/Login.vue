@@ -5,7 +5,7 @@
             <div class="login-css">
                 <h1
                     style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.4rem + 1.8vw);line-height: 1.25;font-weight: 600;">
-                  {{ title }}
+                    {{ title }}
                 </h1>
                 <a-form :model="formData" layout="vertical">
                     <a-form-item label="用户名" name="username" :rules="[{ message: '请输入用户名' }]">
@@ -41,12 +41,13 @@
     </a-row>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { useUserStore } from '/@/store/modules/user';
 import { message, notification } from 'ant-design-vue';
 import { encryptionAES } from '/@/utils/cipher';
 import { router } from '/@/router';
+import { getToken } from '/@/utils/auth';
 const userStore = useUserStore();
 const formData = reactive({
     username: "",
@@ -106,6 +107,13 @@ function forgetPassword() {
 function initProject() {
     router.push('/init')
 }
+
+onMounted(() => {
+    const token = getToken()
+    if (token) {
+        router.push('/analysis')
+    }
+})
 </script>
 <style scoped>
 .content-css {
