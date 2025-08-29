@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
-import { onBeforeUnmount, ref, shallowRef, onMounted, watch, nextTick } from 'vue'
+import { onBeforeUnmount, ref, shallowRef, watch, nextTick } from 'vue'
 import {
   currentFileIds,
   initialFileIds,
@@ -29,7 +29,7 @@ import {
 import {
   customBrowseAndUploadFunc,
   setImageId, srcToDataIdMap,srcToStyleMap,
-  syncImageDataIdToDom
+  syncImageDataIdToDom, initializeSvgImages
 } from "/@/components/common/wangEditor/image-attachment.ts"
 
 const props = defineProps({
@@ -93,7 +93,6 @@ watch(() => props.id, (val) => {
   immediate: true
 })
 
-
 const emit = defineEmits(['editorValue', 'ready'])
 
 // 组件销毁时，也及时销毁编辑器
@@ -107,6 +106,7 @@ onBeforeUnmount(() => {
     imageObserver.disconnect()
     imageObserver = null
   }
+  
   uploadedFileIds.value = new Set([])
   initialFileIds.value = new Set([])
   currentFileIds.value = new Set([])
@@ -132,6 +132,10 @@ const handleCreated = async (editor) => {
     // 先同步一次 DOM
     syncImageDataIdToDom(editor)
     await nextTick()
+    
+    // 初始化SVG图片显示
+    initializeSvgImages(editor)
+    
     // 监听 DOM 变化
     imageObserver = new MutationObserver(() => {
       if (!editorRef.value) return

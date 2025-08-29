@@ -17,6 +17,90 @@ export function setImageId(id: string | number) {
 }
 
 /**
+ * 为SVG创建blob URL用于显示（读取时使用）
+ * @param originalUrl 原始URL
+ * @param imgElement 图片DOM元素
+ */
+async function createSvgBlobUrl(originalUrl: string, imgElement: HTMLImageElement) {
+  try {
+    // 解析URL获取参数
+    const url = new URL(originalUrl)
+    const filePath = decodeURIComponent(url.searchParams.get('filePath') || '')
+    const fileName = decodeURIComponent(url.searchParams.get('fileName') || '')
+    
+    if (!filePath || !fileName) {
+      throw new Error('无法解析文件路径参数')
+    }
+
+    // 获取SVG文件内容
+    const blobRes = await defHttp.get({
+      url: '/api/zrzy-system/common/upfiles/download',
+      params: {
+        filePath: filePath,
+        fileName: fileName
+      },
+      responseType: 'blob'
+    }, { withToken: true })
+
+    if (blobRes.size > 0) {
+      // 创建blob URL
+      const blob = new Blob([blobRes], { type: 'image/svg+xml' })
+      const blobUrl = URL.createObjectURL(blob)
+      
+      // 替换DOM中的src
+      imgElement.src = blobUrl
+      
+      // 当图片从DOM中移除时释放blob
+      const observer = new MutationObserver(() => {
+        if (!document.contains(imgElement)) {
+          URL.revokeObjectURL(blobUrl)
+          observer.disconnect()
+        }
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+    }
+  } catch (error) {
+    console.warn('创建SVG blob URL失败', error)
+  }
+}
+
+/**
+ * 初始化编辑器中的所有SVG图片（在编辑器设置内容后调用）
+ * @param editor
+ */
+export function initializeSvgImages(editor: IDomEditor) {
+  if (!editor) return
+  const container = editor.getEditableContainer()
+  if (!container) return
+
+  // 查找所有的SVG图片
+  const allImages = container.querySelectorAll('img')
+  
+  allImages.forEach(img => {
+    const imgElement = img as HTMLImageElement
+    const src = imgElement.getAttribute('src')
+    if (!src) return
+
+    // 检测是否为SVG文件
+    const isSvg = imgElement.getAttribute('data-is-svg') === 'true' || 
+                 imgElement.classList.contains('svg-image') ||
+                 src.toLowerCase().includes('.svg')
+
+    if (isSvg) {
+      imgElement.setAttribute('data-is-svg', 'true')
+      imgElement.classList.add('svg-image')
+      
+      // 如果src是原始下载地址 转换为blob URL
+      if (src.includes('download') && !src.startsWith('blob:')) {
+        createSvgBlobUrl(src, imgElement).catch(error => {
+          console.warn('初始化SVG显示失败:', error)
+        })
+      }
+    }
+  })
+}
+
+/**
  * 注册图片模块
  */
 export function registerImageModule() {
@@ -44,17 +128,20 @@ export function registerImageModule() {
  * @param elem
  * @param childrenHtml
  */
-function imageToHtml(elem: SlateElement, childrenHtml: string): string {
-  const { src = '', alt = '', dataId = '', style = {} } = elem as any
+function imageToHtml(elem: SlateElement, _childrenHtml: string): string {
+  const { src = '', alt = '', dataId = '', style = {}, isSvg = false } = elem as any
   let styleStr = 'max-width: 100%;'
   if (style.width) styleStr += ` width: ${style.width};`
   if (style.height) styleStr += ` height: ${style.height};`
+  
   // console.log('imageToHtml style:', style)
   return `<img 
     src="${src}" 
     alt="${alt || ''}" 
     data-w-e-type="image"
     data-id="${dataId || ''}"
+    data-is-svg="${isSvg ? 'true' : 'false'}"
+    class="${isSvg ? 'svg-image' : ''}"
     style="${styleStr}"
   />`
 }
@@ -65,18 +152,31 @@ function imageToHtml(elem: SlateElement, childrenHtml: string): string {
  * @param children
  * @param editor
  */
-function parseImageHtml(domElem: Element, children: any[], editor: IDomEditor): SlateElement {
+function parseImageHtml(domElem: Element, _children: any[], _editor: IDomEditor): SlateElement {
   const $elem = domElem as HTMLImageElement
-  const dataId = srcToDataIdMap.get($elem.src) || $elem.getAttribute('data-id') || ''
-  const style = srcToStyleMap.get($elem.src) || {}
+  const originalSrc = $elem.getAttribute('src') || ''
+  const dataId = srcToDataIdMap.get(originalSrc) || $elem.getAttribute('data-id') || ''
+  const style = srcToStyleMap.get(originalSrc) || {}
+  const isSvg = $elem.getAttribute('data-is-svg') === 'true' || 
+               $elem.classList.contains('svg-image') ||
+               originalSrc.toLowerCase().includes('.svg')
+  
+  // 如果是SVG文件，在读取时创建blob URL用于显示
+  if (isSvg && originalSrc && !originalSrc.startsWith('blob:')) {
+    // 创建blob URL并替换DOM中的显示
+    createSvgBlobUrl(originalSrc, $elem).catch(error => {
+      console.warn('读取时创建SVG blob URL失败:', error)
+    })
+  } 
+  
   return {
     type: 'image',
-    src: $elem.getAttribute('src') || '',
+    src: originalSrc, // 始终保存原始URL到数据结构中
     alt: $elem.getAttribute('alt') || '',
     dataId: dataId,
     width: $elem.style.width || style?.width || '',
     height: $elem.style.height || style?.height || '',
-    // 新增：合并样式数据
+    isSvg: isSvg,
     style: {
       width: $elem.style.width || style?.width || '',
       height: $elem.style.height || style?.height || ''
@@ -117,7 +217,26 @@ export function syncImageDataIdToDom(editor: IDomEditor) {
       
       if (img.getAttribute('alt') !== 'attachment-file-icon') {
         img.setAttribute('data-w-e-type', "image")
+        
+        const isSvg = src.toLowerCase().includes('.svg')
+        if (isSvg) {
+          img.setAttribute('data-is-svg', 'true')
+          img.classList.add('svg-image')
+        }
       }
+    }
+
+    // 检查并转换SVG图片
+    const imgElement = img as HTMLImageElement
+    const isSvg = img.getAttribute('data-is-svg') === 'true' || 
+                 img.classList.contains('svg-image') ||
+                 src.toLowerCase().includes('.svg')
+    
+    if (isSvg && src && !src.startsWith('blob:') && src.includes('download')) {
+      // 为已存在的SVG图片创建blob URL
+      createSvgBlobUrl(src, imgElement).catch(error => {
+        console.warn('同步时创建SVG blob URL失败:', error)
+      })
     }
   })
 }
@@ -127,12 +246,10 @@ export function syncImageDataIdToDom(editor: IDomEditor) {
  * @param insertFn
  * @param editor
  */
-export async function customBrowseAndUploadFunc(insertFn: Function, editor: IDomEditor) {
+export async function customBrowseAndUploadFunc(_insertFn: Function, editor: IDomEditor) {
   const input = document.createElement('input')
   input.type = 'file'
-  // input.accept = 'image/*' 
-  // svg的有点问题暂时不考虑
-  input.accept = '.jpg,.jpeg,.png,.gif'
+  input.accept = 'image/*'
 
   input.onchange = async () => {
     if (!currentId) {
@@ -158,37 +275,83 @@ export async function customBrowseAndUploadFunc(insertFn: Function, editor: IDom
         { withToken: true }
       )
       if (res && res.code === 200 && Array.isArray(res.result)) {
-        res.result.forEach((file: any) => {
+        for (const file of res.result) {
           const filePath = file.filePath
           const fileName = file.fileName
           const id = file.id
-          const downloadUrl = `${(window as any).settingConfig?.proxyBaseDomain || ''}/zrzy-system/common/upfiles/download?filePath=${encodeURIComponent(
+          // 检查是否为图片文件
+          const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp']
+          const fileExtension = fileName.toLowerCase().split('.').pop() || ''
+          const isImageFile = imageExtensions.includes(fileExtension)
+          const isSvgFile = fileExtension === 'svg'
+          
+          // 构建原始下载URL
+          const originalUrl = `${(window as any).settingConfig?.proxyBaseDomain || ''}/zrzy-system/common/upfiles/download?filePath=${encodeURIComponent(
             filePath
           )}&fileName=${encodeURIComponent(fileName)}`
+          
+          let displayUrl = originalUrl
+
+          // SVG文件特殊处理：创建blob URL用于即时显示
+          if (isSvgFile) {
+            try {
+              const blobRes = await defHttp.get({
+                url: '/api/zrzy-system/common/upfiles/download',
+                params: {
+                  filePath: filePath,
+                  fileName: fileName
+                },
+                responseType: 'blob'
+              }, { withToken: true })
+              
+              if (blobRes.size > 0) {
+                // 创建blob URL用于显示
+                const blob = new Blob([blobRes], { type: 'image/svg+xml' })
+                displayUrl = URL.createObjectURL(blob)
+              }
+            } catch (error) {
+              console.warn('获取SVG blob失败，使用原始URL:', error)
+              displayUrl = originalUrl + '&inline=true'
+            }
+          } else if (isImageFile) {
+            // 其他图片类型尝试添加inline参数
+            displayUrl = originalUrl + '&inline=true'
+          }
 
           editor.restoreSelection() // 确保光标位置
-          editor.insertNode({
+          
+          // 保存原始URL到HTML 但替换为displayUrl显示
+          const imageNode = {
             type: 'image',
-            src: downloadUrl,
+            src: originalUrl,
             alt: fileName,
             dataId: id,
             children: [{ text: '' }],
-          } as any)
+            isSvg: isSvgFile
+          } as any
+
+          editor.insertNode(imageNode)
           
-          // 维护 src 到 dataId 的映射
-          srcToDataIdMap.set(downloadUrl, id)
-          srcToStyleMap.set(downloadUrl, {}) // 初始化空样式
+          // 维护映射关系（使用原始URL）
+          srcToDataIdMap.set(originalUrl, id)
+          srcToStyleMap.set(originalUrl, {})
           
-          // 插入后立即同步 data-id 到 DOM
+          // 插入后立即同步 data-id 到 DOM , 且立即替换DOM中的显示URL
           setTimeout(() => {
-            
             syncImageDataIdToDom(editor)
             addFileId(id)
             addUploadedFileId(String(id))
+            
+            // 替换DOM中的src为可显示的URL
+            if (displayUrl !== originalUrl) {
+              const container = editor.getEditableContainer()
+              const imgs = container?.querySelectorAll(`img[src="${originalUrl}"]`)
+              imgs?.forEach(img => {
+                (img as HTMLImageElement).src = displayUrl
+              })
+            }
           }, 100)
-          
-          // console.log('插入图片后的HTML:', editor.getHtml())
-        })
+        }
       } else {
         message.warning('上传失败，返回格式异常')
       }
