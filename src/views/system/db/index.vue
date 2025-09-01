@@ -38,7 +38,7 @@
                         </p>
                         <p>
                             <CheckCircleOutlined :style="{ color: '#389e0d' }" />
-                            修改表名RENAME TO，生成 <a>RENAME TO </a> 回滚语句
+                            修改表名生成 <a>ALTER TABLE a RENAME TO b; </a> 回滚语句
                         </p>
                         <p>
                             <CheckCircleOutlined :style="{ color: '#389e0d' }" />
