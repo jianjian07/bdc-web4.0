@@ -47,7 +47,7 @@ export const importJson = (fileList: any, params: any, url?: string, callback?: 
                     cancelText: '取消',
                     content:
                         h('div', [
-                            h('div', { style: 'margin-bottom: 12px;white-space: pre-line;' }, res?.message || '文件已存在'),
+                            h('div', { style: 'margin-bottom: 12px;white-space: pre-line;' }, res?.message || '已存在'),
                             // 仅当 params.importType 存在时才渲染 Checkbox
                             params.importType !== undefined
                                 ? h(Checkbox, {
@@ -75,7 +75,24 @@ export const importJson = (fileList: any, params: any, url?: string, callback?: 
  * 导出json
  */
 export function exprotJson(params: any, title: string, url?: string) {
-    defHttp.get({ url: url || Api.exportJson, params: params, responseType: "blob" }, { withToken: true }).then((res) => {
+    defHttp.get({ url: url || Api.exportJson, params: params, data: params, responseType: "blob" }, { withToken: true }).then((res) => {
+        title = title + formatToDateTime(new Date().getTime())
+        const fileName = title + '.json'; //文件名
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(res);
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(link.href);
+
+    }).catch(err => {
+        console.info(err)
+    })
+}
+/**
+ * 导出json
+ */
+export function exprotJson_post(params: any, title: string, url?: string) {
+    defHttp.post({ url: url || Api.exportJson, data: params, responseType: "blob" }, { withToken: true }).then((res) => {
         title = title + formatToDateTime(new Date().getTime())
         const fileName = title + '.json'; //文件名
         const link = document.createElement('a');
