@@ -2147,3 +2147,35 @@ export function downloadPdf(params: any) {
   // generatePdfByHtml(params.title, params.className, params.text)
   // downloadPdfByCanvas(params.title, params.className, params.text)
 }
+
+/**
+ * @Description 批量生成附记和共有情况
+ * @param c_type fj(仅生成附记) gyqk(仅生成共有情况) 空时，均生成
+ */
+export function batchFjAndGyqk(param: { type: any }) {
+    debugger
+    return new Promise((resolve) => {
+        let params: any = { slbh: route.query.slbh }
+        let text = "附记和共有情况"
+        if (param.type) {
+            params.type = param.type
+            text = param.type == "fj" ? "附记" : "共有情况"
+        }
+        defHttp.put({
+            url: '/api/zrzy-bdc/bdc/public/updateFjAndGyqk',
+            params: params
+        }, {
+            withToken: true
+        }).then((res: any) => {
+            if (res && res.success) {
+                resolve(true)
+                message.success(`${text}成功生成!`)
+            } else {
+                message.warning(res?.message)
+                resolve(false)
+            }
+        })
+    }).catch(err => {
+        message.warning(err)
+    })
+}
