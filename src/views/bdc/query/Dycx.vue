@@ -19,14 +19,14 @@
             <template #dot>
               <div class="slot-dot-start">登记情况</div>
             </template>
-            <span style="font-weight: bold;position: absolute;left: -400px;font-size: 18px">{{ bdcdyh }}</span>
+            <span style="font-weight: bold;position: absolute;left: -410px;font-size: 18px">{{ bdcdyh }}</span>
           </a-timeline-item>
           <a-timeline-item style="height: 50px">
             <template #dot><span style="font-weight: bold">至今</span></template>
           </a-timeline-item>
           <a-timeline-item v-for="(item, index) in hisData" :color="index == 0 ? 'green' : 'blue'">
             <template #dot><ClockCircleOutlined style="font-size: 16px" /></template>
-            <span style="position: absolute;left: -165px;top: 1px;font-size: 14px">{{ item.djsj }}</span>
+            <span style="position: absolute;left: -180px;top: 1px;font-size: 14px">{{ item.djsj }}</span>
             <div style="padding-bottom: 10px">
               <template v-if="props.formData.bdcdyh">
               <span :style="{ color: index == 0 ? 'green' : '', fontSize: '20px', lineHeight: '20px' }">
