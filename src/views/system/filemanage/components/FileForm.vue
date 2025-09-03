@@ -122,7 +122,7 @@ import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 const props = defineProps({
   selectItem: {
     type: Object,
-    default: {}
+    default: null
   }
 })
 // 表单加载状态

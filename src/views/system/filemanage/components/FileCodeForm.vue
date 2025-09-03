@@ -155,7 +155,7 @@ import { guid } from "/@/utils"
 const props = defineProps({
   selectItem: {
     type: Object,
-    default: {}
+    default: null
   },
   treeData: {
     type: Array,
