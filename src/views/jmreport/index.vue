@@ -119,7 +119,7 @@ const columns = [
   // { title: "表单编码", dataIndex: "code", width: 150 },
   { title: "报表分类", dataIndex: "typeName", width: 220 },
   { title: "创建时间", dataIndex: "createTime", width: 140 },
-  { title: '操作', key: 'action', width: 250, fixed: 'right', }
+  { title: '操作', key: 'action', width: 280, fixed: 'right', }
 ]
 let datalist: any = ref([])
 let formData: any = ref({ name: '', code: '', formType: '' })

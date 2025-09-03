@@ -137,6 +137,7 @@ function onClose() {
  */
 function initTree() {
   // 1、新增时左侧选择了部门 2、编辑时
+  props.dataInfo.deptList = props.dataInfo.deptList || []
   if (props.dataInfo.deptList && props.dataInfo.deptList.length > 0) {
     loadCurrentBranchTrees()
   } else { // 新增时左侧未选择部门
