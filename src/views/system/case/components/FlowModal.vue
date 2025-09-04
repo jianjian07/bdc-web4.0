@@ -12,6 +12,10 @@
         <a-form-item label="登记大类">
             <a-input v-model:value="flowInfo.djdl" />
         </a-form-item>
+        <a-form-item label="登记小类">
+            <a-input v-model:value="flowInfo.djxl" />
+            <div style="color: #5094f9;font-size: 10px;padding-top: 5px;">默认为空，特殊情况需填写，如区分经营权和承包经营权、强制转移等</div>
+        </a-form-item>
         <a-form-item label="RegType" name="regType" :rules="[{ required: true, message: '请输入登记类型' }]">
             <a-input v-model:value="flowInfo.regType" />
         </a-form-item>
@@ -25,7 +29,7 @@
             <a-input v-model:value="flowInfo.prefix" />
         </a-form-item>
         <a-form-item label="流程时限(小时)">
-           <a-input-number v-model:value="flowInfo.lcsx"/>
+            <a-input-number v-model:value="flowInfo.lcsx" />
         </a-form-item>
         <a-form-item label="顺序号">
             <a-input-number v-model:value="flowInfo.orderNum" :min="1" :max="100" />
@@ -75,10 +79,10 @@ const emit = defineEmits(['setBaseInfo'])
 watch(() => props.lcid, (newValue, _oldValue) => {
     flowInfo.value.lcid = newValue
     if (newValue) {
-      getFlowInfo(props.lcid)
+        getFlowInfo(props.lcid)
     }
 }, {
-  immediate: true,
+    immediate: true,
 })
 
 function getFlowInfo(lcid: string) {

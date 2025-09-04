@@ -8,19 +8,32 @@
             <a-divider type="vertical" />{{
             sqlInfo.createTime }}
         </p>
-        <a-form-item label="执行脚本">
-            <monaco-editor v-model="sqlInfo.sqlContent" language="sql" theme="vs" style="width: 100%;" height="500px">
-            </monaco-editor>
-        </a-form-item>
-        <p style="color: #6c727f !important;">回滚人：{{ sqlInfo.updateBy }}
-            <a-divider type="vertical" />{{
+        <a-tabs v-model:activeKey="activeKey">
+            <a-tab-pane key="1" tab="执行信息">
+                <a-form-item label="执行脚本">
+                    <monaco-editor v-model="sqlInfo.sqlContent" language="sql" theme="vs" style="width: 100%;"
+                        height="500px">
+                    </monaco-editor>
+                </a-form-item>
+                <p style="color: #6c727f !important;">回滚人：{{ sqlInfo.updateBy }}
+                    <a-divider type="vertical" />{{
             sqlInfo.updateTime }}
-        </p>
-        <a-form-item label="回滚脚本">
-            <monaco-editor v-model="sqlInfo.rollbackSqlContent" language="sql" theme="vs" style="width: 100%;"
-                height="500px">
-            </monaco-editor>
-        </a-form-item>
+                </p>
+                <a-form-item label="回滚脚本">
+                    <monaco-editor v-model="sqlInfo.rollbackSqlContent" language="sql" theme="vs" style="width: 100%;"
+                        height="500px">
+                    </monaco-editor>
+                </a-form-item>
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="异常日志" force-render>
+
+                <monaco-editor v-model="sqlInfo.logContent" language="sql" theme="vs" style="width: 100%;"
+                    height="60vh">
+                </monaco-editor>
+
+            </a-tab-pane>
+        </a-tabs>
+
 
     </a-form>
 </template>
@@ -36,6 +49,7 @@ const props = defineProps({
         default: {}
     }
 });
+const activeKey = ref('1');
 let sqlInfo: any = ref({})
 getSqlInfo()
 /**
