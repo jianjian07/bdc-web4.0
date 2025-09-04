@@ -79,7 +79,7 @@ export function getMultipleRef(list: any[], arr: any[]) {
  * @param _type
  * @param demoRefs
  */
-export async function sendSaveFun(type: string, demoRefs: any, loading: any, eventBus: any, params?: any,) {
+export async function sendSaveFun(type: string, demoRefs: any, btn: any, loading: any, eventBus: any, params?: any,) {
   return new Promise(async (resolve) => {
     if (loading) {
       loading.value = true
@@ -175,17 +175,17 @@ function getSaveEventBusFuncStr(fun) {
   return str
 }
 
-export async function baseSave(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
-  return await sendSaveFun('baseSave', demoRefs, loading, eventBus, params)
+export async function baseSave(demoRefs: any, btn: any, loading: any,  jdmc: string, eventBus: any, params: any) {
+  return await sendSaveFun('baseSave', demoRefs, btn, loading, eventBus, params)
 }
 
-export async function handOver(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
-  let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
+export async function handOver(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params: any) {
+  let res: any = await sendSaveFun('handOver', demoRefs, btn, loading, eventBus, params)
   if (res && res.status && res.validate) {
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
     let checkRes: any = true
     if (['收件','受理', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
-      checkRes = await checkSeal(slbh, loading)
+      checkRes = await checkSeal(slbh, btn, loading)
     }
     if (checkRes) {
       let btnList = await getHandleCkbzBtn()
@@ -249,7 +249,7 @@ export function closeCurrentTab() {
  * @param loading
  * @param type
  */
-export async function submit(demoRefs: any, loading: any, jdmc: string, eventBus: any, obj: any) {
+export async function submit(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, obj: any) {
   if (obj && obj.type == 'cftz') {
     let res = await getFormInfo(demoRefs)
     let find = res.find(r => r.validate == false)
@@ -435,7 +435,7 @@ function updateQlrData(type, data) {
  * 附件按钮
  * @param manage 是否默认展示为管理状态
  */
-export async function showFile(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
+export async function showFile(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params?: any) {
   eventBus.emit('showFile', params?.manage || false)
 }
 
@@ -443,7 +443,7 @@ export async function showFile(demoRefs: any, loading: any, jdmc: string, eventB
  * 附件按钮（新标签页）
  * @param params
  */
-export function showFileNewBlank(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
+export function showFileNewBlank(demoRefs: any, btn:any, loading: any, jdmc: string, eventBus: any, params?: any) {
   let query = route.query
   const urlSearchParams = new URLSearchParams(query)
   urlSearchParams.set('manage', params?.manage ?? false) // 设置 manage 参数
@@ -457,7 +457,7 @@ export function showFileNewBlank(demoRefs: any, loading: any, jdmc: string, even
  * @param loading
  * @param params
  */
-export async function showSpPanel(demoRefs: any, loading: any, jdmc: string, eventBus: any, params?: any) {
+export async function showSpPanel(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params?: any) {
   eventBus.emit('showSpPanel')
 }
 
@@ -537,14 +537,15 @@ function getReportUrl(data) {
  * cType为0不生成证号
  * @returns
  */
-export async function register(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
+export async function register(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params: any) {
   const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
   const cType = (params == undefined || params.cType == null) ? '1' : params.cType
   const callback = params?.callback
-  let checkRes = await checkSeal(slbh, loading)
+  let checkRes = await checkSeal(slbh, btn, loading)
   if (!checkRes) {
     return
   }
+  btn.loading = true
   loading.value = true
   defHttp.get({
     url: '/api/zrzy-bdc/bdc/register/isRegister',
@@ -552,8 +553,9 @@ export async function register(demoRefs: any, loading: any, jdmc: string, eventB
   }, { withToken: true }
   ).then((res: any) => {
     loading.value = false
+    btn.loading = false
     if (res.success) {
-      djb(slbh, cType, loading, callback);
+      djb(slbh, cType, btn, loading, callback);
     } else {
       if (res.result == '-1') {
         message.error(res?.message)
@@ -565,7 +567,7 @@ export async function register(demoRefs: any, loading: any, jdmc: string, eventB
           okType: 'danger',
           cancelText: '取消',
           onOk() {
-            djb(slbh, "0", loading, callback);
+            djb(slbh, "0", btn, loading, callback);
           },
           onCancel() {
           },
@@ -574,6 +576,7 @@ export async function register(demoRefs: any, loading: any, jdmc: string, eventB
     }
   }).catch((error: any) => {
     loading.value = false
+    btn.loading = false
     message.success("记载失败" + error)
   })
 }
@@ -581,8 +584,9 @@ export async function register(demoRefs: any, loading: any, jdmc: string, eventB
 /**
  * 保存移交逻辑校验
  */
-function checkSeal(slbh: string, loading?: any) {
+function checkSeal(slbh: string, btn: any, loading?: any) {
   return new Promise((resolve, reject) => {
+    btn.loading = true
     if (loading) {
       loading.value = true
     }
@@ -590,6 +594,7 @@ function checkSeal(slbh: string, loading?: any) {
       url: '/api/zrzy-logic/logic/check/checkSeal',
       params: { slbh: slbh }
     }, { withToken: true }).then((res: any) => {
+      btn.loading = false
       if (loading) {
         loading.value = false
       }
@@ -612,6 +617,7 @@ function checkSeal(slbh: string, loading?: any) {
         resolve(false)
       }
     }).catch((error: any) => {
+      btn.loading = false
       if (loading) {
         loading.value = false
       }
@@ -622,7 +628,8 @@ function checkSeal(slbh: string, loading?: any) {
 }
 
 //登记簿逻辑
-function djb(slbh: string, cType: string, loading?: any, callback?: any) {
+function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: any) {
+  btn.loading = true
   if (loading) {
     loading.value = true
   }
@@ -631,6 +638,7 @@ function djb(slbh: string, cType: string, loading?: any, callback?: any) {
     params: { slbh: slbh, cType: cType }
   }, { withToken: true }
   ).then(async (res: any) => {
+    btn.loading = false
     if (loading) {
       loading.value = false
     }
@@ -646,6 +654,7 @@ function djb(slbh: string, cType: string, loading?: any, callback?: any) {
       // router.push('/refresh')
     }
   }).catch((error: any) => {
+    btn.loading = false
     if (loading) {
       loading.value = false
     }
@@ -673,7 +682,7 @@ export function savaGd() {
     })
   })
 }
-export function baseGd(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
+export function baseGd(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params: any) {
   const slbh = route.query.slbh?.toString()
   const taskId = route.query.taskId?.toString()
   return new Promise(async (resolve, reject) => {
@@ -2067,7 +2076,7 @@ export function updateHtztBySlbh() {
 /**
  * 不予登记
  */
-export async function handTerminate(demoRefs: any, loading: any, jdmc: string, eventBus: any, params: any) {
+export async function handTerminate(demoRefs: any, btn:any, loading: any, jdmc: string, eventBus: any, params: any) {
   let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
   if (res && res.status && res.validate) {
     Modal.confirm({

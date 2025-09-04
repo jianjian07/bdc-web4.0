@@ -9,7 +9,7 @@
           <div class="form-btn-list">
             <a-space-compact style="margin: 5px 10px;">
               <template v-for="(btn, index) in formBtnList">
-                <a-button type="primary" @click="handleClick(btn)">
+                <a-button type="primary" :loading="btn.loading" @click="handleClick(btn)">
                   {{ btn.btnName }}
                 </a-button>
               </template>
@@ -277,7 +277,7 @@ async function handleClick(btn) {
       .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
       .replace(/'/g, '"'); // 单引号变双引号
     let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : correctedBz) : ''
-    let _params = `(demoRefs.value,spinning,jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
+    let _params = `(demoRefs.value,btn,spinning,jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
     await eval(`_publicFun['${btn.funName}']` + _params)
   }
 }
@@ -292,7 +292,7 @@ let ywlx = ref('1')
  * @param spinning 
  * @param params 
  */
-function openList(demoRefs, spinning, jdmc, eventBus, params?: any) {
+function openList(demoRefs, btn, spinning, jdmc, eventBus, params?: any) {
   const { vtype, reportId } = params
   eType.value = vtype != undefined ? vtype : ''
   formId.value = reportId != undefined ? reportId : ''
