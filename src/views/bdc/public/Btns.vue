@@ -3,7 +3,7 @@
     <div class="foot-btn-css" v-if="leftBtnList.length > 0">
       <a-space :size="spaceSize">
         <template v-for="(btn, index) in leftBtnList">
-          <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+          <a-button size="small" type="primary" :loading="btn.loading" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
         </template>
       </a-space>
     </div>
@@ -22,10 +22,10 @@
                 <!--                  <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>-->
                 <!--                </template>-->
                 <template v-if="!sfybz">
-                  <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+                  <a-button size="small" type="primary" :loading="btn.loading" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
                 </template>
               </template>
-              <a-button v-else size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+              <a-button v-else size="small" type="primary" :loading="btn.loading" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
             </template>
             <a-button v-if="canScrollRight" class="scroll-button" size="small" type="primary" @click="scrollRight">
               <template #icon>
@@ -39,13 +39,13 @@
     <div v-if="rightBtnList.length > 0" class="foot-btn-css foot-btn-right-css">
       <a-space :size="spaceSize">
         <template v-for="(btn, index) in rightBtnList.slice(0, 3)">
-          <a-button size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
+          <a-button size="small" type="primary" :loading="btn.loading" @click="handleClick(btn)">{{ btn.btnName }}</a-button>
         </template>
         <a-popover placement="bottomRight" v-if="rightBtnList.length > 3">
           <template #content>
             <div class="right-other-list">
               <template v-for="(btn, index) in rightBtnList.slice(3, rightBtnList.length)">
-                <a-button class="right-other-btn" size="small" type="primary" @click="handleClick(btn)">{{ btn.btnName
+                <a-button class="right-other-btn" size="small" type="primary" :loading="btn.loading" @click="handleClick(btn)">{{ btn.btnName
                   }}</a-button>
               </template>
             </div>
@@ -230,7 +230,7 @@ async function handleClick(btn) {
         .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 键名加双引号
         .replace(/'/g, '"'); // 单引号变双引号
       let params = btn.bz ? (isJsonData(correctedBz) ? JSON.parse(correctedBz) : `'${correctedBz}'`) : ''
-      let _params = `(_vueRefs.value, loading, _jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
+      let _params = `(_vueRefs.value, btn, loading, _jdmc.value,eventBus${params ? (',' + JSON.stringify(params)) : params})`
       if (btn.anwz == 'center') {
         params = params || {}
         params.regType = props.regType
