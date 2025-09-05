@@ -7,6 +7,7 @@ import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { currentRoute, router } from "/@/router"
 import { defHttp } from "/@/utils/http/axios"
 import { checkLogic } from "/@/utils/bdc/bdc"
+import { Base64 } from "js-base64"
 import {
   saveFormData,
   saveHandleData,
@@ -522,7 +523,8 @@ function getReportUrl(data) {
   return new Promise((resolve) => {
     defHttp.post({ url: '/api/zrzy-bdc/bdc/FastReport/printFastReport', data: data }, { withToken: true }).then((res) => {
       if (res && res.success) {
-        resolve(res.result)
+        let urlCertView = `${window.settingConfig.kkFileDomain}/onlinePreview?officePreviewType=pdf&url=${Base64.encode(res.result)}`;
+        resolve(urlCertView);
       } else {
         message.warning(res?.message || '获取地址失败!')
         resolve(false)
