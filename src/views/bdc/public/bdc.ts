@@ -82,6 +82,9 @@ export function getMultipleRef(list: any[], arr: any[]) {
  */
 export async function sendSaveFun(type: string, demoRefs: any, btn: any, loading: any, eventBus: any, params?: any,) {
   return new Promise(async (resolve) => {
+    if (btn && btn.loading !== undefined) {
+      btn.loading = true
+    }
     if (loading) {
       loading.value = true
     }
@@ -123,6 +126,9 @@ export async function sendSaveFun(type: string, demoRefs: any, btn: any, loading
     }
     if (loading) {
       loading.value = false
+    }
+    if (btn && btn.loading !== undefined) {
+      btn.loading = false
     }
     userStore.setSaveFormFlag(true)
     console.log('validateInfos', validateInfos)
@@ -547,7 +553,9 @@ export async function register(demoRefs: any, btn: any, loading: any, jdmc: stri
   if (!checkRes) {
     return
   }
-  btn.loading = true
+  if (btn && btn.loading !== undefined) {
+    btn.loading = true
+  }
   loading.value = true
   defHttp.get({
     url: '/api/zrzy-bdc/bdc/register/isRegister',
@@ -555,7 +563,9 @@ export async function register(demoRefs: any, btn: any, loading: any, jdmc: stri
   }, { withToken: true }
   ).then((res: any) => {
     loading.value = false
-    btn.loading = false
+    if (btn && btn.loading !== undefined) {
+      btn.loading = false
+    }
     if (res.success) {
       djb(slbh, cType, btn, loading, callback);
     } else {
@@ -578,7 +588,9 @@ export async function register(demoRefs: any, btn: any, loading: any, jdmc: stri
     }
   }).catch((error: any) => {
     loading.value = false
-    btn.loading = false
+    if (btn && btn.loading !== undefined) {
+      btn.loading = false
+    }
     message.success("记载失败" + error)
   })
 }
@@ -588,7 +600,9 @@ export async function register(demoRefs: any, btn: any, loading: any, jdmc: stri
  */
 function checkSeal(slbh: string, btn: any, loading?: any) {
   return new Promise((resolve, reject) => {
-    btn.loading = true
+    if (btn && btn.loading !== undefined) {
+      btn.loading = true
+    }
     if (loading) {
       loading.value = true
     }
@@ -596,7 +610,9 @@ function checkSeal(slbh: string, btn: any, loading?: any) {
       url: '/api/zrzy-logic/logic/check/checkSeal',
       params: { slbh: slbh }
     }, { withToken: true }).then((res: any) => {
-      btn.loading = false
+      if (btn && btn.loading !== undefined) {
+        btn.loading = false
+      }
       if (loading) {
         loading.value = false
       }
@@ -619,7 +635,9 @@ function checkSeal(slbh: string, btn: any, loading?: any) {
         resolve(false)
       }
     }).catch((error: any) => {
-      btn.loading = false
+      if (btn && btn.loading !== undefined) {
+        btn.loading = false
+      }
       if (loading) {
         loading.value = false
       }
@@ -631,7 +649,9 @@ function checkSeal(slbh: string, btn: any, loading?: any) {
 
 //登记簿逻辑
 function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: any) {
-  btn.loading = true
+  if (btn && btn.loading !== undefined) {
+    btn.loading = true
+  }
   if (loading) {
     loading.value = true
   }
@@ -640,7 +660,9 @@ function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: an
     params: { slbh: slbh, cType: cType }
   }, { withToken: true }
   ).then(async (res: any) => {
-    btn.loading = false
+    if (btn && btn.loading !== undefined) {
+      btn.loading = false
+    }
     if (loading) {
       loading.value = false
     }
@@ -656,7 +678,9 @@ function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: an
       // router.push('/refresh')
     }
   }).catch((error: any) => {
-    btn.loading = false
+    if (btn && btn.loading !== undefined) {
+      btn.loading = false
+    }
     if (loading) {
       loading.value = false
     }
@@ -2079,7 +2103,7 @@ export function updateHtztBySlbh() {
  * 不予登记
  */
 export async function handTerminate(demoRefs: any, btn:any, loading: any, jdmc: string, eventBus: any, params: any) {
-  let res: any = await sendSaveFun('handOver', demoRefs, loading, eventBus, params)
+  let res: any = await sendSaveFun('handOver', demoRefs, btn, loading, eventBus, params)
   if (res && res.status && res.validate) {
     Modal.confirm({
       title: '提示',

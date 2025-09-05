@@ -122,7 +122,7 @@ async function saveData(params?: any) {
   // 这里如果是带.value的就需要拿到.value 因为保存的内部直接处理的formDoms[i].formId
   // eval那种形式是默认解包了 所以不需要再处理
   const refs = demoRefs.value.map(ref => ref?.value || ref)
-  return await sendSaveFun('baseSave', refs, spinning, eventBus, params)
+  return await sendSaveFun('baseSave', refs, null, spinning, eventBus, params)
 }
 
 /**
@@ -139,7 +139,7 @@ async function saveValidateData(params?: any) {
   }
   // checkDemoRefs()
   const refs = demoRefs.value.map(ref => ref?.value || ref)
-  return await sendSaveFun('baseSave', refs, spinning, eventBus, params)
+  return await sendSaveFun('baseSave', refs, null, spinning, eventBus, params)
 }
 
 async function saveQlrData(type: any, params?: any) {
