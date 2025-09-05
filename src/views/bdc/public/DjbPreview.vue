@@ -65,7 +65,7 @@ function initData() {
   let ywh = route.query.ywh
   let slbh = route.query.slbh
   if (ywh || slbh) {
-    defHttp.get({ url: api.list, params: { slbhOrYwh: ywh || slbh } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.list, params: { slbhOrYwh: ywh || slbh } }, { withToken: true, withTimeout: false }).then((res) => {
       if (res && res.success) {
         if (res.result) {
           list.value = res.result.djbList || []
