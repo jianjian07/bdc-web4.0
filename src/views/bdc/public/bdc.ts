@@ -2188,7 +2188,6 @@ export function downloadPdf(params: any) {
  * @param c_type fj(仅生成附记) gyqk(仅生成共有情况) 空时，均生成
  */
 export function batchFjAndGyqk(param: { type: any }) {
-    debugger
     return new Promise((resolve) => {
         let params: any = { slbh: route.query.slbh }
         let text = "附记和共有情况"

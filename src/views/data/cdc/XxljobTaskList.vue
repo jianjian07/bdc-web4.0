@@ -257,15 +257,16 @@ function trigger(record: any) {
 }
 function start(record: any) {
     let ulr = record.triggerStatus === 1 ? Api.stopUrl : Api.startUrl
+    let text = record.triggerStatus === 1 ? '停止' : '启动'
     defHttp.post({ url: ulr, params: { id: record.id } }, { withToken: true }).then((res) => {
         if (!res.message) {
-            message.success('启动成功')
+            message.success(`${text}成功`)
             loadData()
         } else {
-            message.error('启动失败' + res?.message)
+            message.error(`${text}失败` + res?.message)
         }
     }).catch(err => {
-        message.error('启动失败' + err)
+        message.error(`${text}失败` + err)
     })
 }
 /**
