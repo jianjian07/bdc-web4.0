@@ -29,7 +29,10 @@ import {
 import {
   customBrowseAndUploadFunc,
   setImageId, srcToDataIdMap,srcToStyleMap,
-  syncImageDataIdToDom, initializeSvgImages
+  syncImageDataIdToDom, 
+  initializeSvgImages, 
+  clearImageCache,
+  findImageInfoFromSlate
 } from "/@/components/common/wangEditor/image-attachment.ts"
 
 const props = defineProps({
@@ -112,6 +115,7 @@ onBeforeUnmount(() => {
   currentFileIds.value = new Set([])
   srcToDataIdMap.clear()
   srcToStyleMap.clear()
+  clearImageCache()
 })
 
 // 保存 observer 引用，用于销毁
@@ -164,15 +168,16 @@ const initDataIds = () => {
     Array.from(elementsWithId).forEach((el) => {
       const id = (el as HTMLElement).getAttribute('data-id')
       const src = (el as HTMLElement).getAttribute('src')
+      const originalSrc = (el as HTMLElement).getAttribute('data-original-src') || src
       // 提取样式信息 （图片缩放）
       const style = {
         width: el.getAttribute('style')?.match(/width:\s*([^;]+)/)?.[1] || '',
         height: el.getAttribute('style')?.match(/height:\s*([^;]+)/)?.[1] || ''
       }
-      if (id && src) {
-        // 统一存储格式校验
-        srcToDataIdMap.set(src, id)
-        srcToStyleMap.set(src, style)
+      if (id && originalSrc) {
+        // 统一存储格式校验 - 使用原始URL作为key
+        srcToDataIdMap.set(originalSrc, id)
+        srcToStyleMap.set(originalSrc, style)
       }
       if (id) ids.add(String(id))
     })
@@ -209,26 +214,27 @@ const handleChange = (editor) => {
       const img = div.querySelector('img[data-w-e-type="image"]')
       
       if (img) {
-        // 通过 src 找到 slate 节点
-        const src = img.getAttribute('src')
+        // 优先从 data-original-src 获取原始 URL，否则用当前 src
+        const originalSrc = img.getAttribute('data-original-src') || img.getAttribute('src')
         let dataId = ''
 
-        function findDataId(nodes) {
-          for (const node of nodes) {
-            if ((node as any).type === 'image' && (node as any).src === src) {
-              dataId = (node as any).dataId
-              break
-            }
-            if (Array.isArray((node as any).children)) {
-              findDataId((node as any).children)
-            }
+        // 先从映射中查找
+        dataId = srcToDataIdMap.get(originalSrc) || ''
+        
+        // 如果映射中没有，再从 Slate 节点中查找
+        if (!dataId) {
+          const slateInfo = findImageInfoFromSlate(editor, originalSrc)
+          if (slateInfo) {
+            dataId = slateInfo.dataId
           }
         }
-
-        findDataId(editor.children)
         
         if (dataId) {
           img.setAttribute('data-id', dataId)
+          // 确保映射关系存在
+          if (originalSrc && !srcToDataIdMap.has(originalSrc)) {
+            srcToDataIdMap.set(originalSrc, dataId)
+          }
         }
         // 只同步当前图片节点
         let width = div.style.width

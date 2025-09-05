@@ -280,12 +280,36 @@ function getDays(startDate, endDate) {
   return result
 }
 
+/**
+ * 规范化富文本中的图片标签
+ * @param html
+ */
+function normalizeMsgContentHtml(html) {
+  try {
+    if (!html || typeof html !== 'string') return html
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = html
+    // 仅处理 wangeditor 的图片节点
+    const imgs = wrapper.querySelectorAll('img[data-w-e-type="image"]')
+    imgs.forEach((img) => {
+      const original = img.getAttribute('data-original-src') || ''
+      const src = img.getAttribute('src') || ''
+      // 若存在原始下载地址且当前为 base64，则写回 src=""
+      if (original && /^\s*data:/i.test(src)) {
+        img.setAttribute('src', '')
+      }
+    })
+    return wrapper.innerHTML
+  } catch (_) {
+    return html
+  }
+}
+
 const onSubmit = async () => {
   return new Promise(async (resolve, reject) => {
     const deletedIds = getDeletedFileIds() || []
     const uploadedIds = getUploadedFileIds() || []
     const currentIds = new Set(currentFileIds.value || [])
-    
     // 新上传但未保留的
     const unkeptUploadedIds = uploadedIds.filter(id => !currentIds.has(id))
     
@@ -313,7 +337,8 @@ const onSubmit = async () => {
           formState.createBy = formState.createBy || useUserStore().getUserInfo.username
           formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
           formState.updateBy = useUserStore().getUserInfo.username
-
+          // 避免将 base64 存入数据库
+          formState.msgContent = normalizeMsgContentHtml(formState.msgContent)
           defHttp[method](
               {
                 url: url,
