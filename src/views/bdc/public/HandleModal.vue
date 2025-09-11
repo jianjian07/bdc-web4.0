@@ -395,9 +395,15 @@ function getTaskUserInfo(stringList, transitionList, yjfx) {
             treeData.value = transTree
             treeDataCopy.value = JSON.parse(JSON.stringify(treeData.value))
             roleNum.value = roleNumber
-            // 取第一个第一级父节点
-            const firstRootNode = transTree[0] || []
-            expandedKeys.value = firstRootNode.children ? collectParentKeys(firstRootNode) : []
+            // 默认取流程节点下的第一级父节点
+            const keys = [];
+            transTree.forEach(item => {
+              if (item.children && item.children.length > 0) {
+                keys.push(item.key) // 当前节点是父节点，加入key
+              }
+            })
+            //expandedKeys.value = firstRootNode.children ? collectParentKeys(firstRootNode) : []
+            expandedKeys.value = keys;
             treeSpinning.value = false
           }
         }
