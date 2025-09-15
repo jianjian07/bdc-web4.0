@@ -44,6 +44,7 @@ import { message } from 'ant-design-vue';
 import { SaveOutlined } from '@ant-design/icons-vue';
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { formatToDateTime } from "/@/views/online/utils/dateUtil";
+import { encryptByBase64 } from "/@/utils/cipher";
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
 // 弹窗标题
@@ -129,6 +130,9 @@ function handleModalOk() {
         } else {
             url = '/api/zrzy-form/form/add' // 新增
             formState.value.createTime = value
+        }
+        if (formState.value.content) {
+            formState.value.content = encryptByBase64(formState.value.content)
         }
         defHttp.post({ url: url, data: formState.value }, { withToken: true }).then((res) => {
             if (res.success) {

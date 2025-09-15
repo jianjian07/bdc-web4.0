@@ -44,7 +44,7 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="动态数据源" name="cType">
-                        <a-select v-model:value="reportData.dbKey" :options="dataSources" allow-clear/>
+                        <a-select v-model:value="reportData.dbKey" :options="dataSources" allow-clear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="24">
@@ -74,6 +74,7 @@ import monacoEditor from '/@/components/monaco/monacoEditor.vue'
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { formatToDateTime } from "/@/views/online/utils/dateUtil"
+import { encryptByBase64 } from '/@/utils/cipher';
 const props = defineProps({
     open: {
         type: Boolean,
@@ -144,8 +145,11 @@ function onOk() {
     const value = formatToDateTime(time);
     reportData.value.createTime = reportData.value.createTime || value
     reportData.value.updateTime = value
+    let _reportData: any = { ...reportData.value }
+    _reportData.content = encryptByBase64(reportData.value.content)
+    _reportData.dataSource = encryptByBase64(reportData.value.dataSource)
     //reportData.value.isLoad = isLoad.value
-    defHttp.post({ url: url, data: reportData.value }, { withToken: true }).then((res) => {
+    defHttp.post({ url: url, data: _reportData }, { withToken: true }).then((res) => {
         if (res.success) {
             message.success('保存成功')
         } else {
