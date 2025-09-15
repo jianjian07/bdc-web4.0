@@ -4,13 +4,13 @@
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="6" :offset="0">
           <a-form-item label="标题">
-            <a-input v-model:value="formData.title" allowClear/>
+            <a-input v-model:value="formData.title" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6">
           <a-form-item label="消息类型">
             <a-select v-model:value="formData.category" style="width: 100%" :options="getDictItemsByCode('tzggxxlx')"
-                      allowClear></a-select>
+              allowClear></a-select>
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -38,7 +38,7 @@
     <div class="wonder-table-toolbar" v-if="operable">
       <a-button type="primary" @click="handleModal('new')" style="margin-right: 8px">
         <template #icon>
-          <plus-outlined/>
+          <plus-outlined />
         </template>
         新增
       </a-button>
@@ -46,77 +46,71 @@
         <template #overlay>
           <a-menu>
             <a-menu-item key="1" @click="batchDelete">
-              <DeleteOutlined style="margin-right: 8px"/>
+              <DeleteOutlined style="margin-right: 8px" />
               删除
             </a-menu-item>
           </a-menu>
         </template>
 
         <a-button style="margin-right: 8px"> 批量操作
-          <DownOutlined/>
+          <DownOutlined />
         </a-button>
       </a-dropdown>
     </div>
     <a-spin :spinning="spinning">
-      <a-table
-          :columns="columns"
-          :data-source="datalist"
-          :pagination="pagination"
-          @change="onChange($event, loadData)"
-          :row-selection="operable ? rowSelection : false"
-          :row-key="record => record.id">
+      <a-table :columns="columns" :data-source="datalist" :pagination="pagination" @change="onChange($event, loadData)"
+        :row-selection="operable ? rowSelection : false" :row-key="record => record.id">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'priority'">
-                    <span>
-                        <a-tag color="red" v-if="record.priority == 'H'">
-                            高
-                        </a-tag>
-                        <a-tag color="yellow" v-else-if="record.priority == 'M'">
-                            中
-                        </a-tag>
-                        <a-tag color="green" v-else-if="record.priority == 'L'">
-                            低
-                        </a-tag>
-                    </span>
+            <span>
+              <a-tag color="red" v-if="record.priority == 'H'">
+                高
+              </a-tag>
+              <a-tag color="yellow" v-else-if="record.priority == 'M'">
+                中
+              </a-tag>
+              <a-tag color="green" v-else-if="record.priority == 'L'">
+                低
+              </a-tag>
+            </span>
           </template>
           <template v-if="column.dataIndex === 'sendStatus'">
-                    <span>
-                        <a-tag color="green" v-if="record.sendStatus == '1'">
-                            已发布
-                        </a-tag>
-                        <a-tag color="red" v-else-if="record.sendStatus == '0'">
-                            未发布
-                        </a-tag>
-                        <a-tag color="orange" v-else-if="record.sendStatus == '2'">
-                            已撤销
-                        </a-tag>
-                    </span>
+            <span>
+              <a-tag color="green" v-if="record.sendStatus == 1">
+                已发布
+              </a-tag>
+              <a-tag color="red" v-else-if="record.sendStatus == 0">
+                未发布
+              </a-tag>
+              <a-tag color="orange" v-else-if="record.sendStatus == 2">
+                已撤销
+              </a-tag>
+            </span>
           </template>
           <template v-if="column.key === 'action'">
             <a-space>
               <template #split>
-                <a-divider type="vertical"/>
+                <a-divider type="vertical" />
               </template>
               <a v-if="operable" @click="handleModal('edit', record)">编辑</a>
               <a v-else @click="handleModal('view', record)">查看</a>
               <a-dropdown v-if="operable">
                 <a class="ant-dropdown-link" @click.prevent>
                   更多
-                  <DownOutlined/>
+                  <DownOutlined />
                 </a>
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
-                                    @confirm="handleDelete(record.id)">
+                      <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消" @confirm="handleDelete(record.id)">
                         <a>删除</a>
                       </a-popconfirm>
                     </a-menu-item>
-                    <a-menu-item v-if="record.sendStatus != '1'">
-                      <a @click="handlePublish(record, '1')">发布</a>
+                    <a-menu-item v-if="record.sendStatus != 1">
+                      <a @click="handlePublish(record, 1)">发布</a>
                     </a-menu-item>
                     <a-menu-item v-else>
-                      <a @click="handlePublish(record, '2')">撤销</a>
+                      <a @click="handlePublish(record, 2)">撤销</a>
                     </a-menu-item>
                     <a-menu-item>
                       <a @click="handleModal('view', record)">查看</a>
@@ -284,25 +278,25 @@ const rowSelection = computed(() => {
     onSelect(record: any, selected: boolean) {
       const id = record.id
       const keys = new Set(state.selectedRowKeys)
-    
+
       if (selected) {
         keys.add(id)
       } else {
         keys.delete(id)
       }
-    
+
       state.selectedRowKeys = Array.from(keys)
     },
     onSelectAll(selected: boolean, _selectionRows: any, changeRows: any[]) {
       const changeIds = changeRows.map((item: any) => item.id)
       const currentIds = new Set(state.selectedRowKeys)
-    
+
       if (selected) {
         changeIds.forEach(id => currentIds.add(id))
       } else {
         changeIds.forEach(id => currentIds.delete(id))
       }
-    
+
       state.selectedRowKeys = Array.from(currentIds)
     }
   }
@@ -411,7 +405,7 @@ function handleModal(type: any, record: any = null) {
  */
 function handleDelete(id: string) {
   defHttp.delete(
-      { url: api.delUrl, params: { id: id } }, { withToken: true }
+    { url: api.delUrl, params: { id: id } }, { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
       message.success('删除成功！')
@@ -448,7 +442,7 @@ function batchDelete() {
  */
 function handlePublish(record: any, type: any) {
   defHttp.put(
-      { url: api.pubUrl, params: { id: record.id, sendStatus: type } }, { withToken: true }
+    { url: api.pubUrl, params: { id: record.id, sendStatus: type } }, { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
       message.success(type == '1' ? '发布成功！' : '撤销成功！')

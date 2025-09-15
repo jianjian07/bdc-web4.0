@@ -1,17 +1,17 @@
 <template>
   <div class="baseContent">
     <div class="sectionOne">
-<!--      <div class="panelOne">-->
-<!--        <a-card class="userBox1" v-for="info in baseInfo" :key="info.key" @click="onClickEntry(info.route)"-->
-<!--          :bordered="false">-->
-<!--          <div class="baseInfo">-->
-<!--            <div class="infoItem">-->
-<!--              <span>{{ info.label }}</span>-->
-<!--              <span :style="{ color: info.color }">{{ info.value }}</span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </a-card>-->
-<!--      </div>-->
+      <!--      <div class="panelOne">-->
+      <!--        <a-card class="userBox1" v-for="info in baseInfo" :key="info.key" @click="onClickEntry(info.route)"-->
+      <!--          :bordered="false">-->
+      <!--          <div class="baseInfo">-->
+      <!--            <div class="infoItem">-->
+      <!--              <span>{{ info.label }}</span>-->
+      <!--              <span :style="{ color: info.color }">{{ info.value }}</span>-->
+      <!--            </div>-->
+      <!--          </div>-->
+      <!--        </a-card>-->
+      <!--      </div>-->
       <div class="panelTwo">
         <a-card class="userBox" :bordered="false">
           <div class="commonEntry">
@@ -147,9 +147,7 @@ function onClickEntry(path, params: any = {}) {
 function handleAdd(entry: any) {
   // 跳转至创建流程页面
   const params = {
-    // regType: '0101',
-    lcid: entry.key,
-    processKey: entry.value
+    lcid: entry.key
   }
   addFlow(params)
 }
@@ -203,7 +201,7 @@ function handleAdd(entry: any) {
           cursor: pointer;
           z-index: 1;
           position: relative;
-          
+
 
           span:nth-of-type(1) {
             font-weight: bold;
@@ -261,7 +259,7 @@ function handleAdd(entry: any) {
             align-items: center;
             width: 90%;
             margin: auto;
-            
+
             .icon-label {
               font-size: 1.3vw;
               width: 75%;
@@ -269,7 +267,7 @@ function handleAdd(entry: any) {
               white-space: nowrap;
             }
           }
-          
+
           //span {
           //  display: flex;
           //  align-items: center;
@@ -471,7 +469,8 @@ function handleAdd(entry: any) {
       width: 45%;
     }
 
-    .dqList, .ycfList {
+    .dqList,
+    .ycfList {
       height: 100%;
       overflow: hidden;
       display: flex;

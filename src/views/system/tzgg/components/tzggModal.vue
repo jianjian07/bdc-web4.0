@@ -1,16 +1,16 @@
 <template>
   <a-form ref="formRef" :disabled="formDisabled" :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol"
-          :rules="stateRules">
+    :rules="stateRules">
     <a-form-item label="消息类型" ref="msgCategory" name="msgCategory">
       <a-radio-group v-model:value="formState.msgCategory" @change="onCatelogChange"
-                     :options="getDictItemsByCode('tzggxxlx')">
+        :options="getDictItemsByCode('tzggxxlx')">
       </a-radio-group>
     </a-form-item>
     <a-form-item label="标题" name="title">
-      <a-input v-model:value="formState.title" placeholder="请输入标题"/>
+      <a-input v-model:value="formState.title" placeholder="请输入标题" />
     </a-form-item>
     <a-form-item label="摘要" name="msgAbstract">
-      <a-textarea v-model:value="formState.msgAbstract" placeholder="请输入摘要"/>
+      <a-textarea v-model:value="formState.msgAbstract" placeholder="请输入摘要" />
     </a-form-item>
     <a-form-item label="接收用户" name="msgType">
       <a-radio-group v-model:value="formState.msgType" @change="onTypeChange">
@@ -31,12 +31,8 @@
     </a-form-item>
     <a-form-item v-show="showGSSJ" label="公示时间" name="startTime">
       <div style="display: flex">
-        <a-date-picker
-            format="YYYY/MM/DD HH:mm:ss"
-            value-format="YYYY/MM/DD HH:mm:ss"
-            v-model:value="formState.startTime"
-            @change="onGSSJChange"
-        />
+        <a-date-picker format="YYYY/MM/DD HH:mm:ss" value-format="YYYY/MM/DD HH:mm:ss"
+          v-model:value="formState.startTime" @change="onGSSJChange" />
         <span style="display: flex; align-items: center; padding:0 8px">
           <span> 起 </span>
           <span style="padding: 0 8px;">
@@ -45,28 +41,25 @@
           <span> 个工作日 </span>
         </span>
         <a-form-item name="endTime" class="endTime-form-item">
-          <a-date-picker
-            format="YYYY/MM/DD HH:mm:ss"
-            value-format="YYYY/MM/DD HH:mm:ss"
-            v-model:value="formState.endTime"
-            @change="onGSSJChange"
-        />
-          </a-form-item>
+          <a-date-picker format="YYYY/MM/DD HH:mm:ss" value-format="YYYY/MM/DD HH:mm:ss"
+            v-model:value="formState.endTime" @change="onGSSJChange" />
+        </a-form-item>
         <span style="display: flex; align-items: center; padding-left: 8px">
           止
         </span>
       </div>
     </a-form-item>
-<!--    <a-form-item v-show="showGSSJ && false" label="公示结束时间" name="endTime">-->
-<!--      <a-date-picker-->
-<!--          format="YYYY/MM/DD HH:mm:ss"-->
-<!--          value-format="YYYY/MM/DD HH:mm:ss"-->
-<!--          v-model:value="formState.endTime"-->
-<!--          @change="onGSSJChange"-->
-<!--      />-->
-<!--    </a-form-item>-->
+    <!--    <a-form-item v-show="showGSSJ && false" label="公示结束时间" name="endTime">-->
+    <!--      <a-date-picker-->
+    <!--          format="YYYY/MM/DD HH:mm:ss"-->
+    <!--          value-format="YYYY/MM/DD HH:mm:ss"-->
+    <!--          v-model:value="formState.endTime"-->
+    <!--          @change="onGSSJChange"-->
+    <!--      />-->
+    <!--    </a-form-item>-->
     <a-form-item label="内容" name="msgContent">
-      <WangEditor ref="wangEditorRef" @editorValue="setContent" :readOnly="formDisabled" :id="formState.id" :content="formState.msgContent"></WangEditor>
+      <WangEditor ref="wangEditorRef" @editorValue="setContent" :readOnly="formDisabled" :id="formState.id"
+        :content="formState.msgContent"></WangEditor>
     </a-form-item>
   </a-form>
 </template>
@@ -94,7 +87,7 @@ let formState: any = reactive({
   msgContent: '',
   msgType: 'ALL',
   priority: 'H',
-  sendStatus: '0', // '0'未发布 '1'已发布 '2'已撤销
+  sendStatus: 0, // '0'未发布 '1'已发布 '2'已撤销
   sendTime: '',
   cancelTime: '',
   delFlag: '0',
@@ -312,13 +305,13 @@ const onSubmit = async () => {
     const currentIds = new Set(currentFileIds.value || [])
     // 新上传但未保留的
     const unkeptUploadedIds = uploadedIds.filter(id => !currentIds.has(id))
-    
+
     // 需要删除的所有ID
     const allDelIds = [...deletedIds, ...unkeptUploadedIds]
-    
+
     // 去重（防止重复）
     const uniqueDelIds = Array.from(new Set(allDelIds))
-    
+
     let delRes = true
     if (uniqueDelIds.length > 0) {
       delRes = await deleteAttachment(uniqueDelIds)
@@ -330,33 +323,33 @@ const onSubmit = async () => {
     let url = props.formData.type == 'new' ? api.add : api.edit
     let method = props.formData.type == 'new' ? 'post' : 'put'
     formRef.value
-        .validate()
-        .then(() => {
+      .validate()
+      .then(() => {
 
-          formState.createTime = formState.createTime || dayjs().format("YYYY-MM-DD HH:mm:ss")
-          formState.createBy = formState.createBy || useUserStore().getUserInfo.username
-          formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
-          formState.updateBy = useUserStore().getUserInfo.username
-          // 避免将 base64 存入数据库
-          formState.msgContent = normalizeMsgContentHtml(formState.msgContent)
-          defHttp[method](
-              {
-                url: url,
-                data: formState
-              },
-              { withToken: true }
-          ).then((res: any) => {
-            if (res?.success) {
-              message.success(res?.message)
-              return resolve(true)
-            } else {
-              message.warning(res?.message || '操作失败！')
-              return reject()
-            }
-          })
-        }).catch((error: any) => {
-      console.log(error)
-    })
+        formState.createTime = formState.createTime || dayjs().format("YYYY-MM-DD HH:mm:ss")
+        formState.createBy = formState.createBy || useUserStore().getUserInfo.username
+        formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
+        formState.updateBy = useUserStore().getUserInfo.username
+        // 避免将 base64 存入数据库
+        formState.msgContent = normalizeMsgContentHtml(formState.msgContent)
+        defHttp[method](
+          {
+            url: url,
+            data: formState
+          },
+          { withToken: true }
+        ).then((res: any) => {
+          if (res?.success) {
+            message.success(res?.message)
+            return resolve(true)
+          } else {
+            message.warning(res?.message || '操作失败！')
+            return reject()
+          }
+        })
+      }).catch((error: any) => {
+        console.log(error)
+      })
   })
 }
 
@@ -402,6 +395,6 @@ defineExpose({
 
 <style lang="less" scoped>
 .endTime-form-item {
-  margin-bottom: 0; 
+  margin-bottom: 0;
 }
 </style>
