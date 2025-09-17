@@ -211,10 +211,10 @@ const columns = [
     rules: [{ required: true, message: '请选择规则参数' }]
   },
   {
-    title: '规则参数值',
+    title: '流水号分类',
     dataIndex: 'ruleValue',
     key: 'ruleValue',
-    placeholder: '请输入规则参数值',
+    placeholder: '请输入流水号分类',
     rules: [{ validator: validateRuleValue }],
     optional: true
   },
