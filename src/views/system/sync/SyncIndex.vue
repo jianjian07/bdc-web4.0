@@ -40,9 +40,19 @@
           </template>
           新增
         </a-button>
+        <a-popconfirm title="确定要重置检查点吗?【如果有运行中的任务，请先停止】" @confirm="onReset">
+          <a-button type="primary">
+            <template #icon>
+              <RedoOutlined />
+            </template>
+            重置检查点
+          </a-button>
+        </a-popconfirm>
+
       </a-space>
     </div>
-    <a-alert message="建议一个数据库一个同步任务,避免数据表重复监测" class="sys-role-table-header" show-icon type="info" />
+    <a-alert message="1、建议一个数据库一个同步任务,避免数据表重复监测&nbsp;&nbsp;&nbsp;&nbsp;2、重置检查点：清空所以检查点【如果有运行中的任务，请先停止】"
+      class="sys-role-table-header" show-icon type="info" />
     <a-table :columns="columns" :data-source="dataList" :pagination="pagination" @change="onChange($event, loadData)"
       :row-key="record => record.id">
       <template #bodyCell="{ column, record, index }">
@@ -134,7 +144,8 @@ enum api {
   list = '/api/zrzy-cdc/data/sync/list',
   del = '/api/zrzy-cdc/data/sync/delete',
   start = '/api/zrzy-cdc/data/sync/start',
-  stop = '/api/zrzy-cdc/data/sync/stop'
+  stop = '/api/zrzy-cdc/data/sync/stop',
+  reset = '/api/zrzy-cdc/data/sync/resetCheckpoints',
 }
 
 onMounted(() => {
@@ -196,7 +207,7 @@ function start(record) {
  * @param record
  */
 function stop(record) {
-  defHttp.post({ url: api.stop, params: { code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
+  defHttp.get({ url: api.stop, params: { code: record.code } }, { withToken: true, withTimeout: false }).then((res) => {
     if (res.success) {
       message.success('停止成功')
       record.jobId = '';
@@ -223,7 +234,20 @@ function del(record) {
     }
   })
 }
-
+/**
+ * 重置检查点
+ */
+function onReset() {
+  defHttp.post({ url: api.reset }, { withToken: true }).then((res) => {
+    if (res.success) {
+      message.success('重置成功')
+    } else {
+      message.error('重置失败' + res?.message)
+    }
+  }).catch(err => {
+    message.error('重置失败' + err)
+  })
+}
 /**
 * 分页
 * @param pag

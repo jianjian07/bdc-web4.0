@@ -1,89 +1,43 @@
 <template>
-  <a-form
-    ref="formRef"
-    :model="processModel"
-    name="basic"
-    :label-col="{ span: 6 }"
-    :wrapper-col="{ span: 18 }"
-    autocomplete="off"
-    style="margin-top: 20px"
-  >
+  <a-form ref="formRef" :model="processModel" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }"
+    autocomplete="off" style="margin-top: 20px">
     <a-form-item label="选择文件">
-      <a-upload
-        name="file"
-        v-model:file-list="fileList"
-        :max-count="1"
-        :headers="{ authorization: 'authorization-text' }"
-        :showUploadList="false"
-        :customRequest="handleImportJson"
-      >
+      <a-upload name="file" v-model:file-list="fileList" :max-count="1"
+        :headers="{ authorization: 'authorization-text' }" :showUploadList="false" :customRequest="handleImportJson">
         <a-button>
           <upload-outlined />
           文件
         </a-button>
       </a-upload>
     </a-form-item>
-    <a-form-item
-      label="流程"
-      name="lcid"
-      :rules="[{ required: true, message: '请选择需要导出的流程' }]"
-    >
-      <a-tree-select
-        v-model:value="processModel.lcid"
-        show-search
-        style="width: 500px"
-        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-        placeholder="请输入流程名称"
-        allow-clear
-        :tree-data="treeData"
-        :field-names="{
-          children: 'children',
-          label: 'title',
-          value: 'key',
-        }"
-        tree-node-filter-prop="title"
-        @select="selectProcess"
-      ></a-tree-select>
+    <a-form-item label="流程" name="lcid" :rules="[{ required: true, message: '请选择需要导出的流程' }]">
+      <a-tree-select v-model:value="processModel.lcid" show-search style="width: 500px"
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="请输入流程名称" allow-clear
+        :tree-data="treeData" :field-names="{
+    children: 'children',
+    label: 'title',
+    value: 'key',
+  }" tree-node-filter-prop="title" @select="selectProcess"></a-tree-select>
     </a-form-item>
     <a-form-item label="权利类型">
-      <a-select
-        v-model:value="processModel.qllx"
-        mode="multiple"
-        :options="getDictItemsByCode('qllx')"
-        allowClear
-        style="width: 500px"
-        show-search
-        optionFilterProp="label"
-        disabled
-      >
+      <a-select v-model:value="processModel.qllx" mode="multiple" :options="getDictItemsByCode('qllx')" allowClear
+        style="width: 500px" show-search optionFilterProp="label" disabled>
       </a-select>
     </a-form-item>
     <a-form-item label="导入权利类型">
-      <a-select
-        v-model:value="processModel.qllxNew"
-        mode="multiple"
-        :options="getDictItemsByCode('qllx')"
-        allowClear
-        style="width: 500px"
-        show-search
-        optionFilterProp="label"
-        :disabled="processModel.qllx != null && processModel.qllx.length > 1"
-      >
+      <a-select v-model:value="processModel.qllxNew" mode="multiple" :options="getDictItemsByCode('qllx')" allowClear
+        style="width: 500px" show-search optionFilterProp="label"
+        :disabled="processModel.qllx != null && processModel.qllx.length > 1">
       </a-select>
       <div style="margin-top: 10px; color: red">
         当所选文件权利类型为多个时，导入权利类型不允许选择，只能完整导入
       </div>
     </a-form-item>
     <a-form-item label="导入项">
-      <a-checkbox-group
-        v-model:value="processModel.pzx"
-        style="width: 100%; display: grid">
+      <a-checkbox-group v-model:value="processModel.pzx" style="width: 100%; display: grid">
         <div v-for="(item, index) in pzxList" :key="index" style="padding: 5px">
-          <a-checkbox
-            :value="item.key"
-            :disabled="importpzx != null && importpzx.indexOf(item.key) == -1"
-            >{{ item.title }}</a-checkbox
-          >
+          <a-checkbox :value="item.key" :disabled="importpzx != null && importpzx.indexOf(item.key) == -1">{{ item.title
+            }}</a-checkbox>
         </div>
       </a-checkbox-group>
     </a-form-item>
@@ -184,7 +138,7 @@ function importFile(url?: string, callback?: any) {
         if (typeof callback == "function") {
           callback(res.result);
         } else {
-          message.warning(res?.message);
+          message.info(res?.message);
         }
       }
     });
