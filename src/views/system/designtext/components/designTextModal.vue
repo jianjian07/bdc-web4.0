@@ -2,22 +2,23 @@
   <div class="design-text-modal">
     <a-form ref="formRef" :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol" :rules="stateRules">
       <a-form-item label="名称" name="designName">
-        <a-input v-model:value="formState.designName" placeholder="请输入名称"/>
+        <a-input v-model:value="formState.designName" placeholder="请输入名称" />
       </a-form-item>
       <a-form-item label="设计内容" name="designContent">
-        <a-textarea v-model:value="formState.designContent" placeholder="请输入设计内容"/>
+        <a-textarea v-model:value="formState.designContent" placeholder="请输入设计内容" />
       </a-form-item>
       <a-form-item label="设计类型" name="designType">
-        <a-select v-model:value="formState.designType" :options="getDictItemsByCode('design_text')"/>
+        <a-select v-model:value="formState.designType" :options="getDictItemsByCode('design_text')" />
       </a-form-item>
       <a-form-item label="角色" name="roles">
-        <a-select v-model:value="formState.rolesArr" :options="roleOptions" :field-names="{ label: 'name', value: 'id' }" mode="multiple" @change="handleChangeRoles"/>
+        <a-select v-model:value="formState.rolesArr" :options="roleOptions"
+          :field-names="{ label: 'name', value: 'id' }" mode="multiple" @change="handleChangeRoles" />
       </a-form-item>
       <a-form-item label="是否公开" name="isOpenCheck">
         <a-checkbox v-model:checked="formState.isOpenCheck">公开</a-checkbox>
       </a-form-item>
       <a-form-item label="状态" name="zt">
-        <a-select v-model:value="formState.zt" :options="getDictItemsByCode('sfys')"/>
+        <a-select v-model:value="formState.zt" :options="getDictItemsByCode('sfys')" />
       </a-form-item>
     </a-form>
   </div>
@@ -61,7 +62,7 @@ const stateRules: any = {
   zt: [{ required: true, message: '请选择状态' }]
 }
 // 角色
-let roleOptions = ref<any>([]) 
+let roleOptions = ref<any>([])
 
 enum api {
   add = '/api/zrzy-bdc/bdc/bdcDesignText/add',
@@ -74,7 +75,7 @@ watch(() => props.formData, (val) => {
   }
   if (val && val.type != 'add') {
     Object.keys(formState).forEach(ele => {
-       formState[ele] = val.record[ele]
+      formState[ele] = val.record[ele]
     })
     formState['isOpenCheck'] = formState['isOpen'] == 1
     formState['rolesArr'] = formState['roles'].includes(',') ? formState['roles'].split(',') : [formState['roles']]
@@ -94,22 +95,24 @@ function onSubmit() {
     formRef.value
       .validate()
       .then(() => {
-        
+
         formState.roles = formState.rolesArr.join(',')
         formState.isOpen = formState.isOpenCheck ? 1 : 0
         formState.createTime = formState.createTime || dayjs().format("YYYY-MM-DD HH:mm:ss")
         formState.createBy = formState.createBy || useUserStore().getUserInfo.username
         formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
         formState.updateBy = useUserStore().getUserInfo.username
-
+        let newFormState = { ...formState }
+        delete newFormState.rolesArr
+        delete newFormState.isOpenCheck
         defHttp[method](
           {
             url: url,
-            data: formState
+            data: newFormState
           },
           { withToken: true }
         ).then((res: any) => {
-          if(res?.success) {
+          if (res?.success) {
             message.success(res.message)
             return resolve(true)
           } else {
@@ -129,6 +132,4 @@ defineExpose({
 
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

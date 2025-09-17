@@ -76,8 +76,8 @@
                           <template v-if="column?.key == 'ruleValue' && record['ruleParam'] == 'serial_num'">
                             <a-select v-model:value="record[column.key]" style="width: 100%;"
                               :disabled="column.disabled || getDisabled(column, record)"
-                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder" allow-clear
-                              :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
+                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder"
+                              allow-clear :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
                               @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item, index) in getDict('serial_num_code')" :label="item.label"
                                 :value="item.value">
@@ -88,8 +88,8 @@
                           <template v-else-if="column?.dict">
                             <a-select v-model:value="record[column.key]" style="width: 100%;"
                               :disabled="column.disabled || getDisabled(column, record)"
-                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder" allow-clear
-                              :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
+                              :status="record[column.dataIndex + 'Status']" :placeholder="column.placeholder"
+                              allow-clear :dropdownMatchSelectWidth="false" @focus="setInputStatus(column, record)"
                               @change="(value, option) => handleChangeValue(value, option, column, record)">
                               <a-select-option v-for="(item, index) in getDict(column.dict)" :label="item.label"
                                 :value="item.value">
@@ -460,9 +460,9 @@ function handleSubmit() {
           rule.serialLength = rule.serialLength || ''
           rule.serialType = rule.serialType || ''
           rule.ruleValue = rule.ruleValue || ''
+          delete rule.key
           return rule
         })
-
         defHttp.post({ url: api.save, data: ruleList.value }, { withToken: true }).then((res) => {
           if (res && res.success) {
             for (let i = 0; i < res.result.length; i++) {
