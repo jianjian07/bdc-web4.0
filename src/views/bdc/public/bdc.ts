@@ -529,8 +529,9 @@ function getReportUrl(data) {
   return new Promise((resolve) => {
     defHttp.post({ url: '/api/zrzy-bdc/bdc/FastReport/printFastReport', data: data }, { withToken: true }).then((res) => {
       if (res && res.success) {
-        let urlCertView = `${window.settingConfig.kkFileDomain}/onlinePreview?officePreviewType=pdf&url=${Base64.encode(res.result)}`;
-        resolve(urlCertView);
+        //let urlCertView = `${window.settingConfig.kkFileDomain}/onlinePreview?officePreviewType=pdf&url=${Base64.encode(res.result)}`;
+        //resolve(urlCertView);
+        resolve(res.result);
       } else {
         message.warning(res?.message || '获取地址失败!')
         resolve(false)
