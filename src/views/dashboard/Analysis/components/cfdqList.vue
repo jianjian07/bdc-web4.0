@@ -40,7 +40,7 @@ let spinning: any = ref(false)
 
 const columns = [
   {
-    dataIndex: 'bdcqzh',
+    dataIndex: 'cfwh',
     title: '查封文号',
     align: 'left',
     width: '35%',
