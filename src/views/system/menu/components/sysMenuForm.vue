@@ -24,7 +24,7 @@
           </div>
         </a-modal>
       </a-form-item>
-      
+
       <a-form-item label="外联菜单" v-show="formState.type == 1">
         <a-radio-group v-model:value="formState.iframe" button-style="solid">
           <a-radio-button :value="true">是</a-radio-button>
@@ -139,17 +139,17 @@ formState.value.type = props.powerType
 const rules = computed(() => ({
   type: [{ required: true, message: '请输入菜单类型!' }],
   name: [{ required: !!formState.value.path, message: formState.value.type == 2 ? '请输入按钮名称' : '请输入菜单名称!' }],
-  path: [{ required: formState.value.type == 0, message: '请输入路由地址!' },
+  path: [{ required: formState.value.type === 0 || formState.value.type == 1, message: '请输入路由地址!' },
       {
         validator: (rule, value) => {
           if (!value) return Promise.resolve()
-          
+
           if (formState.value.type === 0 || formState.value.pid === '0') {
             if (!/^\/.*/.test(value)) {
               return Promise.reject('一级路由应以 / 开头')
             }
-          } 
-    
+          }
+
           return Promise.resolve()
         },
       }],
