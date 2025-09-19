@@ -31,7 +31,7 @@
   <div class="wonder-table-css">
     <div class="wonder-table-toolbar">
       <a-space>
-        <a-button type="primary" @click="addData">
+        <a-button type="primary" v-if="showCreate" @click="addData">
           <template #icon>
             <plus-outlined />
           </template>
@@ -106,7 +106,9 @@ import { exprotJson } from "/@/views/online/utils/file"
 import { cModal } from "/@/components/cModal/index"
 import { useUserStoreWithOut } from "/@/store/modules/user"
 import { Http2ServerRequest } from "http2"
-
+import { usePermissionStore } from "/@/store/modules/permission"
+const permissionStore = usePermissionStore()
+const showCreate = computed(() => permissionStore.showCreateBtn)
 
 enum Api {
   copyUrl = '/api/zrzy-form/wform/copyData',

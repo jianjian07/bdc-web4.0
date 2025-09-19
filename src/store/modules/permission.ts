@@ -15,7 +15,8 @@ interface PermissionState {
     menuList: menuModel[];
     permissionList: string[];
     toolBarInfo: toolbarModel[],
-    igsInfo: IgsInfoModel[]
+    igsInfo: IgsInfoModel[],
+    showCreateBtn: boolean;
 }
 /**
  * 菜单及工具栏
@@ -28,7 +29,8 @@ export const usePermissionStore = defineStore({
         menuList: [],
         permissionList: [],
         toolBarInfo: [],
-        igsInfo: []
+        igsInfo: [],
+        showCreateBtn: false
     }),
     getters: {
         getIsDynamicAddedRoute(): boolean {
@@ -47,6 +49,9 @@ export const usePermissionStore = defineStore({
         },
         getPermissionList(): string[] {
             return this.permissionList;
+        },
+        getShowCreateBtn(): boolean {
+            return this.showCreateBtn;
         }
     },
     actions: {
@@ -76,7 +81,7 @@ export const usePermissionStore = defineStore({
                 routeList = this.getMenuInfo
             } else {
                 let data: any = await getMenuListBySysId()
-                let list = (data.menuList) as AppRouteRecordRaw[]
+                let list = (data?.menuList) as AppRouteRecordRaw[]
                 if (list != null && list.length > 0) {
                     routeList = (list) as AppRouteRecordRaw[]
                     this.setMenuList(list)
@@ -90,6 +95,9 @@ export const usePermissionStore = defineStore({
             routes = [...routeList, REDIRECT_ROUTE, REFRESH_ROUTE]
             routes.push(ERROR_LOG_ROUTE);
             return routes
+        },
+        setShowCreateBtn(show: boolean) {
+            this.showCreateBtn = show;
         },
         resetState(): void {
             this.setDynamicAddedRoute(false)

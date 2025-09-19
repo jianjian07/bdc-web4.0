@@ -29,7 +29,7 @@
                   <span class="left-name" v-else style="margin-left:5px">{{ node.title }}</span>
                 </div>
                 <div v-if="selectedKeys[0] == node.id" class="right">
-                  <a-button style="margin-left: 8px;" @click.stop="addTag(node)">
+                  <a-button style="margin-left: 8px;" v-if="showCreate" @click.stop="addTag(node)">
                     <template #icon>
                       <plus-outlined style="font-size: 10px" />
                     </template>
@@ -82,7 +82,7 @@
           </a-tree>
         </div>
         <div class="mq-config-topic-add">
-          <a-button style="width: 100%" type="dashed" @click="addTopic">
+          <a-button style="width: 100%" type="dashed" v-if="showCreate" @click="addTopic">
             <plus-outlined />
             新建Topic
           </a-button>
@@ -97,12 +97,15 @@
 
 <script lang="ts" setup>
 import { PlusOutlined, CheckOutlined, MinusOutlined, FolderOutlined, EllipsisOutlined, ColumnHeightOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons-vue'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { findNode, getDictItemsByCode } from '/@/views/online/utils/commonUtils'
 import MqConfigForm from "/@/views/data/pzxx/modules/MqConfigForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { findNodeById } from "/@/views/data/apimanage/modules/apiUtil"
+import { usePermissionStore } from "/@/store/modules/permission"
+const permissionStore = usePermissionStore()
+const showCreate = computed(() => permissionStore.showCreateBtn)
 // 加载
 let loading = ref<boolean>(false)
 // 搜索值

@@ -39,7 +39,7 @@
     <div class="wonder-table-css">
         <div class="wonder-table-toolbar">
             <a-space>
-                <a-button type="primary" @click="addData">
+                <a-button v-if="showCreate" type="primary" @click="addData">
                     <template #icon>
                         <plus-outlined />
                     </template>
@@ -117,11 +117,14 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent } from "vue";
+import { ref, onMounted, defineAsyncComponent, computed } from "vue"
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, ExportOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
 import { exprotJson, importJson } from "../utils/file";
+import { usePermissionStore } from "/@/store/modules/permission";
+const permissionStore = usePermissionStore()
+const showCreate = computed(() => permissionStore.showCreateBtn)
 const ReportModal = defineAsyncComponent(() => import("/@/views/online/report/ReportModal.vue"));
 const columns = [
     { title: "ID", dataIndex: "id", width: 200 },

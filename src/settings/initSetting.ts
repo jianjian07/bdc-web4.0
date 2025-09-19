@@ -6,6 +6,8 @@ import projectSetting from "/@/settings/projectSetting"
 import { useAppStoreWithOut } from "/@/store/modules/app"
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
+import { decryptAES } from "/@/utils/cipher.ts"
+import { usePermissionStore } from "/@/store/modules/permission.ts"
 
 /**
  * 初始化全局配置
@@ -15,6 +17,13 @@ export function initGlobalSetting() {
   let config: ProjectConfig = Persistent.getLocal(PROJ_CFG_KEY) as ProjectConfig;
   config = deepMerge(projectSetting, config || {});
   appStore.setProjectConfig(config);
+}
+
+export function initShowCreateBtnByLicense() {
+  let license = window.settingConfig?.license;
+  let showCreateBtn = license ? decryptAES(license) === 'COMPANY_LICENSE' : false;
+  const permissionStore = usePermissionStore()
+  permissionStore.setShowCreateBtn(showCreateBtn)
 }
 
 /**
@@ -33,7 +42,7 @@ export function checkAndApplyMemorialEffect() {
  * 应用哀悼黑白主题
  */
 function applyMemorialEffect() {
-  const appElement = document.querySelector('#app')
+  const appElement = document.body
   if (!appElement.classList.contains('black-white-app')) {
     appElement.classList.add('black-white-app')
   }
@@ -53,7 +62,7 @@ function getTodayKey() {
  * 切换(哀悼)黑白主题
  */
 export function toggleBlackWhite() {
-  const appElement = document.querySelector('#app')
+  const appElement = document.body
   if (appElement.classList.contains('black-white-app')) {
     appElement.classList.remove('black-white-app')
   } else {
@@ -67,10 +76,10 @@ export function toggleBlackWhite() {
  */
 export function fetchNacosConfig() {
     return new Promise((resolve) => {
-        defHttp.get({ 
+        defHttp.get({
             url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public',
             responseType: 'json',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json;charset=UTF-8'
             }
         }, { withToken: true }).then((res) => {

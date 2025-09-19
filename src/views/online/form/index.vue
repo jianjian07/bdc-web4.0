@@ -37,7 +37,7 @@
     <div class="wonder-table-css">
         <div class="wonder-table-toolbar">
             <a-space>
-                <a-button type="primary" @click="addData">
+                <a-button v-if="showCreate" type="primary" @click="addData">
                     <template #icon>
                         <plus-outlined />
                     </template>
@@ -128,7 +128,8 @@
 
 <script lang="ts" setup>
 import { defHttp } from "/@/utils/http/axios";
-import { ref, onMounted, defineAsyncComponent } from "vue";
+import { usePermissionStore } from '/@/store/modules/permission'
+import { ref, onMounted, defineAsyncComponent, computed } from "vue"
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined, ExportOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { router } from "/@/router";
@@ -137,6 +138,8 @@ import ClipboardJS from 'clipboard'
 import HistoryDrawer from './modules/HistoryDrawer.vue';
 import CVfd from './modules/Vfd.vue'
 const formAddModal = defineAsyncComponent(() => import("/@/views/online/form/modules/formAddModal.vue"));
+const permissionStore = usePermissionStore()
+const showCreate = computed(() => permissionStore.getShowCreateBtn);
 enum Api {
     copyUrl = '/api/zrzy-form/form/copyData',
     lockFormUrl = '/api/zrzy-form/form/lockForm',

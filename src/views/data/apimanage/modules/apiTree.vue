@@ -34,7 +34,7 @@
               <!--              <span style="margin-left:5px">{{ node.apiGroupName }}</span>-->
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
-              <a-button style="margin-left: 8px;" @click.stop="addApi(node)">
+              <a-button style="margin-left: 8px;" v-if="showCreate" @click.stop="addApi(node)">
                 <template #icon>
                   <plus-outlined style="font-size: 10px" />
                 </template>
@@ -75,7 +75,7 @@
               </a-tooltip>
             </div>
             <div v-if="selectedKeys[0] == node.id" class="right">
-              <a-button style="margin-left: 8px;" @click="copyApi(node)">
+              <a-button style="margin-left: 8px;" v-if="showCreate" @click="copyApi(node)">
                 <template #icon>
                   <SwitcherOutlined style="font-size: 10px" />
                 </template>
@@ -98,7 +98,7 @@
       </a-tree>
     </div>
     <div class="api-editor-dir-add">
-      <a-button style="width: 100%" type="primary" ghost @click="addDir">
+      <a-button style="width: 100%" type="primary" v-if="showCreate" ghost @click="addDir">
         <plus-outlined />
         新建
       </a-button>
@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, ref, watch, computed } from "vue"
 import {
   PlusOutlined,
   MinusOutlined,
@@ -130,6 +130,9 @@ import {
   removeMagicApiById
 } from "/@/views/data/apimanage/modules/apiUtil"
 import { exprotJson, importJson } from "/@/views/online/utils/file"
+import { usePermissionStore } from "/@/store/modules/permission"
+const permissionStore = usePermissionStore()
+const showCreate = computed(() => permissionStore.showCreateBtn)
 // 搜索目录/接口
 let searchValue = ref<string>('')
 // 是否展开/收缩

@@ -67,3 +67,22 @@ export function encryptionAES(cipherText: string) {
   })
   return encrypted.toString()
 }
+
+export function decryptAES(cipherText: string) {
+  const key = 'WONDER1274654321'
+  const key_ele = CryptoJS.enc.Latin1.parse(key)
+  var iv = key_ele
+  try {
+    var decrypted = CryptoJS.AES.decrypt(
+      cipherText,
+      key_ele, {
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.ZeroPadding
+    })
+    return decrypted.toString(CryptoJS.enc.Utf8)
+  } catch (error) {
+    // console.log('decryptAES error',error)
+    return ''
+  }
+}

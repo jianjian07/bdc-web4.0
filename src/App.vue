@@ -16,7 +16,7 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import LockScreen from "/@/views/sys/lock/LockScreen.vue"
 import { onMounted } from "vue"
 import { router } from "/@/router"
-import { checkAndApplyMemorialEffect, getGlobalFontSize } from "/@/settings/initSetting"
+import { checkAndApplyMemorialEffect, getGlobalFontSize, initShowCreateBtnByLicense } from "/@/settings/initSetting"
 const userStore = useUserStoreWithOut()
 const fontSize = getGlobalFontSize()
 
@@ -24,6 +24,7 @@ const fontSize = getGlobalFontSize()
 onMounted(() => {
   // 默哀日
   checkAndApplyMemorialEffect()
+  initShowCreateBtnByLicense()
   let isPageReloaded = sessionStorage.getItem('isPageReloaded')
   if (!isPageReloaded) {
     // 第一次加载
