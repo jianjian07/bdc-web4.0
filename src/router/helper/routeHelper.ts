@@ -4,12 +4,12 @@ const modules = import.meta.glob('/src/views/**/*.vue');
 export function dynamicRouter(routeList: AppRouteModule[]) {
     const list: AppRouteModule[] = [];
     routeList.forEach(async (item) => {
-        if (item.component !== "wonderform") {
+        if (item.component !== "wonderform" && item.component && item.path) {
             const componentName = getComponentName(item); // 使用缓存路由必须 确保 name 唯一
             let tab: any = {
                 ...item,
                 name: item.children && item.children.length ? item.title : componentName,
-                component: item.children && item.children.length ? modules[`/src/views/${item.component}.vue`] 
+                component: item.children && item.children.length ? modules[`/src/views/${item.component}.vue`]
                   : () =>  getComponent(item.component, componentName),
                 meta: {
                     cache: item.cache,
@@ -83,8 +83,8 @@ export function dynamicRouterOld(routeList: AppRouteModule[]) {
 
 
 /**
- * 生成唯一的组件name (缓存用, 但如果是/:code 这种或是 /xx但地址栏增加了参数 
- * route读取不到跳转路由时的地址, 因为这里是登陆之后还没进入具体页面读的地址, 所以路由没有query params信息 
+ * 生成唯一的组件name (缓存用, 但如果是/:code 这种或是 /xx但地址栏增加了参数
+ * route读取不到跳转路由时的地址, 因为这里是登陆之后还没进入具体页面读的地址, 所以路由没有query params信息
  * 只是这种缓存路由刷新的话 开多个标签页手动刷新时会把name相同的都刷新)
  * @param item
  */
@@ -119,11 +119,11 @@ function getComponentName(item) {
         queryId = Object.entries(item.query).map(([key, value]) => `${key}-${value}`).join('-');
         // console.log('处理 query 参数',item)
     }
-    
-    
+
+
 
     const pathSuffix = item.path?.split('/').filter(Boolean).pop() || item.id?.slice(-6) || 'default';
-    
+
     // 处理 index.vue 的情况
     if (fileName === 'index') {
         const parentName = nameParts[nameParts.length - 2] || 'index'

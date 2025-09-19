@@ -170,7 +170,7 @@ export const useUserStore = defineStore({
     getLastOperateTime(): number {
       return this.lastOperateTime || getAuthCache(LAST_OPERATE_TIME) || this.getAppCommonLocal(LAST_OPERATE_TIME) || this.getAppCommonSession(LAST_OPERATE_TIME)
     },
-    getSaveFormFlag(): boolean {
+    getSaveFormFlag(): boolean | undefined {
       return this.saveFormFlag
     }
   },
@@ -420,10 +420,11 @@ export const useUserStore = defineStore({
         const permissionStore = usePermissionStore();
         if (!permissionStore.isDynamicAddedRoute) {
           const routes = await permissionStore.buildRoutesAction();
-          routes.forEach((route: unknown) => {
-            router.addRoute(route as unknown as RouteRecordRaw);
-          });
-
+          if (routes && routes.length > 0) {
+            routes.forEach((route: unknown) => {
+              router.addRoute(route as unknown as RouteRecordRaw);
+            });
+          }
           router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
           permissionStore.setDynamicAddedRoute(true);
         }

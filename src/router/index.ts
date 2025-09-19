@@ -81,14 +81,16 @@ export async function setupRouter(app: App<Element>) {
   const permissionStore = usePermissionStoreWithOut();
   if (userStore.getToken) {
     const routes = await permissionStore.buildRoutesAction();
-    routes.forEach((route) => {
-      router.addRoute(route as unknown as RouteRecordRaw);
-    });
+    if (routes && routes.length > 0) {
+      routes.forEach((route) => {
+        router.addRoute(route as unknown as RouteRecordRaw);
+      });
+    }
 
     router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
     permissionStore.setDynamicAddedRoute(true);
   }
   app.use(router);
-  await router.isReady()  
+  await router.isReady()
   currentRoute = Object.assign(currentRoute, router.currentRoute.value)
 }
