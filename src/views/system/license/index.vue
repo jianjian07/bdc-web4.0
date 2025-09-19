@@ -18,7 +18,7 @@
                 value-format="YYYY/MM/DD" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
-            <a-button type="primary" @click="onLicense">生成授权</a-button>&nbsp;&nbsp;
+            <a-button v-if="showCreate" type="primary" @click="onLicense">生成授权</a-button>&nbsp;&nbsp;
             <a-button type="primary" @click="register">注册授权</a-button>&nbsp;&nbsp;
             <a-button type="primary" @click="verifyLicense">验证授权</a-button>
         </a-form-item>
@@ -29,9 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue'
 import { defHttp } from "/@/utils/http/axios"
 import  { message } from "ant-design-vue"
+import { usePermissionStore } from "/@/store/modules/permission.ts"
+const permissionStore = usePermissionStore()
+const showCreate = computed(() => permissionStore.showCreateBtn)
 enum api {
     getUrl = '/api/zrzy-system/sys/license/get',
     licenseUrl = '/api/zrzy-system/sys/license/generateLicense',
