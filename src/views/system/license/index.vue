@@ -31,15 +31,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { defHttp } from "/@/utils/http/axios"
-import  { message } from "ant-design-vue"
+import { message } from "ant-design-vue"
 import { usePermissionStore } from "/@/store/modules/permission.ts"
 const permissionStore = usePermissionStore()
 const showCreate = computed(() => permissionStore.showCreateBtn)
 enum api {
-    getUrl = '/api/zrzy-system/sys/license/get',
-    licenseUrl = '/api/zrzy-system/sys/license/generateLicense',
-    registerUrl = '/api/zrzy-system/sys/license/registerLicense',
-    verifyLicense = '/api/zrzy-system/sys/license/verifyLicense'
+    getUrl = '/api/zrzy-system/sys/common/get',
+    licenseUrl = '/api/zrzy-system/sys/common/generateLicense',
+    registerUrl = '/api/zrzy-system/sys/common/registerLicense',
+    verifyLicense = '/api/zrzy-system/sys/common/verifyLicense'
 }
 let licenseData: any = ref({})
 
@@ -49,7 +49,7 @@ let formRef = ref<any>();
  * 生成授权
  */
 const onLicense = async () => {
-     await formRef.value.validateFields('expiryDate');
+    await formRef.value.validateFields('expiryDate');
     defHttp.post({ url: api.licenseUrl, data: licenseData.value }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
             licenseData.value.license = res.result
@@ -62,7 +62,7 @@ const onLicense = async () => {
  * 注册授权
  */
 const register = async () => {
-   await formRef.value.validateFields(["license"]);
+    await formRef.value.validateFields(["license"]);
     defHttp.post({ url: api.registerUrl, data: { license: licenseData.value.license } }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
             message.info("注册授权成功")
@@ -77,9 +77,9 @@ const register = async () => {
 const verifyLicense = () => {
     defHttp.post({ url: api.verifyLicense }, { withToken: true }).then((res) => {
         if (res && res.success) {
-             if(res.result.success) {
+            if (res.result.success) {
                 message.info(res.result.msg)
-            }else{
+            } else {
                 message.error(res.result.msg)
             }
         } else {
