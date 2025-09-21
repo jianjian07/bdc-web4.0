@@ -319,6 +319,7 @@ function downLoadFile() {
 .ssoFileTree {
   display: flex;
   width: 100%;
+  height: 100%;
 
   .text-ellipsis {
     width: 180px; /* 定义容器宽度 */
@@ -337,6 +338,8 @@ function downLoadFile() {
 
   .treeList {
     width: 100%;
+    height: 100%;
+    overflow: auto;
     min-width: 300px;
     max-width: 350px;
 
@@ -373,6 +376,7 @@ function downLoadFile() {
   .filePreview {
     flex: 1;
     position: relative;
+    height: 100%;
 
     .oprBtns {
       position: absolute;

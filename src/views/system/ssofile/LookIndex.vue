@@ -76,6 +76,7 @@ onMounted(() => {
     padding: 10px 0;
     display: flex;
     flex: 1;
+    overflow:auto;
   }
 }
 </style>

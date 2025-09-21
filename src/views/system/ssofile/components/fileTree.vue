@@ -743,6 +743,7 @@ function delFile(data, type?: string | undefined) {
 .ssoFileTree {
   display: flex;
   width: 100%;
+  height: 100%;
 
   .text-ellipsis {
     width: 180px; /* 定义容器宽度 */
@@ -764,8 +765,10 @@ function delFile(data, type?: string | undefined) {
 
   .treeList {
     width: 100%;
+    height: 100%;
     min-width: 300px;
     max-width: 380px;
+    overflow: auto;
 
     .customTitle {
       height: 30px;
@@ -800,6 +803,7 @@ function delFile(data, type?: string | undefined) {
   .filePreview {
     flex: 1;
     position: relative;
+    height: 100%;
 
     .oprBtns {
       position: absolute;

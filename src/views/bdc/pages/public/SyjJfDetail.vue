@@ -75,7 +75,7 @@ const props = defineProps({
 
 const baseColumns = [
   {
-    title: '纳税价(元/㎡)',
+    title: '评估价(元/㎡)',
     dataIndex: 'nsj',
     key: 'nsj',
     width: '25%',
