@@ -64,7 +64,7 @@
                                 <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
                                 <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
                                 <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
-                                <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>
+<!--                                <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>-->
                                 <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0"></span>
                                 <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF"></span>
                                 <span v-if="fwInfo.zbyyzt == 1" class="zbzt" style="background-color: #9A992F"></span>
@@ -79,7 +79,7 @@
                             <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
                             <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
                             <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
-                            <span v-if="fwInfo.xzdjzt == 1" class="zt" style="background-color: #BF6B97"></span>
+                            <span v-if="fwInfo.xzdj == 1" class="zt" style="background-color: #BF6B97"></span>
                             <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0"></span>
                             <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF"></span>
                             <span v-if="fwInfo.yyzt == 1" class="zt" style="background-color: #9A992F"></span>
@@ -94,7 +94,7 @@
             </table>
               <div v-if="showAll && cxxData.length > 5" style="text-align: center;padding: 10px;">
               当前只显示<span style="color: #1677ff;">5</span>层，点击 <a-button type="link" @click="onShowAll">加载全部</a-button>
-              </div> 
+              </div>
             </template>
             <template v-else>
               <a-empty/>
@@ -269,7 +269,7 @@ async function loadFwxx(isFilter = false) {
         }
       }
     }
-  
+
 }
 
 function onCheck(item: any) {
@@ -310,8 +310,8 @@ function onShowAll() {
 function handleFilterLpb() {
   const wlc = filterLpb.value.cData;
   dyxx.value = lpbData.value.dyhList;
-  cxxData.value = wlc 
-    ? lpbData.value.cxxList.filter(item => item.wlc == wlc) 
+  cxxData.value = wlc
+    ? lpbData.value.cxxList.filter(item => item.wlc == wlc)
     : lpbData.value.cxxList;
   cxx.value = [];
   nextTick(() => {
@@ -352,7 +352,7 @@ td {
     float: left;
     margin-left: 8px;
     border-radius: 50%;
-  
+
   &:nth-of-type(1) {
     margin-left: 0px;
   }
@@ -363,7 +363,7 @@ td {
   height: 8px;
   float: left;
   margin-left: 8px;
-  
+
   &:nth-of-type(1) {
     margin-left: 0px;
   }
@@ -415,18 +415,18 @@ td {
 .lpb-main {
   height: calc(100% - 50px);
   display: flex;
-  
+
   .lpb-content {
     flex: auto;
     padding: 15px;
     //width: calc(100% - 300px);
     height: 100%;
     overflow: auto;
-    
+
     .lpb-content-search-tool {
       display: flex;
     }
-    
+
     .fw-td {
       text-align: center;
       align:center;
@@ -438,25 +438,25 @@ td {
       padding-top: 2px;
       padding-bottom: 2px;
     }
-    
+
     .checked-shbw {
       padding-left: 8px;
       padding-top: 2px;
       padding-bottom: 2px;
     }
-    
+
     .unchecked-shbw {
       padding-left: 0px;
       padding-top: 2px;
       padding-bottom: 2px;
     }
   }
-  
+
   .lpb-info {
     width: 300px;
     height: 100%;
     border-left: 1px solid rgba(5, 5, 5, 0.06);
-  
+
     .lpb-info-header {
       height: 30px;
       padding: 0 15px;
@@ -465,28 +465,28 @@ td {
       text-align: left;
       border-bottom: 1px solid rgba(5, 5, 5, 0.06);
     }
-  
+
     .lpb-info-content {
       display: flex;
       flex-direction: column;
       height: calc(100% - 30px);
       overflow: auto;
-      
+
       .lpb-info-row {
         padding: 10px 15px;
         border-bottom: 1px solid rgba(5, 5, 5, 0.06);
       }
-      
+
       .lpb-info-title {
         color: #4678b2;
         font-weight: bold;
       }
-      
+
       :deep(.ant-form-item-row) {
         padding: 7px 15px;
         border-bottom: 1px solid rgba(5, 5, 5, 0.06);
       }
-      
+
       :deep(.ant-form-item) {
         margin-bottom: 0;
       }
