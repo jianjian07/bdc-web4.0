@@ -81,7 +81,7 @@
           :data-source="datalist"
           :pagination="pagination"
           @change="onChange($event, loadData)"
-          :row-selection="{ 
+          :row-selection="{
           selectedRowKeys: selectedRowKeys,
           onSelect: onSelectRow,
           onSelectAll: onSelectAll
@@ -187,7 +187,8 @@ let pagination = ref({
   showTotal: () => {
     return `共 ${pagination.value.total} 条数据`
   },
-  showSizeChanger: false
+  showSizeChanger: true,
+  showQuickJumper: true
 })
 
 onMounted(async () => {
@@ -285,6 +286,7 @@ function searchData() {
  */
 function onChange(pag: any, callback: any) {
   pagination.value.current = pag.current
+  pagination.value.pageSize = pag.pageSize
   callback()
 }
 

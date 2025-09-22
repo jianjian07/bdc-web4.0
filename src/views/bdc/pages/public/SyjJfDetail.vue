@@ -29,7 +29,7 @@
         </template>
       </template>
     </a-table>
-    
+
     <a-table :loading="loading" :columns="totalColumns" :data-source="totalDataSource" :pagination="false"
              bordered></a-table>
   </div>
@@ -191,12 +191,10 @@ const updateTotalDataSource = debounce(() => {
     let count = 0
     const MAX_CHUNK = 100  // 每轮最多算多少条
 
-    while (currentJscs > 0 && count < MAX_CHUNK) {
+    do {
       const sybl = 5 + (num - 1) * 10
-
       const currentFj = currentJscs >= jsfj ? jsfj : currentJscs
       const syje = currentFj * jsmj * (sybl / 100)
-
       const finalJscsStr = num === 1
           ? `${formatNumberStr(source.nsj)} - ${formatNumberStr(source.jsfj)} - ${formatNumberStr(source.ykjfy)} = ${formatNumberStr(jscs)}`
           : `${formatNumberStr(prevJscs)} - ${formatNumberStr(jsfj)} = ${formatNumberStr(currentJscs)}`
@@ -224,7 +222,7 @@ const updateTotalDataSource = debounce(() => {
         currentJscs = 0
         break
       }
-    }
+    } while (currentJscs > 0 && count < MAX_CHUNK)
 
     if (currentJscs > 0) {
       setTimeout(processChunk, 0)

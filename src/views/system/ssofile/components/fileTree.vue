@@ -24,7 +24,7 @@
           </a-tooltip>
         </div>
       </div>
-      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="false" :checkable="true"
+      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" :selectable="true" :checkable="true" :selectedKeys="selectedKeys" @select="handleSelectTreeNode"
         show-icon :default-expand-all="expandAll" @drop="onDrop" :draggable="isManage && editOrder" v-model:checkedKeys="checkedKeys" style="width: 100%">
         <template #icon="">
         </template>
@@ -156,7 +156,7 @@
                 <template v-else>
                   <a-tooltip :title="dataRef.materialName + `（${ dataRef.children.length }个）`">
                     <div class="text-ellipsis">
-                      {{ dataRef.materialName }} 
+                      {{ dataRef.materialName }}
                       <span style="color: #5094f9;font-weight: 600;">（{{ dataRef.children.length }}个）</span>
                     </div>
                   </a-tooltip>
@@ -288,6 +288,7 @@ const kkFileApi = ref('')
 const proxyBaseApi = ref('')
 let loading = ref(false)
 let checkedKeys = ref([])
+let selectedKeys = ref([])
 
 const props = defineProps({
   isManage: {
@@ -338,11 +339,13 @@ function loadFileList(getDefault: Boolean = true) {
         //遍历附件，增加index，方便上一个下一个跳转
         fileIndexList=[];
         ssoFileList.value.forEach((material: any) => {
+          material.selectable = material.parentId && material.parentId != '0' ? true : false
           if(material.fileType=='folder' && material.children.length>0){
             material.children.forEach((file: any) => {
               fileIndexList.push(file);
               file.preIndex=fileIndexList.length-2;
               file.nextIndex=fileIndexList.length;
+              file.selectable = file.parentId && file.parentId != '0' ? true : false
             })
           }
         })
@@ -539,6 +542,7 @@ function deleteCatalogOrFile(item: any, type: String = '') {
 }
 
 function previewFile(data: any) {
+  selectedKeys.value = [data.id]
   // 后端返回kkFile路径预览附件
   if(!props.modalPreview) {
     eventBus?.emit('previewFile', true)
@@ -699,7 +703,7 @@ function batchDel() {
       content: createVNode('div', { style: 'color:red;' }, '确认要删除所选的目录或附件吗？这将会删除目录下的所有附件！'),
       onOk() {
         let keys = checkedKeys.value.map((key) => {
-        let find = findNode(ssoFileList.value, key, 'id') 
+        let find = findNode(ssoFileList.value, key, 'id')
           if (find) {
             return { id: key, fileType: find.fileType || '' }
           } else {
@@ -708,7 +712,7 @@ function batchDel() {
         })
         delFile(keys, 'all')
       },
-      
+
   });
 }
 
@@ -732,10 +736,18 @@ function delFile(data, type?: string | undefined) {
         previewData.value.previewUrl = ''
       }
       checkedKeys.value = []
+      selectedKeys.value = []
     } else {
       message.warning(res?.message)
     }
   })
+}
+
+function handleSelectTreeNode(keys, e) {
+  let dataRef = e.node.dataRef
+  if (dataRef.parentId != '0') {
+    previewFile(dataRef)
+  }
 }
 </script>
 
@@ -797,7 +809,7 @@ function delFile(data, type?: string | undefined) {
       .ant-tree-switcher {
         line-height: 30px;
       }
-    } 
+    }
   }
 
   .filePreview {
@@ -815,10 +827,10 @@ function delFile(data, type?: string | undefined) {
         padding-right: 8px;
       }
     }
-    
+
     :deep(.ant-spin-nested-loading) {
       height: 100%;
-      
+
       .ant-spin-container {
         height: 100%;
         overflow: auto;

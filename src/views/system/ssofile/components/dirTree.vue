@@ -1,7 +1,7 @@
 <template>
   <div class="ssoFileTree">
     <div class="treeList">
-      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" v-model:expandedKeys="expandedKeys" :load-data="loadFileList"  :selectable="false"
+      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" v-model:expandedKeys="expandedKeys" :load-data="loadFileList"  :selectable="true" @select="handleSelectTreeNode"
         show-icon  style="width: 100%">
         <template #icon="">
         </template>
@@ -126,7 +126,7 @@
                       fill="#FFFFFF" p-id="3714"></path>
                   </svg>
                 </template>
-               
+
               </icon>
               <div v-if="dataRef.parentId == '0'">
                 <a-tooltip :title="dataRef.materialName + `（${ dataRef.children.length }个）`">
@@ -145,7 +145,7 @@
               </template>
             </div>
             <div v-if="dataRef.parentId != '0' && !dataRef.dirkey">
-              <a-button type="link" block @click="previewFile(dataRef)">查看</a-button>
+              <a-button class="file-preview-btn" type="link" block>查看</a-button>
             </div>
           </div>
         </template>
@@ -228,7 +228,9 @@ function loadDirList() {
           return {
             dirkey: ele.dirkey,
             title: ele.title,
-            key: ele.dirkey
+            key: ele.dirkey,
+            parentId: ele.parentId,
+            selectable: ele.parentId && ele.parentId != '0' ? true : false
           }
         })
         expandedKeys.value = [res?.result[0].dirkey]
@@ -254,7 +256,12 @@ function loadFileList(node) {
       { withToken: true }
     ).then((res: any) => {
       if (res?.success) {
-        node.dataRef.children = res?.result
+        node.dataRef.children = res?.result.map(ele => {
+          return {
+            ...ele,
+            selectable: ele.parentId && ele.parentId != '0' ? true : false,
+          }
+        })
         ssoFileList.value = [...ssoFileList.value];
         resolve(true)
       } else {
@@ -311,6 +318,13 @@ function downLoadFile() {
     }).catch((err: any) => {
       console.log("附件报错", err);
     });
+}
+
+function handleSelectTreeNode(selectedKeys, e) {
+  let dataRef = e.node.dataRef
+  if (dataRef.parentId != '0' && !dataRef.dirkey) {
+    previewFile(dataRef)
+  }
 }
 
 </script>
@@ -370,7 +384,7 @@ function downLoadFile() {
       .ant-tree-switcher {
         line-height: 30px;
       }
-    } 
+    }
   }
 
   .filePreview {
@@ -392,6 +406,13 @@ function downLoadFile() {
       width: 100%;
       height: 100%;
       margin-top: 20px;
+    }
+  }
+
+
+  :deep(.ant-tree-node-selected) {
+    .file-preview-btn {
+      color: white;
     }
   }
 }

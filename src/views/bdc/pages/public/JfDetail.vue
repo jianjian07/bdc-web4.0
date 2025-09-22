@@ -1,6 +1,6 @@
 <template>
   <div class="jf-detail">
-    <a-button style="margin-bottom: 10px; float: right" @click="handelAdd">新增</a-button>
+    <a-button style="margin-bottom: 10px; float: right" v-if="!disabled" @click="handelAdd">新增</a-button>
     <a-table :columns="columns" :data-source="jfxx" size="small" :loading="loading" :pagination="false" style="padding-bottom: 8px">
       <template #headerCell="{ title, column }">
         <template v-if="column.rules?.find(r => r.required)">
@@ -43,7 +43,7 @@ import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { currentRoute } from "/@/router"
 const route = currentRoute;
-const columns = [
+const defaultColumns = [
   {
     title: '缴费项目',
     dataIndex: "jfxm",
@@ -95,6 +95,7 @@ const columns = [
     width: 80
   }
 ]
+let columns = ref<any>([])
 
 // 缴费信息
 let jfxx = ref<any>([])
@@ -107,6 +108,10 @@ let props = defineProps({
   viewData: {
     type: Object,
     default: {}
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 enum api {
@@ -120,9 +125,18 @@ enum api {
 const emit = defineEmits(['getYjje'])
 
 onMounted(() => {
+  initColumns()
   getJfxmOptions()
   initData()
 })
+
+function initColumns() {
+  if (props.disabled) {
+    columns.value = defaultColumns.filter(item => item.key !== 'action')
+  } else {
+    columns.value = defaultColumns
+  }
+}
 
 /**
  * 获取缴费项目配置
@@ -141,7 +155,7 @@ function getJfxmOptions() {
 function initData() {
   let slbh = route.query.slbh
   if (slbh) {
-    defHttp.get({ url: api.list, params: { slbh: slbh } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.list, params: { slbh: slbh, readonly: props.disabled ? 1 : 0 } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         jfxx.value = res.result
         getYjje()
@@ -228,7 +242,7 @@ function saveData() {
   return new Promise((resolve, reject) => {
      if (validateTable()) {
       let params = jfxx.value.map((item) => {
-        let ruleColumn = columns.filter((column: any) => column.rules)
+        let ruleColumn = columns.value.filter((column: any) => column.rules)
         for (let i = 0; i < ruleColumn.length; i++) {
           delete item[ruleColumn[i].dataIndex + 'Status']
         }
@@ -260,7 +274,7 @@ function saveData() {
 function validateTable() {
   for (let i = 0; i < jfxx.value.length; i++) {
     let record = jfxx.value[i]
-    let ruleColumn = columns.filter((column: any) => column.rules)
+    let ruleColumn = columns.value.filter((column: any) => column.rules)
     for (let j = 0; j < ruleColumn.length; j++) {
       setInputStatus(ruleColumn[j], record)
       if (record[ruleColumn[j].dataIndex+ 'Status'] == 'error') {

@@ -153,7 +153,7 @@
                           </a-popconfirm>
                         </template>
                         <template v-else-if="['sxy','sxfs'].includes(column?.key)">
-                          <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
+                          <a-tooltip :trigger="['focus','contextmenu']" placement="topLeft" :arrow="false" color="red">
                             <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
                               <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                             </template>
@@ -166,7 +166,7 @@
                           </a-tooltip>
                         </template>
                         <template v-else-if="['sxtj'].includes(column?.key)">
-                          <a-tooltip :trigger="['focus','contextmenu']" placement="bottom" :arrow="false" color="red">
+                          <a-tooltip :trigger="['focus','contextmenu']" placement="topLeft" :arrow="false" color="red">
                             <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
                               <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                             </template>
@@ -467,7 +467,13 @@ function loadSfxxx(sfxbh: string) {
         rec.sfjm = rec.sfjm ? rec.sfjm + '' : null
         rec.jmfs = rec.jmfs ? rec.jmfs + '' : null
         sxtjxx.value = res.result.bdcSfConfigsxList.map((item) => {
-          item.sxtj = item.sxtj.includes(',') ? item.sxtj.split(',') : (item.sxtj ? item.sxtj : [])
+          let sxtjValue = item.sxtj ?? ''
+          // 确保是字符串后再进行分割判断
+          if (typeof sxtjValue === 'string' && sxtjValue.includes(',')) {
+            item.sxtj = sxtjValue.split(',')
+          } else {
+            item.sxtj = sxtjValue ? [sxtjValue] : []
+          }
           return item
         })
         if (rec.djlx) {
