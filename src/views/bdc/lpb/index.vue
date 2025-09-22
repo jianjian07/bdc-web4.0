@@ -137,7 +137,7 @@
                       <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
                       <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
                       <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
-                      <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>
+<!--                      <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>-->
                       <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0"></span>
                       <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF"></span>
                       <span v-if="fwInfo.zbyyzt == 1" class="zbzt" style="background-color: #9A992F"></span>
@@ -158,7 +158,7 @@
                       <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
                       <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
                       <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
-                      <span v-if="fwInfo.xzdjzt == 1" class="zt" style="background-color: #BF6B97"></span>
+                      <span v-if="fwInfo.xzdj == 1" class="zt" style="background-color: #BF6B97"></span>
                       <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0"></span>
                       <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF"></span>
                       <span v-if="fwInfo.yyzt == 1" class="zt" style="background-color: #9A992F"></span>
@@ -460,7 +460,7 @@ function initCurrentCase() {
       }
     })
   })
-  
+
 }
 
 /**
@@ -688,12 +688,12 @@ function handleTemSave() {
   updateOrPush(temFwList.value, {
     zbm: currentZrzInfo.value.zbm,
     fwxxList: data.map((item) => {
-      item.zddm = currentZrzInfo.value.zddm 
+      item.zddm = currentZrzInfo.value.zddm
       item.zbm = currentZrzInfo.value.zbm
       return item
     })
   })
-  
+
   message.success('暂存成功!')
 }
 
@@ -712,6 +712,10 @@ function getClass(fwInfo) {
  */
 function checkShow(fwInfo) {
   if (regType.value && fwInfo && fwInfo.shbw) {
+    // 限制登记不允许
+    if (fwInfo.xzdj == 1) {
+      return false
+    }
     if (regType.value.split(',').length == 1) {
       return checkShowForSingle(regType.value, fwInfo)
     } else {
@@ -754,7 +758,7 @@ function handleOk() {
     temFwList.value = [{
         zbm: currentZrzInfo.value.zbm,
         fwxxList: data.map((item) => {
-          item.zddm = currentZrzInfo.value.zddm 
+          item.zddm = currentZrzInfo.value.zddm
           item.zbm = currentZrzInfo.value.zbm
           return item
         })
@@ -763,13 +767,13 @@ function handleOk() {
     updateOrPush(temFwList.value, {
       zbm: currentZrzInfo.value.zbm,
       fwxxList: data.map((item) => {
-        item.zddm = currentZrzInfo.value.zddm 
+        item.zddm = currentZrzInfo.value.zddm
         item.zbm = currentZrzInfo.value.zbm
         return item
       })
     })
   }
- 
+
   okData = temFwList.value
   .filter(item => item.fwxxList && item.fwxxList.length > 0)
   .flatMap(item => item.fwxxList)
