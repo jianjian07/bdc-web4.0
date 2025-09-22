@@ -126,7 +126,7 @@ enum api {
   extractUserRole = '/api/zrzy-system/UserRole/extractUserRole',
   processCompletePl = '/api/zrzy-bdc/act/task/processCompletePl',
   getTaskTransitionList = '/api/zrzy-bdc/act/task/getTaskTransitionList',
-  insertMqMessageForHandOver = '/api/zrzy-bdc/bdc/publiccommon/insertMqMessageForHandOver',
+  insertMqMessageForHandOverPl = '/api/zrzy-bdc/bdc/publiccommon/insertMqMessageForHandOverPl',
   getApiTransferRule = '/api/zrzy-bdc/act/task/getTaskHandoverRule'
 }
 
@@ -474,7 +474,7 @@ function handleProcessOver(obj) {
       defHttp.post({ url: api.processCompletePl, data: model }, { withToken: true }).then(async (res) => {
         if (res && res.success) {
           message.success('移交成功!')
-          let _mq = await batchPush()
+          let _mq = await insertMqMessageForHandOver()
           if (_mq) {
             resolve(true)
           } else {
@@ -770,44 +770,14 @@ function onClearNode() {
 /**
  * 一窗办理进度推送
  */
-async function batchPush() {
+function insertMqMessageForHandOver() {
   let nodeName = props.formData.nodeName
   let slbhList = props.formData.slbhList
-  let successCount = 0
-  let failCount = 0
-  const failedItems = []
-
-  for (let i = 0; i < slbhList.length; i++) {
-    try {
-      const result = await insertMqMessageForHandOver(slbhList[i], nodeName)
-      if (result.success) {
-        successCount++
-      } else {
-        failCount++
-        failedItems.push({ slbh: slbhList[i], error: result.message })
-      }
-    } catch (error) {
-      failCount++
-      failedItems.push({ slbh: slbhList[i], error: error.message || '未知错误' })
-      message.warning(`推送失败，受理编号：${slbhList[i]}`, error)
-    }
-  }
-  const isSuccess = failCount === 0
-  if (!isSuccess) {
-    message.warning(`批量推送完成，成功${successCount}条，失败${failCount}条`)
-  }
-  return isSuccess
-}
-
-/**
- * 一窗办理进度推送
- */
-function insertMqMessageForHandOver(slbh, nodeName) {
   return new Promise((resolve) => {
     defHttp.post({
-      url: api.insertMqMessageForHandOver,
-      params: {
-        slbh: slbh,
+      url: api.insertMqMessageForHandOverPl,
+      data: {
+        slbhList: slbhList,
         yjfx: handleDirection.value,
         jdmc: nodeName
       }
