@@ -121,7 +121,8 @@ let pagination = ref({
     showTotal: () => {
         return `共 ${pagination.value.total} 条数据`
     },
-    showSizeChanger: false
+    showSizeChanger: true,
+    showQuickJumper: true
 })
 
 onMounted(() => {
@@ -155,6 +156,7 @@ function searchData() {
 */
 function onChange(pag: any, callback: any) {
     pagination.value.current = pag.current
+    pagination.value.pageSize = pag.pageSize
     callback()
 }
 /**
