@@ -22,6 +22,8 @@
           <a-form-item label="办理环节">
             <a-select ref="select" v-model:value="formData.taskName">
               <a-select-option value="收件">收件</a-select-option>
+              <a-select-option value="初审">初审</a-select-option>
+              <a-select-option value="核定">核定</a-select-option>
               <a-select-option value="缮证">缮证</a-select-option>
             </a-select>
           </a-form-item>

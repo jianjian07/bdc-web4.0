@@ -11,7 +11,7 @@
             </a-col>
             <a-col :span="14">
               <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
-                <a-radio :value="1">向后</a-radio>
+                <a-radio v-show="!hidenBackRadio" :value="1">向后</a-radio>
                 <a-radio :value="2">平级</a-radio>
               </a-radio-group>
             </a-col>
@@ -76,7 +76,7 @@ import {
   CloseCircleOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue'
-import { createVNode, nextTick, onMounted, ref, watch } from "vue"
+import { computed, createVNode, nextTick, onMounted, ref, watch } from "vue"
 import { findNode, getTransferRuleByCode } from "/@/views/online/utils/commonUtils"
 import { defHttp } from "/@/utils/http/axios"
 import { Modal, message } from "ant-design-vue"
@@ -120,6 +120,8 @@ let hoverNodeIndex = ref<number>(-1)
 let searchValue = ref('')
 // 展开节点
 let expandedKeys = ref<any>([])
+// 是否隐藏向后移交按钮
+let hidenBackRadio = ref<boolean>(false)
 
 enum api {
   getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
@@ -132,6 +134,11 @@ enum api {
 
 watch(() => props.formData.taskIdList, (val: any) => {
   if (val) {
+    if (props.formData.nodeName == '初审' || props.formData.nodeName == '核定') {
+      // 当 nodeName 为 "初审" 或 "核定" 时，自动设置为平级移交
+      handleDirection.value = 2
+      hidenBackRadio.value = true
+    }
     getTaskInfo()
   }
 }, {
@@ -163,7 +170,11 @@ function getTaskInfo() {
     }, { withToken: true }).then(async (res) => {
       if (res && res.success) {
         formState.value = res.result
-        setTransTree()
+        if (handleDirection.value == 2) {
+          setPjTransTree()
+        } else {
+          setTransTree()
+        }
         resolve(true)
       } else {
         message.warning('获取流程数据失败:' + res?.message)
@@ -556,18 +567,17 @@ function getCurrentApiTransferRule(taskId) {
  * 移交方向改变
  */
 function onChangeDirection(e) {
-  let obj: any = {}
   expandedKeys.value = []
   searchValue.value = ''
   handleUserType.value = 1
   handleDirection.value = e.target.value
-  setTransData(handleDirection.value, obj)
+  setTransData(handleDirection.value)
 }
 
 /**
  * 根据移交方向设置
  */
-function setTransData(yjfx, rejectObj) {
+function setTransData(yjfx) {
   if (yjfx == 1) {
     // 默认向后移交
     setTransTree()
