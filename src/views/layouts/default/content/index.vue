@@ -7,8 +7,8 @@
       <Suspense>
         <RouterView>
           <template #default="{ Component, route }">
-            <keep-alive :include="caches" :key="keepAliveKey">
-              <component :is="Component" v-if="isReload" :key="`${route.fullPath}_${reloadKey}`" />
+            <keep-alive :include="caches" :key="devMode ? keepAliveKey : undefined">
+              <component :is="Component" v-if="isReload"  :key="`${route.fullPath}_${reloadKey}`" />
             </keep-alive>
           </template>
         </RouterView>
@@ -30,7 +30,7 @@ const reloadKey = ref(Date.now())
 const router = useRouter()
 const caches = ref<string[]>([])
 const keepAliveKey = ref(Date.now())
-
+const devMode = import.meta.env.DEV
 // 记录 只有新增加时才重置
 const seenComponentTypes = new Set<string>()
 
@@ -38,18 +38,20 @@ watch(() => tabStore.getCacheTabs, (newTabs) => {
   const newCaches = newTabs.map(tab => {
     return tab.meta?.componentName
   }).filter(Boolean) as string[]
-  
+
   // 是否有新的组件
-  const hasNewComponentType = newCaches.some(componentName => 
+  const hasNewComponentType = newCaches.some(componentName =>
     !seenComponentTypes.has(componentName)
   )
-  
+
   if (hasNewComponentType) {
     newCaches.forEach(componentName => seenComponentTypes.add(componentName))
-    
+
     // 重置keep-alive实例
-    keepAliveKey.value = Date.now()
-    
+    // 仅在开发模式路由 matcher 损坏时重置 keep-alive
+    if (devMode && window.routerMatcherBroken) {
+      keepAliveKey.value = Date.now()
+    }
     // 更新缓存列表
     caches.value = [...seenComponentTypes]
   } else {
@@ -62,7 +64,7 @@ watch(() => tabStore.getCacheTabs, (newTabs) => {
   }
 }, {
   immediate: true,
-  deep: true 
+  deep: true
 })
 
 watch(() => tabStore.getReloadTab, (newV) => {
@@ -73,14 +75,14 @@ watch(() => tabStore.getReloadTab, (newV) => {
      isReload.value = true
      tabStore.setReloadTab(false)
    })
- } 
+ }
 }, {
   deep: true
 })
 
 const originalWarn = console.warn
 console.warn = function(...args) {
-  if (args[0] && typeof args[0] === 'string' && 
+  if (args[0] && typeof args[0] === 'string' &&
       args[0].includes('No match found for location with path')) {
 
     // 从警告信息中提取目标路径
@@ -104,7 +106,7 @@ console.warn = function(...args) {
       }
     }, 100)
 
-    return 
+    return
   }
   originalWarn.apply(console, args)
 }
@@ -113,7 +115,7 @@ console.warn = function(...args) {
 <style lang="less" scoped>
 .content-main {
   overflow-y: hidden;
-  
+
   :deep(.ant-spin-nested-loading) {
     height: 100%;
 
