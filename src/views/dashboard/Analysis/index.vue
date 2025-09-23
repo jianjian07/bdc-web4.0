@@ -145,6 +145,8 @@ function onClickEntry(path, params: any = {}) {
  * 创建流程
  */
 function handleAdd(entry: any) {
+  //系统上线后多人误点击导致创建了空案卷，暂时屏蔽，后期有合适思路后再考虑这块内容如何使用
+  return;
   // 跳转至创建流程页面
   const params = {
     lcid: entry.key
