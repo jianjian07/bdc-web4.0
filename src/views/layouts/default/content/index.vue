@@ -70,8 +70,8 @@ watch(() => tabStore.getCacheTabs, (newTabs) => {
 watch(() => tabStore.getReloadTab, (newV) => {
  if (newV) {
    isReload.value = false
+   reloadKey.value = Date.now()
    nextTick(() => {
-     reloadKey.value = Date.now()
      isReload.value = true
      tabStore.setReloadTab(false)
    })
