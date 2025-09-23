@@ -1,8 +1,11 @@
 <template>
   <div class="ssoFileTree">
     <div class="treeList">
-      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" v-model:expandedKeys="expandedKeys" :load-data="loadFileList"  :selectable="true" @select="handleSelectTreeNode"
-        show-icon  style="width: 100%">
+      <div class="batchDownLoadBtn" v-permission="'report:file:download'">
+        <a-button type="primary" v-if="showFileDownLoadBtn" :icon="h(DownOutlined)" @click="batchDownLoad">下载</a-button>
+      </div>
+      <a-directory-tree v-if="ssoFileList && ssoFileList.length > 0" :tree-data="ssoFileList" v-model:expandedKeys="expandedKeys" :load-data="loadFileList"  :selectable="true" :checkable="isCheckabled" @select="handleSelectTreeNode"
+        v-model:checkedKeys="checkedKeys" show-icon  style="width: 100%">
         <template #icon="">
         </template>
         <template #title="{ dataRef }">
@@ -163,13 +166,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h, onMounted, watch, inject } from 'vue'
+import { ref, h, onMounted, watch, inject, computed } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { Base64 } from 'js-base64';
-import Icon, { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons-vue';
+import Icon, {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UploadOutlined,
+  EyeOutlined,
+  DownOutlined
+} from '@ant-design/icons-vue'
+import { findNode } from "/@/views/online/utils/commonUtils.ts"
+import { ContentTypeEnum } from "/@/enums/httpEnum.ts"
+import { usePermissionStore } from "/@/store/modules/permission.ts"
+import { formatToDateTime } from "/@/views/online/utils/dateUtil.ts"
 const eventBus = inject('scopedEventBus', null)
-
+const permissionList = usePermissionStore().getPermissionList
 let ssoFileList: any = ref([])
 let filePreview: any = ref(false)
 let previewData: any = ref('')
@@ -184,6 +198,7 @@ const urlList = {
 const baseApi = ref('')
 const kkFileApi = ref('')
 const proxyBaseApi = ref('')
+let checkedKeys: any = ref([])
 
 const props = defineProps({
   isManage: {
@@ -195,6 +210,28 @@ const props = defineProps({
     default: {}
   }
 })
+
+const isCheckabled = computed(() => {
+  return permissionList.includes('report:file:download')
+})
+
+const selectedFileKeys = computed(() => {
+  return checkedKeys.value.map((key) => {
+    let find = findNode(ssoFileList.value, key, 'id')
+    return {
+      fileType: find?.fileType,
+      id: find?.id,
+    }
+  }).filter((item) => item.fileType !== 'folder')
+})
+
+const showFileDownLoadBtn = computed(() => {
+  return selectedFileKeys.value.length > 0
+})
+
+enum api {
+  batchDownload = '/api/zrzy-bdc/bdcdj/upfiles/file/downloadPl' // 批量下载
+}
 
 watch(() => props.formData, (val) => {
   if(val.slbh) {
@@ -324,6 +361,36 @@ function handleSelectTreeNode(selectedKeys, e) {
   let dataRef = e.node.dataRef
   if (dataRef.parentId != '0' && !dataRef.dirkey) {
     previewFile(dataRef)
+  }
+}
+
+function batchDownLoad() {
+  if (selectedFileKeys.value.length > 0) {
+    let ids = selectedFileKeys.value.map((item) => item.id).join(',')
+    defHttp.post({
+      url: api.batchDownload,
+      responseType: "blob",
+      params: { ids: ids },
+      headers: { 'Content-Type': ContentTypeEnum.FORM_URLENCODED } }, { withToken: true }).then((res: any) => {
+      if (res.size == 0) {
+        message.error('下载附件出错！')
+        return
+      }
+      const blob = new Blob([res])
+      const elink = document.createElement('a')
+      let title = '附件_'
+      title = title + formatToDateTime(new Date().getTime()) + '.zip'
+      elink.download = title
+      elink.style.display = 'none'
+      elink.href = URL.createObjectURL(blob)
+      document.body.appendChild(elink)
+      elink.click()
+      URL.revokeObjectURL(elink.href)
+      document.body.removeChild(elink)
+    }).catch((err: any) => {
+      console.log("附件报错", err);
+      message.error('下载附件出错！')
+    })
   }
 }
 
