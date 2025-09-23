@@ -4,9 +4,9 @@
       <a-table :scroll="{y: `calc(100% - 75px)`}" :columns="columns" :data-source="scrollList" size="small" :pagination="pagination" @change="onChange($event, loadData)" class="userTable" style="height: 100%">
         <template #bodyCell="{ column, record }">
           <div style="cursor: pointer;" @click="onClickItem(record)">
-            <template v-if="column.dataIndex === 'bdcqzh'">
-              <a-tooltip :title="record.bdcqzh">
-                <div style="width: 100%; text-align: left;" class="text-ellipsis">{{ record.bdcqzh }}</div>
+            <template v-if="column.dataIndex === 'cfwh'">
+              <a-tooltip :title="record.cfwh">
+                <div style="width: 100%; text-align: left;" class="text-ellipsis">{{ record.cfwh }}</div>
               </a-tooltip>
             </template>
             <template v-if="column.dataIndex === 'expireday'">
