@@ -8,7 +8,12 @@
         <RouterView>
           <template #default="{ Component, route }">
             <keep-alive :include="caches" :key="devMode ? keepAliveKey : undefined">
-              <component :is="Component" v-if="isReload"  :key="`${route.fullPath}_${reloadKey}`" />
+              <component :is="Component" v-if="isReload"
+                         :key="route.meta?.componentName
+           ? caches.includes(route.meta.componentName as string)
+             ? `${route.meta.componentName}_${route.fullPath}`
+             : `${route.meta.componentName}_${route.fullPath}_${reloadKey}`
+           : `${route.fullPath}_${reloadKey}`"/>
             </keep-alive>
           </template>
         </RouterView>
@@ -68,14 +73,30 @@ watch(() => tabStore.getCacheTabs, (newTabs) => {
 })
 
 watch(() => tabStore.getReloadTab, (newV) => {
- if (newV) {
-   isReload.value = false
-   reloadKey.value = Date.now()
-   nextTick(() => {
-     isReload.value = true
-     tabStore.setReloadTab(false)
-   })
- }
+  if (newV) {
+    const compName = tabStore.getCurrentTab?.meta?.componentName
+    if (compName) {
+      // 保证旧 vnode 被卸载
+      const idx = caches.value.indexOf(compName)
+      if (idx > -1) caches.value.splice(idx, 1)
+
+      nextTick(() => {
+        caches.value.push(compName)
+        isReload.value = false
+        nextTick(() => {
+          isReload.value = true
+          tabStore.setReloadTab(false)
+        })
+      })
+    } else {
+      reloadKey.value = Date.now()
+      isReload.value = false
+      nextTick(() => {
+        isReload.value = true
+        tabStore.setReloadTab(false)
+      })
+    }
+  }
 }, {
   deep: true
 })
