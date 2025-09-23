@@ -517,7 +517,11 @@ function customRequest(data) {
       if (res && res.success) {
         message.success('上传成功！')
         loadFileList(false)
+      } else {
+        message.warning(res?.message || '上传失败！')
       }
+    }).catch((err: any) => {
+      message.warning(err || '上传失败！')
     })
 }
 
