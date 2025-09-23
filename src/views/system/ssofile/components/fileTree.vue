@@ -561,7 +561,8 @@ function previewFile(data: any) {
   }
   format = format.toLowerCase();
   let base = ['jpg','png','jpeg'].includes(format) ? proxyBaseApi.value : baseApi.value
-  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${data.title}`))
+  let newName = data.title.replace(/\.(?=[^.]*$)/, `${data.id}.`);
+  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${newName}`))
   previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
   loading.value = false
 }
