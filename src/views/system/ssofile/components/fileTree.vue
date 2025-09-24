@@ -695,13 +695,31 @@ function handleOrder() {
 }
 
 //弹出上传工具
-function showExe() {
+async function showExe() {
+  let casename = await getCaseNameBySlbh()
   const userStore = useUserStoreWithOut();
   let token = userStore.getToken.replace('Bearer ', '');
   let url = window.location.hostname + ':' + window.location.port;
   //如果不encodeURIComponent编码，则url参数(192.168.27.160:9003)在chrome下会触发安全问题报错，但在360浏览器（webkit内核）中正常
-  let exeUrl = `MapgisEGov://caseno=${encodeURIComponent(props.formData.slbh)}&url=${encodeURIComponent(url)}&processId=${encodeURIComponent(props.formData.processId)}&nodeId=${encodeURIComponent(props.formData.nodeId)}&token=${encodeURIComponent(token)}`;
+  let exeUrl = `MapgisEGov://caseno=${encodeURIComponent(props.formData.slbh)}&casename=${encodeURIComponent(casename)}&url=${encodeURIComponent(url)}&processId=${encodeURIComponent(props.formData.processId)}&nodeId=${encodeURIComponent(props.formData.nodeId)}&token=${encodeURIComponent(token)}`;
   window.location.href = exeUrl;
+}
+
+function getCaseNameBySlbh() {
+  return new Promise((resolve, reject) => {
+    defHttp.get({
+      url: '/api/zrzy-bdc/bdc/bl/getCaseModel',
+      params: { slbh: props.formData.slbh },
+    }, { withToken: true })
+      .then((res: any) => {
+        if (res && res.success) {
+          resolve(res.result.ajmc)
+        } else {
+          message.warning(res?.message || '获取失败!')
+          resolve('')
+        }
+      })
+  })
 }
 
 /**
