@@ -8,12 +8,7 @@
         <RouterView>
           <template #default="{ Component, route }">
             <keep-alive :include="caches" :key="devMode ? keepAliveKey : undefined">
-              <component :is="Component" v-if="isReload"
-                         :key="route.meta?.componentName
-           ? caches.includes(route.meta.componentName as string)
-             ? `${route.meta.componentName}_${route.fullPath}`
-             : `${route.meta.componentName}_${route.fullPath}_${reloadKey}`
-           : `${route.fullPath}_${reloadKey}`"/>
+              <component :is="Component" v-if="isReload" :key="getTabKey(route)"/>
             </keep-alive>
           </template>
         </RouterView>
@@ -23,7 +18,7 @@
 </template>
 <script lang="ts" setup>
 import { RouterView, useRouter } from 'vue-router'
-import { computed, nextTick, ref, watch } from "vue"
+import { computed, nextTick, reactive, ref, watch } from "vue"
 import { useTabsStore } from "/@/store/modules/tabs"
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 const tabStore = useTabsStore()
@@ -31,13 +26,39 @@ const { getTabsShow } = useTabsSetting()
 let isRouterAlive = computed(() => tabStore.getRouterAlive)
 const fullscreen = computed(() => tabStore.getIsFullScreen)
 let isReload = ref<boolean>(true)
-const reloadKey = ref(Date.now())
 const router = useRouter()
 const caches = ref<string[]>([])
 const keepAliveKey = ref(Date.now())
 const devMode = import.meta.env.DEV
 // 记录 只有新增加时才重置
 const seenComponentTypes = new Set<string>()
+
+// 每个 fullPath 独立的重载版本号 作为 key 的一部分 防止回到旧缓存
+const reloadVersionMap = reactive<Record<string, number>>({})
+
+/**
+ * 获取 tab 缓存的 key
+ * @param route
+ */
+function getTabKey(route: any) {
+  const componentPart = (route.meta?.componentName || route.name || 'anonymous') as string
+  const base = `${componentPart}_${route.fullPath}`
+  const ver = reloadVersionMap[route.fullPath as string]
+  return ver ? `${base}__v${ver}` : base
+}
+
+watch(() => tabStore.getTabList, (list) => {
+  const aliveFullPaths = new Set((list as any[]).map(t => t.fullPath))
+  Object.keys(reloadVersionMap).forEach(fp => {
+    if (!aliveFullPaths.has(fp)) {
+      // 关闭 tab 时清理对应的版本号
+      delete reloadVersionMap[fp]
+    }
+  })
+}, {
+  deep: true,
+  immediate: true
+})
 
 watch(() => tabStore.getCacheTabs, (newTabs) => {
   const newCaches = newTabs.map(tab => {
@@ -74,28 +95,13 @@ watch(() => tabStore.getCacheTabs, (newTabs) => {
 
 watch(() => tabStore.getReloadTab, (newV) => {
   if (newV) {
-    const compName = tabStore.getCurrentTab?.meta?.componentName
-    if (compName) {
-      // 保证旧 vnode 被卸载
-      const idx = caches.value.indexOf(compName)
-      if (idx > -1) caches.value.splice(idx, 1)
-
-      nextTick(() => {
-        caches.value.push(compName)
-        isReload.value = false
-        nextTick(() => {
-          isReload.value = true
-          tabStore.setReloadTab(false)
-        })
-      })
-    } else {
-      reloadKey.value = Date.now()
-      isReload.value = false
-      nextTick(() => {
-        isReload.value = true
-        tabStore.setReloadTab(false)
-      })
-    }
+    const fullPath = router.currentRoute.value.fullPath as string
+    reloadVersionMap[fullPath] = Date.now()
+    isReload.value = false
+    nextTick(() => {
+      isReload.value = true
+      tabStore.setReloadTab(false)
+    })
   }
 }, {
   deep: true
