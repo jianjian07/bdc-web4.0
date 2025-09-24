@@ -385,7 +385,7 @@ function batchDownLoad() {
       }
       const blob = new Blob([res])
       const elink = document.createElement('a')
-      let title = '附件_'
+      let title = '附件_' + props.formData.slbh + '_'
       title = title + formatToDateTime(new Date().getTime()) + '.zip'
       elink.download = title
       elink.style.display = 'none'
