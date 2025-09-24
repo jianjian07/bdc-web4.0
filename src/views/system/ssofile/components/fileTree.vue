@@ -562,8 +562,14 @@ function previewFile(data: any) {
   format = format.toLowerCase();
   let base = ['jpg','png','jpeg'].includes(format) ? proxyBaseApi.value : baseApi.value
   let newName = data.title.replace(/\.(?=[^.]*$)/, `${data.id}.`);
+  let officePreviewType = ''
+  // 需要 PDF 效果的类型
+  const pdfPreferred = ['pdf', 'doc', 'docx']
+  if (format && pdfPreferred.includes(format)) {
+    officePreviewType = '&officePreviewType=pdf'
+  }
   let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&fullfilename=${newName}`))
-  previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
+  previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}${officePreviewType}`
   loading.value = false
 }
 
