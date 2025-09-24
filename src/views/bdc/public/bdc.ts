@@ -592,7 +592,7 @@ export async function register(demoRefs: any, btn: any, loading: any, jdmc: stri
     if (btn && btn.loading !== undefined) {
       btn.loading = false
     }
-    message.success("记载失败" + error)
+    message.warning("记载失败" + error)
   })
 }
 
@@ -667,16 +667,20 @@ function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: an
     if (loading) {
       loading.value = false
     }
-    message.success(res?.message)
-    let _callbackRes = true
-    if (callback) {
-      _callbackRes = await eval(callback)
-    }
-    if (_callbackRes) {
-      // 刷新
-      const tabStore = useTabsStore()
-      tabStore.refreshTab()
-      // router.push('/refresh')
+    if (res && res.success) {
+      message.success(res?.message)
+      let _callbackRes = true
+      if (callback) {
+        _callbackRes = await eval(callback)
+      }
+      if (_callbackRes) {
+        // 刷新
+        const tabStore = useTabsStore()
+        tabStore.refreshTab()
+        // router.push('/refresh')
+      }
+    } else {
+      message.warning(res?.message || '记载失败!')
     }
   }).catch((error: any) => {
     if (btn && btn.loading !== undefined) {
@@ -685,7 +689,7 @@ function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: an
     if (loading) {
       loading.value = false
     }
-    message.success("记载失败" + error)
+    message.warning("记载失败" + error)
   })
 }
 
