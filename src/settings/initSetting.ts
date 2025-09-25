@@ -8,6 +8,8 @@ import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
 import { decryptAES } from "/@/utils/cipher.ts"
 import { usePermissionStore } from "/@/store/modules/permission.ts"
+import { useThemeSetting } from "/@/hooks/setting/useThemeSetting.ts"
+import { useUserStoreWithOut } from "/@/store/modules/user"
 
 /**
  * 初始化全局配置
@@ -31,10 +33,36 @@ export function initShowCreateBtnByLicense() {
  */
 export function checkAndApplyMemorialEffect() {
   // 默哀日
-  const memorialDays = window.settingConfig.memorialDays || ['04-04', '05-12', '07-07', '09-18', '11-30', '12-13'];
+  const { getTheme, toggleTheme } = useThemeSetting();
+  const theme = getTheme.value
+  const memorialDays = window.settingConfig?.memorialDays || ['04-04', '05-12', '07-07', '09-18', '11-30', '12-13'];
   const today = getTodayKey()
-  if (memorialDays.includes(today)) {
-    applyMemorialEffect()
+  const isMemorialDay = memorialDays.includes(today)
+  const userStore = useUserStoreWithOut()
+  // 主题是全局配置
+  if (isMemorialDay) {
+    const userChoiceDate = userStore.getMemorialUserChoiceDate
+    const userOverrodeToday = userChoiceDate === today
+
+    // 当天首次进入（未手动覆盖）时，强制使用黑白主题；之后尊重当日用户选择
+    if (!userOverrodeToday && theme !== 'memorial') {
+      toggleTheme()
+    }
+
+    // 根据当前主题应用/移除效果
+    if (theme === 'memorial') {
+      applyMemorialEffect()
+    } else {
+      removeMemorialEffect()
+    }
+  } else {
+    // 非默哀日清除当日覆盖标记，并按主题应用效果
+    userStore.setMemorialUserChoiceDate('')
+    if (theme === 'memorial') {
+      applyMemorialEffect()
+    } else {
+      removeMemorialEffect()
+    }
   }
 }
 
@@ -45,6 +73,16 @@ function applyMemorialEffect() {
   const appElement = document.body
   if (!appElement.classList.contains('black-white-app')) {
     appElement.classList.add('black-white-app')
+  }
+}
+
+/**
+ * 取消应用哀悼黑白主题
+ */
+function removeMemorialEffect() {
+  const appElement = document.body
+  if (appElement.classList.contains('black-white-app')) {
+    appElement.classList.remove('black-white-app')
   }
 }
 
@@ -62,11 +100,20 @@ function getTodayKey() {
  * 切换(哀悼)黑白主题
  */
 export function toggleBlackWhite() {
+  const { toggleTheme } = useThemeSetting();
+  const userStore = useUserStoreWithOut()
+  toggleTheme()
   const appElement = document.body
   if (appElement.classList.contains('black-white-app')) {
     appElement.classList.remove('black-white-app')
   } else {
     appElement.classList.add('black-white-app')
+  }
+  // 如果今天是默哀日，记录“当日已由用户手动选择”，避免刷新后再次被强制为黑白
+  const memorialDays = window.settingConfig?.memorialDays || ['04-04', '05-12', '07-07', '09-18', '11-30', '12-13'];
+  const today = getTodayKey()
+  if (memorialDays.includes(today)) {
+    userStore.setMemorialUserChoiceDate(today)
   }
   message.info('主题已切换!')
 }

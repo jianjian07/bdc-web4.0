@@ -10,7 +10,9 @@ const setting: ProjectConfig = {
   // 菜单
   menuSetting: {
     collapsed: false
-  }
+  },
+  // 主题 默哀日：memorial 手动切换正常：normal
+  theme: 'default'
 }
 
 export default setting;

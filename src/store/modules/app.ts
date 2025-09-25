@@ -31,6 +31,9 @@ export const useAppStore = defineStore({
         getMenuSetting(): MenuSetting {
             return this.getProjectConfig.menuSetting;
         },
+        getTheme(): string {
+            return this.getProjectConfig.theme;
+        },
         getIframeSrc(): string {
             return this.iframeSrc
         }

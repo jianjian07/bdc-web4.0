@@ -24,7 +24,8 @@ import {
   IGS_INFO,
   TOOLBAR_INFO,
   LAST_OPERATE_TIME,
-  LOCK_STATUS
+  LOCK_STATUS,
+  MEMORIAL_USER_CHOICE_DATE
 } from '/@/enums/cacheEnum'
 import { DEFAULT_CACHE_TIME } from '/@/settings/encryptionSetting';
 import { toRaw } from 'vue';
@@ -49,6 +50,7 @@ interface BasicStore {
   [IGS_INFO]: [],
   [TOOLBAR_INFO]: [],
   [LAST_OPERATE_TIME]: number,
+  [MEMORIAL_USER_CHOICE_DATE]: string,
   [LOCK_STATUS]: string
 }
 

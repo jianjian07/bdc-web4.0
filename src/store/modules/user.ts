@@ -18,7 +18,8 @@ import {
   USER_INFO_KEY,
   VALIDATE_RULE_DATA_KEY,
   API_RULE_DATA_KEY,
-  TRANSFER_RULE_DATA_KEY
+  TRANSFER_RULE_DATA_KEY,
+  MEMORIAL_USER_CHOICE_DATE
 } from '/@/enums/cacheEnum'
 import { getAuthCache, removeAuthCache, setAuthCache } from '/@/utils/auth'
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel'
@@ -63,6 +64,8 @@ interface UserState {
   saveFormFlag?: boolean,
   lastOperateTime?: number,
   isLocked?: string
+  // 默哀日当日用户选择日期(用于当日刷新保持选择)
+  memorialUserChoiceDate?: string
 }
 
 export const useUserStore = defineStore({
@@ -106,7 +109,8 @@ export const useUserStore = defineStore({
     // 上次操作时间(用于离开锁定)
     lastOperateTime: new Date().getTime(),
     // 是否锁屏
-    isLocked: false
+    isLocked: false,
+    memorialUserChoiceDate: ''
   }),
   getters: {
     getUserInfo(): UserInfo {
@@ -123,7 +127,7 @@ export const useUserStore = defineStore({
       return this.isLocked || localStorage.getItem(LOCK_STATUS)
     },
     getAllDicts(): [] {
-      return (this.dicts && this.dict?.length) ? this.dict : getAuthCache(DB_DICT_DATA_KEY);
+      return (this.dicts && this.dicts?.length) ? this.dicts : getAuthCache(DB_DICT_DATA_KEY);
     },
     getAllCategory(): [] {
       return (this.category && this.category?.length) ? this.category : getAuthCache(CATEGORY_DATA_KEY);
@@ -172,6 +176,9 @@ export const useUserStore = defineStore({
     },
     getSaveFormFlag(): boolean | undefined {
       return this.saveFormFlag
+    },
+    getMemorialUserChoiceDate(): string {
+      return this.memorialUserChoiceDate || getAuthCache(MEMORIAL_USER_CHOICE_DATE) || ''
     }
   },
   actions: {
@@ -251,6 +258,10 @@ export const useUserStore = defineStore({
     setSaveFormFlag(bool: boolean) {
       this.saveFormFlag = bool
     },
+    setMemorialUserChoiceDate(date: string) {
+      this.memorialUserChoiceDate = date || ''
+      setAuthCache(MEMORIAL_USER_CHOICE_DATE, date)
+    },
     lockScreen() {
       this.isLocked = 'true'
       localStorage.setItem(LOCK_STATUS, 'true')
@@ -276,6 +287,7 @@ export const useUserStore = defineStore({
       this.sessionTimeout = false;
       this.menuIndex = -1
       this.licence = ''
+      this.setMemorialUserChoiceDate('')
     },
     formatDictList(newArr: any, parent?: any) {
       let newData = newArr.map((item: any) => {

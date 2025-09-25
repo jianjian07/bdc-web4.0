@@ -49,6 +49,8 @@ export const TOOLBAR_INFO = 'TOOLBAR_INFO'
 export const LAST_OPERATE_TIME = 'LAST_OPERATE_TIME'
 // 锁屏
 export const LOCK_STATUS = 'LOCK_STATUS'
+// 手动切换主题
+export const MEMORIAL_USER_CHOICE_DATE = 'MEMORIAL_USER_CHOICE_DATE'
 
 export enum CacheTypeEnum {
   SESSION,
