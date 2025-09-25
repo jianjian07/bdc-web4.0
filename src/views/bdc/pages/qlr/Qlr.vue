@@ -252,12 +252,19 @@ function handleAdd() {
   let formId = gyfsQlrArr.includes(props.qlrxx.qlrlxmc)
       ? ( props.formType == 'modal' ? '117' : '109' )
       : ( props.formType == 'modal' ? '116' : '55' )
-  if (tableData.value.length > 0 && tableData.value[0].gyfs == '0') {
-    message.warning('该权利人共有方式为单独所有,不允许再添加')
-  } else if (tableData.value.length == 2 && tableData.value[0].gyfs == '1') {
-    message.warning('该权利人共有方式为共同所有,只允许添加两个权利人!') 
-  } else {
-    let modal = cModal({
+  // 没有共有方式的不对共有方式进行判断
+  if (!gyfsQlrArr.includes(props.qlrxx.qlrlxmc)) {
+    if (tableData.value.length > 0 && tableData.value[0].gyfs == '0') {
+      message.warning('该权利人共有方式为单独所有,不允许再添加')
+      return
+    }
+    if (tableData.value.length == 2 && tableData.value[0].gyfs == '1') {
+      message.warning('该权利人共有方式为共同所有,只允许添加两个权利人!')
+      return
+    }
+  }
+
+  let modal = cModal({
       title: '新增' + props.qlrxx.qlrxsmc,
       width: '70vw',
       filePath: 'views/bdc/public/GenPublic',
@@ -282,7 +289,6 @@ function handleAdd() {
         }
       }
     })
-  }
 }
 
 /**
@@ -376,8 +382,8 @@ function handleDel(record) {
   defHttp.post({
         url: '/api/zrzy-bdc/bdc/qlr/deleteQlr',
         data: {
-          qlrmc: record.qlrmc, 
-          zjh: record.zjh, 
+          qlrmc: record.qlrmc,
+          zjh: record.zjh,
           slbh: route.query.slbh,
           qlrlb: props.qlrxx.qlrlxmc,
           sxh: props.qlrxx.sxh,
