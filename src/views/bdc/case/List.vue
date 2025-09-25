@@ -93,7 +93,8 @@ enum api {
     // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
     tasklist = '/api/zrzy-bdc/act/task/list',
     delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData",
-    taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust'
+    taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust',
+    handleFlagUrl = '/api/zrzy-bdc/hi/taskinst/updateHandleFlag'
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -168,7 +169,30 @@ function clear() {
  * @param record
  */
 function handleCase(record: any) {
+  // 记录办理状态
+  handleFlag(record)
     router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
+}
+
+/**
+ * 修改办理状态
+ */
+function handleFlag(record) {
+  if (!record.taskId || record.handleFlag == 1) {
+    return
+  }
+  defHttp.put({
+    url: api.handleFlagUrl,
+    params: { taskId: record.taskId }
+  }, { withToken: true }).then((res) => {
+    if (res && res.code == 200) {
+
+    } else {
+      console.log("修改办理状态失败：" + res.message)
+    }
+  }).catch((err => {
+    console.log("修改办理状态失败：" + err)
+  }))
 }
 
 /**
