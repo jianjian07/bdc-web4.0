@@ -93,7 +93,8 @@ export function getUserInfo() {
             resolve({
                 username: res.result.username,
                 userId: res.result.id,
-                realname: res.result.realName
+                realname: res.result.realName,
+                loginTraceId: res.result.loginTraceId
             })
         } else {
             resolve(null)
