@@ -45,7 +45,7 @@
                 <a-col :span="4" :offset="0">
                     <a-form-item style="text-align: center;margin-left: 10px">
                         <a-space>
-                            <a-button type="primary" @click="loadData">
+                            <a-button type="primary" @click="searchData">
                                 <template #icon>
                                     <component :is="SearchOutlined"></component>
                                 </template>查询
@@ -158,6 +158,9 @@ let pagination = ref({
     total: 0,
     current: 1,
     pageSize: 10,
+    showTotal: () => {
+      return `共 ${pagination.value.total} 条数据`
+    }
 })
 
 enum Api {
@@ -180,9 +183,13 @@ function loadJobGroup() {
  * 表格数据加载
 */
 async function loadData() {
+  if (timeValue.value && timeValue.value.length == 2) {
     let startTime = dayjs(timeValue.value[0]).format(dateFormat)
     let endTime = dayjs(timeValue.value[1]).format(dateFormat)
     formData.value.filterTime = startTime + ' - ' + endTime
+  } else {
+    formData.value.filterTime = ''
+  }
     formData.value.jobId = jobId.value == "" ? 0 : jobId.value
     let jobGroupValue = (jobGroup.value == '' || jobGroup.value == undefined) ? 0 : jobGroup.value
     defHttp.get({ url: Api.list, params: { start: (pagination.value.current - 1) * pagination.value.pageSize, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
@@ -194,10 +201,26 @@ async function loadData() {
         console.info(err)
     })
 }
+
+/**
+ * 查询
+ */
+function searchData() {
+  pagination.value.current = 1
+  loadData()
+}
 /**
  * 重置
 */
 function refreshData() {
+    // 默认查询当天的数据
+    const time = new Date().getTime();
+    const dayValue = formatToDate(time);
+    timeValue.value = ([
+      dayjs(dayValue + " 00:00:00", dateFormat),
+      dayjs(dayValue + " 23:59:59", dateFormat),
+    ])
+    pagination.value.current = 1
     formData.value = {
       logStatus: '-1',
       filterTime: '',
