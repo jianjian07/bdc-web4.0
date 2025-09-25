@@ -329,7 +329,9 @@ function previewFile(data: any) {
   let base = ['jpg','png','jpeg'].includes(format) ? proxyBaseApi.value : baseApi.value
   let newName = data.title.replace(/\.(?=[^.]*$)/, `${data.id}.`);
   let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/file/download?id=${data.id}&db=${props.formData.db}&fullfilename=${newName}`))
-  previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}${officePreviewType}`
+  //previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}${officePreviewType}`
+  //长治linux中4.0和4.4在以pdf模式预览电子签名pdf时都不显示签名，改回默认jpg模式
+  previewData.value.previewUrl = `${kkFileApi.value}/onlinePreview?url=${encodeUrl}`
 }
 
 function closePreview() {
