@@ -4,23 +4,21 @@
       <div class="addNewBtn" v-if="isManage">
         <div>
           <a-tooltip title="新增目录" placement="top">
-            <a-button type="primary" :icon="h(PlusOutlined)" @click="addCatalog">目录</a-button>
+            <a-button type="primary" :icon="h(PlusOutlined,{style:{width:'8px'}})" @click="addCatalog" >目录</a-button>
           </a-tooltip>
           <a-tooltip title="新增附件" placement="top">
-            <a-button type="primary" :icon="h(PlusOutlined)" @click="addFile">附件</a-button>
+            <a-button type="primary" :icon="h(PlusOutlined,{style:{width:'8px'}})" @click="addFile">附件</a-button>
           </a-tooltip>
           <a-tooltip :title="editOrder ? '保存目录顺序' : '编辑目录顺序'" placement="top">
-            <a-button type="primary" v-if="editOrder" :icon="h(CheckOutlined)" @click="handleOrder">目录顺序</a-button>
-             <a-button type="primary" v-else :icon="h(EditOutlined)" @click="handleOrder">目录顺序</a-button>
+            <a-button type="primary" v-if="editOrder" :icon="h(CheckOutlined,{style:{width:'8px'}})" @click="handleOrder">目录顺序</a-button>
+             <a-button type="primary" v-else :icon="h(EditOutlined,{style:{width:'8px'}})" @click="handleOrder">目录顺序</a-button>
           </a-tooltip>
           <a-tooltip title="工具上传" placement="top">
-            <a-button type="primary" :icon="h(UploadOutlined)" @click="showExe">工具</a-button>
+            <a-button type="primary" :icon="h(UploadOutlined,{style:{width:'8px'}})" @click="showExe">工具</a-button>
           </a-tooltip>
           <a-button type="primary" v-if="checkedKeys.length" :icon="h(DeleteOutlined)" @click="batchDel">删除</a-button>
-        </div>
-        <div>
           <a-tooltip title="刷新附件" placement="right">
-            <a-button style="margin-right: 5px" size="small" :icon="h(ReloadOutlined)" @click.stop="loadFileList(false)" />
+            <a-button size="small" :icon="h(ReloadOutlined)" @click.stop="loadFileList(false)" />
           </a-tooltip>
         </div>
       </div>
