@@ -22,8 +22,8 @@
   <spin-mask v-if="maskShow" :mask-text="maskText"></spin-mask>
 </template>
 <script lang="ts" setup>
-import { Layout } from 'ant-design-vue';
-import { computed, onMounted, unref, ref, defineAsyncComponent, toRefs } from 'vue'
+import { Layout, Modal } from 'ant-design-vue'
+import { computed, onMounted, unref, ref, defineAsyncComponent, toRefs, onBeforeUnmount } from 'vue'
 import LayoutHeader from '/@/views/layouts/default/header/index.vue'
 import LayoutMultipleHeader from '/@/views/layouts/default/header/MultipleHeader.vue'
 import LayoutSideBar from '/@/views/layouts/default/sider/index.vue'
@@ -34,6 +34,7 @@ import { useTabsStore } from "/@/store/modules/tabs"
 import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 import { PageEnum } from "/@/enums/pageEnum";
 import { currentRoute } from "/@/router"
+import { useUserStore } from "/@/store/modules/user.ts"
 // const LayoutHeader = defineAsyncComponent(() => import("/@/views/layouts/default/header/index.vue"));
 // const LayoutMultipleHeader = defineAsyncComponent(() => import("/@/views/layouts/default/header/MultipleHeader.vue"));
 const LayoutContent = defineAsyncComponent(() => import("./content/index.vue"));
@@ -50,6 +51,53 @@ let { maskShow, maskText } = toRefs(appStore.$state)
 const route = currentRoute;
 let prefixCls = 'default-layout'
 let showMenuList = ref(true)
+let socket: any = null;
+
+onMounted(() => {
+  onStartWs()
+})
+
+onBeforeUnmount(() => {
+  onCloseWs()
+})
+
+/**
+ * 开启ws
+ */
+function onStartWs() {
+  const userStore = useUserStore();
+  const userInfo = userStore.getUserInfo
+  if (userInfo && userInfo.loginTraceId) {
+    let url = window.settingConfig?.wsbaseDomain + "/zrzy-system/ws/" + userInfo.loginTraceId + "/home"
+    socket = new WebSocket(url);
+    socket.onopen = () => {
+      // console.log('WebSocket 连接已打开');
+    };
+    socket.onclose = () => {
+      // console.log('WebSocket 连接已关闭');
+    };
+    socket.onmessage = (event) => {
+      Modal.warning({
+        title: '系统下线通知',
+        content: event.data || '您已在其他设备登录，即将退出！',
+        onOk() {
+          userStore.logout(true);
+        }
+      });
+    };
+  }
+}
+
+/**
+ * 关闭ws
+ */
+function onCloseWs() {
+  if (socket) {
+    socket.close();
+    socket = null;
+  }
+}
+
 const layoutClass = () => {
   let cls: string[] = ['ant-layout'];
   if (unref(true) || unref(true)) {
