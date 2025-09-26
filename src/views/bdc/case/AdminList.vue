@@ -171,7 +171,7 @@ function clear() {
  * @param record
  */
 function handleCase(record: any) {
-    router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
+    router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey, formFlag: 'adminList' } });
 }
 
 /**
