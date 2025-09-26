@@ -18,10 +18,11 @@ export function checkShowForSingle(regType, fwInfo) {
         return checkShowForZjDy(regType, fwInfo)
       }
     case '03':
+      // 石磊 0925 预告类不限制楼盘
       // 预测楼盘表
-      if (fwInfo && fwInfo.chzt != '2') {
-        return false
-      }
+      // if (fwInfo && fwInfo.chzt != '2') {
+      //   return false
+      // }
       let ygdj = regType.substr(0, 3)
       if (ygdj === '030') {
         return checkShowForYgCq(regType, fwInfo)
