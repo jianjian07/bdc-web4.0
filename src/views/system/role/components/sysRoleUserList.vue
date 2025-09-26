@@ -27,7 +27,7 @@
       <div class="sys-role-user-list-content">
         <a-button type="primary" @click="handleUserPermission" style="margin-bottom: 10px">授权用户</a-button>
         <a-table :columns="columns" :data-source="userList" :pagination="pagination"
-          @change="onTableChange" rowKey="id" bordered>
+          @change="onTableChange" rowKey="id" bordered :loading="loading">
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'index'">
               {{ index + 1 }}
@@ -89,6 +89,7 @@ let searchForm = ref<any>({
 let currentRoleId = ref<string>('')
 // 当前角色用户列表
 let userList = ref<any>([])
+let loading = ref(false)
 
 let page = ref<any>({
   total: 0,
@@ -131,6 +132,7 @@ function reset() {
 }
 
 function initData() {
+  loading.value = true
   let params = {
     userName: searchForm.value.name,
     enabled: searchForm.value.state,
@@ -149,8 +151,10 @@ function initData() {
     } else {
       userList.value = []
     }
+    loading.value = false
   }).catch(err => {
     userList.value = []
+    loading.value = false
   })
 }
 
