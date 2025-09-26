@@ -47,6 +47,8 @@
                 {{ index + 1 }}
               </template>
               <template v-if="column.dataIndex === 'operation'">
+                <a @click="handleUser(record)">用户</a>
+                <a-divider type="vertical" />
                 <a @click="handleLcqx(record)" v-permission="'system:role:workflow'">流程权限</a>
                 <!-- <a-divider type="vertical" />
                 <a @click="handleDept(record)">分配</a> -->
@@ -76,6 +78,7 @@
     <sys-role-modal ref="roleModal" @ok="handleOk"></sys-role-modal>
     <sys-role-dept-modal ref="roleDeptModal"></sys-role-dept-modal>
     <sys-role-process-modal ref="roleProcessModal"></sys-role-process-modal>
+    <sys-role-user-list ref="roleUserListDrawer"></sys-role-user-list>
   </div>
 </template>
 
@@ -87,6 +90,7 @@ import SysRoleDeptModal from "/@/views/system/role/components/sysRoleDeptModal.v
 import SysRoleProcessModal from "/@/views/system/role/components/sysRoleProcessModal.vue"
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue'
+import SysRoleUserList from "/@/views/system/role/components/sysRoleUserList.vue"
 
 enum api {
   getAllMenu = '/api/zrzy-system/menu/getAllMenu',
@@ -112,6 +116,8 @@ let currentRole = ref<any>([])
 let roleModal = ref()
 // 部门弹窗
 let roleDeptModal = ref()
+// 角色用户
+let roleUserListDrawer = ref()
 // 当前选中的折叠面板
 let activeCollapseKey = ref<any>()
 // 流程弹窗
@@ -153,7 +159,7 @@ const columns = [
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 260,
+    width: 300,
   },
 
 ]
@@ -268,6 +274,14 @@ function handleDelRole(id: number, index: number) {
  */
 function handleDept(record) {
   roleDeptModal.value.open(record)
+}
+
+/**
+ * 角色用户
+ * @param record
+ */
+function handleUser(record) {
+  roleUserListDrawer.value.edit(record)
 }
 
 /**

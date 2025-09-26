@@ -42,6 +42,13 @@
           </a-space>
         </a-form>
       </div>
+       <div style="margin-bottom: 10px">
+          <a-alert show-icon type="info">
+            <template #message>
+              已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}&nbsp;</a>项
+            </template>
+          </a-alert>
+       </div>
       <div class="user-chosen-user-table-body">
         <a-table :columns="columns" :data-source="userList" :pagination="pagination" :row-selection="rowSelection"
                  :scroll="{ y: 800 }" rowKey="id" @change="onTableChange" :customRow="customRow">
@@ -383,7 +390,7 @@ function reset() {
   }
 
   .user-chosen-user {
-    width: calc(100%);
+    width: calc(100% - 250px);
     height: 100%;
     padding: 10px;
 
@@ -393,7 +400,7 @@ function reset() {
     }
 
     .user-chosen-user-table-body {
-      height: calc(100% - 50px);
+      height: calc(100% - 80px);
 
       :deep(.ant-table-wrapper) {
         height: 100%;
@@ -412,8 +419,12 @@ function reset() {
         }
       }
 
+      :deep(.ant-spin-nested-loading) {
+        height: 100%;
+      }
       :deep(.ant-spin-container) {
         overflow: hidden !important;
+        height: 100%;
       }
     }
   }
