@@ -1,33 +1,65 @@
 <template>
     <div class="wonder-table-form">
-        <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
-            <a-row :gutter="[0, 8]" tyle="flex">
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="案卷名称">
-                        <a-input v-model:value="formData.ajmc" allowClear />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8" :offset="0">
-                    <a-form-item label="受理编号">
-                        <a-input v-model:value="formData.slbh" allowClear />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="6" :offset="0">
-                    <a-form-item style="text-align: center;">
-                        <a-space>
-                            <a-button type="primary" @click="searchData">
-                                <template #icon>
-                                    <component :is="SearchOutlined"></component>
-                                </template>查询</a-button>
-                            <a-button @click="clear">
-                                <template #icon>
-                                    <component :is="RedoOutlined"></component>
-                                </template>重置</a-button>
-                        </a-space>
-                    </a-form-item>
-                </a-col>
-            </a-row>
-        </a-form>
+       <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
+      <a-row :gutter="[0, 8]" tyle="flex">
+        <a-col :span="6" :offset="0">
+          <a-form-item label="受理编号">
+            <a-input v-model:value="formData.slbh" allowClear/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6" :offset="0">
+          <a-form-item label="流程类别">
+            <a-select v-model:value="formData.lclx" :options="getDictItemsByCode('bpm_process_type')"
+                      @change="onChangeLclx" allowClear/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6" :offset="0">
+          <a-form-item label="流程名称">
+            <a-select v-model:value="formData.lcid" :options="lcmcList" @change="onChangeAjlx"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="4" :offset="0">
+          <a-form-item label="办理环节">
+             <a-select v-model:value="formData.nodeName" :options="nodeList" allowClear/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="[0, 8]" tyle="flex">
+        <a-col :span="6" :offset="0">
+          <a-form-item label="不动产单元号">
+            <a-input v-model:value="formData.bdcdyh" allowClear/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6" :offset="0">
+          <a-form-item label="坐落">
+            <a-input v-model:value="formData.zl" allowClear/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6" :offset="0">
+          <a-form-item label="案卷名称">
+            <a-input v-model:value="formData.ajmc" allowClear/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6" :offset="0">
+          <a-form-item style="text-align: center;">
+            <a-space>
+              <a-button type="primary" @click="searchData">
+                <template #icon>
+                  <component :is="SearchOutlined"></component>
+                </template>
+                查询
+              </a-button>
+              <a-button @click="clear">
+                <template #icon>
+                  <component :is="RedoOutlined"></component>
+                </template>
+                重置
+              </a-button>
+            </a-space>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
     </div>
     <div class="wonder-table-css">
         <a-spin :spinning="spinning">
@@ -89,12 +121,15 @@ import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, Exclamat
 import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils.ts";
 enum api {
     // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
     tasklist = '/api/zrzy-bdc/act/task/list',
     delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData",
     taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust',
-    handleFlagUrl = '/api/zrzy-bdc/hi/taskinst/updateHandleFlag'
+    handleFlagUrl = '/api/zrzy-bdc/hi/taskinst/updateHandleFlag',
+    getLcListByLclx = '/api/zrzy-bdc/flow/flowConfig/getLcListByLclx',
+    nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list'
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -122,14 +157,26 @@ let pagination = ref({
     showSizeChanger: true,
     showQuickJumper: true
 })
+// 流程名称下拉
+let lcmcList = ref([])
+// 业务节点下拉
+let nodeList = ref([])
 
 onMounted(() => {
   loadData()
 })
 
 function loadData() {
-    spinning.value = true
-    defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh } }, { withToken: true }).then(res => {
+  spinning.value = true
+  let data = {
+    lcid: formData.value.lcid,
+    ajmc: formData.value.ajmc,
+    slbh: formData.value.slbh,
+    bdcdyh: formData.value.bdcdyh,
+    zl: formData.value.zl,
+    taskName: formData.value.nodeName
+  }
+    defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: data }, { withToken: true }).then(res => {
         if (res.success) {
             const result = res.result
             datalist.value = result.records
@@ -263,6 +310,77 @@ function handleDelete(slbh: string, ajmc: string) {
     });
 
 
+}
+
+/**
+ * 流程类型下拉
+ */
+function onChangeLclx(_value) {
+  if (_value) {
+    getLcmcByLclx(_value)
+  } else {
+    formData.value.lcid = ''
+    formData.value.nodeName = ''
+    lcmcList.value = []
+    nodeList.value = []
+  }
+}
+
+/**
+ * 流程名称下拉
+ */
+function getLcmcByLclx(lclx) {
+  return new Promise((resolve, reject) => {
+    defHttp.get({ url: api.getLcListByLclx, params: { lclx: lclx } }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        lcmcList.value = res.result.map(item => {
+          return {
+            value: item.lcid,
+            label: item.lcmc
+          }
+        })
+        if (lcmcList.value.length > 0) {
+          let currentId = lcmcList.value[0].value
+          formData.value.lcid = currentId
+          getNode(currentId)
+        } else {
+          formData.value.lcid = undefined
+        }
+        resolve(true)
+      } else {
+        reject(false)
+      }
+    }).catch(err => {
+      reject(false)
+    })
+  })
+}
+
+/**
+ * 流程名称下拉
+ */
+function onChangeAjlx(_value) {
+  if (_value) {
+    getNode(_value)
+  } else {
+    formData.value.nodeName = ''
+  }
+}
+
+/**
+ * 业务节点下拉
+ */
+function getNode(currentLcid) {
+  defHttp.get({ url: api.nodelistUrl, params: { processId: currentLcid } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      nodeList.value = res.result.map(item => {
+        return {
+          value: item.processNodeName,
+          label: item.processNodeName
+        }
+      })
+    }
+  })
 }
 </script>
 
