@@ -80,9 +80,24 @@ export const useTabsStore = defineStore({
         if (this.tabActiveKey === tab.fullPath) {
           // 旧标签页存在则跳转到旧标签页
           this.setFromTab(true)
+          let zbxIndex = -1
+          if (tab.path == '/bdc/casedoing') {
+            // 关闭案卷办理
+            if (tab.query && tab.query.formFlag == 'adminList') {
+              // 若当前标签页是案卷办理的管理员在办箱，则跳转到管理员在办箱
+              zbxIndex = this.tabList.findIndex(t => t.path == '/bdc/case/AdminList')
+            } else {
+              // 否则跳转到案卷办理的在办箱
+              zbxIndex = this.tabList.findIndex(t => t.path == '/bdc/case/list')
+            }
+            if (zbxIndex !== -1) {
+              this.tabActiveKey = this.tabList[zbxIndex].fullPath
+              return
+            }
+          }
           const oldPath = this.routerChangeObj?.old;
           const oldIndex = this.tabList.findIndex(f => f.fullPath === oldPath);
-        
+
           const fallbackIndex = Math.max(0, tabIndex - 1)
           const newActiveTab = (oldPath && oldIndex !== -1)
             ? this.tabList[oldIndex].fullPath
@@ -91,7 +106,7 @@ export const useTabsStore = defineStore({
         }
       }
       this.setCacheTabList()
-    }, 
+    },
     resetTabList() {
       this.tabList = []
       this.setCacheTabList()
