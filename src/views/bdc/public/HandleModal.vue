@@ -207,6 +207,8 @@ function getTaskInfo() {
     }, { withToken: true }).then(async (res) => {
       if (res && res.success) {
         let taskData = res.result
+        // 节点去重
+        taskData.histListNode = uniqueByKey(taskData.histListNode, 'task_def_key_') || []
         let limit = true
         if (window.settingConfig.removeRegisterLimit) {
           limit = false
@@ -1037,6 +1039,26 @@ function insertMqMessageForHandOver() {
       }
     )
   })
+}
+
+/**
+ * 根据对象数组的指定属性去重
+ * @param arr
+ * @param key
+ */
+function uniqueByKey(arr, key) {
+  const seen = new Set()
+  const result = []
+
+  for (const item of arr) {
+    const value = item[key]
+    if (!seen.has(value)) {
+      seen.add(value)
+      result.push(item)
+    }
+  }
+
+  return result
 }
 
 defineExpose({
