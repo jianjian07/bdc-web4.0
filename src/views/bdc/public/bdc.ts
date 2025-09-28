@@ -1815,7 +1815,9 @@ async function getHandleCkbzBtn() {
           }
         }
         // 4.非收件节点，显示“窗口补正”
-        let btnList = [{ name: text, type: 'primary', isDefaultBtn: text == '窗口补正' }]
+        // 新增 结果意见选择补齐补正时才显示 ; 窗口补正到收件节点时需要找倒数第二条数据显示完成补正
+        let lastCzjg = taskList[taskLength - 1].czjg || taskList[taskLength - 2].czjg ||''
+        let btnList = lastCzjg == '5' ? [{ name: text, type: 'primary', isDefaultBtn: text == '窗口补正' }] : []
 
         resolve(btnList)
         return btnList
