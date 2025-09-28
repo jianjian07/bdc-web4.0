@@ -14,8 +14,8 @@
             <a-textarea v-model:value="licenseData.license" placeholder="请输入授权码" :rows="6" allow-clear />
         </a-form-item>
         <a-form-item label="授权日期" name="expiryDate" :rules="[{ required: true, message: '请输入授权期限!' }]">
-            <a-date-picker v-model:value="licenseData.expiryDate" style="width: 250px;" format="YYYY/MM/DD"
-                value-format="YYYY/MM/DD" />
+            <a-date-picker v-model:value="licenseData.expiryDate" style="width: 250px;" format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
             <a-button v-if="showCreate" type="primary" @click="onLicense">生成授权</a-button>&nbsp;&nbsp;
