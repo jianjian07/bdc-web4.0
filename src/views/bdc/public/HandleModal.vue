@@ -10,7 +10,7 @@
               移交方向：
             </a-col>
             <a-col :span="14">
-              <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
+              <a-radio-group v-model:value="handleDirection" :disabled="directionDisabled" @change="onChangeDirection">
                 <a-radio :value="1">向后</a-radio>
                 <a-radio :value="2">平级</a-radio>
                 <a-radio :value="3" v-if="formState?.taskData?.histListSize > 0">驳回</a-radio>
@@ -103,7 +103,7 @@ const props = defineProps({
     default: {}
   }
 })
-// 开启弹窗 
+// 开启弹窗
 let open = ref<boolean>(false)
 // 加载状态
 let spinning = ref<boolean>(false)
@@ -145,6 +145,8 @@ let searchValue = ref('')
 let rejectModelNode = ref<any>(null)
 // 展开节点
 let expandedKeys = ref<any>([])
+// 移交方向是否只读
+let directionDisabled = ref<boolean>(false)
 
 enum api {
   getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
@@ -161,24 +163,12 @@ onMounted(() => {
   getTaskInfo()
 })
 
-onBeforeUnmount(() => {
-  eventBus.off('setShjg')
-})
-
-/**
- * 获取页面上的审核结果
- * @param value
- */
-function getShjg() {
-  eventBus.emit('getShjg')
-}
-
 /**
  * 通过审核结果初始化移交方向
  * @param shjg
  */
 function initHandleDirection(shjg) {
-  let e 
+  let e
   switch(shjg) {
     case '1':
       // 同意 -> 向后
@@ -197,9 +187,9 @@ function initHandleDirection(shjg) {
     default:
       break;
   }
-  
   if (e) {
     handleDirection.value = e.target.value
+    directionDisabled.value = true
     onChangeDirection(e)
   }
 }
@@ -237,34 +227,32 @@ function getTaskInfo() {
             }
           }
         }
-  
+
         let slbh = route.query.slbh || props.formData.slbh
         // let lcmc = formConfig.value.ajmc
-        let cbsj, cbr
-        if (taskData.bpmLogList.length) {
-          cbsj = taskData.bpmLogList[0].opTime
-          cbr = taskData.bpmLogList[0].opUserName
-        } else {
-          cbsj = taskData.taskNameStartTime
-          cbr = taskData.taskAssigneeName
-        }
-  
+        // let cbsj, cbr
+        // if (taskData.bpmLogList.length) {
+        //   cbsj = taskData.bpmLogList[0].opTime
+        //   cbr = taskData.bpmLogList[0].opUserName
+        // } else {
+        //   cbsj = taskData.taskNameStartTime
+        //   cbr = taskData.taskAssigneeName
+        // }
+
         formState.value = {
           taskId: taskId,
           slbh: slbh,
           // lcmc: lcmc,
           jdmc: taskData.nodeName,
-          cbr: cbr,
-          cbsj: cbsj,
+          // cbr: cbr,
+          // cbsj: cbsj,
           taskData: taskData
         }
-        if (!['初审','复审','核定','审核'].includes(taskData.taskName)) {
-          setTransTree()
+        if (taskData.czjg) {
+          initHandleDirection(taskData.czjg)
         } else {
-          eventBus.on('setShjg', initHandleDirection)
-          getShjg()
+          setTransTree()
         }
-        // setTransTree()
         resolve(true)
       } else {
         message.warning('获取流程数据失败:' + res?.message)
@@ -548,7 +536,7 @@ async function handleOk() {
   let nextnodeUserNameList: any = []
   let nextnodeUserIdList: any = []
   let nextnode = ''
-  
+
   const roleNames = selectedNodes.value
     .map(n => n.roleName)
     .filter(Boolean)
@@ -685,7 +673,7 @@ function validateApiTransfer(obj) {
       if (find && find.ywlx == 'transfer' && find.ruleType == 'api') {
         let content = find.content
         const scope: any = { defHttp, Modal, createVNode, ExclamationCircleOutlined }; // 显式用一下，保证vite不会剔除
-  
+
         let fn = eval(`async (slbh) => {
           ${content}
         }`)
@@ -836,7 +824,7 @@ function onSelectTreeNode(keys, info) {
         selectedKeys.value.push(currentNodeKey)
       }
     }
-    
+
     selectedUsefulKeys.value = currentGroupKeys
     setSelectNode()
   }
@@ -919,7 +907,7 @@ function likeSearch(node, value, resultKeys, expandedCollect, path = []) {
 
     if (isLeaf && n.title?.toLowerCase().includes(keyword)) {
       resultKeys.push(n.key)
-      
+
       const parentKeys = currentPath.slice(0, -1)
       parentKeys.forEach(k => {
         if (!expandedCollect.includes(k)) {
@@ -1035,7 +1023,7 @@ function markRight() {
  */
 function insertMqMessageForHandOver() {
   return new Promise((resolve) => {
-    defHttp.post({ url: api.insertMqMessageForHandOver, params: { 
+    defHttp.post({ url: api.insertMqMessageForHandOver, params: {
         slbh: route.query.slbh,
         yjfx: handleDirection.value,
         jdmc: formState.value.jdmc
