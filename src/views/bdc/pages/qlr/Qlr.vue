@@ -1,28 +1,31 @@
 <template>
   <div class="qlr">
-    <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc +'信息'" :showArrow="true" :classname="titleClassName"
-                      collapseType="row" style='width:100%'>
+    <c-collapse-panel :defaultCollapse="false" :header="qlrxx.qlrxsmc + '信息'" :showArrow="true"
+      :classname="titleClassName" collapseType="row" style='width:100%'>
       <div class="qlr-add-tool">
         <a-space>
-          <a-popconfirm v-if="qlrxx?.btnId?.includes('6') && !disabled" title="是否确定统赋？" :disabled="disabled" ok-text="确定" cancel-text="取消" @confirm="handleTf">
-             <a-button>统赋</a-button>
+          <a-popconfirm v-if="qlrxx?.btnId?.includes('6') && !disabled" title="是否确定统赋？" :disabled="disabled"
+            ok-text="确定" cancel-text="取消" @confirm="handleTf">
+            <a-button>统赋</a-button>
           </a-popconfirm>
           <a-button v-if="qlrxx?.btnId?.includes('1') && !disabled" @click="handleAdd">新增</a-button>
         </a-space>
       </div>
       <a-table :columns="columns" :data-source="tableData" :pagination="pagination" rowKey="zjh"
-               @change="onTableChange">
+        @change="onTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <div v-if="actionBtnList.length" class="qlr-btns">
-              <template v-for="(item,index) in actionBtnList">
+              <template v-for="(item, index) in actionBtnList">
                 <template v-if="item.name == '删除'">
-                  <a-popconfirm title="是否确定删除该数据？" :disabled="disabled" ok-text="确定" cancel-text="取消" @confirm="handleFun(item.funcName,record)">
+                  <a-popconfirm title="是否确定删除该数据？" :disabled="disabled" ok-text="确定" cancel-text="取消"
+                    @confirm="handleFun(item.funcName, record)">
                     <a-button type="link" :disabled="disabled">{{ item.name }}</a-button>
                   </a-popconfirm>
                 </template>
-                <a-button v-else type="link" :disabled="(item.name == '查看' || item.name == '家庭成员') ? false : disabled" @click="handleFun(item.funcName,record)">{{ item.name }}</a-button>
-                <a-divider v-if="index !== actionBtnList.length - 1" type="vertical"/>
+                <a-button v-else type="link" :disabled="(item.name == '查看' || item.name == '家庭成员') ? false : disabled"
+                  @click="handleFun(item.funcName, record)">{{ item.name }}</a-button>
+                <a-divider v-if="index !== actionBtnList.length - 1" type="vertical" />
               </template>
             </div>
           </template>
@@ -178,7 +181,7 @@ function initBtnList() {
 function initData() {
   let query = route.query
   let ywh = props.ywh ? { ywh: props.ywh } : {}
-  let bdcdyh = props.bdcdyh ? { bdcdyh: props.bdcdyh }: {}
+  let bdcdyh = props.bdcdyh ? { bdcdyh: props.bdcdyh } : {}
   let sxh = getSxhParam()
   defHttp.post({
     url: api.list,
@@ -230,7 +233,7 @@ function getSxhParam() {
  * @param record
  */
 function handleFun(name, record) {
-  console.log('fun',fun) // 防止打包被移除
+  console.log('fun', fun) // 防止打包被移除
   eval(`fun['${name}'](record)`)
 }
 
@@ -248,10 +251,10 @@ function onTableChange(pag) {
  */
 function handleAdd() {
   let query = route.query
-  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人','异议申请人']
+  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关', '查封申请人', '居住权人', '债务人', '权利人代理人', '义务人代理人', '申请执行人', '异议申请人']
   let formId = gyfsQlrArr.includes(props.qlrxx.qlrlxmc)
-      ? ( props.formType == 'modal' ? '117' : '109' )
-      : ( props.formType == 'modal' ? '116' : '55' )
+    ? (props.formType == 'modal' ? '117' : '109')
+    : (props.formType == 'modal' ? '116' : '55')
   // 没有共有方式的不对共有方式进行判断
   if (!gyfsQlrArr.includes(props.qlrxx.qlrlxmc)) {
     if (tableData.value.length > 0 && tableData.value[0].gyfs == '0') {
@@ -265,30 +268,30 @@ function handleAdd() {
   }
 
   let modal = cModal({
-      title: '新增' + props.qlrxx.qlrxsmc,
-      width: '70vw',
-      filePath: 'views/bdc/public/GenPublic',
-      formData: {
-        formId: formId,
-        ywh: props.ywh,
-        bdcdyh: props.bdcdyh,
-        slbh: query.slbh,
-        qlrlb: props.qlrxx.qlrlxmc,
-        qlrList: tableData.value,
-        sxh: props.qlrxx.sxh,
-        type: 'add'
-      },
-      onOk: async (res) => {
-        if (res && res.saveQlrData) {
-          let _result = await res.saveQlrData('add')
-          if (_result) {
-            modal.destroy()
-            initData()
-            emit('getTbxx', props.qlrxx.tbxx)
-          }
+    title: '新增' + props.qlrxx.qlrxsmc,
+    width: '70vw',
+    filePath: 'views/bdc/public/GenPublic',
+    formData: {
+      formId: formId,
+      ywh: props.ywh,
+      bdcdyh: props.bdcdyh,
+      slbh: query.slbh,
+      qlrlb: props.qlrxx.qlrlxmc,
+      qlrList: tableData.value,
+      sxh: props.qlrxx.sxh,
+      type: 'add'
+    },
+    onOk: async (res) => {
+      if (res && res.saveQlrData) {
+        let _result = await res.saveQlrData('add')
+        if (_result) {
+          modal.destroy()
+          initData()
+          emit('getTbxx', props.qlrxx.tbxx)
         }
       }
-    })
+    }
+  })
 }
 
 /**
@@ -296,10 +299,10 @@ function handleAdd() {
  * @param record
  */
 function handleLook(record) {
-  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人','异议申请人']
+  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关', '查封申请人', '居住权人', '债务人', '权利人代理人', '义务人代理人', '申请执行人', '异议申请人']
   let formId = gyfsQlrArr.includes(props.qlrxx.qlrlxmc)
-      ? ( props.formType == 'modal' ? '117' : '109' )
-      : ( props.formType == 'modal' ? '116' : '55' )
+    ? (props.formType == 'modal' ? '117' : '109')
+    : (props.formType == 'modal' ? '116' : '55')
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
   cModal({
     title: '查看' + props.qlrxx.qlrxsmc,
@@ -312,6 +315,7 @@ function handleLook(record) {
       qlrmc: record.qlrmc,
       zjh: record.zjh,
       type: 'look',
+      qlrlb: props.qlrxx.qlrlxmc,
       ...qlrid
     },
     footer: false
@@ -324,10 +328,10 @@ function handleLook(record) {
  */
 function handleEdit(record) {
   let query = route.query
-  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关','查封申请人','居住权人','债务人','权利人代理人','义务人代理人','申请执行人','异议申请人']
+  let gyfsQlrArr = window?.settingConfig?.gyfsQlrArr || ['查封机关', '查封申请人', '居住权人', '债务人', '权利人代理人', '义务人代理人', '申请执行人', '异议申请人']
   let formId = gyfsQlrArr.includes(props.qlrxx.qlrlxmc)
-      ? ( props.formType == 'modal' ? '117' : '109' )
-      : ( props.formType == 'modal' ? '116' : '55' )
+    ? (props.formType == 'modal' ? '117' : '109')
+    : (props.formType == 'modal' ? '116' : '55')
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
   let modal = cModal({
     title: '编辑' + props.qlrxx.qlrxsmc,
@@ -380,23 +384,23 @@ function handleJtcy(record) {
 function handleDel(record) {
   let qlrid = props.formType == 'modal' ? { qlrid: record.qlrid } : {}
   defHttp.post({
-        url: '/api/zrzy-bdc/bdc/qlr/deleteQlr',
-        data: {
-          qlrmc: record.qlrmc,
-          zjh: record.zjh,
-          slbh: route.query.slbh,
-          qlrlb: props.qlrxx.qlrlxmc,
-          sxh: props.qlrxx.sxh,
-          ...qlrid
-        }
-    }, { withToken: true }).then((res) => {
-      if (res && res.success) {
-        initData()
-        message.success('删除成功')
-        emit('getTbxx', props.qlrxx.tbxx)
-      } else {
-        message.warning('删除失败')
-      }
+    url: '/api/zrzy-bdc/bdc/qlr/deleteQlr',
+    data: {
+      qlrmc: record.qlrmc,
+      zjh: record.zjh,
+      slbh: route.query.slbh,
+      qlrlb: props.qlrxx.qlrlxmc,
+      sxh: props.qlrxx.sxh,
+      ...qlrid
+    }
+  }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      initData()
+      message.success('删除成功')
+      emit('getTbxx', props.qlrxx.tbxx)
+    } else {
+      message.warning('删除失败')
+    }
   })
 }
 
@@ -417,9 +421,9 @@ function handleTf() {
     sxh: props.qlrxx.sxh,
   }
   defHttp.post({
-        url: api.tf,
-        data: _data
-    }, { withToken: true }).then((res) => {
+    url: api.tf,
+    data: _data
+  }, { withToken: true }).then((res) => {
     if (res && res.success) {
       message.success('统赋成功')
     } else {
