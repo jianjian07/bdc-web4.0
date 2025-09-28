@@ -103,7 +103,7 @@
                             <template #split>
                                 <a-divider type="vertical" />
                             </template>
-                            <a @click="handleCase(record)">办理</a>
+                            <a :class="{ 'case-bl-active': clickedList.includes(record.slbh) }" @click="handleCase(record)">办理</a>
                             <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
                             <a v-if="record.taskName == '收件' || record.taskName == '受理'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
                         </a-space>
@@ -161,6 +161,8 @@ let pagination = ref({
 let lcmcList = ref([])
 // 业务节点下拉
 let nodeList = ref([])
+// 当前点击过办理案卷
+let clickedList = ref<any>([])
 
 onMounted(() => {
   loadData()
@@ -216,9 +218,12 @@ function clear() {
  * @param record
  */
 function handleCase(record: any) {
+  if (!clickedList.value.includes(record.slbh)) {
+    clickedList.value.push(record.slbh)
+  }
   // 记录办理状态
   handleFlag(record)
-    router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
+  router.push({ path: '/bdc/casedoing', query: { slbh: record.slbh, taskId: record.taskId, nodeId: record.taskDefKey } });
 }
 
 /**
@@ -387,4 +392,7 @@ function getNode(currentLcid) {
 <style scoped lang="less">
 // table通用样式，保持项目内样式一致
 @import url('/@/assets/less/table.less');
+.case-bl-active {
+  color: #771caa;
+}
 </style>

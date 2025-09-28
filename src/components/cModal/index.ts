@@ -31,18 +31,18 @@ export function cModal (options?: cModalModel) {
       destroy()
     }
   }
-  
+
   if (options && options.isDefaultBtn !== false) {
     options.isDefaultBtn = true
   }
-  
-  // 定义弹窗中自己的动态组件加载 
+
+  // 定义弹窗中自己的动态组件加载
   const modules = import.meta.glob('/src/**/*.vue');
   const fontSize = getGlobalFontSize()
   const configTheme:any = {
     token: {
       colorPrimary: '#5094F9',
-      colorPrimaryBg: '#e6f4ff',
+      colorPrimaryBg: '#cae8ff',
       fontSize: fontSize
     },
   }
@@ -54,7 +54,7 @@ export function cModal (options?: cModalModel) {
   // app.use(router)
   app.use(formImagining)
   instance = app.mount(div);
-  
+
   // 设置弹窗loading
   function setConfirmLoading(value:boolean) {
     if (instance) {
@@ -75,7 +75,7 @@ export function cModal (options?: cModalModel) {
       instance.close()
     }
   }
-  
+
   // 更新
   function update(options?: cModalModel) {
     if (instance) {

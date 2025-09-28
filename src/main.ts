@@ -28,7 +28,7 @@ async function bootstrap() {
     const configTheme:any = {
       token: {
         colorPrimary: '#5094F9',
-        colorPrimaryBg: '#e6f4ff',
+        colorPrimaryBg: '#cae8ff',
         fontSize: fontSize
       },
     }
