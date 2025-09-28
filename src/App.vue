@@ -2,7 +2,7 @@
   <a-config-provider :locale="zhCN" :theme="{
     token: {
       colorPrimary: '#5094F9',
-      colorPrimaryBg: '#e6f4ff',
+      colorPrimaryBg: '#cae8ff',
       fontSize: fontSize
     },
   }">
