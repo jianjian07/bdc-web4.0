@@ -570,8 +570,8 @@ function setApiParameters() {
       props.selectItem.apiParameters = copy
       props.selectItem.activeParamPane = 'query'
     }
-    let _arr = url.split('/')
-    props.selectItem.code = _arr[_arr.length - 1]
+    // let _arr = url.split('/')
+    // props.selectItem.code = _arr[_arr.length - 1]
   }
 }
 
