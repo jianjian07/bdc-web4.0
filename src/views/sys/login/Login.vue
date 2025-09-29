@@ -1,4 +1,5 @@
 <template>
+  <template v-if="showLogin">
     <a-row class="content-css">
         <a-col :span="7"></a-col>
         <a-col :span="8" :offset="7">
@@ -39,6 +40,7 @@
             </div>
         </a-col>
     </a-row>
+  </template>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
@@ -48,12 +50,14 @@ import { message, notification } from 'ant-design-vue';
 import { encryptionAES } from '/@/utils/cipher';
 import { router } from '/@/router';
 import { getToken } from '/@/utils/auth';
+import { defHttp } from "/@/utils/http/axios"
 const userStore = useUserStore();
 const formData = reactive({
     username: "",
     password: "",
 });
 const loading = ref<boolean>(false);
+let showLogin = ref<boolean>(false)
 let title = window?.settingConfig?.appTitle || '不动产登记信息管理系统'
 /**
  * 登录
@@ -108,12 +112,42 @@ function initProject() {
     router.push('/init')
 }
 
-onMounted(() => {
-    const token = getToken()
-    if (token) {
-        router.push('/analysis')
+onMounted(async () => {
+    let status = await getLicenseStatus()
+    if (!status) {
+        showLogin.value = false
+        router.push('/init')
+    } else {
+        showLogin.value = true
+        const token = getToken()
+        if (token) {
+            router.push('/analysis')
+        }
     }
 })
+
+/**
+ * 获取License状态
+ */
+function getLicenseStatus() {
+  return new Promise((resolve) => {
+    let url = '/api/zrzy-system/sys/common/verifyLicense'
+    defHttp.post({ url: url }, { withToken: true }).then((res) => {
+       if (res && res.success) {
+         if (res.result.success) {
+            resolve(true)
+         } else {
+           message.error(res.result.msg)
+           resolve(false)
+         }
+       } else {
+         message.error("授权验证失败")
+         resolve(false)
+       }
+    })
+  })
+}
+
 </script>
 <style scoped>
 .content-css {

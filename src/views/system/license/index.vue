@@ -2,10 +2,10 @@
     <a-form ref="formRef" :model="licenseData" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" autocomplete="off"
         style="padding-top: 20px;">
         <a-form-item label="CPU序列号" :rules="[{ required: true, message: 'Please input your username!' }]">
-            <a-input v-model:value="licenseData.cpuSerial" />
+            <a-input :disabled="props.isInit" v-model:value="licenseData.cpuSerial" />
         </a-form-item>
         <a-form-item label="硬盘序列号" :rules="[{ required: true, message: 'Please input your username!' }]">
-            <a-input v-model:value="licenseData.diskSerial" />
+            <a-input :disabled="props.isInit" v-model:value="licenseData.diskSerial" />
         </a-form-item>
         <!-- <a-form-item label="MAC地址" :rules="[{ required: true, message: 'Please input your username!' }]">
             <a-input v-model:value="licenseData.macAddress" />
@@ -14,11 +14,13 @@
             <a-textarea v-model:value="licenseData.license" placeholder="请输入授权码" :rows="6" allow-clear />
         </a-form-item>
         <a-form-item label="授权日期" name="expiryDate" :rules="[{ required: true, message: '请输入授权期限!' }]">
-            <a-date-picker v-model:value="licenseData.expiryDate" style="width: 250px;" format="YYYY-MM-DD"
+            <a-date-picker :disabled="props.isInit" v-model:value="licenseData.expiryDate" style="width: 250px;" format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
-            <a-button v-if="showCreate" type="primary" @click="onLicense">生成授权</a-button>&nbsp;&nbsp;
+            <template v-if="showCreate && !props.isInit">
+              <a-button type="primary" @click="onLicense">生成授权</a-button>&nbsp;&nbsp;
+            </template>
             <a-button type="primary" @click="register">注册授权</a-button>&nbsp;&nbsp;
             <a-button type="primary" @click="verifyLicense">验证授权</a-button>
         </a-form-item>
@@ -33,6 +35,7 @@ import { computed, onMounted, ref } from 'vue'
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { usePermissionStore } from "/@/store/modules/permission.ts"
+import { router } from "/@/router"
 const permissionStore = usePermissionStore()
 const showCreate = computed(() => permissionStore.showCreateBtn)
 enum api {
@@ -45,6 +48,12 @@ let licenseData: any = ref({})
 
 let formRef = ref<any>();
 
+const props = defineProps({
+  isInit: {
+    type: Boolean,
+    default: false
+  }
+})
 /**
  * 生成授权
  */
@@ -66,6 +75,9 @@ const register = async () => {
     defHttp.post({ url: api.registerUrl, data: { license: licenseData.value.license } }, { withToken: true }).then((res) => {
         if (res && res.code == 200) {
             message.info("注册授权成功")
+            if (props.isInit) {
+                router.push('/login')
+            }
         } else {
             message.error("注册授权失败")
         }
