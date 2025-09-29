@@ -57,8 +57,9 @@
           <div v-if="selectedNodes.length" class="selected-nodes-content">
             <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
                  @mouseleave="hoverNodeIndex = -1">
-              <span :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
-              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 15px;"
+              <TeamOutlined style="padding-right: 10px;color: #1677ff" />
+              <span style="color: #1677ff" :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
+              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 10px;"
                                    @click="onClickNode(item.key)"/>
             </div>
           </div>
@@ -877,6 +878,7 @@ defineExpose({
     display: flex;
     // justify-content: center;
     width: 200px;
+    font-size: 16px;
     padding: 5px;
     text-align: left;
     position: relative;

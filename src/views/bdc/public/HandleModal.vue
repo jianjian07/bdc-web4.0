@@ -30,7 +30,7 @@
             </a-col>
           </a-row>
           <a-divider orientation="left">承办人员</a-divider>
-          <div style="margin-bottom: 5px" v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
+          <div style="margin-bottom: 5px;" v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
             <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange"
                       :dropdownMatchSelectWidth="false">
               <template v-for="(item, index) in formState.taskData.histListNode">
@@ -69,8 +69,9 @@
           <div v-if="selectedNodes.length" class="selected-nodes-content">
             <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
                  @mouseleave="hoverNodeIndex = -1">
-              <span :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
-              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 15px;"
+              <TeamOutlined style="padding-right: 10px;color: #1677ff" />
+              <span style="color: #1677ff" :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
+              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="color:red; position: absolute; right: 0; top: 10px;"
                                    @click="onClickNode(item.key)"/>
             </div>
           </div>
@@ -1129,6 +1130,7 @@ defineExpose({
   .selected-nodes-node {
     display: flex;
     // justify-content: center;
+    font-size: 16px;
     width: 200px;
     padding: 5px;
     text-align: left;
