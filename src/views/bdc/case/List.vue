@@ -103,7 +103,7 @@
                             <template #split>
                                 <a-divider type="vertical" />
                             </template>
-                            <a :class="{ 'case-bl-active': clickedList.includes(record.slbh) }" @click="handleCase(record)">办理</a>
+                            <a :class="{ 'case-bl-active': clickedList.includes(record.slbh) || record.handleFlag == 1 }" @click="handleCase(record)">办理</a>
                             <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
                             <a v-if="record.taskName == '收件' || record.taskName == '受理'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
                         </a-space>
