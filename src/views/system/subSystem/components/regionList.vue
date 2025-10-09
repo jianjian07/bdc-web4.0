@@ -35,7 +35,7 @@
           :checkStrictly="checkStrictly"
           :checked-keys="checkKeys"
           :selected-keys="selectKeys"
-          :fieldNames="{key: 'areaCode', title: 'titleAndValue'}"
+          :fieldNames="{ key: 'areaCode', title: 'titleAndValue' }"
         >
           <template #title="{ titleAndValue }">
             <span v-if="titleAndValue.indexOf(searchValue) > -1">

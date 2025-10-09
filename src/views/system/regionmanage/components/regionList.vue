@@ -143,7 +143,8 @@ function loadRegionList() {
     { withToken: true }
   ).then((res: any) => {
     if (res?.success) {
-      genData = res?.result
+      // genData = res?.result
+      genData = normalizeTreeData(res?.result || [])
       gData.value = genData
       generateList(genData);
       emit('regionInfo', genData)
@@ -168,6 +169,20 @@ function queryByKey() {
     } else {
       message.warning(res?.message || '未查询到数据！')
     }
+  })
+}
+
+function normalizeTreeData(list: any[]) {
+  return list.map(item => {
+    const newItem = {
+      ...item,
+      key: item.areaCode,
+      value: item.areaCode,
+    }
+    if (item.children?.length) {
+      newItem.children = normalizeTreeData(item.children)
+    }
+    return newItem
   })
 }
 

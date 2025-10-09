@@ -1515,16 +1515,32 @@ export function getDeptOptions() {
  */
 export function getRegionOptions() {
   return new Promise((resolve, reject) => {
+
+    function normalizeTreeData(list: any[]) {
+      return list.map(item => {
+        const newItem = {
+          ...item,
+          key: item.areaCode,
+          value: item.areaCode,
+        }
+        if (item.children?.length) {
+          newItem.children = normalizeTreeData(item.children)
+        }
+        return newItem
+      })
+    }
     let url = '/api/zrzy-system/sys/areacode/queryAreaTreeAndZdgs'
     defHttp.get({ url: url }, { withToken: true }).then((res) => {
       if (res && res.success) {
-        resolve(res.result || [])
+        let list = normalizeTreeData(res.result)
+        resolve(list || [])
       } else {
         resolve([])
       }
     })
   })
 }
+
 
 /**
  * 获取子系统选项
