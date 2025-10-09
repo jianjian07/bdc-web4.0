@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'scroll-container': true, scrollable: scrollable }" ref="scrollRef">
+  <div :class="{ 'scroll-container': true }" ref="scrollRef">
     <a-list item-layout="horizontal" :data-source="scrollList">
       <template #renderItem="{ item }">
         <a-list-item @click="showModal(item)" :style="{ height: itemHeight + 'px' }" @mouseover="toggleAnimation(false)"
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, onBeforeUnmount } from "vue";
 import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index"
 
@@ -52,7 +52,7 @@ let animId: any = ref(null)
 let top = 0;
 let index = 0
 let itemHeight: any = ref(70)
-let scrollable: any = ref(false)
+let scrollStep = 0.5
 
 const props = defineProps({
   category: {
@@ -71,56 +71,95 @@ watch(() => props.category, (val) => {
 })
 
 onMounted(() => {
-  top = 0
-  index = 0
+  window.addEventListener('resize', handleResize)
   watch(() => dataList.value, (val) => {
-    if (val?.length) {
-      if (dataList.value.length > (Math.ceil(scrollRef.value?.offsetHeight / itemHeight.value) || 3)) {
-        scroll()
-      } else {
-        scrollable.value = true
-      }
-    }
+    handleResize()
   }, {
     immediate: true
   })
 })
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
-const scroll = () => {
-  scrollRef.value?.scrollTo({
-    top: top++
-  })
+/**
+ * 处理窗口大小变化
+ */
+function handleResize() {
+  top = 0
+  index = 0
+  stopScroll()
 
-  if (top % itemHeight.value === 0) {
-    const target = scrollList.value[index]
-    scrollList.value.push(target)
+  const containerHeight = scrollRef.value?.offsetHeight || 0
+  const listHeight = dataList.value.length * itemHeight.value
 
-    if (index < (dataList.value.length - 1)) {
-      index++
+  if (dataList.value?.length) {
+    if (listHeight > containerHeight) {
+      // 复制一份数据，用于无缝滚动
+      scrollList.value = [...dataList.value, ...dataList.value]
+      startScroll()
     } else {
-      top = 0
-      index = 0
-      scrollRef.value?.scrollTo({
-        top: 0
-      })
       scrollList.value = [...dataList.value]
+      stopScroll()
     }
   }
+}
+
+/**
+ * 停止滚动
+ */
+const stopScroll = () => {
+  if (animId.value) {
+    cancelAnimationFrame(animId.value)
+    animId.value = null
+  }
+  running.value = false
+}
+
+/**
+ * 开始滚动
+ */
+const startScroll = () => {
+  if (!animId.value) {
+    running.value = true
+    scroll()
+  }
+}
+
+/**
+ * 滚动
+ */
+const scroll = () => {
+  top += scrollStep
+  scrollRef.value?.scrollTo({ top })
+
+  // 到第一份列表底部
+  if (top >= dataList.value.length * itemHeight.value) {
+    top = 0
+    scrollRef.value?.scrollTo({ top: 0 })
+  }
+
   if (running.value) {
     animId.value = requestAnimationFrame(scroll)
+  } else {
+    animId.value = null
   }
 }
 
 function toggleAnimation(flag: any) {
-  if (dataList.value.length <= (Math.ceil(scrollRef.value?.offsetHeight / itemHeight.value) || 3)) {
+  const containerHeight = scrollRef.value?.offsetHeight || 0
+  const listHeight = dataList.value.length * itemHeight.value
+  if (listHeight <= containerHeight) {
     return
   }
-  running.value = flag
-  if (running.value) {
-    scroll()
+
+  if (flag) {
+    // 鼠标移出
+    startScroll()
   } else {
-    cancelAnimationFrame(animId)
+    // 鼠标悬停
+    stopScroll()
   }
 }
 
@@ -179,10 +218,6 @@ function showModal(record: any) {
   :deep(.ant-list-item-meta) {
     align-items: center !important;
   }
-}
-
-.scrollable {
-  overflow: auto;
 }
 
 .text-ellipsis {
