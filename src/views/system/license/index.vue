@@ -52,8 +52,21 @@ const props = defineProps({
   isInit: {
     type: Boolean,
     default: false
+  },
+  initData: {
+    type: Object,
+    default: () => ({})
   }
 })
+
+onMounted(() => {
+  if (props.isInit) {
+    licenseData.value = props.initData
+  } else {
+    initLicenseData()
+  }
+})
+
 /**
  * 生成授权
  */
@@ -99,13 +112,14 @@ const verifyLicense = () => {
         }
     })
 }
-onMounted(() => {
-    defHttp.get({ url: api.getUrl }, { withToken: true }).then((res) => {
-        if (res && res.code == 200) {
-            licenseData.value = res.result
-        }
-    })
-})
+
+function initLicenseData() {
+  defHttp.get({ url: api.getUrl }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+          licenseData.value = res.result
+      }
+  })
+}
 </script>
 
 <style scoped lang="less"></style>

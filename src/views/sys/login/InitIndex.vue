@@ -7,9 +7,10 @@
             <a-col :span="12" style="padding-top: 10px;">
                 <!--  layout="vertical" -->
                 <!-- :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" -->
-                <a-tabs v-model:activeKey="activeKey" style="padding: 10px; height: 100%;">
+              <template v-if="showTab">
+                  <a-tabs v-model:activeKey="activeKey" style="padding: 10px; height: 100%;">
                     <a-tab-pane key="license" tab="授权">
-                         <license-index :isInit="true" />
+                         <license-index :isInit="true" :initData="initData" />
                     </a-tab-pane>
                     <a-tab-pane key="datasource" tab="数据库">
                         <a-form style="margin: 10px;" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
@@ -35,6 +36,7 @@
                 </a-form>
                     </a-tab-pane>
                 </a-tabs>
+              </template>
             </a-col>
         </a-row>
     </div>
@@ -43,20 +45,29 @@
 <script setup lang="ts">
 import { defHttp } from '/@/utils/http/axios';
 import licenseIndex from '/@/views/system/license/index.vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue'
 
 let initData = ref<any>({})
 let activeKey = ref<string>('license')
+let showTab = ref<boolean>(false)
 enum api {
     getUrl = '/api/zrzy-system/sys/common/get',
     encryptUrl = '/api/zrzy-system/sys/common/encrypt',
     decryptUrl = '/api/zrzy-system/sys/common/decrypt',
 }
-defHttp.get({ url: api.getUrl }, { withToken: false }).then((res) => {
-    if (res && res.success) {
-        initData.value = res.result
-    }
+onMounted(() => {
+  showTab.value = false
+  defHttp.get({ url: api.getUrl }, { withToken: false }).then((res) => {
+      if (res && res.success) {
+          initData.value = res.result
+      }
+      showTab.value = true
+  }).catch((err) => {
+    console.log(err)
+    showTab.value = true
+  })
 })
+
 function encryptDbPwd() {
     defHttp.get({ url: api.encryptUrl, params: { str: initData.value.dbPwd } }, { withToken: false }).then((res) => {
         initData.value.encryptDbPwd = res
