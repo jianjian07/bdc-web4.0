@@ -10,10 +10,10 @@
               移交方向：
             </a-col>
             <a-col :span="14">
-              <a-radio-group v-model:value="handleDirection" :disabled="directionDisabled" @change="onChangeDirection">
-                <a-radio :value="1">向后</a-radio>
-                <a-radio :value="2">平级</a-radio>
-                <a-radio :value="3" v-if="formState?.taskData?.histListSize > 0">驳回</a-radio>
+              <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
+                <a-radio :value="1" :disabled="directionDisabled['1']">向后</a-radio>
+                <a-radio :value="2" :disabled="directionDisabled['2']">平级</a-radio>
+                <a-radio :value="3" v-if="formState?.taskData?.histListSize > 0" :disabled="directionDisabled['3']">驳回</a-radio>
               </a-radio-group>
             </a-col>
           </a-row>
@@ -147,7 +147,11 @@ let rejectModelNode = ref<any>(null)
 // 展开节点
 let expandedKeys = ref<any>([])
 // 移交方向是否只读
-let directionDisabled = ref<boolean>(false)
+let directionDisabled = ref<any>({
+  "1": false,
+  "2": false,
+  "3": false
+})
 
 enum api {
   getTaskUserInfo = '/api/zrzy-bdc/act/process/extActProcess/getTaskUserInfo',
@@ -190,7 +194,19 @@ function initHandleDirection(shjg) {
   }
   if (e) {
     handleDirection.value = e.target.value
-    directionDisabled.value = true
+    if (shjg === '1') {
+      directionDisabled.value = {
+        "1": false,
+        "2": false,
+        "3": true
+      }
+    } else {
+      directionDisabled.value = {
+        "1": true,
+        "2": true,
+        "3": true
+      }
+    }
     onChangeDirection(e)
   }
 }
