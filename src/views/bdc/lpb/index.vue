@@ -133,7 +133,7 @@
                       <span v-if="fwInfo.zbcqxzzt == 1" class="zbzt" style="background-color: #75FBD4"></span>
                       <span v-if="fwInfo.zbdyqzt == 1" class="zbzt" style="background-color: #50A68D"></span>
                       <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF"></span>
-                      <span v-if="fwInfo.zbggbwzt == 1" class="zbzt" style="background-color: #805B23"></span>
+<!--                      <span v-if="fwInfo.zbggbwzt == 1" class="zbzt" style="background-color: #805B23"></span>-->
                       <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
                       <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
                       <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
@@ -154,7 +154,7 @@
                       <span v-if="fwInfo.cqxzzt == 1" class="zt" style="background-color: #75FBD4"></span>
                       <span v-if="fwInfo.dyqzt == 1" class="zt" style="background-color: #50A68D"></span>
                       <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF"></span>
-                      <span v-if="fwInfo.ggbwzt == 1" class="zt" style="background-color: #805B23"></span>
+                      <span v-if="fwInfo.ggbw == 1" class="zt" style="background-color: #805B23"></span>
                       <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
                       <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
                       <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
@@ -716,10 +716,19 @@ function checkShow(fwInfo) {
     if (fwInfo.xzdj == 1) {
       return false
     }
-    if (regType.value.split(',').length == 1) {
-      return checkShowForSingle(regType.value, fwInfo)
+    if (fwInfo.ggbw == 1) {
+      // 公共部位只允许产权首次
+      if (regType.value == '0101') {
+        return checkShowForSingle(regType.value, fwInfo)
+      } else {
+        return false
+      }
     } else {
-      return checkShowForZh(regType.value, fwInfo)
+      if (regType.value.split(',').length == 1) {
+        return checkShowForSingle(regType.value, fwInfo)
+      } else {
+        return checkShowForZh(regType.value, fwInfo)
+      }
     }
   } else {
     return false

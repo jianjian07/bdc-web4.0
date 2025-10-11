@@ -195,7 +195,7 @@ function checkShowForCf(regType, fwInfo) {
   }
 }
 
-// 正式查封 
+// 正式查封
 function checkShowForCfdj(regType, fwInfo) {
   // 0225 放开都允许
   return !!fwInfo
@@ -322,7 +322,7 @@ export function getYwStr(type, item) {
   };
 
   const mapping = statusMap[type];
-  if (!mapping) return ''; 
+  if (!mapping) return '';
 
   let result = [];
   for (let key in mapping) {
@@ -340,7 +340,7 @@ export function getYwStr(type, item) {
       }
     }
   }
-  return result.join(',');                 
+  return result.join(',');
 }
 
 export function getDictStr(dict, value) {
