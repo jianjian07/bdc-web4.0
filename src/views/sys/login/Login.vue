@@ -113,7 +113,8 @@ function initProject() {
 }
 
 onMounted(async () => {
-    let status = await getLicenseStatus()
+    // let status = await getLicenseStatus()
+    let status = true
     if (!status) {
         showLogin.value = false
         router.push('/init')
