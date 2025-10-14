@@ -370,7 +370,7 @@ function handleJtcy(record) {
     filePath: 'views/bdc/public/GenPublic',
     formData: {
       formId: formId,
-      cbfbm: record.zjh,
+      cbfbm: record.cbfdmfbfdm,
       iszd: props.disabled ? '1' : '0'
     },
     footer: false
