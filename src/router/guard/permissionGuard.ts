@@ -4,10 +4,11 @@ import { PAGE_NOT_FOUND_ROUTE } from "/@/router/routes/basic";
 import { usePermissionStoreWithOut } from "/@/store/modules/permission";
 import { useUserStoreWithOut } from "/@/store/modules/user";
 import { nextTick } from "vue"
+import { PAGE_NOT_FOUND_NAME } from "/@/router/constant.ts"
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN
 const BASE_ZSTP = PageEnum.BASE_ZSTP
-// const BASE_EXTRA = PageEnum.BASE_EXTRA
+const BASE_EXTRA = PageEnum.BASE_EXTRA
 const ERROR_401 = PageEnum.ERROR_401
 
 const whitePathList: PageEnum[] = [LOGIN_PATH, BASE_ZSTP, ERROR_401, PageEnum.BASE_INIT];
@@ -56,12 +57,25 @@ export function createPermissionGuard(router: Router) {
           }
         } catch { }
       }
+      if ((BASE_EXTRA.includes(from.path) || from.path == ERROR_401) && to.path === LOGIN_PATH) {
+        next({ path: ERROR_401, replace: true, query: to.query });
+        return;
+      }
       next();
       return;
     }
 
-    // token不存在
-    if (!token) {
+    let querySsoToken = to.query.ssoToken || ""
+
+    // token不存在 或 当前用户不是框架传的token 截取
+    if (querySsoToken && (!token || (token && querySsoToken != token.substring(7)))) {
+      let _res = await userStore.getAhUserInfoAction(querySsoToken)
+      if (!_res) {
+        next(ERROR_401)
+      }
+      next({ path: to.path, replace: true, query: to.query });
+      return
+    } else if (!token) {
       // You can access without permission. You need to set the routing meta.ignoreAuth to true
       if (to.meta.ignoreAuth) {
         next();
@@ -107,6 +121,11 @@ export function createPermissionGuard(router: Router) {
         console.info(err);
         next();
       }
+    }
+    // 外部表单页面若没有路由权限不跳转404,而跳到401
+    if ((to.name == PAGE_NOT_FOUND_ROUTE.name || to.name == PAGE_NOT_FOUND_NAME + 'Child') && BASE_EXTRA.includes(to.path)) {
+      next({ path: ERROR_401, replace: true });
+      return;
     }
 
     if (permissionStore.getIsDynamicAddedRoute) {

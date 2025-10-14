@@ -4,9 +4,9 @@
             <a-col :span="6"></a-col>
             <a-col :span="6">
                 <h1 class="text-jumbo text-ginormous">未授权!</h1>
-                <h2 class="txt-color">您没有实景三维平台权限</h2>
+                <h2 class="txt-color">您没有系统权限</h2>
 
-                <h3 class="txt-color">请联系运维人员或市场人员申请购买产品！</h3>
+                <h3 class="txt-color">请联系运维人员或市场人员！</h3>
 
             </a-col>
             <a-col :span="6">
