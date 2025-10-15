@@ -2203,7 +2203,7 @@ export function getSignature(params?: any){
 
 export function downloadPdf(params: any) {
   // generatePdfByHtml(params.title, params.className, params.text)
-  // downloadPdfByCanvas(params.title, params.className, params.text)
+  downloadPdfByCanvas(params.title, params.className, params.options)
 }
 
 /**
@@ -2235,4 +2235,46 @@ export function batchFjAndGyqk(param: { type: any }) {
     }).catch(err => {
         message.warning(err)
     })
+}
+
+/**
+ * 调库数据提取
+ * @param options
+ */
+export function extractData(options: any) {
+  return new Promise(async (resolve) => {
+    const { data, regType } = options
+    const route = currentRoute;
+    let kyqList: any = []
+    switch (regType) {
+      case '0201':
+        for (let i = 0; i < data.length; i++) {
+          const kyq = data[i];
+          kyqList.push({ kyqlx: "ckxk", kyqzh: kyq.kyqzsh, ssywh: "" })
+        }
+        break;
+    }
+    let params = {
+      slbh: route.query.procInstid2,
+      djdl: "DYQ",
+      djlx: regType,
+      kyqList: kyqList
+    }
+    defHttp.post({
+            url: '/api/zrzy-kyq/kyq/case/addCase',
+            data: params
+        }, { withToken: true }).then((res) => {
+        if (res && res.success) {
+          resolve(true)
+          // message.success('操作成功!')
+        } else {
+          message.warning(res?.message || '操作失败!')
+          resolve(false)
+        }
+    })
+  })
+}
+
+export function reloadPage() {
+  router.push('/refresh')
 }
