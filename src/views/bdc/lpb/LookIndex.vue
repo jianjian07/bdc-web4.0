@@ -109,6 +109,9 @@
               <div class="lpb-info-title lpb-info-row">
                 <a @click="queryHis(checkFw.bdcdyh)">{{ checkFw.bdcdyh }}</a>
               </div>
+              <div v-if="isShowFcfht=='1' && checkFw.ftid" class="lpb-info-title lpb-info-row">
+                <a @click="viewFcfht(checkFw.ftid)">分层分户图</a>
+              </div>
                 <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
                   <template v-for="(item) in fwKeys">
                     <a-form-item :label="item.label">
@@ -183,6 +186,8 @@ let cxxOptions = ref<any>([])
 let lpbData = ref<any>()
 let showAll = ref(false)
 let zrzTableData = ref<any>([])
+// 是否显示分层分户图
+let isShowFcfht = ref<string>('')
 // 详细信息
 const fwKeys = [
   { label: '室号', value: 'shbw' },
@@ -212,6 +217,7 @@ enum api {
 onMounted(() => {
   let route = router.currentRoute.value
   let zddm = route.query.zddm
+  isShowFcfht=route.query.fcfht;
   if (zddm) {
     loadList(zddm)
   }
@@ -331,6 +337,18 @@ function onClose() {
 function queryHis(bdcdyh){
   router.push('/query/dyxx?bdcdyh=' + bdcdyh)
 }
+/**
+ * 查看宗地图分层分户图
+ * @param ftid
+ */
+function viewFcfht(ftid) {
+  console.log('recccqqq', ftid)
+  let base = window?.settingConfig?.proxyBaseDomain
+  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/ft/download?id=${ftid}`))
+  window.open(`${window?.settingConfig?.kkFileDomain}/onlinePreview?url=${encodeUrl}`)
+}
+
+
 </script>
 
 <style lang="less" scoped>

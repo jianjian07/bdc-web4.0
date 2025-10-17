@@ -2236,6 +2236,15 @@ export function batchFjAndGyqk(param: { type: any }) {
         message.warning(err)
     })
 }
+/**
+ * 查看宗地图分层分户图
+ * @param ftid
+ */
+export function viewZdt(ftid: string) {
+  let base = window?.settingConfig?.proxyBaseDomain
+  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/ft/download?id=${ftid}`))
+  window.open(`${window?.settingConfig?.kkFileDomain}/onlinePreview?url=${encodeUrl}`)
+}
 
 /**
  * 调库数据提取
