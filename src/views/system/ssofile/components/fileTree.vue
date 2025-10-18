@@ -697,7 +697,10 @@ function handleOrder() {
 
 //弹出上传工具
 async function showExe() {
-  let casename = await getCaseNameBySlbh()
+  let casename = await getCaseNameBySlbh();
+  if(!casename){
+    casename=props.formData.slbh;
+  }
   const userStore = useUserStoreWithOut();
   let token = userStore.getToken.replace('Bearer ', '');
   let url = window.location.hostname + ':' + window.location.port;
@@ -713,10 +716,10 @@ function getCaseNameBySlbh() {
       params: { slbh: props.formData.slbh },
     }, { withToken: true })
       .then((res: any) => {
-        if (res && res.success) {
+        if (res && res.success && res.result) {
           resolve(res.result.ajmc)
         } else {
-          message.warning(res?.message || '获取失败!')
+          //message.warning(res?.message || '获取失败!')
           resolve('')
         }
       })
