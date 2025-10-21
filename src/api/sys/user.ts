@@ -8,7 +8,6 @@ enum api {
   getTokenApiTyyw = '/tyyw/auth/oauth/token',
   getTokenApi = '/api/zrzy-system/api/v1/auth/authorization',
   getUserInfoApi = '/api/zrzy-system/sys/v1/user/getUserInfo',
-  getSingleUserInfoApi = '/api/zrzy-system/api/v1/auth/singleToken',
   logoutApi = '/api/zrzy-system/api/v1/auth/logOut'
   // licenseApi = '/onemap/zrzy-om-licence/licence',
 }
@@ -102,20 +101,6 @@ export function getUserInfo() {
         }
     }).catch((err => {
         resolve(null)
-    }))
-  })
-}
-
-export function getAhUserInfo(ssoToken: string) {
-  return new Promise((resolve) => {
-    defHttp.put({ url: api.getSingleUserInfoApi + '?ssoToken=' + ssoToken }, { withToken: true }).then((res) => {
-      if (res && res.code == 200) {
-        resolve(res.result)
-      } else {
-        resolve(null)
-      }
-    }).catch((err => {
-      resolve(null)
     }))
   })
 }

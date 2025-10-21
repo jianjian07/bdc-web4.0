@@ -16,7 +16,6 @@ import {
   TENANT_ID,
   TOKEN_KEY,
   USER_INFO_KEY,
-  AH_USER_INFO_KEY,
   VALIDATE_RULE_DATA_KEY,
   API_RULE_DATA_KEY,
   TRANSFER_RULE_DATA_KEY,
@@ -24,7 +23,7 @@ import {
 } from '/@/enums/cacheEnum'
 import { getAuthCache, removeAuthCache, setAuthCache } from '/@/utils/auth'
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel'
-import { doLogout, getAhUserInfo, getUserInfo, licence, login_tyyw, loginApi } from '/@/api/sys/user'
+import { doLogout, getUserInfo, licence, login_tyyw, loginApi } from '/@/api/sys/user'
 import { router } from '../../router'
 import { usePermissionStore } from '/@/store/modules/permission'
 import { RouteRecordRaw } from 'vue-router'
@@ -38,7 +37,6 @@ import { getDict, getRuleList } from "/@/api/sys/dict"
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
-  ahUserInfo: any;
   token?: string;
   //   roleList: RoleEnum[];
   // 数据字典,
@@ -75,8 +73,6 @@ export const useUserStore = defineStore({
   state: (): UserState => ({
     // 用户信息
     userInfo: null,
-    // 安徽用户信息,
-    ahUserInfo: null,
     // token
     token: undefined,
     // 角色列表
@@ -119,9 +115,6 @@ export const useUserStore = defineStore({
   getters: {
     getUserInfo(): UserInfo {
       return this.userInfo || getAuthCache<UserInfo>(USER_INFO_KEY) || {};
-    },
-    getAhUserInfo(): any {
-      return this.ahUserInfo || getAuthCache<any>(AH_USER_INFO_KEY) || {};
     },
     getLoginInfo(): LoginInfo {
       return this.loginInfo || getAuthCache<LoginInfo>(LOGIN_INFO_KEY) || {};
@@ -208,10 +201,6 @@ export const useUserStore = defineStore({
       console.log('this.lastUpdateTime', this.lastUpdateTime)
       setAuthCache(USER_INFO_KEY, info);
     },
-    setAhUserInfo(info: any) {
-      this.ahUserInfo = info;
-      setAuthCache(AH_USER_INFO_KEY, info);
-    },
     setLoginInfo(info: LoginInfo | null) {
       this.loginInfo = info;
       setAuthCache(LOGIN_INFO_KEY, info);
@@ -292,7 +281,6 @@ export const useUserStore = defineStore({
     },
     resetState() {
       this.setUserInfo(null);
-      this.setAhUserInfo(null);
       this.setToken('');
       this.resetLockState()
       //   this.roleList = [];
@@ -441,7 +429,17 @@ export const useUserStore = defineStore({
       if (sessionTimeout) {
         this.setSessionTimeout(false);
       } else {
-        await this.addDynamicRoutes()
+        const permissionStore = usePermissionStore();
+        if (!permissionStore.isDynamicAddedRoute) {
+          const routes = await permissionStore.buildRoutesAction();
+          if (routes && routes.length > 0) {
+            routes.forEach((route: unknown) => {
+              router.addRoute(route as unknown as RouteRecordRaw);
+            });
+          }
+          router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
+          permissionStore.setDynamicAddedRoute(true);
+        }
         await this.setLoginInfo(data);
         await nextTick()
         goHome && (await router.replace((userInfo && userInfo.homePath) || PageEnum.BASE_HOME));
@@ -481,51 +479,10 @@ export const useUserStore = defineStore({
       if (userInfo) {
         this.setUserInfo(userInfo);
       }
-      await this.afterAction()
-      return userInfo;
-    },
-    async getAhUserInfoAction(ssoToken: string) {
-      if (!ssoToken) {
-        return null;
-      }
-      const ahUserInfo: any = await getAhUserInfo(ssoToken);
-      if (ahUserInfo) {
-        const token = "Single " + ahUserInfo.token.access_token
-        this.setToken(token);
-        this.setAhUserInfo(ahUserInfo.userInfo);
-      }
-      const userInfo: any = await getUserInfo();
-      if (userInfo) {
-        this.setUserInfo(userInfo);
-      }
-      await this.afterAction()
-      const sessionTimeout = this.sessionTimeout;
-      if (sessionTimeout) {
-        this.setSessionTimeout(false);
-      } else {
-        await this.addDynamicRoutes()
-        // await this.setLoginInfo(data);
-        await nextTick()
-      }
-      return userInfo;
-    },
-    async afterAction() {
       await getDict()
       // 规则
       await getRuleList()
-    },
-    async addDynamicRoutes() {
-      const permissionStore = usePermissionStore();
-      if (!permissionStore.isDynamicAddedRoute) {
-        const routes = await permissionStore.buildRoutesAction();
-        if (routes && routes.length > 0) {
-          routes.forEach((route: unknown) => {
-            router.addRoute(route as unknown as RouteRecordRaw);
-          });
-        }
-        router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
-        permissionStore.setDynamicAddedRoute(true);
-      }
+      return userInfo;
     },
     /**
      * 退出登录

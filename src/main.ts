@@ -45,10 +45,10 @@ async function bootstrap() {
     registerGlobComp(app)
     // 加载全局配置
     initGlobalSetting()
-    // 路由保护
-    setupRouterGuard(router)
     // 配置路由
     await setupRouter(app)
+    // 路由保护
+    setupRouterGuard(router)
     // 定时器(长时间不操作退出)
     checkTimeout()
     app.use(formImagining)

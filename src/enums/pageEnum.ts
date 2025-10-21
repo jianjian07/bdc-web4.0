@@ -12,5 +12,5 @@ export enum PageEnum {
   // 知识图谱
   BASE_ZSTP = '/relationshipGraph',
   ERROR_401 = '/401',
-  BASE_EXTRA = ['/workflow/publicForm']
+  BASE_EXTRA = ['/workflow/publicForm', '/workflow/publicMap']
 }
