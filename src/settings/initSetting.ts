@@ -122,14 +122,16 @@ export function toggleBlackWhite() {
  * 读取nacos配置
  */
 export function fetchNacosConfig() {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+        // let nacosToken = await getNacosToken()
+        let nacosToken = ''
         defHttp.get({
-            url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public',
+            url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public&accessToken=' + nacosToken,
             responseType: 'json',
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8'
             }
-        }, { withToken: true }).then((res) => {
+        }, { withToken: false }).then((res) => {
             if (res) {
                 window.settingConfig = res
                 if (window.settingConfig.appTitle) {
@@ -141,6 +143,40 @@ export function fetchNacosConfig() {
             resolve(true)
         })
     })
+}
+
+/**
+ * 获取nacos token
+ */
+function getNacosToken() {
+  return new Promise(async (resolve) => {
+    let result:any = await getSettingJson()
+    if (result && result.nacosUser && result.nacosPwd) {
+      let params = {
+        username: result.nacosUser,
+        password: result.nacosPwd
+      }
+      let url = ''
+      defHttp.get({ url: url, params: params }, { withToken: false }).then((res) => {
+        if (res && res.success) {
+          resolve(res.result)
+        } else {
+          resolve('')
+        }
+      })
+    }
+  })
+}
+
+/**
+ * 获取全局配置
+ */
+function getSettingJson() {
+  return new Promise((resolve) => {
+    defHttp.get({ url: '/setting.json?t=' + Date.now() }, { withToken: false }).then((res) => {
+      resolve(res)
+    })
+  })
 }
 
 /**
