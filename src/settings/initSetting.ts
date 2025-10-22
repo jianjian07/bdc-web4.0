@@ -123,8 +123,8 @@ export function toggleBlackWhite() {
  */
 export function fetchNacosConfig() {
     return new Promise(async (resolve) => {
-        // let nacosToken = await getNacosToken()
-        let nacosToken = ''
+        let nacosToken = await getNacosToken()
+        //let nacosToken = ''
         defHttp.get({
             url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public&accessToken=' + nacosToken,
             responseType: 'json',
@@ -156,7 +156,7 @@ function getNacosToken() {
         username: result.nacosUser,
         password: result.nacosPwd
       }
-      let url = ''
+      let url = '/api/zrzy-system/api/v1/auth/getNacosToken'
       defHttp.get({ url: url, params: params }, { withToken: false }).then((res) => {
         if (res && res.success) {
           resolve(res.result)
