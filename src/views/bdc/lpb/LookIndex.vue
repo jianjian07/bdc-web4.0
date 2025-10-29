@@ -150,6 +150,7 @@ import { defHttp } from "/@/utils/http/axios"
 import { getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
 import { message } from "ant-design-vue"
 import { router } from "/@/router"
+import { Base64 } from "js-base64"
 
 // 最大户数
 let maxHs = ref<number>(0)
@@ -342,9 +343,8 @@ function queryHis(bdcdyh){
  * @param ftid
  */
 function viewFcfht(ftid) {
-  console.log('recccqqq', ftid)
   let base = window?.settingConfig?.proxyBaseDomain
-  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/ft/download?id=${ftid}`))
+  let encodeUrl = encodeURIComponent(Base64.encode(`${base}/zrzy-bdc/bdcdj/upfiles/ft/download?id=${ftid}&fullfilename=${ftid}.jpg`))
   window.open(`${window?.settingConfig?.kkFileDomain}/onlinePreview?url=${encodeUrl}`)
 }
 
