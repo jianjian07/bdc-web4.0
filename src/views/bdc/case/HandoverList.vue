@@ -169,6 +169,10 @@ const currentPageSelectedRow = ref<string[]>([]);
 const selectedRowKeys = ref<string[]>([]);
 // 受理编号集合
 let slbhList = ref<string[]>([])
+// 节点名称集合
+let taskNameList = ref<string[]>([])
+// 节点key集合
+let taskDefKeyList = ref<string[]>([])
 
 const columns = [
   { title: "任务id", dataIndex: "taskId", align: "center" },
@@ -195,8 +199,33 @@ let pagination = ref({
 
 onMounted(async () => {
   await getLcmcByLclx(formData.value.lclx)
-  loadData()
+  //loadData()
+  //进来默认查询所有在办箱案卷
+  loadAllData()
 })
+
+
+function loadAllData() {
+  spinning.value = true
+  defHttp.post({
+    url: api.tasklist,
+    params: {
+      pageNo: pagination.value.current,
+      pageSize: pagination.value.pageSize
+    },
+    data: {
+    }
+  }, { withToken: true }).then(res => {
+    if (res.success) {
+      const result = res.result
+      datalist.value = result.records
+      pagination.value.total = result.total
+    }
+    spinning.value = false
+  }).catch(_err => {
+    spinning.value = false
+  })
+}
 
 function loadData() {
   spinning.value = true
@@ -278,6 +307,8 @@ function searchData() {
   currentPageSelectedRow.value = []
   selectedRowKeys.value = []
   slbhList.value = []
+  taskDefKeyList.value=[]
+  taskNameList.value=[]
   loadData()
 }
 
@@ -328,6 +359,8 @@ function onSelectRow(record: any, selected: any) {
   }
   selectedRowKeys.value = currentPageSelectedRow.value.map(m => m['taskId'])
   slbhList.value = currentPageSelectedRow.value.map(m => m['slbh'])
+  taskDefKeyList.value = currentPageSelectedRow.value.map(m => m['taskDefKey'])
+  taskNameList.value = currentPageSelectedRow.value.map(m => m['taskName'])
 }
 
 /**
@@ -344,22 +377,30 @@ function onSelectAll(selected: any, _selectionRows: any, changeRows: any) {
   }
   selectedRowKeys.value = currentPageSelectedRow.value.map((m: any) => m['taskId'])
   slbhList.value = currentPageSelectedRow.value.map(m => m['slbh'])
+  taskDefKeyList.value = currentPageSelectedRow.value.map(m => m['taskDefKey'])
+  taskNameList.value = currentPageSelectedRow.value.map(m => m['taskName'])
 }
 
 /**
  * 批量移交
  */
 function batchHandover() {
-  let firstRecord = datalist.value[0]
+  //let firstRecord = datalist.value[0]
+  if(new Set(taskDefKeyList.value).size>1){
+    message.warning("只允许选择同一个节点进行批量移交，请检查!")
+    return;
+  }
   let modal = cModal({
     title: '移交',
     width: '45vw',
     filePath: 'views/bdc/public/HandleModalPL',
     formData: {
       taskIdList: selectedRowKeys.value,
-      nodeName: firstRecord.taskName,
+      //nodeName: firstRecord.taskName,
+      nodeName: taskNameList.value[0],
       slbhList: slbhList.value,
-      taskDefKey: firstRecord.taskDefKey,
+      //taskDefKey: firstRecord.taskDefKey,
+      taskDefKey: taskDefKeyList.value[0]
     },
     onOk: async (res: any) => {
       if (res) {
