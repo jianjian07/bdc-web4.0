@@ -1,46 +1,46 @@
 <template>
-  <template v-if="showLogin">
-    <a-row class="content-css">
-        <a-col :span="7"></a-col>
-        <a-col :span="8" :offset="7">
-            <div class="login-css">
-                <h1
-                    style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.4rem + 1.8vw);line-height: 1.25;font-weight: 600;">
-                    {{ title }}
-                </h1>
-                <a-form :model="formData" layout="vertical">
-                    <a-form-item label="用户名" name="username" :rules="[{ message: '请输入用户名' }]">
-                        <a-input v-model:value="formData.username">
-                            <template #prefix>
-                                <UserOutlined class="site-form-item-icon" />
-                            </template>
-                        </a-input>
-                    </a-form-item>
+    <template v-if="showLogin">
+        <a-row class="content-css">
+            <a-col :span="7"></a-col>
+            <a-col :span="8" :offset="7">
+                <div class="login-css">
+                    <h1
+                        style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.4rem + 1.8vw);line-height: 1.25;font-weight: 600;">
+                        {{ title }}
+                    </h1>
+                    <a-form :model="formData" layout="vertical">
+                        <a-form-item label="用户名" name="username" :rules="[{ message: '请输入用户名' }]">
+                            <a-input v-model:value="formData.username">
+                                <template #prefix>
+                                    <UserOutlined class="site-form-item-icon" />
+                                </template>
+                            </a-input>
+                        </a-form-item>
 
-                    <a-form-item label="密码" name="password" :rules="[{ message: '请输入密码' }]">
-                        <a-input-password v-model:value="formData.password">
-                            <template #prefix>
-                                <LockOutlined class="site-form-item-icon" />
-                            </template>
-                        </a-input-password>
-                    </a-form-item>
+                        <a-form-item label="密码" name="password" :rules="[{ message: '请输入密码' }]">
+                            <a-input-password v-model:value="formData.password">
+                                <template #prefix>
+                                    <LockOutlined class="site-form-item-icon" />
+                                </template>
+                            </a-input-password>
+                        </a-form-item>
 
-                    <a-form-item>
-                        <a-button type="primary" block @click="handleLogin" class="login-button-css"
-                            style="letter-spacing: 0.5px;height: 40px;" :loading="loading">登录</a-button>
-                    </a-form-item>
-                    <div style="font-size: 12px;float: right;">
-                        <a-space>
-                            <template #split>
-                                <a-divider type="vertical" />
-                            </template>
-                            <a @click="forgetPassword">忘记密码？</a> <a @click="initProject">系统初始化</a></a-space>
-                    </div>
-                </a-form>
-            </div>
-        </a-col>
-    </a-row>
-  </template>
+                        <a-form-item>
+                            <a-button type="primary" block @click="handleLogin" class="login-button-css"
+                                style="letter-spacing: 0.5px;height: 40px;" :loading="loading">登录</a-button>
+                        </a-form-item>
+                        <div style="font-size: 12px;float: right;">
+                            <a-space>
+                                <template #split>
+                                    <a-divider type="vertical" />
+                                </template>
+                                <a @click="forgetPassword">忘记密码？</a> <a @click="initProject">系统初始化</a></a-space>
+                        </div>
+                    </a-form>
+                </div>
+            </a-col>
+        </a-row>
+    </template>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
@@ -131,22 +131,22 @@ onMounted(async () => {
  * 获取License状态
  */
 function getLicenseStatus() {
-  return new Promise((resolve) => {
-    let url = '/api/zrzy-system/sys/common/verifyLicense'
-    defHttp.post({ url: url }, { withToken: true }).then((res) => {
-       if (res && res.success) {
-         if (res.result.success) {
-            resolve(true)
-         } else {
-           message.error(res.result.msg)
-           resolve(false)
-         }
-       } else {
-         message.error("授权验证失败")
-         resolve(false)
-       }
+    return new Promise((resolve) => {
+        let url = '/api/zrzy-system/sys/common/verifyLicense'
+        defHttp.post({ url: url }, { withToken: false }).then((res) => {
+            if (res && res.success) {
+                if (res.result.success) {
+                    resolve(true)
+                } else {
+                    message.error(res.result.msg)
+                    resolve(false)
+                }
+            } else {
+                message.error("授权验证失败")
+                resolve(false)
+            }
+        })
     })
-  })
 }
 
 </script>
