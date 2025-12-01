@@ -34,7 +34,7 @@
               @change="changeEnabled($event, record)" disabled/>
           </template>
           <template v-if="column.dataIndex == 'loginLocked'">
-            <span v-if="!record.enabled" style="color:rgb(245,34,45)">已锁定</span>
+            <span v-if="record.loginLocked" style="color:rgb(245,34,45)">已锁定</span>
             <span v-else>未锁定</span>
           </template>
           <template v-if="column.dataIndex === 'operation'">
@@ -42,6 +42,8 @@
             <a-divider type="vertical" />
             <a @click="changePSW(record)">修改密码</a>
             <a-divider type="vertical" />
+            <a v-if="record.loginLocked" @click="unLock(record, index)">解锁</a>
+            <a-divider v-if="record.loginLocked" type="vertical" />
             <a-popconfirm :disabled="record.username == 'admin'" cancel-text="否" ok-text="是"
               @confirm="handleDel(record, index)">
               <template #title>
@@ -165,6 +167,7 @@ watch(() => props.deptInfo, (newVal) => {
 enum api {
   list = '/api/zrzy-system/sys/v1/user/page',
   del = '/api/zrzy-system/sys/v1/user/delete',
+  unLock = '/api/zrzy-system/sys/v1/user/unLock',
   roleList = '/api/zrzy-system/role/list'
 }
 
@@ -261,6 +264,23 @@ function handleDel(record, index) {
     }
   }).catch(err => {
      message.warning('删除失败!')
+  })
+}
+
+/**
+ * 解锁
+ * @param record
+ */
+function unLock(record, index) {
+  defHttp.post({ url: api.unLock, params: { userName: record.username } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      message.success('解锁成功!')
+      userList.value[index].loginLocked=false
+    } else {
+      message.warning('解锁失败!')
+    }
+  }).catch(err => {
+     message.warning('解锁失败!')
   })
 }
 

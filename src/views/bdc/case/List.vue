@@ -70,6 +70,7 @@
                         <a @click="itemView(record)">{{ record.ajmc }}</a>
                         <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName+"督办：" +record.taskSuperviseRemark }}】</span>
                         <span v-if="record.taskUrgent" style="color: red;">【{{  record.taskUrgentUserRealName+"加急：" +record.taskUrgentRemark }}】</span>
+                        <span v-if="record.taskBack" style="color: red;">【{{ "退件：" + record.taskBackRemark }}】</span>
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>

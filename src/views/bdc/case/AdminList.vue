@@ -72,6 +72,7 @@
             + record.taskSuperviseRemark }}】</span>
                         <span v-if="record.taskUrgent" style="color: red;">【{{ record.taskUrgentUserRealName + "加急："
             + record.taskUrgentRemark }}】</span>
+                        <span v-if="record.taskBack" style="color: red;">【{{ "退件：" + record.taskBackRemark }}】</span>
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>
