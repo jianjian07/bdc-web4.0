@@ -1,29 +1,27 @@
 <template>
   <a-config-provider :locale="zhCN">
-    <a-modal class="commonModal" v-model:open="modalVisible" :width="(isFullScreen || fullScreen) ? '100%' : width"
-             :wrap-class-name="(fullScreen || isFullScreen) ? `full-common-modal ${wrapClassName || ''}` : (wrapClassName || '')"
-             :confirmLoading="confirmLoading" :maskClosable="false" @cancel="handleClose"
-             v-bind="footerBind"
-             :bodyStyle="(isFullScreen || fullScreen) ? null : (height ? { height: height, padding: '0px 10px', overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', padding: '0px 10px', overflowY: 'auto', overflowX: 'hidden' })">
+     <a-modal class="commonModal" v-model:open="modalVisible" :width="(propsState.isFullScreen || fullScreen) ? '100%' : propsState.width"
+      :wrap-class-name="(fullScreen || propsState.isFullScreen) ? `full-common-modal ${propsState.wrapClassName || ''}` : (propsState.wrapClassName || '')" :confirmLoading="confirmLoading" :maskClosable="false" @cancel="handleClose"
+      v-bind="footerBind" :bodyStyle="(propsState.isFullScreen || fullScreen) ? null : (propsState.height ? { height: propsState.height, padding: '0px 10px', overflowY: 'auto', overflowX: 'hidden' } : { maxHeight: 'calc(100vh - 300px)', padding: '0px 10px', overflowY: 'auto', overflowX: 'hidden' })">
       <template #title>
-        {{ title }}
-        <div v-if="!isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
-          <FullscreenExitOutlined v-if="fullScreen"/>
-          <FullscreenOutlined v-else/>
+        {{ propsState.title }}
+        <div v-if="!propsState.isFullScreen" class="fullscreen-custom" @click="handleFullscreen">
+          <FullscreenExitOutlined v-if="fullScreen" />
+          <FullscreenOutlined v-else />
         </div>
       </template>
-      <template #footer>
-        <div :style="footerStyle">
-          <a-button v-if="isDefaultBtn" @click="handleClose">{{ cancelText }}</a-button>
-          <template v-for="(btn, btnIndex) in footerExtendBtn">
+      <template v-if="propsState.footer" #footer>
+        <div :style="propsState.footerStyle">
+          <a-button v-if="propsState.isDefaultBtn" @click="handleClose">{{ propsState.cancelText }}</a-button>
+          <template v-for="(btn, btnIndex) in propsState.footerExtendBtn">
             <a-button :type="btn.type" @click="handleExtendBtn(btn)">{{ btn.name }}</a-button>
           </template>
-          <a-button v-if="isDefaultBtn" type="primary" @click="handleOk">{{ okText }}</a-button>
+          <a-button v-if="propsState.isDefaultBtn" type="primary" @click="handleOk">{{ propsState.okText }}</a-button>
         </div>
       </template>
       <Suspense v-if="isFinish">
         <template #default>
-          <component v-bind:is="component" :formData="formData" ref="link"></component>
+          <component v-bind:is="component" :formData="propsState.formData" ref="link"></component>
         </template>
         <template #fallback>
           <a-spin tip="Loading...">
@@ -36,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue"
+import { computed, defineAsyncComponent, onBeforeUnmount, reactive, onMounted, ref, watch } from "vue"
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 
@@ -51,7 +49,7 @@ let link = ref()
 let fullScreen = ref<boolean>(false)
 let isFinish = ref(false)
 const component = computed(() => {
-  return defineAsyncComponent(modules[`/src/${props.filePath}.vue`]);
+  return defineAsyncComponent(modules[`/src/${propsState.filePath}.vue`]);
 });
 let props = defineProps({
   title: {
@@ -119,9 +117,26 @@ let props = defineProps({
   }
 })
 
+
+let propsState = reactive<any>({
+  ...props,
+})
+
+watch(() => props, (newProps) => {
+      Object.keys(newProps).forEach(key => {
+        if (key in propsState) {
+          propsState[key] = newProps[key]
+        }
+      })
+    }, {
+      deep: true,
+      immediate: true
+    }
+)
+
 // 页脚绑定
 const footerBind = computed(() => {
-  if (props.footer) {
+  if (propsState.footer) {
     return ''
   } else {
     return { footer: null }
@@ -153,17 +168,17 @@ function setConfirmLoading(value: boolean) {
  * 确定
  */
 async function handleOk() {
-  if (props.onOk && typeof props.onOk === "function") {
+  if (propsState.onOk && typeof propsState.onOk === "function") {
     let childDom = link.value
     let res
     if (childDom && childDom?.rView?.$?.exposed?.exposedEvents?.handleOk) {
       res = await childDom.rView.$.exposed.exposedEvents.handleOk()
-      props.onOk(res)
+      propsState.onOk(res)
     } else if (childDom && childDom.handleOk) {
       res = await childDom.handleOk()
-      props.onOk(res)
+      propsState.onOk(res)
     } else {
-      props.onOk(childDom)
+      propsState.onOk(childDom)
     }
     // 自己在方法里面执行关闭按钮操作
   } else {
@@ -175,9 +190,9 @@ async function handleOk() {
  * 点击关闭
  */
 function handleClose() {
-  if (props.onCancel && typeof props.onCancel === "function") {
+  if (propsState.onCancel && typeof propsState.onCancel === "function") {
     let childDom = link.value
-    props.onCancel(childDom)
+    propsState.onCancel(childDom)
     // 自己在方法里面执行关闭按钮操作
   } else {
     modalVisible.value = false
@@ -215,7 +230,11 @@ function close() {
  * 更新props
  */
 function update(newProps) {
-  props = deepMerge({ ...props }, newProps);
+   Object.keys(newProps).forEach(key => {
+    if (key in propsState) {
+      propsState[key] = newProps[key]   // 修改 reactive 对象
+    }
+  })
 }
 
 function deepMerge(target, source) {
