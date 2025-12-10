@@ -230,9 +230,27 @@ function close() {
  * 更新props
  */
 function update(newProps) {
-   Object.keys(newProps).forEach(key => {
-    if (key in propsState) {
-      propsState[key] = newProps[key]   // 修改 reactive 对象
+  deepMergeReactive(propsState, newProps)
+}
+
+function deepMergeReactive(target, source) {
+  if (!source || typeof source !== 'object') return
+
+  Object.keys(source).forEach(key => {
+    const newVal = source[key]
+    const oldVal = target[key]
+
+    if (
+      newVal &&
+      typeof newVal === 'object' &&
+      !Array.isArray(newVal)
+    ) {
+      if (!oldVal || typeof oldVal !== 'object') {
+        target[key] = {}
+      }
+      deepMergeReactive(target[key], newVal)
+    } else {
+      target[key] = newVal
     }
   })
 }
