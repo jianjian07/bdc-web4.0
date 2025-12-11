@@ -10,7 +10,7 @@
           {{ getExistsList(record.existsList) }}
         </div>
         <div v-if="column.dataIndex == 'importType'">
-          <template v-if="record.checked">
+          <template v-if="record.isChecked">
             <a-select v-model:value="record[column.dataIndex]" style="width: 100%"
                       :options="getImportTypeOptions(record.existsList)">
             </a-select>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { message } from "ant-design-vue"
 
 const props = defineProps({
@@ -63,28 +63,22 @@ let listData = ref<any>([])
 
 const rowSelection = computed(() => {
   return {
-    mode: 'checkbox',
+    type: 'checkbox',
     selectedRowKeys: selectedKeys.value,
     onChange: (selectedRowKeys: any, selectRows: any) => {
       selectedKeys.value = selectedRowKeys
       selectedRows.value = selectRows
+      updateCheckedFlags()
     },
-    onSelect(record: any, selected: any) {
-      record.checked = selected
-      if (!record.checked) {
-        record.importType = null
-      }
-    },
-    onSelectAll(selected: any, _selectionRows: any, changeRows: any) {
-      changeRows.forEach(row => {
-        row.checked = selected
-      })
-    }
   }
 })
 
 watch(() => props.formData.validateList, (newVal) => {
-  listData.value = newVal
+  listData.value = JSON.parse(JSON.stringify(newVal.map((m) => {
+    m.isChecked = m.checked
+    delete m.checked
+    return m
+  })))
   initData()
 }, {
   immediate: true,
@@ -96,15 +90,25 @@ watch(() => props.formData.validateList, (newVal) => {
  */
 function initData() {
   listData.value = listData.value.map((tree) => {
-    tree.checked = tree.defaultChecked
+    tree.isChecked = tree.defaultChecked
     if (tree.defaultChecked) {
       tree.importType = '1'
     }
     return tree
   })
-  
-  selectedKeys.value = listData.value.filter(tree => tree.checked).map(m => m.id)
-  selectedRows.value = listData.value.filter(tree => tree.checked)
+
+  selectedKeys.value = listData.value.filter(tree => tree.isChecked).map(m => m.id)
+  selectedRows.value = listData.value.filter(tree => tree.isChecked)
+
+}
+
+function updateCheckedFlags() {
+  listData.value.forEach(item => {
+    item.isChecked = selectedKeys.value.includes(item.id)
+    if (!item.isChecked) {
+      item.importType = null
+    }
+  })
 }
 
 /**

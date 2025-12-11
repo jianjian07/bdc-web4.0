@@ -359,7 +359,12 @@ function validateSelected(selectedRows) {
 function importFileData(selectedRows, fileData) {
   return new Promise((resolve, reject) => {
     fileData.delete('validateList')
-    fileData.append('validateList', JSON.stringify(selectedRows))
+    let rows = JSON.parse(JSON.stringify(selectedRows.map((m) => {
+      m.checked = m.isChecked
+      delete m.isChecked
+      return m
+    })))
+    fileData.append('validateList', JSON.stringify(rows))
     defHttp.post({
       url: api.importApi,
       data: fileData,
