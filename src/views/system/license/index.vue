@@ -18,9 +18,6 @@
                 format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
-            <template v-if="showCreate && !props.isInit">
-                <a-button type="primary" @click="onLicense">生成授权</a-button>&nbsp;&nbsp;
-            </template>
             <a-button type="primary" @click="register">注册授权</a-button>&nbsp;&nbsp;
             <a-button type="primary" @click="verifyLicense">验证授权</a-button>
         </a-form-item>
@@ -31,13 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { usePermissionStore } from "/@/store/modules/permission.ts"
 import { router } from "/@/router"
-const permissionStore = usePermissionStore()
-const showCreate = computed(() => permissionStore.showCreateBtn)
 enum api {
     getUrl = '/api/zrzy-system/sys/common/get',
     licenseUrl = '/api/zrzy-system/sys/common/generateLicense',
@@ -66,20 +60,6 @@ onMounted(() => {
         initLicenseData()
     }
 })
-
-/**
- * 生成授权
- */
-const onLicense = async () => {
-    await formRef.value.validateFields('expiryDate');
-    defHttp.post({ url: api.licenseUrl, data: licenseData.value }, { withToken: false }).then((res) => {
-        if (res && res.code == 200) {
-            licenseData.value.license = res.result
-        } else {
-            message.error("获取授权失败")
-        }
-    })
-}
 /**
  * 注册授权
  */
