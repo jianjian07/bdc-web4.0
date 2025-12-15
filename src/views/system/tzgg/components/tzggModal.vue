@@ -78,6 +78,7 @@ import {
   getDeletedFileIds,
   getUploadedFileIds,
 } from "/@/components/common/wangEditor/upload-attachment.ts"
+import { encryptByBase64 } from '/@/utils/cipher'
 
 const formRef = ref()
 let formState: any = reactive({
@@ -331,7 +332,7 @@ const onSubmit = async () => {
         formState.updateTime = dayjs().format("YYYY-MM-DD HH:mm:ss")
         formState.updateBy = useUserStore().getUserInfo.username
         // 避免将 base64 存入数据库
-        formState.msgContent = normalizeMsgContentHtml(formState.msgContent)
+        formState.msgContent = encryptByBase64(normalizeMsgContentHtml(formState.msgContent))
         defHttp[method](
           {
             url: url,

@@ -122,27 +122,27 @@ export function toggleBlackWhite() {
  * 读取nacos配置
  */
 export function fetchNacosConfig() {
-    return new Promise(async (resolve) => {
-        let nacosToken = await getNacosToken()
-        //let nacosToken = ''
-        defHttp.get({
-            url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public&accessToken=' + nacosToken,
-            responseType: 'json',
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-        }, { withToken: false }).then((res) => {
-            if (res) {
-                window.settingConfig = res
-                if (window.settingConfig.appTitle) {
-                    document.title = window.settingConfig.appTitle;
-                }
-            } else {
-                alert('nacos配置读取失败！')
-            }
-            resolve(true)
-        })
+  return new Promise(async (resolve) => {
+    let nacosToken = await getNacosToken()
+    //let nacosToken = ''
+    defHttp.get({
+      url: '/nacos/v1/cs/configs?dataId=bdc.json&group=DEFAULT_GROUP&tenant=public&accessToken=' + nacosToken,
+      // responseType: 'json',
+      // headers: {
+      //     'Content-Type': 'application/json;charset=UTF-8'
+      // }
+    }, { withToken: false }).then((res) => {
+      if (res) {
+        window.settingConfig = res
+        if (window.settingConfig.appTitle) {
+          document.title = window.settingConfig.appTitle;
+        }
+      } else {
+        alert('nacos配置读取失败！')
+      }
+      resolve(true)
     })
+  })
 }
 
 /**
@@ -150,7 +150,7 @@ export function fetchNacosConfig() {
  */
 function getNacosToken() {
   return new Promise(async (resolve) => {
-    let result:any = await getSettingJson()
+    let result: any = await getSettingJson()
     if (result && result.nacosUser && result.nacosPwd) {
       let params = {
         username: result.nacosUser,
@@ -183,9 +183,9 @@ function getSettingJson() {
  * 获取全局字体大小
  */
 export function getGlobalFontSize() {
-    const raw = window?.settingConfig?.fontSize;
-    const size = raw !== null && raw !== '' && !isNaN(Number(raw))
-      ? Number(raw)
-      : 13;
-    return size;
+  const raw = window?.settingConfig?.fontSize;
+  const size = raw !== null && raw !== '' && !isNaN(Number(raw))
+    ? Number(raw)
+    : 13;
+  return size;
 }

@@ -18,9 +18,9 @@
     </div>
     <div class="sys-user-table-body">
       <a-spin :spinning="loading">
-        <a-table v-if="showTable" :columns="columns" :data-source="deptList" @expand="onExpand" :auto-expand-parent="false" rowKey="id" 
-                 :pagination="false" :scroll="{ y: 300 }">
-          <template  #expandIcon="{ expanded, onExpand, record }">
+        <a-table v-if="showTable" :columns="columns" :data-source="deptList" @expand="onExpand"
+          :auto-expand-parent="false" rowKey="id" :pagination="false" :scroll="{ y: 300 }">
+          <template #expandIcon="{ expanded, onExpand, record }">
             <span v-if="record.hasChildren && !expanded" @click="(e) => onExpand(record, e)">
               <CaretRightOutlined style="margin-right: 5px;" />
             </span>
@@ -32,7 +32,7 @@
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex == 'enabled'">
               <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用"
-                @change="changeEnabled($event, record)"/>
+                @change="changeEnabled($event, record)" />
             </template>
             <template v-if="column.dataIndex === 'operation'">
               <a @click="handleEdit(record)">编辑</a>
@@ -49,7 +49,8 @@
         </a-table>
       </a-spin>
     </div>
-    <dept-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :deptListOption="deptList" @ok="ok"></dept-modal>
+    <dept-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :deptListOption="deptList"
+      @ok="ok"></dept-modal>
   </div>
 </template>
 
@@ -119,9 +120,9 @@ onMounted(() => {
 /**
  * 加载数据
  */
-function initData(record? : any, isLazy = true) {
+function initData(record?: any, isLazy = true) {
   loading.value = true
-  if(!record) {
+  if (!record) {
     deptList.value = []
   }
   let params = {
@@ -133,7 +134,7 @@ function initData(record? : any, isLazy = true) {
     if (res.code == 200) {
       if (params.pid == '') {
         deptList.value = res.result
-      }  else if (isLazy) { // 只有懒加载时才更新子节点
+      } else if (isLazy) { // 只有懒加载时才更新子节点
         record.children = res.result
       }
     } else {
@@ -161,17 +162,26 @@ function changeEnabled(e, record) {
 /**
  * 保存
  */
- function onOk(data: any) {
-    // 执行保存
-    let url = api.add
-
-    defHttp.post({ url: url, data: data }, { withToken: true }).then((res) => {
-      if (res && res.code == 200) {
-        message.success("保存成功！")
-      }
-    }).catch(err => {
-        console.info(err)
-    })
+function onOk(data: any) {
+  // 执行保存
+  let url = api.add
+  let _data = {
+    areacode: data.areacode,
+    createTime: data.createTime,
+    enabled: data.enabled,
+    id: data.id,
+    name: data.name,
+    pid: data.pid,
+    simpleName: data.simpleName,
+    sortid: data.sortid,
+  };
+  defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
+    if (res && res.code == 200) {
+      message.success("保存成功！")
+    }
+  }).catch(err => {
+    console.info(err)
+  })
 }
 
 function addDept() {
@@ -205,11 +215,11 @@ function handleDel(record, index) {
       // 递归找到该节点的父节点，并删除该节点
       const delChild = (node) => {
         if (record.pid == 0 || record.pid == '' || record.pid == undefined) {
-          deptList.value = deptList.value.filter(child => child.id!== record.id)
+          deptList.value = deptList.value.filter(child => child.id !== record.id)
           return true
         } else if (node.id === record.pid) {
           node.children = node.children.filter(child => child.id !== record.id)
-          if(node.children.length == 0) {
+          if (node.children.length == 0) {
             node.hasChildren = false
           }
           return true
@@ -220,18 +230,18 @@ function handleDel(record, index) {
 
       for (let i = 0; i < deptList.value.length; i++) {
         let node = deptList.value[i]
-        let find = delChild(node) 
-        if(find) {
-         break
+        let find = delChild(node)
+        if (find) {
+          break
         }
       }
-      
+
       message.success('删除成功!')
     } else {
       message.warning('删除失败!')
     }
   }).catch(err => {
-     message.warning('删除失败!')
+    message.warning('删除失败!')
   })
 }
 
@@ -254,7 +264,7 @@ function reset() {
 }
 
 function onSearch() {
-  if(searchForm.value.name == '') {
+  if (searchForm.value.name == '') {
     deptList.value = []
     showTable.value = false
     initData(null, true)
@@ -267,11 +277,11 @@ function onSearch() {
 function ok(data) {
   drawerOpen.value = false
   console.log(data.data)
-  if(data.isAdd) { //新增
+  if (data.isAdd) { //新增
     // 根据data.data手动新增deptList数据
-    if(data.data.pid == 0) {
+    if (data.data.pid == 0) {
       deptList.value.push(data.data)
-    }else {
+    } else {
       // 递归找到父级节点，并添加子节点
       const addChild = (node) => {
         if (node.id === data.data.pid) {
@@ -283,18 +293,18 @@ function ok(data) {
         }
       }
 
-      for(let i = 0; i < deptList.value.length; i++) {
+      for (let i = 0; i < deptList.value.length; i++) {
         let node = deptList.value[i]
-        let find = addChild(node) 
-        if(find) {
+        let find = addChild(node)
+        if (find) {
           break
         }
       }
     }
   } else {
-    if(data.data) { //编辑
+    if (data.data) { //编辑
       // 递归找到该节点，若节点修改了pid，则先添加到新pid下，再删除旧pid下的该节点
-      if(data.data.pid != data.data.oldPid) {
+      if (data.data.pid != data.data.oldPid) {
         console.log('编辑 新增', data.data.pid)
         // 递归找到父级节点，并添加子节点
         const addChild = (node) => {
@@ -307,35 +317,35 @@ function ok(data) {
             return true
           } else if (node.children) {
             node.children.forEach(child => addChild(child))
-          }  
+          }
         }
-        for(let i = 0; i < deptList.value.length; i++) {
+        for (let i = 0; i < deptList.value.length; i++) {
           let node = deptList.value[i]
           let find = addChild(node)
-          if(find) {
+          if (find) {
             break
           }
         }
         // 递归找到该节点的父级节点，并删除该节点
         const delChild = (node) => {
           if (data.data.oldPid == 0 || data.data.oldPid == '' || data.data.oldPid == undefined) {
-            deptList.value = deptList.value.filter(child => child.id!== data.data.id)
+            deptList.value = deptList.value.filter(child => child.id !== data.data.id)
             return true
           } else if (node.id === data.data.oldPid) {
             node.children = node.children.filter(child => child.id !== data.data.id)
-            if(node.children.length == 0) {
+            if (node.children.length == 0) {
               node.hasChildren = false
             }
             return true
           } else if (node.children) {
             node.children.forEach(child => delChild(child))
           }
-        } 
+        }
         for (let i = 0; i < deptList.value.length; i++) {
           let node = deptList.value[i]
-          let find = delChild(node) 
-          if(find) {
-           break
+          let find = delChild(node)
+          if (find) {
+            break
           }
         }
       } else {
@@ -375,7 +385,7 @@ function setDeptList(arr, node) {
 
   .sys-user-table-body {
     height: calc(100% - 50px);
-    
+
     :deep(.ant-table-body) {
       overflow-y: scroll;
       max-height: calc(100% - 50px) !important;
@@ -400,9 +410,9 @@ function setDeptList(arr, node) {
     :deep(.ant-spin-nested-loading) {
       height: 100%;
     }
-    
+
     :deep(.ant-spin-container) {
-      overflow: hidden!important;
+      overflow: hidden !important;
     }
   }
 

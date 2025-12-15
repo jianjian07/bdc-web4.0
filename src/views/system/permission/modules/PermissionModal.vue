@@ -1,46 +1,38 @@
 <template>
   <div class="permission-modal">
     <a-modal v-model:open="modalVisible" :width="760" :title="title + '权限配置'" :confirm-loading="confirmLoading"
-             @ok="handleModalOk" @cancel="handleModalCancel"
-             :body-style="{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }">
+      @ok="handleModalOk" @cancel="handleModalCancel"
+      :body-style="{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }">
       <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
         <a-form-item label="用户">
-          <a-input v-model:value="formState.realName"/>
+          <a-input v-model:value="formState.realName" />
         </a-form-item>
         <template v-if="type == 'db'">
           <a-form-item label="流程">
             <a-tree-select v-model:value="formState.superviseProcessArr" :tree-data="treeData" show-search
-                           tree-node-filter-prop="title"
-                           label-in-value multiple
-                           tree-checkable
-                           allowClear
-                           :field-names="{
-               children: 'children',
-               value: 'key',
-               label: 'title',
-            }"/>
+              tree-node-filter-prop="title" label-in-value multiple tree-checkable allowClear :field-names="{
+      children: 'children',
+      value: 'key',
+      label: 'title',
+    }" />
           </a-form-item>
           <a-form-item label="状态">
             <a-switch v-model:checked="formState.superviseStatus" :checkedValue="1" :unCheckedValue="0"
-                      checked-children="启用" un-checked-children="禁用"/>
+              checked-children="启用" un-checked-children="禁用" />
           </a-form-item>
         </template>
         <template v-if="type == 'jj'">
           <a-form-item label="流程">
             <a-tree-select v-model:value="formState.urgentProcessArr" :tree-data="treeData" show-search
-                           tree-node-filter-prop="title"
-                           label-in-value multiple
-                           tree-checkable
-                           allowClear
-                           :field-names="{
-                 children: 'children',
-                 value: 'key',
-                 label: 'title',
-              }"/>
+              tree-node-filter-prop="title" label-in-value multiple tree-checkable allowClear :field-names="{
+      children: 'children',
+      value: 'key',
+      label: 'title',
+    }" />
           </a-form-item>
           <a-form-item label="状态">
             <a-switch v-model:checked="formState.urgentStatus" :checkedValue="1" :unCheckedValue="0"
-                      checked-children="启用" un-checked-children="禁用"/>
+              checked-children="启用" un-checked-children="禁用" />
           </a-form-item>
         </template>
       </a-form>
@@ -134,7 +126,12 @@ function handleModalOk() {
   delete data.id
   delete data.superviseProcessArr
   delete data.urgentProcessArr
-  defHttp.put({ url: url, data: data }, { withToken: true }).then((res) => {
+  let savaModel: any = {};
+  savaModel.createBy = data.userName
+  savaModel.superviseProcess = data.superviseProcess
+  savaModel.superviseStatus = data.superviseStatus
+  savaModel.superviseUser = data.superviseUser
+  defHttp.put({ url: url, data: savaModel }, { withToken: true }).then((res) => {
     confirmLoading.value = false
     if (res && res.success) {
       message.success('保存成功!')
@@ -159,6 +156,4 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

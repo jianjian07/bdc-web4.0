@@ -1,21 +1,10 @@
 <template>
   <div class="sys-rule-form">
-    <a-form
-        ref="formRef"
-        :label-col="{ span: 5 }"
-        :wrapper-col="{ span: 18 }"
-        :rules="rules"
-        :model="formState">
+    <a-form ref="formRef" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" :rules="rules" :model="formState">
       <a-form-item label="业务类型" name="ywlx">
-        <a-tree-select
-            v-model:value="formState.ywlx"
-            show-search
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            placeholder="请选择业务类型"
-            allow-clear
-            :tree-data="getTreeDictItemsByCode('ywgzlx')"
-            @change="handleChangeYwlx"
-        >
+        <a-tree-select v-model:value="formState.ywlx" show-search
+          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="请选择业务类型" allow-clear
+          :tree-data="getTreeDictItemsByCode('ywgzlx')" @change="handleChangeYwlx">
         </a-tree-select>
       </a-form-item>
       <a-form-item label="规则名称" name="ruleName">
@@ -25,13 +14,14 @@
         <a-input v-model:value="formState.ruleCode" placeholder="规则编号"></a-input>
       </a-form-item>
       <a-form-item label="规则类型" name="ruleType">
-        <a-select v-model:value="formState.ruleType" :options="getDictItemsByCode('ruleType')"
-                  placeholder="规则类型" @change="handleChangeRuleType">
+        <a-select v-model:value="formState.ruleType" :options="getDictItemsByCode('ruleType')" placeholder="规则类型"
+          @change="handleChangeRuleType">
         </a-select>
       </a-form-item>
       <a-form-item label="规则内容" name="content">
         <template v-if="formState.ruleType == 'sql' || formState.ruleType == 'api'">
-          <monaco-editor v-model="formState.content" :language="formState.ruleType == 'sql' ? 'sql' : 'javascript'" height="300px">
+          <monaco-editor v-model="formState.content" :language="formState.ruleType == 'sql' ? 'sql' : 'javascript'"
+            height="300px">
           </monaco-editor>
         </template>
         <template v-else>
@@ -96,7 +86,7 @@ const rules = ref<any>({
   ruleCode: [{ required: true, validator: checkRuleCode }],
   // ruleCode: [{ required: true,  message: '请输入规则编码!' }, { pattern: /^[A-Za-z0-9]*$/, message: '请输入字母或数字' }],
   ruleType: [{ required: true, message: '请选择规则类型!' }],
-  content: [{ required: true, validator: checkContent }, ],
+  content: [{ required: true, validator: checkContent },],
   message: [{ required: true, message: '请输入提示信息!' }],
 })
 
@@ -151,7 +141,7 @@ function resetFields() {
     description: '',
     status: '1',
     ywlx: props.catalog && props.catalog.length ? props.catalog[0].value : null,
-    ywlxName: props.catalog && props.catalog.length ?  props.catalog[0].label : null
+    ywlxName: props.catalog && props.catalog.length ? props.catalog[0].label : null
   }
 }
 
@@ -275,7 +265,7 @@ function handleOk() {
     let params = JSON.parse(JSON.stringify(formState.value))
     delete params.ywlxName
     params.updateTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
-    params.updateBy =  userInfo.username
+    params.updateBy = userInfo.username
     if (props.type == '新增') {
       apiUrl = api.add
       params.createTime = params.updateTime
@@ -284,7 +274,7 @@ function handleOk() {
       apiUrl = api.edit
     }
     defHttp.post({ url: apiUrl, data: params }, { withToken: true }).then((res) => {
-      if (!res.message) { 
+      if (!res.message) {
         message.success(props.type + '成功')
         emit('formOk')
       } else {
@@ -294,12 +284,10 @@ function handleOk() {
       message.error(props.type + '失败')
     })
   }).catch(error => {
-        console.log('error', error);
+    console.log('error', error);
   })
 }
 
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

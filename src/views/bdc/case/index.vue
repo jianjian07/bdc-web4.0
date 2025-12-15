@@ -19,7 +19,8 @@
         </div>
 
         <div style="width: 100%;background-color: #fff;margin-left:8px;">
-            <a-table :columns="columns" :data-source="dataSource" style="width: 100%;" :pagination="pagination" @change="onTableChange">
+            <a-table :columns="columns" :data-source="dataSource" style="width: 100%;" :pagination="pagination"
+                @change="onTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'action'">
                         <a-space>
@@ -81,11 +82,11 @@ let pagination = ref({
     pageSize: 10,
 })
 onMounted(() => {
-  loadData()
+    loadData()
 })
 
 function loadData() {
-    defHttp.post({ url: api.getProcessList, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, ajlx: 1 } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getProcessList, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize, ajlx: 1 } }, { withToken: true }).then((res) => {
         if (res && res.success) {
             dataSource.value = res.result.records
             pagination.value.total = res.result.total
@@ -95,8 +96,8 @@ function loadData() {
 let processInfo: any = ref('')
 
 function onTableChange(pag) {
-  pagination.value = pag
-  loadData()
+    pagination.value = pag
+    loadData()
 }
 /**
  * 选中流程事件

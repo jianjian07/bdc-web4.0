@@ -3,7 +3,7 @@
     <a-spin :spinning="spinning">
       <a-row style="display:flex; height: 100%; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8">
         <a-col :md="12" class="mid-col"
-               style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
+          style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
           <a-row style="align-items: center;">
             <a-col :span="10">
               <svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon>
@@ -29,18 +29,16 @@
             </a-col>
           </a-row>
           <a-divider orientation="left">承办人员</a-divider>
-          <a-input-search v-if="handleUserType == 1"
-                          placeholder="请输入承办人员名称" v-model:value="searchValue"
-                          enterButton @search="onSearch" style="margin-bottom: 10px">
+          <a-input-search v-if="handleUserType == 1" placeholder="请输入承办人员名称" v-model:value="searchValue" enterButton
+            @search="onSearch" style="margin-bottom: 10px">
           </a-input-search>
           <a-spin :class="treeData.length ? 'tree-spin' : ''" :spinning="treeSpinning">
             <a-tree v-if="!treeSpinning && treeData.length" multiple :show-icon="true" :block-node="true"
-                    :selected-keys="selectedKeys" :default-expand-all="false" :auto-expand-parent="false"
-                    :tree-data="treeData" v-model:expandedKeys="expandedKeys"
-                    @select="onSelectTreeNode">
+              :selected-keys="selectedKeys" :default-expand-all="false" :auto-expand-parent="false"
+              :tree-data="treeData" v-model:expandedKeys="expandedKeys" @select="onSelectTreeNode">
               <template #icon="{ dataRef }">
-                <TeamOutlined v-if="dataRef.iconName == 'team'"/>
-                <UserOutlined v-else-if="dataRef.iconName == 'user'"/>
+                <TeamOutlined v-if="dataRef.iconName == 'team'" />
+                <UserOutlined v-else-if="dataRef.iconName == 'user'" />
               </template>
             </a-tree>
           </a-spin>
@@ -50,17 +48,19 @@
             <svg-icon name="people" width="35px" height="35px" color="#5094F9"></svg-icon>
             移交对象
             <a-popconfirm title="确定要清空移交对象吗?" @confirm="onClearNode">
-              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }"/>
+              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }" />
             </a-popconfirm>
           </h3>
           <div style="color: #838E95 !important;">请选择需要移交的对象</div>
           <div v-if="selectedNodes.length" class="selected-nodes-content">
             <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
-                 @mouseleave="hoverNodeIndex = -1">
+              @mouseleave="hoverNodeIndex = -1">
               <TeamOutlined style="padding-right: 10px;color: #1677ff" />
-              <span style="color: #1677ff" :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
+              <span style="color: #1677ff" :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{
+      item.title
+    }}</span>
               <CloseCircleOutlined v-show="hoverNodeIndex == index" style="position: absolute; right: 0; top: 10px;"
-                                   @click="onClickNode(item.key)"/>
+                @click="onClickNode(item.key)" />
             </div>
           </div>
         </a-col>
@@ -397,8 +397,8 @@ async function handleOk() {
   let nextnode = ''
 
   const roleNames = selectedNodes.value
-      .map(n => n.roleName)
-      .filter(Boolean)
+    .map(n => n.roleName)
+    .filter(Boolean)
 
   const uniqueRoles = [...new Set(roleNames)]
 
@@ -553,7 +553,7 @@ function validateApiTransfer(obj) {
  */
 function getCurrentApiTransferRule(taskId) {
   return new Promise((resolve, reject) => {
-    defHttp.post({ url: api.getApiTransferRule, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getApiTransferRule, params: { taskId: taskId } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(res.result || '')
       } else {

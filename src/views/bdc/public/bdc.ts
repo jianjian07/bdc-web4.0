@@ -182,7 +182,7 @@ function getSaveEventBusFuncStr(fun) {
   return str
 }
 
-export async function baseSave(demoRefs: any, btn: any, loading: any,  jdmc: string, eventBus: any, params: any) {
+export async function baseSave(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params: any) {
   return await sendSaveFun('baseSave', demoRefs, btn, loading, eventBus, params)
 }
 
@@ -191,7 +191,7 @@ export async function handOver(demoRefs: any, btn: any, loading: any, jdmc: stri
   if (res && res.status && res.validate) {
     const slbh = route.query.slbh == null ? '' : route.query.slbh.toString()
     let checkRes: any = true
-    if (['收件','受理', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
+    if (['收件', '受理', '初审', '复审', '核定', '审核', '登簿', '记载登记簿'].includes(jdmc)) {
       checkRes = await checkSeal(slbh, btn, loading)
     }
     if (checkRes) {
@@ -450,7 +450,7 @@ export async function showFile(demoRefs: any, btn: any, loading: any, jdmc: stri
  * 附件按钮（新标签页）
  * @param params
  */
-export function showFileNewBlank(demoRefs: any, btn:any, loading: any, jdmc: string, eventBus: any, params?: any) {
+export function showFileNewBlank(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params?: any) {
   let query = route.query
   const urlSearchParams = new URLSearchParams(query)
   urlSearchParams.set('manage', params?.manage ?? false) // 设置 manage 参数
@@ -607,7 +607,7 @@ function checkSeal(slbh: string, btn: any, loading?: any) {
     if (loading) {
       loading.value = true
     }
-    defHttp.post({
+    defHttp.get({
       url: '/api/zrzy-logic/logic/check/checkSeal',
       params: { slbh: slbh }
     }, { withToken: true }).then((res: any) => {
@@ -658,7 +658,7 @@ function djb(slbh: string, cType: string, btn: any, loading?: any, callback?: an
   }
   defHttp.post({
     url: '/api/zrzy-bdc/bdc/register/saveRegister',
-    params: { slbh: slbh, cType: cType }
+    data: { slbh: slbh, cType: cType }
   }, { withToken: true }
   ).then(async (res: any) => {
     if (btn && btn.loading !== undefined) {
@@ -1548,11 +1548,11 @@ export function getRegionOptions() {
 export function getSystemList() {
   return new Promise((resolve) => {
     defHttp.get(
-        {
-          url: '/api/zrzy-system/sys/sysSubsystem/list',
-          params: { pageSize: 1000, pageNo: 1 }
-        },
-        { withToken: true }
+      {
+        url: '/api/zrzy-system/sys/sysSubsystem/list',
+        params: { pageSize: 1000, pageNo: 1 }
+      },
+      { withToken: true }
     ).then((res: any) => {
       if (res && res.success) {
         resolve(res.result.records || [])
@@ -1672,10 +1672,10 @@ export function getQlrFj() {
  */
 export function plReport(ids) {
   return new Promise((resolve, reject) => {
-      defHttp.post({ url: '/api/zrzy-report/bdc/report/reReportBatch', data: ids }, {
-          withToken: true,
-          withTimeout: false
-      }).then((res) => {
+    defHttp.post({ url: '/api/zrzy-report/bdc/report/reReportBatch', data: ids }, {
+      withToken: true,
+      withTimeout: false
+    }).then((res) => {
       if (res && res.success) {
         message.success('上报成功!' + res?.message)
         resolve(true)
@@ -1832,7 +1832,7 @@ async function getHandleCkbzBtn() {
         }
         // 4.非收件节点，显示“窗口补正”
         // 新增 结果意见选择补齐补正时才显示 ; 窗口补正到收件节点时需要找倒数第二条数据显示完成补正
-        let lastCzjg = taskList[taskLength - 1].czjg || taskList[taskLength - 2].czjg ||''
+        let lastCzjg = taskList[taskLength - 1].czjg || taskList[taskLength - 2].czjg || ''
         let btnList = lastCzjg == '5' ? [{ name: text, type: 'primary', isDefaultBtn: text == '窗口补正' }] : []
 
         resolve(btnList)
@@ -2125,7 +2125,7 @@ export function updateHtztBySlbh() {
 /**
  * 不予登记
  */
-export async function handTerminate(demoRefs: any, btn:any, loading: any, jdmc: string, eventBus: any, params: any) {
+export async function handTerminate(demoRefs: any, btn: any, loading: any, jdmc: string, eventBus: any, params: any) {
   let res: any = await sendSaveFun('handOver', demoRefs, btn, loading, eventBus, params)
   if (res && res.status && res.validate) {
     Modal.confirm({
@@ -2187,12 +2187,12 @@ export function numberToChinese(money, options = { round: true }) {
  * 手写签名
  * @param 获取regtype
  */
-export function getSignature(params?: any){
+export function getSignature(params?: any) {
   let modal = cModal({
     title: '电子签名',
     // width: 1000,
     isFullScreen: true,
-    footer:false,
+    footer: false,
     filePath: 'views/signature/index',
     formData: {
       slbh: route.query.slbh,
@@ -2211,30 +2211,30 @@ export function downloadPdf(params: any) {
  * @param c_type fj(仅生成附记) gyqk(仅生成共有情况) 空时，均生成
  */
 export function batchFjAndGyqk(param: { type: any }) {
-    return new Promise((resolve) => {
-        let params: any = { slbh: route.query.slbh }
-        let text = "附记和共有情况"
-        if (param.type) {
-            params.type = param.type
-            text = param.type == "fj" ? "附记" : "共有情况"
-        }
-        defHttp.put({
-            url: '/api/zrzy-bdc/bdc/public/updateFjAndGyqk',
-            params: params
-        }, {
-            withToken: true
-        }).then((res: any) => {
-            if (res && res.success) {
-                resolve(true)
-                message.success(`${text}成功生成!`)
-            } else {
-                message.warning(res?.message)
-                resolve(false)
-            }
-        })
-    }).catch(err => {
-        message.warning(err)
+  return new Promise((resolve) => {
+    let params: any = { slbh: route.query.slbh }
+    let text = "附记和共有情况"
+    if (param.type) {
+      params.type = param.type
+      text = param.type == "fj" ? "附记" : "共有情况"
+    }
+    defHttp.put({
+      url: '/api/zrzy-bdc/bdc/public/updateFjAndGyqk',
+      params: params
+    }, {
+      withToken: true
+    }).then((res: any) => {
+      if (res && res.success) {
+        resolve(true)
+        message.success(`${text}成功生成!`)
+      } else {
+        message.warning(res?.message)
+        resolve(false)
+      }
     })
+  }).catch(err => {
+    message.warning(err)
+  })
 }
 /**
  * 查看宗地图分层分户图

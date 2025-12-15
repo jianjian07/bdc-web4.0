@@ -3,7 +3,7 @@
     <a-spin :spinning="spinning">
       <a-row style="display:flex; height: 100%; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8">
         <a-col :md="12" class="mid-col"
-               style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
+          style="padding: 20px; height: 100%; min-height: 500px;overflow-y: auto;border-right: 1px solid #e8e8e8; flex: auto">
           <a-row style="align-items: center;">
             <a-col :span="10">
               <svg-icon name="移交" width="20px" height="20px" color="#5094F9"></svg-icon>
@@ -13,7 +13,8 @@
               <a-radio-group v-model:value="handleDirection" @change="onChangeDirection">
                 <a-radio :value="1" :disabled="directionDisabled['1']">向后</a-radio>
                 <a-radio :value="2" :disabled="directionDisabled['2']">平级</a-radio>
-                <a-radio :value="3" v-if="formState?.taskData?.histListSize > 0" :disabled="directionDisabled['3']">驳回</a-radio>
+                <a-radio :value="3" v-if="formState?.taskData?.histListSize > 0"
+                  :disabled="directionDisabled['3']">驳回</a-radio>
               </a-radio-group>
             </a-col>
           </a-row>
@@ -32,27 +33,25 @@
           <a-divider orientation="left">承办人员</a-divider>
           <div style="margin-bottom: 5px;" v-if="(formState?.taskData?.histListSize > 0) && (handleDirection == 3)">
             <a-select v-model:value="rejectModelNode" style="margin-top: 10px" @change="onRejectModelChange"
-                      :dropdownMatchSelectWidth="false">
+              :dropdownMatchSelectWidth="false">
               <template v-for="(item, index) in formState.taskData.histListNode">
                 <a-select-option v-if="item.name_ != formState.taskData.taskName" :value="item.task_def_key_">{{
-                    item.name_
-                  }}
+      item.name_
+    }}
                 </a-select-option>
               </template>
             </a-select>
           </div>
-          <a-input-search v-if="handleUserType == 1"
-                          placeholder="请输入承办人员名称" v-model:value="searchValue"
-                          enterButton @search="onSearch" style="margin-bottom: 10px">
+          <a-input-search v-if="handleUserType == 1" placeholder="请输入承办人员名称" v-model:value="searchValue" enterButton
+            @search="onSearch" style="margin-bottom: 10px">
           </a-input-search>
           <a-spin :class="treeData.length ? 'tree-spin' : ''" :spinning="treeSpinning">
             <a-tree v-if="!treeSpinning && treeData.length" multiple :show-icon="true" :block-node="true"
-                    :selected-keys="selectedKeys" :default-expand-all="false" :auto-expand-parent="false"
-                    :tree-data="treeData"  v-model:expandedKeys="expandedKeys"
-                    @select="onSelectTreeNode">
+              :selected-keys="selectedKeys" :default-expand-all="false" :auto-expand-parent="false"
+              :tree-data="treeData" v-model:expandedKeys="expandedKeys" @select="onSelectTreeNode">
               <template #icon="{ dataRef }">
-                <TeamOutlined v-if="dataRef.iconName == 'team'"/>
-                <UserOutlined v-else-if="dataRef.iconName == 'user'"/>
+                <TeamOutlined v-if="dataRef.iconName == 'team'" />
+                <UserOutlined v-else-if="dataRef.iconName == 'user'" />
               </template>
             </a-tree>
           </a-spin>
@@ -62,17 +61,19 @@
             <svg-icon name="people" width="35px" height="35px" color="#5094F9"></svg-icon>
             移交对象
             <a-popconfirm title="确定要清空移交对象吗?" @confirm="onClearNode">
-              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }"/>
+              <DeleteOutlined :style="{ fontSize: '16px', color: '#555' }" />
             </a-popconfirm>
           </h3>
           <div style="color: #838E95 !important;">请选择需要移交的对象</div>
           <div v-if="selectedNodes.length" class="selected-nodes-content">
             <div v-for="(item, index) in selectedNodes" class="selected-nodes-node" @mousemove="hoverNodeIndex = index"
-                 @mouseleave="hoverNodeIndex = -1">
+              @mouseleave="hoverNodeIndex = -1">
               <TeamOutlined style="padding-right: 10px;color: #1677ff" />
-              <span style="color: #1677ff" :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{ item.title }}</span>
-              <CloseCircleOutlined v-show="hoverNodeIndex == index" style="color:red; position: absolute; right: 0; top: 10px;"
-                                   @click="onClickNode(item.key)"/>
+              <span style="color: #1677ff" :title="item.title">{{ item.roleName ? item.roleName + ' - ' : '' }}{{
+      item.title
+    }}</span>
+              <CloseCircleOutlined v-show="hoverNodeIndex == index"
+                style="color:red; position: absolute; right: 0; top: 10px;" @click="onClickNode(item.key)" />
             </div>
           </div>
         </a-col>
@@ -174,16 +175,16 @@ onMounted(() => {
  */
 function initHandleDirection(shjg) {
   let e
-  switch(shjg) {
+  switch (shjg) {
     case '1':
       // 同意 -> 向后
-        e = { target: { value: 1 } }
+      e = { target: { value: 1 } }
       break;
     case '2':
     case '3':
     case '5':
       // 回退/退件/补齐补正  -> 驳回
-        e = { target: { value: 3 } }
+      e = { target: { value: 3 } }
       break;
     case '4':
       // 转件 -> 平级
@@ -717,7 +718,7 @@ function validateApiTransfer(obj) {
  */
 function getCurrentApiTransferRule(taskId) {
   return new Promise((resolve, reject) => {
-    defHttp.post({ url: api.getApiTransferRule, params: { taskId: taskId } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getApiTransferRule, params: { taskId: taskId } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(res.result || '')
       } else {
@@ -1042,18 +1043,20 @@ function markRight() {
  */
 function insertMqMessageForHandOver() {
   return new Promise((resolve) => {
-    defHttp.post({ url: api.insertMqMessageForHandOver, params: {
+    defHttp.post({
+      url: api.insertMqMessageForHandOver, params: {
         slbh: route.query.slbh,
         yjfx: handleDirection.value,
         jdmc: formState.value.jdmc
-      }}, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          resolve(true)
-        } else {
-          message.error('进度推送失败!' + res?.message)
-          resolve(false)
-        }
       }
+    }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(true)
+      } else {
+        message.error('进度推送失败!' + res?.message)
+        resolve(false)
+      }
+    }
     )
   })
 }

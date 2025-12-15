@@ -1,25 +1,18 @@
 <template>
   <div class="sfbzpz">
     <a-row :gutter="10" style="height: 100%;width: 100%">
-      <a-col class="left" :md="7" :sm="24" style="padding:10px;border-right: 1px solid rgba(5, 5, 5, 0.06);height: 100%; overflow: auto">
+      <a-col class="left" :md="7" :sm="24"
+        style="padding:10px;border-right: 1px solid rgba(5, 5, 5, 0.06);height: 100%; overflow: auto">
         <a-alert type="info" :show-icon="true" style="margin-bottom: 10px">
           <template #message>
-            当前选择：<span>{{ selectedNode.title }}</span> 
+            当前选择：<span>{{ selectedNode.title }}</span>
             <a v-if="selectedNode.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
             <a @click="reloadData"> 刷新</a>
           </template>
         </a-alert>
         <a-spin class="sfbzpz-tree-spin" :spinning="spinning">
-          <a-tree 
-              v-if="!spinning"
-              :show-icon="true"
-              :tree-data="treeData"
-              :selected-keys="selectedKeys"
-              :default-expand-all="true"
-              :auto-expand-parent="true"
-              block-node
-              @select="onSelectTreeNode"
-          >
+          <a-tree v-if="!spinning" :show-icon="true" :tree-data="treeData" :selected-keys="selectedKeys"
+            :default-expand-all="true" :auto-expand-parent="true" block-node @select="onSelectTreeNode">
             <template #icon="{ dataRef }">
               <AuditOutlined v-if="dataRef.iconName == 'audit'" />
               <BookOutlined v-else-if="dataRef.iconName == 'book'" />
@@ -28,106 +21,113 @@
           </a-tree>
         </a-spin>
       </a-col>
-      <a-col :md="17" :sm="24" style="padding: 10px;height: 100%; overflow: auto; display: flex; justify-content: center; align-items: center;">
+      <a-col :md="17" :sm="24"
+        style="padding: 10px;height: 100%; overflow: auto; display: flex; justify-content: center; align-items: center;">
         <div class="sfbzpz-detail" v-if="selectedNode.id">
-          <div class="title-css1 title-left" >
+          <div class="title-css1 title-left">
             <span>详细信息</span>
           </div>
           <a-spin :spinning="formSpinning" class="sfbzpz-form-spin">
             <a-form ref="formRef" :model="formState" :rules="rules">
               <a-row>
                 <a-col :md="12" :sm="24">
-                   <a-form-item label="收费条目名称" name="sfxmc" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                     <a-input v-model:value="formState.sfxmc" placeholder="请输入收费条目名称" style="width: 100%"></a-input>
-                   </a-form-item>
+                  <a-form-item label="收费条目名称" name="sfxmc" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
+                    <a-input v-model:value="formState.sfxmc" placeholder="请输入收费条目名称" style="width: 100%"></a-input>
+                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="费用类型" name="sflx" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select v-model:value="formState.sflx" :options="getDictItemsByCode('fylx')" placeholder="请选择费用类型">
+                    <a-select v-model:value="formState.sflx" :options="getDictItemsByCode('fylx')"
+                      placeholder="请选择费用类型">
                     </a-select>
                   </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费说明" name="sfsm" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                     <a-input v-model:value="formState.sfsm" placeholder="请输入收费说明"></a-input>
-                   </a-form-item>
+                    <a-input v-model:value="formState.sfsm" placeholder="请输入收费说明"></a-input>
+                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费方式" name="sffs" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select v-model:value="formState.sffs" :options="getDictItemsByCode('sffs')" placeholder="请选择收费方式">
+                    <a-select v-model:value="formState.sffs" :options="getDictItemsByCode('sffs')"
+                      placeholder="请选择收费方式">
                     </a-select>
                   </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费相关域" name="sfxgy" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
                     <a-select v-model:value="formState.sfxgy" placeholder="请选择收费相关域">
-                      <a-select-option v-for="(item, index) in getDictItemsByCode('sfxgy')" :label="item.label" :value="item.description">
+                      <a-select-option v-for="(item, index) in getDictItemsByCode('sfxgy')" :label="item.label"
+                        :value="item.description">
                         {{ item.label }}
                       </a-select-option>
                     </a-select>
-                   </a-form-item>
+                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="费用参数(元)" name="sffy" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input-number style="width: 100%" v-model:value="formState.sffy" placeholder="请输入费用参数(元)"></a-input-number>
-                 </a-form-item>
+                    <a-input-number style="width: 100%" v-model:value="formState.sffy"
+                      placeholder="请输入费用参数(元)"></a-input-number>
+                  </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="收费上限" name="sfsx" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input-number style="width: 100%" v-model:value="formState.sfsx" placeholder="请输入收费上限"></a-input-number>
-                 </a-form-item>
+                    <a-input-number style="width: 100%" v-model:value="formState.sfsx"
+                      placeholder="请输入收费上限"></a-input-number>
+                  </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="序号" name="sxh" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                   <a-input-number style="width: 100%" v-model:value="formState.sxh" placeholder="请输入序号"></a-input-number>
-                 </a-form-item>
+                    <a-input-number style="width: 100%" v-model:value="formState.sxh"
+                      placeholder="请输入序号"></a-input-number>
+                  </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <a-row>
                 <a-col :md="24">
                   <a-form-item label="收费依据" name="sfyj" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
-                   <a-textarea v-model:value="formState.sfyj"  
-                               :auto-size="{ minRows: 3, maxRows: 5 }" 
-                               placeholder="请输入收费依据"></a-textarea>
-                 </a-form-item>
+                    <a-textarea v-model:value="formState.sfyj" :auto-size="{ minRows: 3, maxRows: 5 }"
+                      placeholder="请输入收费依据"></a-textarea>
+                  </a-form-item>
                 </a-col>
               </a-row>
               <a-row>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="是否减免" name="sfjm" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select v-model:value="formState.sfjm" :options="getDictItemsByCode('sfjm')" placeholder="请选择是否减免" @change="onChangeSfjm">
+                    <a-select v-model:value="formState.sfjm" :options="getDictItemsByCode('sfjm')" placeholder="请选择是否减免"
+                      @change="onChangeSfjm">
                     </a-select>
                   </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="24">
                   <a-form-item label="减免方式" name="jmfs" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-                    <a-select :disabled="formState.sfjm == '0'" v-model:value="formState.jmfs" :options="getDictItemsByCode('jmfs')" allow-clear placeholder="请选择是否减免">
+                    <a-select :disabled="formState.sfjm == '0'" v-model:value="formState.jmfs"
+                      :options="getDictItemsByCode('jmfs')" allow-clear placeholder="请选择是否减免">
                     </a-select>
                   </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <a-row>
                 <a-col :md="24">
                   <a-form-item label="优惠政策说明" name="yhzc" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
-                   <a-textarea v-model:value="formState.yhzc"  
-                               :auto-size="{ minRows: 3, maxRows: 5 }" 
-                               placeholder="请输入优惠政策说明">
-                   </a-textarea>
-                 </a-form-item>
+                    <a-textarea v-model:value="formState.yhzc" :auto-size="{ minRows: 3, maxRows: 5 }"
+                      placeholder="请输入优惠政策说明">
+                    </a-textarea>
+                  </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <a-row>
                 <a-col :md="24">
                   <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
@@ -148,40 +148,47 @@
                         </template>
                         <template v-if="column.key === 'action'">
                           <a-popconfirm :disabled="column.disabled" cancel-text="取消" ok-text="确定" title="是否确定删除该项？"
-                                        @confirm="handleDelSxtj(record, index)">
+                            @confirm="handleDelSxtj(record, index)">
                             <a-button type="link">删除</a-button>
                           </a-popconfirm>
                         </template>
-                        <template v-else-if="['sxy','sxfs'].includes(column?.key)">
-                          <a-tooltip :trigger="['focus','contextmenu']" placement="topLeft" :arrow="false" color="red">
+                        <template v-else-if="['sxy', 'sxfs'].includes(column?.key)">
+                          <a-tooltip :trigger="['focus', 'contextmenu']" placement="topLeft" :arrow="false" color="red">
                             <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
                               <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                             </template>
-                            <a-select v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" :disabled="column.disabled" multiple
-                                      :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
-                              <a-select-option v-for="(item,index) in getDictItemsByCode(column.dict)" :label="item.label" :value="column.bz ? item.description : item.value">
+                            <a-select v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']"
+                              style="width: 100%;" :disabled="column.disabled" multiple
+                              :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear
+                              @change="(value, option) => handleChangeValue(value, option, column, record)">
+                              <a-select-option v-for="(item, index) in getDictItemsByCode(column.dict)"
+                                :label="item.label" :value="column.bz ? item.description : item.value">
                                 {{ item.label }}
                               </a-select-option>
                             </a-select>
                           </a-tooltip>
                         </template>
                         <template v-else-if="['sxtj'].includes(column?.key)">
-                          <a-tooltip :trigger="['focus','contextmenu']" placement="topLeft" :arrow="false" color="red">
+                          <a-tooltip :trigger="['focus', 'contextmenu']" placement="topLeft" :arrow="false" color="red">
                             <template v-if="record[column.dataIndex + 'StatusMsg']" #title>
                               <span>{{ record[column.dataIndex + 'StatusMsg'] }}</span>
                             </template>
-                            <a-tree-select v-if="getSxyLabel(record['sxy']) == '权利人类型'" 
-                                           v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" 
-                                           :disabled="column.disabled" tree-checkable
-                                           showCheckedStrategy="TreeSelect.SHOW_ALL"
-                                           :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear
-                                           @change="(value, option) => handleChangeValue(value, option, column, record)"
-                                           :tree-data="getTreeDictItemsByCode(getSxtjOptions(record['sxy']))"
-                                           treeCheckStrictly>
+                            <a-tree-select v-if="getSxyLabel(record['sxy']) == '权利人类型'"
+                              v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']"
+                              style="width: 100%;" :disabled="column.disabled" tree-checkable
+                              showCheckedStrategy="TreeSelect.SHOW_ALL" :placeholder="column.placeholder"
+                              @focus="setInputStatus(column, record)" allow-clear
+                              @change="(value, option) => handleChangeValue(value, option, column, record)"
+                              :tree-data="getTreeDictItemsByCode(getSxtjOptions(record['sxy']))" treeCheckStrictly>
                             </a-tree-select>
-                            <a-select v-else v-model:value="record[column.key]" :status="record[column.dataIndex + 'Status']" style="width: 100%;" :disabled="column.disabled" mode="multiple"
-                                      :placeholder="column.placeholder" @focus="setInputStatus(column, record)" allow-clear @change="(value, option) => handleChangeValue(value, option, column, record)">
-                              <a-select-option v-for="(item,index) in getDictItemsByCode(getSxtjOptions(record['sxy']))" :label="item.label" :value="column.bz ? item.description : item.value">
+                            <a-select v-else v-model:value="record[column.key]"
+                              :status="record[column.dataIndex + 'Status']" style="width: 100%;"
+                              :disabled="column.disabled" mode="multiple" :placeholder="column.placeholder"
+                              @focus="setInputStatus(column, record)" allow-clear
+                              @change="(value, option) => handleChangeValue(value, option, column, record)">
+                              <a-select-option
+                                v-for="(item, index) in getDictItemsByCode(getSxtjOptions(record['sxy']))"
+                                :label="item.label" :value="column.bz ? item.description : item.value">
                                 {{ item.label }}
                               </a-select-option>
                             </a-select>
@@ -192,8 +199,8 @@
                   </a-form-item>
                 </a-col>
               </a-row>
-              
-              
+
+
               <a-row>
                 <a-col :md="24">
                   <a-form-item label="收费登记类型" name="djlx" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
@@ -209,7 +216,7 @@
                   </a-form-item>
                 </a-col>
               </a-row>
-              
+
               <div style="text-align: center;margin-top: 10px">
                 <a-space>
                   <a-button type="primary" @click="handleSubmit">
@@ -235,11 +242,12 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import { AuditOutlined,BookOutlined,FileOutlined } from '@ant-design/icons-vue';
+import { AuditOutlined, BookOutlined, FileOutlined } from '@ant-design/icons-vue';
 import { cModal } from "/@/components/cModal/index"
 import { getDictItemsByCode, getTreeDictItemsByCode, validateRules, setInputStatus } from '/@/views/online/utils/commonUtils';
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
+import { encryptByBase64 } from "/@/utils/cipher";
 
 // loading
 let spinning = ref<boolean>(false)
@@ -520,35 +528,41 @@ function handleAddSxtj() {
 function handleSubmit() {
   return new Promise((resolve, reject) => {
     formRef.value
-    .validate()
-    .then(() => {
-      if (validateTable()) {
-        let _formState = JSON.parse(JSON.stringify(formState.value))
-        _formState.djlx = _formState.djlx.join('|')
-        _formState.sfxbh = selectedNode.value.value
-        let sfxgy = getDictItemsByCode('sfxgy')
-        _formState.sfxgyname = sfxgy.find(item => item.description == _formState.sfxgy)?.label
-        let _sxtjxx = sxtjxx.value.map((item) => {
-          item.sfxbh = selectedNode.value.value
-          let sxtj = JSON.parse(JSON.stringify(item.sxtj))
-          item.sxtj = Array.isArray(sxtj) ? sxtj.map(tj => tj.value ? tj.value : tj).join(',') : ''
-          return item
-        })
-        let params = {
-          bdcSfConfig: _formState,
-          bdcSfConfigsxList: _sxtjxx
-        }
-        defHttp.put({ url: api.update, data: params }, { withToken: true }).then((res) => {
-          if (res && res.success) {
-            message.success('保存成功')
-            initData()
-            loadSfxxx(selectedNode.value.value)
-          } else {
-            message.warning(res?.message)
+      .validate()
+      .then(() => {
+        if (validateTable()) {
+          let _formState = JSON.parse(JSON.stringify(formState.value))
+          _formState.djlx = _formState.djlx.join('|')
+          _formState.sfxbh = selectedNode.value.value
+          let sfxgy = getDictItemsByCode('sfxgy')
+          _formState.sfxgyname = sfxgy.find(item => item.description == _formState.sfxgy)?.label
+          _formState.sfxgy = encryptByBase64(_formState.sfxgy)
+
+          let _sxtjxx = sxtjxx.value.map((item) => {
+            let sx: any = {}
+            sx.sfxbh = selectedNode.value.value
+            let sxtj = JSON.parse(JSON.stringify(item.sxtj))
+            sx.sxtj = Array.isArray(sxtj) ? sxtj.map(tj => tj.value ? tj.value : tj).join(',') : ''
+            sx.sxy = encryptByBase64(item.sxy)
+            sx.gllm = item.gllm
+            sx.sxfs = item.sxfs
+            return sx
+          })
+          let params = {
+            bdcSfConfig: _formState,
+            bdcSfConfigsxList: _sxtjxx
           }
-        })
-      }
-    })
+          defHttp.put({ url: api.update, data: params }, { withToken: true }).then((res) => {
+            if (res && res.success) {
+              message.success('保存成功')
+              initData()
+              loadSfxxx(selectedNode.value.value)
+            } else {
+              message.warning(res?.message)
+            }
+          })
+        }
+      })
   })
 }
 
@@ -562,8 +576,8 @@ function validateTable() {
       let ruleColumn = columns.filter((column: any) => column.rules)
       for (let j = 0; j < ruleColumn.length; j++) {
         setInputStatus(ruleColumn[j], record)
-        if (record[ruleColumn[j].dataIndex+ 'Status'] && record[ruleColumn[j].dataIndex+ 'Status'] == 'error') {
-          message.warning('请检查'+ ruleColumn[j].title + '填写')
+        if (record[ruleColumn[j].dataIndex + 'Status'] && record[ruleColumn[j].dataIndex + 'Status'] == 'error') {
+          message.warning('请检查' + ruleColumn[j].title + '填写')
           return false
         }
       }
@@ -603,7 +617,7 @@ function handleDelSxtj(record, index) {
       }
     })
   } else {
-     sxtjxx.value.splice(index, 1)
+    sxtjxx.value.splice(index, 1)
   }
 }
 // 
@@ -611,18 +625,19 @@ function handleDelSxtj(record, index) {
 
 <style lang="less" scoped>
 @import url('/@/assets/less/form.less');
+
 .sfbzpz {
   height: 100%;
-  
+
   .left {
     :deep(.ant-spin-nested-loading) {
       height: calc(100% - 50px);
     }
   }
-  
+
   .sfbzpz-detail {
     height: 100%;
-    
+
     :deep(.ant-spin-nested-loading) {
       height: calc(100% - 60px);
     }
@@ -652,5 +667,4 @@ function handleDelSxtj(record, index) {
   text-overflow: ellipsis;
   width: 100%;
 }
-
 </style>
