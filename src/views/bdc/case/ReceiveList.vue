@@ -1,5 +1,5 @@
 <template>
-  <div class="wonder-table-form">
+    <div class="wonder-table-form">
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
                 <a-col :span="8" :offset="0">
@@ -36,34 +36,36 @@
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'ajmc'">
                         <a @click="itemView(record)">{{ record.ajmc }}</a>
-                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName+"督办：" +record.taskSuperviseRemark }}】</span>
-                        <span v-if="record.taskUrgent" style="color: red;">【{{  record.taskUrgentUserRealName+"加急：" +record.taskUrgentRemark }}】</span>
+                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName + "督办："
+            + record.taskSuperviseRemark }}】</span>
+                        <span v-if="record.taskUrgent" style="color: red;">【{{ record.taskUrgentUserRealName + "加急："
+            + record.taskUrgentRemark }}】</span>
                     </template>
                     <template v-if="column.key === 'taskTimeStatus'">
                         <span>
-                          <a-space>
-                            <a-tag color="orange" v-if="record.taskTimeStatus == 1">
-                                <template #icon>
-                                    <RollbackOutlined />
-                                </template>
-                                预警
-                            </a-tag>
-                            <a-tag color="red" v-if="record.taskTimeStatus == 2">
-                                <template #icon>
-                                    <AlertOutlined />
-                                </template>
-                                超时
-                            </a-tag>
-                            <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
-                            <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
-                              <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
-                                <template #icon>
-                                  <SolutionOutlined />
-                                </template>
-                                {{ record.taskOwnerName }}
-                              </a-tag>
-                            </a-tooltip>
-                          </a-space>
+                            <a-space>
+                                <a-tag color="orange" v-if="record.taskTimeStatus == 1">
+                                    <template #icon>
+                                        <RollbackOutlined />
+                                    </template>
+                                    预警
+                                </a-tag>
+                                <a-tag color="red" v-if="record.taskTimeStatus == 2">
+                                    <template #icon>
+                                        <AlertOutlined />
+                                    </template>
+                                    超时
+                                </a-tag>
+                                <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
+                                <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
+                                    <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
+                                        <template #icon>
+                                            <SolutionOutlined />
+                                        </template>
+                                        {{ record.taskOwnerName }}
+                                    </a-tag>
+                                </a-tooltip>
+                            </a-space>
                         </span>
                     </template>
                     <template v-if="column.key === 'action'">
@@ -84,8 +86,8 @@ import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, Exclamat
 import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
 enum api {
-  list = '/api/zrzy-bdc/act/task/list',
-  receive = '/api/zrzy-bdc/act/task/claim'
+    list = '/api/zrzy-bdc/act/task/list',
+    receive = '/api/zrzy-bdc/act/task/claim'
 }
 
 let datalist = ref([]);
@@ -115,7 +117,7 @@ let pagination = ref({
 })
 
 onMounted(() => {
-  loadData()
+    loadData()
 })
 
 /**
@@ -123,7 +125,7 @@ onMounted(() => {
  */
 function loadData() {
     spinning.value = true
-    defHttp.post({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh, isLq:true } }, { withToken: true }).then(res => {
+    defHttp.post({ url: api.list, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: { ajmc: formData.value.ajmc, slbh: formData.value.slbh, isLq: true } }, { withToken: true }).then(res => {
         if (res.success) {
             const result = res.result
             datalist.value = result.records
@@ -165,7 +167,7 @@ function clear() {
  * @param record
  */
 function itemView(record: any) {
-  router.push('/task/hisTaskDeal?slbh=' + record.slbh)
+    router.push('/task/hisTaskDeal?slbh=' + record.slbh)
 }
 
 /**
@@ -173,14 +175,14 @@ function itemView(record: any) {
  * @param record
  */
 function handleReceive(record: any) {
-  defHttp.post({ url: api.receive, params: { taskId: record.taskId } }, { withToken: true }).then(res => {
-      if (res && res.success) {
-        message.success('领取成功!')
-        loadData()
-      } else {
-        message.warning('领取失败!')
-      }
-  })
+    defHttp.get({ url: api.receive, params: { taskId: record.taskId } }, { withToken: true }).then(res => {
+        if (res && res.success) {
+            message.success('领取成功!')
+            loadData()
+        } else {
+            message.warning('领取失败!')
+        }
+    })
 }
 
 </script>

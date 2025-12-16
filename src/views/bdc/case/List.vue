@@ -1,43 +1,43 @@
 <template>
-    <div class="wonder-table-form">
-       <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
+  <div class="wonder-table-form">
+    <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="6" :offset="0">
           <a-form-item label="受理编号">
-            <a-input v-model:value="formData.slbh" allowClear/>
+            <a-input v-model:value="formData.slbh" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="流程类别">
             <a-select v-model:value="formData.lclx" :options="getDictItemsByCode('bpm_process_type')"
-                      @change="onChangeLclx" allowClear/>
+              @change="onChangeLclx" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="流程名称">
-            <a-select v-model:value="formData.lcid" :options="lcmcList" @change="onChangeAjlx"/>
+            <a-select v-model:value="formData.lcid" :options="lcmcList" @change="onChangeAjlx" />
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
           <a-form-item label="办理环节">
-             <a-select v-model:value="formData.nodeName" :options="nodeList" allowClear/>
+            <a-select v-model:value="formData.nodeName" :options="nodeList" allowClear />
           </a-form-item>
         </a-col>
       </a-row>
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="6" :offset="0">
           <a-form-item label="不动产单元号">
-            <a-input v-model:value="formData.bdcdyh" allowClear/>
+            <a-input v-model:value="formData.bdcdyh" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="坐落">
-            <a-input v-model:value="formData.zl" allowClear/>
+            <a-input v-model:value="formData.zl" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="案卷名称">
-            <a-input v-model:value="formData.ajmc" allowClear/>
+            <a-input v-model:value="formData.ajmc" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
@@ -60,59 +60,62 @@
         </a-col>
       </a-row>
     </a-form>
-    </div>
-    <div class="wonder-table-css">
-        <a-spin :spinning="spinning">
-            <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-                @change="onChange($event, loadData)">
-                <template #bodyCell="{ column, record }">
-                    <template v-if="column.key === 'ajmc'">
-                        <a @click="itemView(record)">{{ record.ajmc }}</a>
-                        <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName+"督办：" +record.taskSuperviseRemark }}】</span>
-                        <span v-if="record.taskUrgent" style="color: red;">【{{  record.taskUrgentUserRealName+"加急：" +record.taskUrgentRemark }}】</span>
-                        <span v-if="record.taskBack" style="color: red;">【{{ "退件：" + record.taskBackRemark }}】</span>
+  </div>
+  <div class="wonder-table-css">
+    <a-spin :spinning="spinning">
+      <a-table :columns="columns" :data-source="datalist" :pagination="pagination" @change="onChange($event, loadData)">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'ajmc'">
+            <a @click="itemView(record)">{{ record.ajmc }}</a>
+            <span v-if="record.taskSupervise" style="color: red;">【{{ record.taskSuperviseUserRealName + "督办："
+      + record.taskSuperviseRemark }}】</span>
+            <span v-if="record.taskUrgent" style="color: red;">【{{ record.taskUrgentUserRealName + "加急："
+      + record.taskUrgentRemark }}】</span>
+            <span v-if="record.taskBack" style="color: red;">【{{ "退件：" + record.taskBackRemark }}】</span>
+          </template>
+          <template v-if="column.key === 'taskTimeStatus'">
+            <span>
+              <a-space>
+                <a-tag color="orange" v-if="record.taskTimeStatus == 1">
+                  <template #icon>
+                    <RollbackOutlined />
+                  </template>
+                  预警
+                </a-tag>
+                <a-tag color="red" v-if="record.taskTimeStatus == 2">
+                  <template #icon>
+                    <AlertOutlined />
+                  </template>
+                  超时
+                </a-tag>
+                <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
+                <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
+                  <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
+                    <template #icon>
+                      <SolutionOutlined />
                     </template>
-                    <template v-if="column.key === 'taskTimeStatus'">
-                        <span>
-                          <a-space>
-                            <a-tag color="orange" v-if="record.taskTimeStatus == 1">
-                                <template #icon>
-                                    <RollbackOutlined />
-                                </template>
-                                预警
-                            </a-tag>
-                            <a-tag color="red" v-if="record.taskTimeStatus == 2">
-                                <template #icon>
-                                    <AlertOutlined />
-                                </template>
-                                超时
-                            </a-tag>
-                            <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
-                            <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
-                              <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
-                                <template #icon>
-                                  <SolutionOutlined />
-                                </template>
-                                {{ record.taskOwnerName }}
-                              </a-tag>
-                            </a-tooltip>
-                          </a-space>
-                        </span>
-                    </template>
-                    <template v-if="column.key === 'action'">
-                        <a-space :size="2">
-                            <template #split>
-                                <a-divider type="vertical" />
-                            </template>
-                            <a :class="{ 'case-bl-active': clickedList.includes(record.slbh) || record.handleFlag == 1 }" @click="handleCase(record)">办理</a>
-                            <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
-                            <a v-if="record.taskName == '收件' || record.taskName == '受理'" @click="handleDelete(record.slbh, record.ajmc)">删除</a>
-                        </a-space>
-                    </template>
-                </template>
-            </a-table>
-        </a-spin>
-    </div>
+                    {{ record.taskOwnerName }}
+                  </a-tag>
+                </a-tooltip>
+              </a-space>
+            </span>
+          </template>
+          <template v-if="column.key === 'action'">
+            <a-space :size="2">
+              <template #split>
+                <a-divider type="vertical" />
+              </template>
+              <a :class="{ 'case-bl-active': clickedList.includes(record.slbh) || record.handleFlag == 1 }"
+                @click="handleCase(record)">办理</a>
+              <a v-if="!record.taskDelegation" @click="handleEntruster(record)">委托</a>
+              <a v-if="record.taskName == '收件' || record.taskName == '受理'"
+                @click="handleDelete(record.slbh, record.ajmc)">删除</a>
+            </a-space>
+          </template>
+        </template>
+      </a-table>
+    </a-spin>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -124,39 +127,39 @@ import { Modal, message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils.ts";
 enum api {
-    // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
-    tasklist = '/api/zrzy-bdc/act/task/list',
-    delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData",
-    taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust',
-    handleFlagUrl = '/api/zrzy-bdc/hi/taskinst/updateHandleFlag',
-    getLcListByLclx = '/api/zrzy-bdc/flow/flowConfig/getLcListByLclx',
-    nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list'
+  // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
+  tasklist = '/api/zrzy-bdc/act/task/list',
+  delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData",
+  taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust',
+  handleFlagUrl = '/api/zrzy-bdc/hi/taskinst/updateHandleFlag',
+  getLcListByLclx = '/api/zrzy-bdc/flow/flowConfig/getLcListByLclx',
+  nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list'
 }
 let datalist = ref([]);
 let formData: any = ref({})
 let spinning = ref<boolean>(true);
 const columns = [
-    { title: "任务id", dataIndex: "taskId", align: "center" },
-    { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 100 },
-    { title: "案卷名称", dataIndex: "ajmc", align: "center", key: "ajmc" },
-    { title: "登记类别", dataIndex: "processDefinitionName", align: "center", key: "processDefinitionName" },
-    { title: "受理编号", dataIndex: "slbh", align: "center" },
-    { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
-    { title: "当前节点", dataIndex: "taskName", align: "center" },
-    { title: "时长", dataIndex: "durationStr", align: "center" },
-    { title: "提交人", dataIndex: "processApplyUserName", align: "center" },
-    { title: "提交时间", dataIndex: "taskBeginTime", align: "center" },
-    { title: '操作', key: 'action', width: 200, align: "center" }
+  { title: "任务id", dataIndex: "taskId", align: "center" },
+  { title: "状态", dataIndex: "taskTimeStatus", align: "center", key: "taskTimeStatus", width: 100 },
+  { title: "案卷名称", dataIndex: "ajmc", align: "center", key: "ajmc" },
+  { title: "登记类别", dataIndex: "processDefinitionName", align: "center", key: "processDefinitionName" },
+  { title: "受理编号", dataIndex: "slbh", align: "center" },
+  { title: "节点ID", dataIndex: "taskDefKey", align: "center" },
+  { title: "当前节点", dataIndex: "taskName", align: "center" },
+  { title: "时长", dataIndex: "durationStr", align: "center" },
+  { title: "提交人", dataIndex: "processApplyUserName", align: "center" },
+  { title: "提交时间", dataIndex: "taskBeginTime", align: "center" },
+  { title: '操作', key: 'action', width: 200, align: "center" }
 ]
 let pagination = ref({
-    total: 0,
-    current: 1,
-    pageSize: 10,
-    showTotal: () => {
-        return `共 ${pagination.value.total} 条数据`
-    },
-    showSizeChanger: true,
-    showQuickJumper: true
+  total: 0,
+  current: 1,
+  pageSize: 10,
+  showTotal: () => {
+    return `共 ${pagination.value.total} 条数据`
+  },
+  showSizeChanger: true,
+  showQuickJumper: true
 })
 // 流程名称下拉
 let lcmcList = ref([])
@@ -179,23 +182,23 @@ function loadData() {
     zl: formData.value.zl,
     taskName: formData.value.nodeName
   }
-    defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: data }, { withToken: true }).then(res => {
-        if (res.success) {
-            const result = res.result
-            datalist.value = result.records
-            pagination.value.total = result.total
-        }
-        spinning.value = false
-    }).catch(_err => {
-        spinning.value = false
-    })
+  defHttp.post({ url: api.tasklist, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }, data: data }, { withToken: true }).then(res => {
+    if (res.success) {
+      const result = res.result
+      datalist.value = result.records
+      pagination.value.total = result.total
+    }
+    spinning.value = false
+  }).catch(_err => {
+    spinning.value = false
+  })
 }
 /**
  * 查询
 */
 function searchData() {
-    pagination.value.current = 1
-    loadData()
+  pagination.value.current = 1
+  loadData()
 }
 /**
 * 分页
@@ -203,16 +206,16 @@ function searchData() {
 * @param callback 回调函数
 */
 function onChange(pag: any, callback: any) {
-    pagination.value.current = pag.current
-    pagination.value.pageSize = pag.pageSize
-    callback()
+  pagination.value.current = pag.current
+  pagination.value.pageSize = pag.pageSize
+  callback()
 }
 /**
  * 重置
 */
 function clear() {
-    formData.value = {}
-    loadData()
+  formData.value = {}
+  loadData()
 }
 /**
  * 移交
@@ -234,7 +237,7 @@ function handleFlag(record) {
   if (!record.taskId || record.handleFlag == 1) {
     return
   }
-  defHttp.put({
+  defHttp.get({
     url: api.handleFlagUrl,
     params: { taskId: record.taskId }
   }, { withToken: true }).then((res) => {
@@ -292,28 +295,28 @@ function handleEntruster(record: any) {
  * @param slbh
  */
 function handleDelete(slbh: string, ajmc: string) {
-    Modal.confirm({
-        title: '确定要删除该案卷吗?',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: '案卷名称：' + ajmc,
-        okText: '确定',
-        okType: 'danger',
-        cancelText: '取消',
-        onOk() {
-            defHttp.delete(
-                { url: api.delUrl, params: { slbh: slbh } }, { withToken: true }
-            ).then((res: any) => {
-                if (res?.success) {
-                    message.success('删除成功！')
-                    loadData()
-                } else {
-                    message.warning(res?.message)
-                }
-            })
-        },
-        onCancel() {
-        },
-    });
+  Modal.confirm({
+    title: '确定要删除该案卷吗?',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: '案卷名称：' + ajmc,
+    okText: '确定',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk() {
+      defHttp.delete(
+        { url: api.delUrl, params: { slbh: slbh } }, { withToken: true }
+      ).then((res: any) => {
+        if (res?.success) {
+          message.success('删除成功！')
+          loadData()
+        } else {
+          message.warning(res?.message)
+        }
+      })
+    },
+    onCancel() {
+    },
+  });
 
 
 }
@@ -393,6 +396,7 @@ function getNode(currentLcid) {
 <style scoped lang="less">
 // table通用样式，保持项目内样式一致
 @import url('/@/assets/less/table.less');
+
 .case-bl-active {
   color: #771caa;
 }

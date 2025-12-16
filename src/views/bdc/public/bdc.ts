@@ -299,7 +299,7 @@ export async function submit(demoRefs: any, btn: any, loading: any, jdmc: string
 function updateYwblqk() {
   let slbh = route.query.slbh
   return new Promise((resolve, reject) => {
-    defHttp.put({ url: '/api/zrzy-bdc/bdc/bdcCftz/updateYwblqkBySlbh', params: { slbh: slbh } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: '/api/zrzy-bdc/bdc/bdcCftz/updateYwblqkBySlbh', params: { slbh: slbh } }, { withToken: true }).then((res) => {
       if (res && res.success) {
         resolve(true)
       } else {
