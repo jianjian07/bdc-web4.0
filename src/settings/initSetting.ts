@@ -6,7 +6,7 @@ import projectSetting from "/@/settings/projectSetting"
 import { useAppStoreWithOut } from "/@/store/modules/app"
 import { message } from "ant-design-vue"
 import { defHttp } from "/@/utils/http/axios"
-import { decryptAES } from "/@/utils/cipher.ts"
+import { decryptAES, encryptionAES } from "/@/utils/cipher.ts"
 import { usePermissionStore } from "/@/store/modules/permission.ts"
 import { useThemeSetting } from "/@/hooks/setting/useThemeSetting.ts"
 import { useUserStoreWithOut } from "/@/store/modules/user"
@@ -151,10 +151,17 @@ export function fetchNacosConfig() {
 function getNacosToken() {
   return new Promise(async (resolve) => {
     let result: any = await getSettingJson()
-    if (result && result.nacosUser && result.nacosPwd) {
+    if (result && result.nacosAuth) {
+      let auth = decryptAES(result.nacosAuth, 'zondyzrzykjghsyb')
+      if (!auth.includes(':')) {
+        resolve('')
+        return
+      }
+      let user = auth.split(':')[0]
+      let pwd = auth.split(':')[1]
       let params = {
-        username: result.nacosUser,
-        password: result.nacosPwd
+        username: encryptionAES(user),
+        password: encryptionAES(pwd)
       }
       let url = '/api/zrzy-system/api/v1/auth/getNacosToken'
       defHttp.get({ url: url, params: params }, { withToken: false }).then((res) => {

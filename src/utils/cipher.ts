@@ -53,8 +53,8 @@ export function decodeByBase64(cipherText: string) {
 export function encryptByMd5(password: string) {
   return md5(password).toString();
 }
-export function encryptionAES(cipherText: string) {
-  const key = 'WONDER1274654321'
+export function encryptionAES(cipherText: string, cipherKey?: string) {
+  const key = cipherKey || 'WONDER1274654321'
   const key_ele = CryptoJS.enc.Latin1.parse(key)
   var iv = key_ele
   // 加密
@@ -68,8 +68,8 @@ export function encryptionAES(cipherText: string) {
   return encrypted.toString()
 }
 
-export function decryptAES(cipherText: string) {
-  const key = 'WONDER1274654321'
+export function decryptAES(cipherText: string, cipherKey?: string) {
+  const key = cipherKey || 'WONDER1274654321'
   const key_ele = CryptoJS.enc.Latin1.parse(key)
   var iv = key_ele
   try {
