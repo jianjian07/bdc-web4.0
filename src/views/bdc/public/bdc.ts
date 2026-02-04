@@ -1986,6 +1986,24 @@ export function addContract(arr: any) {
   })
 }
 /**
+ * 新建合同(合同材料打印功能)
+ * @param arr
+ */
+export function addContractDy(arr: any) {
+  return new Promise(async (resolve) => {
+    let url = '/api/zrzy-bdc/clf/ht/addContractDy'
+    let _data = { bdcdyh: arr[0].bdcdyh, bdcqzh: arr[0].bdcqzh, djsj: arr[0].djsj, ywh: arr[0].ywh }
+    defHttp.post({ url: url, data: _data }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result)
+      } else {
+        message.warning(res?.message)
+        resolve(false)
+      }
+    })
+  })
+}
+/**
  * 提交合同逻辑检查
  * @param params
  */
