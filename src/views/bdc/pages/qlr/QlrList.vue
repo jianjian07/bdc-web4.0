@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, ref } from "vue"
+import { inject, onActivated, onBeforeUnmount, onMounted, ref } from "vue"
 import Qlr from "/@/views/bdc/pages/qlr/Qlr.vue"
 import { updateQlrxxList } from "/@/views/bdc/public/bdc"
 const eventBus = inject('scopedEventBus', null)
@@ -55,6 +55,10 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   eventBus.off('reloadQlrList')
+})
+//打开办理界面后，如果再打开另外一个办理界面或者案卷办理过程中的带权利人的节点时，会导致同步附件时串了，所以需要在缓存路由被触发时再次更新权利人信息
+onActivated(()=>{
+  getQlrxxList()
 })
 
 const qlrRef = (qlrxsmc) => (el) => {
