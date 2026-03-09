@@ -303,7 +303,7 @@ export class RequestHttp {
                 break;
             case 401: {
                 message = '未授权,请重新登陆';
-                this.goLogin();
+                // this.goLogin();
                 break;
             }
             case 424: {

@@ -373,9 +373,9 @@ export const useUserStore = defineStore({
         return Promise.reject(error);
       }
     },
-     /**
-     * 获取localStorage
-     */
+    /**
+    * 获取localStorage
+    */
     getAppCommonLocal(key: string) {
       if (localStorage[`CC__${APP_LOCAL_CACHE_KEY}`] && this.isJsonData(localStorage[`CC__${APP_LOCAL_CACHE_KEY}`])) {
         let ls = JSON.parse(localStorage[`CC__${APP_LOCAL_CACHE_KEY}`]).value

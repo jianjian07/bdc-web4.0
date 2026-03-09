@@ -374,7 +374,8 @@ function setRejectTransTree(rejectObj) {
 function getTaskUserInfo(stringList, transitionList, yjfx) {
   resetData()
   treeSpinning.value = true
-  defHttp.post({ url: api.getTaskUserInfo, data: { stringList: stringList } }, { withToken: true }).then((res) => {
+  let taskId = route.query.taskId || props.formData.taskId
+  defHttp.post({ url: api.getTaskUserInfo, data: { taskId: taskId, stringList: stringList } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       defHttp.post({ url: api.extractUserRole, data: res.result }, { withToken: true }).then((res) => {
         if (res && res.success) {

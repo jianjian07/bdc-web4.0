@@ -128,9 +128,15 @@ function handleModalOk() {
   delete data.urgentProcessArr
   let savaModel: any = {};
   savaModel.createBy = data.userName
-  savaModel.urgentProcess = data.urgentProcess
-  savaModel.urgentStatus = data.urgentStatus
-  savaModel.urgentUser = data.urgentUser
+  if (props.type == 'db') {
+    savaModel.superviseProcess = data.superviseProcess
+    savaModel.superviseStatus = data.superviseStatus
+    savaModel.superviseUser = data.superviseUser
+  } else {
+    savaModel.urgentProcess = data.urgentProcess
+    savaModel.urgentStatus = data.urgentStatus
+    savaModel.urgentUser = data.urgentUser
+  }
   defHttp.put({ url: url, data: savaModel }, { withToken: true }).then((res) => {
     confirmLoading.value = false
     if (res && res.success) {

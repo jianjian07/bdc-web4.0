@@ -1,66 +1,61 @@
 <template>
   <div class="wonder-table-form">
-      <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
-          <a-row :gutter="[0, 8]" tyle="flex">
-              <a-col :span="8" :offset="0">
-                  <a-form-item label="案卷名称">
-                      <a-input v-model:value="formData.ajmc" />
-                  </a-form-item>
-              </a-col>
-              <a-col :span="8" :offset="0">
-                  <a-form-item label="受理编号">
-                      <a-input v-model:value="formData.slbh" />
-                  </a-form-item>
-              </a-col>
-              <a-col :span="4" :offset="0">
-                  <a-form-item style="text-align: center;">
-                      <a-space>
-                          <a-button type="primary" @click="searchData">
-                              <template #icon>
-                                  <component :is="SearchOutlined"></component>
-                              </template>查询</a-button>
-                          <a-button @click="clear">
-                              <template #icon>
-                                  <component :is="RedoOutlined"></component>
-                              </template>重置</a-button>
-                      </a-space>
-                  </a-form-item>
-              </a-col>
-          </a-row>
-      </a-form>
+    <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
+      <a-row :gutter="[0, 8]" tyle="flex">
+        <a-col :span="8" :offset="0">
+          <a-form-item label="案卷名称">
+            <a-input v-model:value="formData.ajmc" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="8" :offset="0">
+          <a-form-item label="受理编号">
+            <a-input v-model:value="formData.slbh" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="4" :offset="0">
+          <a-form-item style="text-align: center;">
+            <a-space>
+              <a-button type="primary" @click="searchData">
+                <template #icon>
+                  <component :is="SearchOutlined"></component>
+                </template>查询</a-button>
+              <a-button @click="clear">
+                <template #icon>
+                  <component :is="RedoOutlined"></component>
+                </template>重置</a-button>
+            </a-space>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
   </div>
   <div class="wonder-table-css">
-      <a-spin :spinning="spinning">
-          <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
-              @change="onChange($event, loadData)">
-              <template #bodyCell="{ column, record }">
-                  <template v-if="column.dataIndex == 'ajmc'">
-                    <a @click="itemView(record)">{{ record.ajmc }}</a>
-                  </template>
-                  <template v-if="column.dataIndex === 'action'">
-                      <a-space>
-                        <template #split>
-                          <a-divider type="vertical" />
-                        </template>
-                        <a-popconfirm
-                          v-if="record.isUrgent!=''&& record.isUrgent==='1'"
-                          title="确定取消加急吗?"
-                          @confirm="() => queryInfo(record)"
-                        >
-                          <a>取消</a>
-                        </a-popconfirm>
-                        <a v-if="record.isUrgent!=''&& record.isUrgent==='0'"
-                          @click="handleOper(record)">加急</a>
-                      </a-space>
-                  </template>
-                  <template v-if="column.dataIndex === 'isUrgent'">
-                      <a-tag :color="record.isUrgent === '1' ? 'green' : 'red'">
-                         {{ record.isUrgent === '1' ? '已加急' : '未加急' }}
-                      </a-tag>
-                  </template>
+    <a-spin :spinning="spinning">
+      <a-table :columns="columns" :data-source="datalist" :pagination="pagination" @change="onChange($event, loadData)">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex == 'ajmc'">
+            <a @click="itemView(record)">{{ record.ajmc }}</a>
+          </template>
+          <template v-if="column.dataIndex === 'action'">
+            <a-space>
+              <template #split>
+                <a-divider type="vertical" />
               </template>
-          </a-table>
-      </a-spin>
+              <a-popconfirm v-if="record.isUrgent != '' && record.isUrgent === '1'" title="确定取消加急吗?"
+                @confirm="() => queryInfo(record)">
+                <a>取消</a>
+              </a-popconfirm>
+              <a v-if="record.isUrgent != '' && record.isUrgent === '0'" @click="handleOper(record)">加急</a>
+            </a-space>
+          </template>
+          <template v-if="column.dataIndex === 'isUrgent'">
+            <a-tag :color="record.isUrgent === '1' ? 'green' : 'red'">
+              {{ record.isUrgent === '1' ? '已加急' : '未加急' }}
+            </a-tag>
+          </template>
+        </template>
+      </a-table>
+    </a-spin>
   </div>
 </template>
 
@@ -78,7 +73,7 @@ const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 
 enum api {
-  tasklist = '/api/zrzy-bdc/act/processInstance/susperviseAndUrgentlist',
+  tasklist = '/api/zrzy-bdc/act/task/susperviseAndUrgentlist',
   edit = '/api/zrzy-bdc/process/extActUrgent/edit', // 编辑
   queryByInstId = '/api/zrzy-bdc/process/extActUrgent/queryByInstId', //通过实例id查询
 }
@@ -135,7 +130,7 @@ let pagination = ref({
   current: 1,
   pageSize: 10,
   showTotal: () => {
-      return `共 ${pagination.value.total} 条数据`
+    return `共 ${pagination.value.total} 条数据`
   },
   showSizeChanger: false
 })
@@ -146,16 +141,20 @@ onMounted(() => {
 
 function loadData() {
   spinning.value = true
-  defHttp.get({ url: api.tasklist, params: { ajmc: formData.value.ajmc, slbh: formData.value.slbh, type: 'urgent',
-      pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then(res => {
-      if (res.success) {
-          const result = res.result
-          datalist.value = result.records
-          pagination.value.total = result.total
-      }
-      spinning.value = false
+  defHttp.get({
+    url: api.tasklist, params: {
+      ajmc: formData.value.ajmc, slbh: formData.value.slbh, type: 'urgent',
+      pageNo: pagination.value.current, pageSize: pagination.value.pageSize
+    }
+  }, { withToken: true }).then(res => {
+    if (res.success) {
+      const result = res.result
+      datalist.value = result.records
+      pagination.value.total = result.total
+    }
+    spinning.value = false
   }).catch(_err => {
-      spinning.value = false
+    spinning.value = false
   })
 }
 /**
@@ -200,7 +199,7 @@ function handleRestart(record) {
   defHttp.put({
     url: api.edit,
     data: params
-  },{ withToken: true }).then((res: any) => {
+  }, { withToken: true }).then((res: any) => {
     if (res?.success) {
       message.success(res.message)
       loadData()
@@ -215,7 +214,7 @@ function queryInfo(record: any) {
     url: api.queryByInstId,
     params: { id: record.processInstanceId }
   }, { withToken: true }).then((res: any) => {
-    if(res && res.success) {
+    if (res && res.success) {
       handleRestart(res.result)
     }
   })
@@ -239,7 +238,7 @@ function handleOper(record: any) {
     title: '加急',
     width: 600,
     filePath: 'views/bdc/jjgl/jjModal',
-    footerStyle: {'text-align': 'center'},
+    footerStyle: { 'text-align': 'center' },
     formData: {
       record: record
     },
@@ -260,9 +259,11 @@ function handleOper(record: any) {
 }
 
 async function handleTest() {
-  let viewData:any = ref({bdc_djzb: {
-    zcs: '5'
-  }})
+  let viewData: any = ref({
+    bdc_djzb: {
+      zcs: '5'
+    }
+  })
   let result1 = await getQlqtqkByMap('FWSCDJ19980040240002', '19980040240001', viewData)
   let result2 = await getQlqtqkBySLBH('FWSCDJ19980040240002', viewData)
 
