@@ -60,6 +60,9 @@
                         {{ record.name }}
                     </a>
                 </template>
+                <template v-else-if="column.key === 'processType'">
+                    {{ getLabelByDictCode(record.processType) }}
+                </template>
                 <template v-else-if="column.key === 'processStatus'">
                     <span>
                         <a-tag :color="record.processStatus === 1 ? 'green' : 'volcano'">
@@ -119,7 +122,6 @@ let processData = ref({
     processType: '',
     processStatus: ''
 })
-
 const columns = ref<TableColumnsType>([
     {
         title: '序号',
@@ -131,6 +133,7 @@ const columns = ref<TableColumnsType>([
         title: '流程名称',
         dataIndex: 'processName',
         key: 'processName',
+        width: 400,
     },
     {
         title: '流程编码',
@@ -361,5 +364,16 @@ async function getDictLcfl(dictCode: string) {
         { withToken: true }
     );
     dictOptions.value = i || []; // 更简洁
+}
+/**
+ * 数据字典获取标题
+ * @param dict
+ * @param value
+ */
+function getLabelByDictCode(dict: any) {
+    if (dict == '' || dict == null) {
+        return ''
+    }
+    return dictOptions.value.filter((t: any) => t.dictCode == dict)[0].dictName || ''
 }
 </script>
