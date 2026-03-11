@@ -77,7 +77,7 @@
                                 <a-divider type="vertical" />
                             </template>
                             <a @click="handleAction(record, 'sj')">设计</a>
-                            <a @click="handleAction(record, 'pz')">配置</a>
+                            <!-- <a @click="handleAction(record, 'pz')">配置</a> -->
                             <a @click="handleAction(record, 'fb')">发布</a>
                             <a-dropdown>
                                 <a class="ant-dropdown-link" @click.prevent>
