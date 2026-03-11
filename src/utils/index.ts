@@ -8,11 +8,11 @@ const baseApiUrl = '';
  * @returns
  */
 export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
-    let key: string
-    for (key in target) {
-        src[key] = isObject(src[key]) ? deepMerge(src[key], target[key]) : (src[key] = target[key])
-    }
-    return src
+  let key: string
+  for (key in target) {
+    src[key] = isObject(src[key]) ? deepMerge(src[key], target[key]) : (src[key] = target[key])
+  }
+  return src
 }
 /**
  * Add the object as a parameter to the URL
@@ -25,21 +25,33 @@ export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
  *  ==>www.baidu.com?a=3&b=4
  */
 export function setObjToUrlParams(baseUrl: string, obj: any): string {
-    let parameters = '';
-    for (const key in obj) {
-        parameters += key + '=' + encodeURIComponent(obj[key]) + '&';
-    }
-    parameters = parameters.replace(/&$/, '');
-    return /\?$/.test(baseUrl) ? baseUrl + parameters : baseUrl.replace(/\/?$/, '?') + parameters;
+  let parameters = '';
+  for (const key in obj) {
+    parameters += key + '=' + encodeURIComponent(obj[key]) + '&';
+  }
+  parameters = parameters.replace(/&$/, '');
+  return /\?$/.test(baseUrl) ? baseUrl + parameters : baseUrl.replace(/\/?$/, '?') + parameters;
 }
 /**
  * 获取images路径下的图片
  */
 export function getImageUrl(name: string) {
-    return new URL(`/src/assets/images/${name}.png`, import.meta.url).href;
+  try {
+    const fullPath = `/src/assets/images/${name}.png`;
+    const url = new URL(fullPath, import.meta.url);
+    return url.href;
+  } catch (error) {
+    return '';
+  }
 }
 export function getUrl(name: string) {
-    return new URL(`/src/assets/${name}`, import.meta.url).href;
+  try {
+    const fullPath = `/src/assets/${name}`;
+    const url = new URL(fullPath, import.meta.url);
+    return url.href;
+  } catch (error) {
+    return '';
+  }
 }
 /**
  *  获取文件服务访问路径
@@ -47,34 +59,34 @@ export function getUrl(name: string) {
  * @param prefix(默认http)  文件路径前缀 http/https
  */
 export const getFileAccessHttpUrl = (fileUrl, prefix = 'http') => {
-    let result = fileUrl;
-    try {
-        if (fileUrl && fileUrl.length > 0 && !fileUrl.startsWith(prefix)) {
-            //判断是否是数组格式
-            let isArray = fileUrl.indexOf('[') != -1;
-            if (!isArray) {
-                let prefix = `${baseApiUrl}/sys/common/static/`;
-                // 判断是否已包含前缀
-                if (!fileUrl.startsWith(prefix)) {
-                    result = `${prefix}${fileUrl}`;
-                }
-            }
+  let result = fileUrl;
+  try {
+    if (fileUrl && fileUrl.length > 0 && !fileUrl.startsWith(prefix)) {
+      //判断是否是数组格式
+      let isArray = fileUrl.indexOf('[') != -1;
+      if (!isArray) {
+        let prefix = `${baseApiUrl}/sys/common/static/`;
+        // 判断是否已包含前缀
+        if (!fileUrl.startsWith(prefix)) {
+          result = `${prefix}${fileUrl}`;
         }
-    } catch (err) { }
-    return result;
+      }
+    }
+  } catch (err) { }
+  return result;
 };
 
 const S4 = function () {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 };
 
 /**
  * 生成guid
  */
 export function guid() {
-    const timestamp = Date.now().toString(16);
-    return (S4() + S4() + '-' + S4() + '-' + timestamp + '-' + S4() + '-' + S4() + S4() + S4()
-    );
+  const timestamp = Date.now().toString(16);
+  return (S4() + S4() + '-' + S4() + '-' + timestamp + '-' + S4() + '-' + S4() + S4() + S4()
+  );
 }
 /**对比属性**/
 /**
@@ -84,15 +96,15 @@ export function guid() {
  * @returns 不同属性值组成的对象
  */
 export function compareObjects(obj1: any, obj2: any) {
-    // 定义一个空数组用于存储不同的属性值
-    let diff: any = {}
-    for (const key in obj1) {
-        // 如果属性值不同，则将该属性和obj1和obj2的值存入diff对象
-        if (obj1[key] !== obj2[key]) {
-            diff[key] = obj2[key];
-        }
+  // 定义一个空数组用于存储不同的属性值
+  let diff: any = {}
+  for (const key in obj1) {
+    // 如果属性值不同，则将该属性和obj1和obj2的值存入diff对象
+    if (obj1[key] !== obj2[key]) {
+      diff[key] = obj2[key];
     }
-    return diff;
+  }
+  return diff;
 }
 /**对比属性**/
 
@@ -114,8 +126,8 @@ export function scrollOnTheEnd(id, time) {
       let progress = timestamp - startTime;
       let scrollPos = start + distance * (progress / time)
       msg.scrollTop = scrollPos;
-  
-      if (progress < time) { 
+
+      if (progress < time) {
         window.requestAnimationFrame(scrollStep);
       } else {
         msg.scrollTop = end

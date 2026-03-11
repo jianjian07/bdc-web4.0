@@ -277,15 +277,26 @@ function delProcess(record: any) {
         message.warning('该流程已发布，不能删除！！！')
         return
     } else {
-        defHttp.get({ url: '/bpmapi/bpm/design/delProcess', params: { id: record.id } }, { withToken: true }).then((res) => {
-            if (res.success) {
-                message.success('删除成功')
-                loadData()
+        Modal.confirm({
+            title: '系统提示',
+            icon: createVNode(ExclamationCircleOutlined),
+            content: createVNode('div', { style: 'color:red;' }, '确定要「删除」该流程吗?'),
+            onOk() {
+                defHttp.get({ url: '/bpmapi/bpm/design/delProcess', params: { id: record.id } }, { withToken: true }).then((res) => {
+                    if (res.success) {
+                        message.success('删除成功')
+                        loadData()
+                    }
+                    else {
+                        message.error(res.message)
+                    }
+                })
+            },
+            onCancel() {
+
             }
-            else {
-                message.error(res.message)
-            }
-        })
+        });
+
     }
 }
 loadData()

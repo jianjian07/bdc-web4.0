@@ -40,7 +40,13 @@ enum api {
  * @param name
  */
 export function getBdcImgUrl(name) {
-  return new URL(`/src/assets/images/${name}`, import.meta.url).href
+  try {
+    const fullPath = `/src/assets/images/${name}`;
+    const url = new URL(fullPath, import.meta.url);
+    return url.href;
+  } catch (error) {
+    return '';
+  }
 }
 
 /**
