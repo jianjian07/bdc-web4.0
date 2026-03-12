@@ -86,6 +86,7 @@ function setTreeData(data: any) {
  */
 function setBaseInfo(data: any) {
     data.prefix = data.prefix || processInfo.value.value
+    data.lcmc = data.lcmc || processInfo.value.title
     baseInfo.value = data
 }
 </script>
