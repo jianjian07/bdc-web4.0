@@ -381,10 +381,11 @@ async function getDictLcfl(dictCode: string) {
  * @param dict
  * @param value
  */
-function getLabelByDictCode(dict: any) {
-    if (dict == '' || dict == null) {
+function getLabelByDictCode(code: any) {
+    if (!code) {
         return ''
     }
-    return dictOptions.value.filter((t: any) => t.dictCode == dict)[0].dictName || ''
+    const item = dictOptions.value.find(t => t.dictCode == code)
+    return item?.dictName || ''
 }
 </script>
