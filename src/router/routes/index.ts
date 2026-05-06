@@ -32,6 +32,14 @@ const RootRoute = [
     meta: {
       title: '系统初始化',
     },
+  },
+  {
+    path: '/viewpdf',
+    name: 'RViewPdf',
+    component: () => import('/@/views/online/preport/RViewPdf.vue'),
+    meta: {
+      title: '在线预览',
+    },
   }
 ]
 

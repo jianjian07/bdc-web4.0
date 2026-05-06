@@ -2,7 +2,7 @@
     <div class="wonder-table-form">
         <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
             <a-row :gutter="[0, 8]" tyle="flex">
-                <a-col :span="6" :offset="0">
+                <a-col :span="4" :offset="0">
                     <a-form-item label="报表ID">
                         <a-input v-model:value="formData.id" allowClear />
                     </a-form-item>
@@ -12,9 +12,17 @@
                         <a-input v-model:value="formData.title" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="6" :offset="0">
+                <a-col :span="4" :offset="0">
                     <a-form-item label="报表编码">
                         <a-input v-model:value="formData.code" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="4" :offset="0">
+                    <a-form-item label="报表类型" name="type">
+                        <a-select v-model:value="formData.type" allowClear>
+                            <a-select-option :value="0">查询报表</a-select-option>
+                            <a-select-option :value="1">打印报表</a-select-option>
+                        </a-select>
                     </a-form-item>
                 </a-col>
                 <a-col :span="4" :offset="0">
@@ -74,6 +82,11 @@
                         {{ record[column.dataIndex] === 1 ? '是' : '否' }}
                     </a-tag>
                 </template>
+                <template v-if="column.dataIndex === 'type'">
+                    <a-tag :color="record[column.dataIndex] === 1 ? 'green' : 'processing'" style="padding: 0 15px;">
+                        {{ record[column.dataIndex] === 1 ? '打印报表' : '查询报表' }}
+                    </a-tag>
+                </template>
                 <template v-if="column.key === 'action'">
                     <a-space>
                         <template #split>
@@ -128,10 +141,11 @@ const showCreate = computed(() => permissionStore.showCreateBtn)
 const ReportModal = defineAsyncComponent(() => import("/@/views/online/report/ReportModal.vue"));
 const columns = [
     { title: "ID", dataIndex: "id", width: 200 },
+    { title: "报表类型", dataIndex: "type", width: 150 },
     { title: "初始加载", dataIndex: "isLoad", width: 100 },
     { title: "编号", dataIndex: "code", width: 150 },
     { title: "报表标题", dataIndex: "title" },
-    { title: "数据来源", dataIndex: "cType" },
+    // { title: "数据来源", dataIndex: "cType" },
     { title: "MyBatis", dataIndex: "isMybatis" },
     { title: "修改时间", dataIndex: "updateTime", width: 140 },
     { title: '操作', key: 'action', width: 180 }
@@ -159,7 +173,7 @@ enum Api {
  * 表格数据加载
 */
 async function loadData() {
-    defHttp.post({ url: Api.list, data: { id: formData.value.id || '', code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
+    defHttp.post({ url: Api.list, data: { id: formData.value.id || '', type: formData.value.type, code: formData.value.code || '', formName: formData.value.title || '' }, params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize } }, { withToken: true }).then((res) => {
         if (!res.success) return
         const { records, total } = res.result
         datalist.value = records
@@ -186,14 +200,23 @@ function searchData() {
 }
 
 function design(record: any) {
-    router.push("/online/report/design" + '/' + record.id)
+    if (record.type === 1) {
+        router.push("/online/report/pdesion" + '/' + record.id)
+    } else {
+        router.push("/online/report/design" + '/' + record.id)
+    }
 }
 /**
  * 在线预览
  * @param record
  */
 function preview(record: any) {
-    router.push("/online/report/view" + '/' + record.id)
+    if (record.type === 1) {
+        router.push("/viewcpdf" + '?id=' + record.id)
+    } else {
+        router.push("/online/report/view" + '/' + record.id)
+    }
+
 }
 
 /**
