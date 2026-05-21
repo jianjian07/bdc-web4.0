@@ -488,9 +488,10 @@ export function reloadTable(eventBus: any) {
  * 跳转至积木报表的 预览页面
  * @param url
  * @param id
+ * @param type 默认就是积木，1是积木，2是打印报表
  * @param token
  */
-export async function print(params: { code: string, [key: string]: string | number }) {
+export async function print(params: { code: string, [key: string]: string | number, type: number }) {
   // let domain = window._CONFIG['domianURL']
   const routeSlbh = route.query.slbh?.toString(); // 从路由获取的 slbh
   let domain = ''
@@ -516,11 +517,15 @@ export async function print(params: { code: string, [key: string]: string | numb
     }
     url = await getReportUrl(_data)
   } else {
-    const userStore = useUserStoreWithOut();
-    const token = userStore.getToken
-    domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
-    url = `${domain}jmreport/view/${params.code}`
-    url += `?${queryParams.toString()}&token=${token}`
+    if (params.type === 2) {
+      window.open(`/viewpdf?id=${params.code}&${queryParams.toString()}`, '_blank')
+    } else {
+      const userStore = useUserStoreWithOut();
+      const token = userStore.getToken
+      domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
+      url = `${domain}jmreport/view/${params.code}`
+      url += `?${queryParams.toString()}&token=${token}`
+    }
   }
   if (url) {
     window.open(url, '_blank')
