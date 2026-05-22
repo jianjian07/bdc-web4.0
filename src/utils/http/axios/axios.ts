@@ -139,7 +139,33 @@ export class RequestHttp {
                 config.params = undefined;
             }
         }
+        // 统一将data中的undefined转为空字符串，避免JSON.stringify丢失字段
+        if (config.data && typeof config.data === 'object') {
+            config.data = this.replaceUndefinedToEmpty(config.data);
+        }
         return config;
+    }
+
+    /** 深度递归将对象中所有undefined值转为空字符串 */
+    private replaceUndefinedToEmpty(obj: any): any {
+        if (obj === null || obj === undefined) return ''
+        if (Array.isArray(obj)) {
+            return obj.map(item => this.replaceUndefinedToEmpty(item));
+        }
+        if (typeof obj === 'object') {
+            const result: any = {};
+            for (const key in obj) {
+                if (obj[key] === undefined) {
+                    result[key] = '';
+                } else if (obj[key] !== null && typeof obj[key] === 'object') {
+                    result[key] = this.replaceUndefinedToEmpty(obj[key]);
+                } else {
+                    result[key] = obj[key];
+                }
+            }
+            return result;
+        }
+        return obj;
     }
 
     /**按ascii码从小到大排序
@@ -223,7 +249,6 @@ export class RequestHttp {
                 config.timeout = 0
             }
         }
-
         if (config && config.headers && config.requestOptions) { // 多一步判断
             if (config.requestOptions.xAuthToken != undefined) {
                 Reflect.set(config.headers, 'x-auth-token', config.requestOptions.xAuthToken)
