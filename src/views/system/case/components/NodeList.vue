@@ -1,7 +1,8 @@
 <template>
     <a-row style="padding: 10px">
         <a-col :span="3" v-if="nodeList && nodeList.length">
-            <a-tabs default-active-key v-model:activeKey="activeKey" @change="nodeClick" size="small" tab-position="left" class="tab-left">
+            <a-tabs default-active-key v-model:activeKey="activeKey" @change="nodeClick" size="small"
+                tab-position="left" class="tab-left">
                 <a-tab-pane class="tab-panel" v-for="item in nodeList" :key="item.processNodeCode"
                     :tab="item.processNodeName" />
             </a-tabs>
@@ -16,7 +17,7 @@
 
 import { onMounted, ref, watch } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
-import BdpzModal from '/@/views/system/case/components/BdpzModal.vue';
+import BdpzModal from '/@/views/bpm/sxgl/components/BdpzModal.vue';
 let props = defineProps({
     lcid: {
         type: String,
@@ -37,11 +38,11 @@ let activeKey = ref()
 function getNode() {
     defHttp.get({ url: api.nodelistUrl, params: { processId: lcid.value } }, { withToken: true }).then((res) => {
         if (res && res.success) {
-           nodeList.value = res.result;
-           if (res.result.length) {
-              jdid.value = res.result[0].processNodeCode
-              activeKey.value = res.result[0].processNodeCode
-           }
+            nodeList.value = res.result;
+            if (res.result.length) {
+                jdid.value = res.result[0].processNodeCode
+                activeKey.value = res.result[0].processNodeCode
+            }
         }
     });
 }
@@ -54,14 +55,14 @@ function nodeClick(key: any) {
 watch(() => props.lcid, (newValue, _oldValue) => {
     lcid.value = newValue
     if (!props.isBl) {
-      getNode()
+        getNode()
     }
 });
 
 onMounted(() => {
-  if (!props.isBl) {
-    getNode()
-  }
+    if (!props.isBl) {
+        getNode()
+    }
 })
 
 

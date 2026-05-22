@@ -20,7 +20,7 @@
             <div
                 style=" width: 280px;padding: 10px 8px;margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); overflow: auto">
                 <a-directory-tree multiple :tree-data="treeData"
-                    :fieldNames="{ children: 'children', title: 'title', key: 'value' }"
+                    :fieldNames="{ children: 'children', title: 'title', key: 'key' }"
                     v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys" @select="onSelect">
                     <template #icon="">
                     </template>
@@ -31,32 +31,33 @@
         <div class="userTabContent" style="height: 100%">
             <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
                 <a-tab-pane key="1" tab="基础配置">
-                    <SxxxModal :data="processInfo" @setBaseInfo="setBaseInfo" @refreshTree="loadData"
-                        @openFlowDesign="openFlowDesign" />
+                    <SxxxModal v-if="selectedKeys.length > 0" :data="processInfo" @setBaseInfo="setBaseInfo"
+                        @refreshTree="loadData" @openFlowDesign="openFlowDesign" />
                 </a-tab-pane>
                 <a-tab-pane v-if="showFlow" key="2" tab="流程配置" force-render>
                     <CBpmDesign v-if="showFlow" :key="lcid" :id="lcid"></CBpmDesign>
                 </a-tab-pane>
-                <!-- <a-tab-pane key="2" tab="表单配置" force-render>
-                    <NodeList v-if="activeKey == '2'" :lcid="processInfo.key" />
+                <a-tab-pane key="3" tab="表单配置" force-render>
+                    <!-- {{ JSON.stringify(processInfo) }} -->
+                    <NodeList v-if="activeKey == '3'" :lcid="processInfo.key" />
                 </a-tab-pane>
-                <a-tab-pane key="3" tab="权利其他配置" force-render>
-                    <QlqtpzList v-if="activeKey == '3'" :lcid="processInfo.key" :baseInfo="baseInfo" />
+                <a-tab-pane key="4" tab="权利其他配置" force-render>
+                    <QlqtpzList v-if="activeKey == '4'" :lcid="processInfo.key" :baseInfo="processInfo" />
                 </a-tab-pane>
-                <a-tab-pane key="4" tab="业务约束配置" force-render>
-                    <YwysList v-if="activeKey == '4'" :lcid="processInfo.key" :baseInfo="baseInfo"
+                <a-tab-pane key="5" tab="业务约束配置" force-render>
+                    <YwysList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="processInfo"
                         :treeData="treeData" />
                 </a-tab-pane>
-                <a-tab-pane key="5" tab="材料目录配置" force-render>
-                    <ClmlList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="baseInfo" />
+                <a-tab-pane key="6" tab="材料目录配置" force-render>
+                    <ClmlList v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="processInfo" />
                 </a-tab-pane>
-                <a-tab-pane key="6" tab="权利人配置" force-render>
-                    <qlrpz v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="baseInfo"></qlrpz>
+                <a-tab-pane key="7" tab="权利人配置" force-render>
+                    <qlrpz v-if="activeKey == '7'" :lcid="processInfo.key" :baseInfo="processInfo"></qlrpz>
                 </a-tab-pane>
-                <a-tab-pane key="7" tab="规则配置" force-render>
-                    <node-line-list v-if="activeKey == '7'" :lcid="processInfo.key"
-                        :baseInfo="baseInfo"></node-line-list>
-                </a-tab-pane> -->
+                <a-tab-pane key="8" tab="规则配置" force-render>
+                    <node-line-list v-if="activeKey == '8'" :lcid="processInfo.key"
+                        :baseInfo="processInfo"></node-line-list>
+                </a-tab-pane>
             </a-tabs>
         </div>
 
@@ -66,15 +67,15 @@
 <script setup lang="ts">
 import { ref, defineAsyncComponent, onMounted } from "vue";
 import { PlusOutlined } from '@ant-design/icons-vue'
-// import CLCLB from "/@/views/bdc/case/LCLB.vue"
-import NodeLineList from "/@/views/system/case/components/NodeLineList.vue"
 import { defHttp } from "/@/utils/http/axios";
+
 const SxxxModal = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components/SxxxModal.vue"))
-// const NodeList = defineAsyncComponent(() => import("/@/views/system/case/components/NodeList.vue"))
-// const QlqtpzList = defineAsyncComponent(() => import("/@/views/system/case/components/QlqtpzList.vue"))
-// const YwysList = defineAsyncComponent(() => import("/@/views/system/case/components/YwysList.vue"))
-// const ClmlList = defineAsyncComponent(() => import("/@/views/system/case/components/ClmlList.vue"))
-// const Qlrpz = defineAsyncComponent(() => import("/@/views/system/case/components/Qlrpz.vue"))
+const NodeList = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components//NodeList.vue"))
+const QlqtpzList = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components/QlqtpzList.vue"))
+const YwysList = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components/YwysList.vue"))
+const ClmlList = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components/ClmlList.vue"))
+const Qlrpz = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components/Qlrpz.vue"))
+const NodeLineList = defineAsyncComponent(() => import("/@/views/bpm/sxgl/components/NodeLineList.vue"))
 const activeKey = ref('1');
 let processInfo: any = ref({})
 let baseInfo: any = ref(null)
@@ -92,8 +93,11 @@ onMounted(() => {
  * @param process 选中的流程
  */
 function onSelect(process: any, e: any) {
-    // debugger
     processInfo.value = e.node
+    if (processInfo.value.type == 0 || activeKey.value == '2') {
+        activeKey.value = '1'
+        showFlow.value = false
+    }
 }
 
 /**
@@ -110,7 +114,7 @@ function loadData() {
             } else {
                 processInfo.value = res.result[0]
             }
-            selectedKeys.value = [processInfo.value.value]
+            selectedKeys.value = [processInfo.value.key]
         }
     })
 }
@@ -120,18 +124,20 @@ function loadData() {
  * @param data 当前选中流程的基础配置
  */
 function setBaseInfo(data: any) {
-    data.prefix = data.prefix || processInfo.value.value
+    // data.prefix = data.prefix || processInfo.value.value
     data.lcmc = data.lcmc || processInfo.value.title
     baseInfo.value = data
 }
 function handleMxAdd() {
     const lclx = processInfo.value.type == 1 ? processInfo.value.parentId : processInfo.value.value
+    debugger
     processInfo.value = {
         code: '',
         name: '',
         type: 1,
         orderNum: 1,
-        lclx: lclx
+        lclx: lclx,
+        sxlx: processInfo.value.sxlx,
     }
 }
 function openFlowDesign(data: any) {

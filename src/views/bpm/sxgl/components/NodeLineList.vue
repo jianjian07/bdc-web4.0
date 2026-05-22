@@ -3,19 +3,17 @@
     <a-row style="padding: 10px">
       <a-col v-if="nodeList && nodeList.length" :span="3">
         <a-tabs v-model:activeKey="activeKey" class="tab-left" default-active-key size="small" tab-position="left"
-                @change="nodeClick">
+          @change="nodeClick">
           <a-tab-pane v-for="item in nodeList" :key="item.processNodeCode" :tab="item.processNodeName"
-                      class="tab-panel"/>
+            class="tab-panel" />
         </a-tabs>
       </a-col>
       <a-col :span="(nodeList && nodeList.length) ? 21 : 24">
         <a-row>
           <a-col :span="12">
             <a-form-item label="移交规则">
-              <a-select v-model:value="transferRule" :fieldNames="{ label: 'ruleName', value: 'ruleCode'}"
-                        :maxTagCount="5"
-                        :options="userStore.getTransferRuleList"
-                        mode="multiple">
+              <a-select v-model:value="transferRule" :fieldNames="{ label: 'ruleName', value: 'ruleCode' }"
+                :maxTagCount="5" :options="userStore.getTransferRuleList" mode="multiple">
               </a-select>
             </a-form-item>
           </a-col>
@@ -24,8 +22,9 @@
           <a-table :columns="columns" :data-source="lineRule" :pagination="false" bordered>
             <template #bodyCell="{ column, text, record, index }">
               <template v-if="column.dataIndex == 'ruleArr'">
-                <a-select v-model:value="record[column.dataIndex]" :fieldNames="{ label: 'ruleName', value: 'ruleCode'}"
-                          :maxTagCount="5" :options="userStore.getLineRuleList" mode="multiple" style="width: 100%">
+                <a-select v-model:value="record[column.dataIndex]"
+                  :fieldNames="{ label: 'ruleName', value: 'ruleCode' }" :maxTagCount="5"
+                  :options="userStore.getLineRuleList" mode="multiple" style="width: 100%">
                 </a-select>
               </template>
             </template>
@@ -40,10 +39,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref, watch } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { useUserStore } from "/@/store/modules/user"
-import { cloneDeep } from "lodash-es"
 import { message } from "ant-design-vue"
 
 const userStore = useUserStore()
@@ -248,6 +246,4 @@ function saveRule() {
 
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

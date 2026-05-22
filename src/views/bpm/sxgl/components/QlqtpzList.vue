@@ -2,19 +2,23 @@
   <div class="QlqtpzList">
     <a-row>
       <a-col :span="12">
-          <a-form-item label="权利类型">
-              <a-select v-model:value="qllx" :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;"  @change="loadData" show-search optionFilterProp="label">
-              </a-select>
-          </a-form-item>
+        <a-form-item label="权利类型">
+          <a-select v-model:value="qllx" :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;"
+            @change="loadData" show-search optionFilterProp="label">
+          </a-select>
+        </a-form-item>
       </a-col>
       <a-col :span="12" class="oprBtns">
         <a-button type="primary" @click="onShowModal(null, 'new')">
-          <template #icon><PlusOutlined /></template>
+          <template #icon>
+            <PlusOutlined />
+          </template>
           新增
         </a-button>
       </a-col>
     </a-row>
-    <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination" @change="handleTableChange" size="small" class="userTable">
+    <a-table bordered :data-source="dataList" :columns="columns" :row-key="record => record.id" :pagination="pagination"
+      @change="handleTableChange" size="small" class="userTable">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'qllx'">
           {{ getLabelByCode('qllx', record.qllx) }}
@@ -33,13 +37,8 @@
           <a-divider type="vertical" />
           <a @click="onShowModal(record, 'edit')">编辑</a>
           <a-divider type="vertical" />
-          <a-popconfirm
-            title="确定删除？"
-            ok-text="确定"
-            cancel-text="取消"
-            @confirm="onDelete(record.id)"
-          >
-          <a style="color:#ff4d4f">删除</a>
+          <a-popconfirm title="确定删除？" ok-text="确定" cancel-text="取消" @confirm="onDelete(record.id)">
+            <a style="color:#ff4d4f">删除</a>
           </a-popconfirm>
         </template>
       </template>
@@ -124,9 +123,8 @@ const props = defineProps({
     default: {}
   }
 })
-
-watch(() => props.lcid, (val:any) => {
-  if(val) {
+watch(() => props.lcid, (val: any) => {
+  if (val) {
     pagination.value.current = 1
     loadData()
   }
@@ -155,7 +153,7 @@ function loadData() {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res?.success) {
+    if (res?.success) {
       dataList.value = res.result.records
       pagination.value.total = res.result.total
     } else {
@@ -170,8 +168,8 @@ function onShowModal(data: any = null, type: String = 'new') {
   let modal = cModal({
     title: `${title}业务权利其他配置`,
     width: 1000,
-    filePath: 'views/system/case/components/QlqtpzModal',
-    footerStyle: {'text-align': 'center'},
+    filePath: 'views/bpm/sxgl/components/QlqtpzModal',
+    footerStyle: { 'text-align': 'center' },
     footer: type == 'view' ? false : true,
     formData: {
       type: type,
@@ -180,7 +178,7 @@ function onShowModal(data: any = null, type: String = 'new') {
       djlx: djlx.value
     },
     onOk: async (res: any) => {
-      if(type == 'view') {
+      if (type == 'view') {
         modal.destroy()
       } else {
         modal.setConfirmLoading(true)
@@ -208,7 +206,7 @@ function onDelete(id: any) {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res?.success) {
+    if (res?.success) {
       message.success('删除成功！')
       loadData()
     } else {
@@ -217,7 +215,7 @@ function onDelete(id: any) {
   })
 }
 
-function handleTableChange(pag:any) {
+function handleTableChange(pag: any) {
   pagination.value.current = pag.current
   pagination.value.pageSize = pag.pageSize
   loadData()
@@ -235,9 +233,9 @@ function getDjlx() {
 
 // 转换成下拉选项
 function transformOptions(data: any) {
-  let options:any = []
+  let options: any = []
   for (let i = 0; i < data.length; i++) {
-    var children:any = []
+    var children: any = []
     for (let j = 0; j < data[i].children.length; j++) {
       var child = {
         value: data[i].children[j].value,
@@ -259,6 +257,7 @@ function transformOptions(data: any) {
   height: 100%;
   display: flex;
   flex-direction: column;
+
   .oprBtns {
     display: flex;
     justify-content: flex-end;
