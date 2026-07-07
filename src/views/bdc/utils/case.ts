@@ -51,3 +51,17 @@ export function addFlowBL(params: any) {
         message.error('流程创建失败' + err)
     })
 }
+
+
+export function getBpmList() {
+  return new Promise((resolve) => {
+    defHttp.get({ url: "/api/zrzy-bdc/flow/sxml/treeList", params: {} }, { withToken: true }).then((res) => {
+      if (res && res.success) {
+        resolve(res.result || [])
+      } else {
+        message.warning(res?.message || '')
+        resolve([])
+      }
+    })
+  })
+}

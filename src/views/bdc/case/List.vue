@@ -9,13 +9,14 @@
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="流程类别">
-            <a-select v-model:value="formData.lclx" :options="getDictItemsByCode('bpm_process_type')"
-              @change="onChangeLclx" allowClear />
+            <a-select v-model:value="formData.lclx" allowClear show-search
+              :options="bpmList"  :field-names="{ label: 'title', value: 'key' }" @change="onChangeLclx" optionFilterProp="label" />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="流程名称">
-            <a-select v-model:value="formData.lcid" :options="lcmcList" @change="onChangeAjlx" />
+            <a-select v-model:value="formData.lcid" :options="lcmcList" :field-names="{ label: 'title', value: 'key' }" allowClear show-search @change="onChangeLc"
+              optionFilterProp="label" />
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -126,6 +127,7 @@ import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils.ts";
+import { getBpmList } from "/@/views/bdc/utils/case.ts"
 enum api {
   // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
   tasklist = '/api/zrzy-bdc/act/task/list',
@@ -167,8 +169,10 @@ let lcmcList = ref([])
 let nodeList = ref([])
 // 当前点击过办理案卷
 let clickedList = ref<any>([])
+let bpmList = ref<any>([])
 
-onMounted(() => {
+onMounted(async () => {
+  bpmList.value = await getBpmList()
   loadData()
 })
 
@@ -324,9 +328,12 @@ function handleDelete(slbh: string, ajmc: string) {
 /**
  * 流程类型下拉
  */
-function onChangeLclx(_value) {
+function onChangeLclx(_value, option) {
   if (_value) {
-    getLcmcByLclx(_value)
+    // getLcmcByLclx(_value)
+    let dicts = option.children || []
+    // 过滤出status='1'的项
+    lcmcList.value = dicts.filter(item => item.status == '1')
   } else {
     formData.value.lcid = ''
     formData.value.nodeName = ''
@@ -334,7 +341,6 @@ function onChangeLclx(_value) {
     nodeList.value = []
   }
 }
-
 /**
  * 流程名称下拉
  */

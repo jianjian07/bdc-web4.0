@@ -25,6 +25,7 @@ import { onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { findNode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
+import { getBpmList } from "/@/views/bdc/utils/case.ts"
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
 // 确认loading
@@ -68,24 +69,45 @@ defineExpose({
  * 加载流程列表
  */
 function initData() {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     allParentNodes.value = []
     if (currentAjlx.value == '1') {
-      defHttp.get({ url: api.processlist }, { withToken: true }).then((res) => {
-        if (res && res.success) {
-          treeData.value = setPidList(res.result)
-          resolve(true)
-        } else {
-          message.warning(res?.message)
-          resolve(false)
-        }
-      })
+      let treeDict = await getBpmList()
+      treeDict = filterTree(treeDict)
+      treeData.value = setList(treeDict)
+      resolve(true)
     } else {
       let arr = getTreeDictItemsByCode('bllc')
+      arr = filterTree(arr)
       treeData.value = setBlList(arr)
       resolve(true)
     }
   })
+}
+
+function filterTree(nodes) {
+  return nodes
+    .filter(node => node.status == '1')
+    .map(node => ({
+      ...node,
+      children: node.children
+        ? filterTree(node.children)
+        : []
+    }))
+}
+
+function setList(newArr) {
+  let newData = newArr.map(item => {
+    item.pid = item.parentId
+
+    if (item.children) {
+      allParentNodes.value.push(item)
+      item.children = setList(item.children)
+    }
+    return item
+  })
+
+  return newData
 }
 
 function setBlList(newArr, parentId?: any) {
@@ -93,6 +115,8 @@ function setBlList(newArr, parentId?: any) {
     item.title = item.label
     if (parentId) {
       item.pid = parentId
+    } else {
+      item.pid = item.key
     }
     let pid = item.value
     item.key = item.value
@@ -306,7 +330,7 @@ function formatCheckedKeys(keys) {
   allParentNodes.value.forEach(parentNode => {
     const children = parentNode.children || []
     const childKeys = children.map(child => child.key)
-    
+
     if (
       keySet.has(parentNode.key) &&
       childKeys.length > 0 &&
