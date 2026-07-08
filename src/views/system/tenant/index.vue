@@ -40,9 +40,7 @@
                             请先选择一个租户
                         </template>
                     </a-empty>
-                    <div v-else style="padding: 20px; text-align: center; color: #999;">
-                        流程关联功能开发中...
-                    </div>
+                    <ProcessTree v-else :selectInfo="selectInfo" />
                 </a-tab-pane>
                 <a-tab-pane key="3" tab="角色关联" force-render>
                     <a-empty v-if='!selectInfo.id'>
@@ -50,9 +48,7 @@
                             请先选择一个租户
                         </template>
                     </a-empty>
-                    <div v-else style="padding: 20px; text-align: center; color: #999;">
-                        角色关联功能开发中...
-                    </div>
+                    <role-list v-else :selectInfo="selectInfo"></role-list>
                 </a-tab-pane>
                 <a-tab-pane key="4" tab="跨租户共享" force-render>
                     <a-empty v-if='!selectInfo.id'>
@@ -73,7 +69,9 @@
 <script setup lang="ts">
 import { ref, defineAsyncComponent } from "vue";
 import TenantList from "/@/views/system/tenant/components/tenantList.vue"
+import RoleList from "/@/views/system/tenant/components/RoleList.vue"
 const BaseInfo = defineAsyncComponent(() => import("./components/tenantInfo.vue"))
+const ProcessTree = defineAsyncComponent(() => import("./components/ProcessTree.vue"))
 const activeKey = ref('1');
 let selectInfo: any = ref({});
 let isAddMode = ref(false);
