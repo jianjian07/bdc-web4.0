@@ -53,11 +53,12 @@ export function addFlowBL(params: any) {
 }
 
 
-export function getBpmList() {
+export function getBpmList(sxlx = 1) {
   return new Promise((resolve) => {
     defHttp.get({ url: "/api/zrzy-bdc/flow/sxml/treeList", params: {} }, { withToken: true }).then((res) => {
       if (res && res.success) {
-        resolve(res.result || [])
+        let list = res.result.filter(item => item.sxlx == sxlx) || []
+        resolve(list || [])
       } else {
         message.warning(res?.message || '')
         resolve([])

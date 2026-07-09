@@ -77,9 +77,9 @@ function initData() {
       treeData.value = setList(treeDict)
       resolve(true)
     } else {
-      let arr = getTreeDictItemsByCode('bllc')
+      let arr = await getBpmList(0)
       arr = filterTree(arr)
-      treeData.value = setBlList(arr)
+      treeData.value = setList(arr)
       resolve(true)
     }
   })
@@ -109,43 +109,6 @@ function setList(newArr) {
 
   return newData
 }
-
-function setBlList(newArr, parentId?: any) {
-  let newData = newArr.map(item => {
-    item.title = item.label
-    if (parentId) {
-      item.pid = parentId
-    } else {
-      item.pid = item.key
-    }
-    let pid = item.value
-    item.key = item.value
-
-    if (item.children) {
-      allParentNodes.value.push(item)
-      item.children = setBlList(item.children, pid)
-    }
-    return item
-  })
-
-  return newData
-}
-
-function setPidList(newArr, parentId?: any) {
-  let newData = newArr.map(item => {
-    if (parentId) {
-      item.pid = parentId
-    }
-    let pid = item.value
-    if (item.children) {
-      allParentNodes.value.push(item)
-      item.children = setPidList(item.children, pid)
-    }
-    return item
-  })
-  return newData
-}
-
 
 /**
  * 获取所有包含关键字节点的父节点
