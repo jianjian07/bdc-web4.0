@@ -67,9 +67,9 @@
       </div>
       <div class="right-content">
         <a-collapse v-model:activeKey="activeCollapseKey">
-          <a-collapse-panel v-for="(item, index) in sysMenuList" :key="index" :header="item.title">
-            <a-tree v-model:checkedKeys="checkedKeys" :fieldNames="{ children: 'list' }" :defaultExpandAll="false"
-              :show-line="true" :tree-data="item.list" check-strictly checkable>
+          <a-collapse-panel v-for="item in sysMenuList" :key="item.id" :header="item.title">
+            <a-tree :checkedKeys="getCheckedKeys(item.id)" :fieldNames="{ children: 'list' }" :defaultExpandAll="false"
+              :show-line="true" :tree-data="item.list" checkable @check="(keys) => handleTreeCheck(item.id, keys)">
             </a-tree>
           </a-collapse-panel>
         </a-collapse>
@@ -99,7 +99,7 @@ enum api {
   listRoleApi = '/api/zrzy-system/role/list',//角色列表
   deleteRoleApi = '/api/zrzy-system/role/removeById',//删除角色
 }
-let sysMenuList = ref([])
+let sysMenuList = ref<any[]>([])
 let roleList = ref([])
 let pagination = ref({
   total: 0,
@@ -124,8 +124,92 @@ let activeCollapseKey = ref<any>()
 let roleProcessModal = ref()
 // 当前选择
 let selectedKeys = ref<any>([])
-// 选中的流程
-const checkedKeys = ref<any>([]);
+// 各系统选中的菜单
+const checkedKeysMap = ref<Record<string | number, any[]>>({});
+const roleMenuList = ref<any[]>([]);
+
+function getRawCheckedKeys(keys: any) {
+  return Array.isArray(keys) ? keys : (keys?.checked || [])
+}
+
+function getCheckedKeys(systemId: string | number) {
+  return checkedKeysMap.value[systemId] || []
+}
+
+function handleTreeCheck(systemId: string | number, keys: any) {
+  checkedKeysMap.value[systemId] = getRawCheckedKeys(keys)
+}
+
+function buildSubmitMenuIds(group: any) {
+  const rawCheckedKeys = getCheckedKeys(group?.id)
+  const selectedSet = new Set(rawCheckedKeys)
+  const resultSet = new Set(rawCheckedKeys)
+
+  function walk(nodes: any[] = [], ancestors: any[] = []) {
+    nodes.forEach((node) => {
+      const nodeId = node?.id
+      const nextAncestors = nodeId !== undefined ? [...ancestors, nodeId] : ancestors
+      const children = Array.isArray(node?.list) ? node.list : []
+
+      if (selectedSet.has(nodeId)) {
+        ancestors.forEach((ancestorId) => resultSet.add(ancestorId))
+      }
+
+      if (children.length) {
+        walk(children, nextAncestors)
+      }
+    })
+  }
+
+  walk(group?.list || [], [])
+
+  return Array.from(resultSet)
+}
+
+function buildSubmitMenuList() {
+  return sysMenuList.value.map((group: any) => ({
+    systemId: group.id,
+    menuIds: buildSubmitMenuIds(group)
+  }))
+}
+
+function normalizeCheckedKeysForTree(group: any, rawKeys: any[] = []) {
+  const parentNodeIdSet = new Set<any>()
+
+  function walk(nodes: any[] = []) {
+    nodes.forEach((node) => {
+      const children = Array.isArray(node?.list) ? node.list : []
+      if (children.length) {
+        parentNodeIdSet.add(node?.id)
+        walk(children)
+      }
+    })
+  }
+
+  walk(group?.list || [])
+
+  return rawKeys.filter((id) => !parentNodeIdSet.has(id))
+}
+
+function initCheckedKeysMap(menuList: any[] = []) {
+  const nextCheckedKeysMap: Record<string | number, any[]> = {}
+  menuList.forEach((group: any) => {
+    nextCheckedKeysMap[group.id] = checkedKeysMap.value[group.id] || []
+  })
+  checkedKeysMap.value = nextCheckedKeysMap
+}
+
+function applyRoleMenuList(menuList: any[] = []) {
+  const roleMenuMap = new Map(menuList.map((item: any) => [item.systemId, item.menuIds || []]))
+  const nextCheckedKeysMap: Record<string | number, any[]> = {}
+
+  sysMenuList.value.forEach((group: any) => {
+    nextCheckedKeysMap[group.id] = normalizeCheckedKeysForTree(group, roleMenuMap.get(group.id) || [])
+  })
+
+  checkedKeysMap.value = nextCheckedKeysMap
+}
+
 const columns = [
   {
     title: '序号',
@@ -170,6 +254,9 @@ const rowSelection = computed(() => {
     checkStrictly: false,
     selectedRowKeys: selectedKeys.value,
     type: 'radio',
+    getCheckboxProps: (record) => ({
+      disabled: record.children && record.children.length > 0
+    }),
     onChange: (selectedRowKeys, selectedRows) => {
       currentRole.value = selectedRows
       selectedKeys.value = selectedRowKeys
@@ -206,8 +293,13 @@ function onChange(pag: any, callback: any) {
 function loadMenu() {
   defHttp.get({ url: api.getAllMenu }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      sysMenuList.value = res.result
-      activeCollapseKey.value = sysMenuList.value.length ? 0 : -1
+      sysMenuList.value = res.result.map((item: any) => {
+        item.id = Number(item.id)
+        return item
+      })
+      initCheckedKeysMap(sysMenuList.value)
+      applyRoleMenuList(roleMenuList.value)
+      activeCollapseKey.value = sysMenuList.value.length ? sysMenuList.value[0].id : -1
     } else {
       message.warning(res?.message)
     }
@@ -308,7 +400,8 @@ function handleFlcqx(record) {
  */
 function getRoleSysMenuKeys(roleId) {
   defHttp.get({ url: api.getMenusByRoleId, params: { roleId: roleId } }, { withToken: true }).then((res) => {
-    checkedKeys.value = res.result
+    roleMenuList.value = res.result || []
+    applyRoleMenuList(roleMenuList.value)
   }).catch(err => {
     console.info(err)
   })
@@ -318,17 +411,14 @@ function getRoleSysMenuKeys(roleId) {
  * 保存
  */
 function handleSave() {
+  const menuList = buildSubmitMenuList()
   if (currentRole.value.length == 0) {
     message.error("请选择角色")
-  }
-  else if (checkedKeys.value.length == 0) {
-    message.error("请选择菜单")
   }
   else {
     let params = {
       roleId: currentRole.value[0].id,
-      // name: currentRole.value[0].name,
-      menuIds: Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
+      menuList
     }
     defHttp.post({ url: api.saveRoleMenu, data: params }, { withToken: true }).then((res) => {
       if (res.result) {
