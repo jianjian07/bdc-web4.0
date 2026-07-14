@@ -109,8 +109,8 @@ const pagination = ref<any>({
 let qllx = ref('')
 
 const urlList = {
-  queryList: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/list', // 分页列表查询
-  delete: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/delete' //通过id删除
+  queryList: '/api/zrzy-bdc/flow/qlqtpz/list', // 分页列表查询
+  delete: '/api/zrzy-bdc/flow/qlqtpz/delete' //通过id删除
 }
 
 const props = defineProps({

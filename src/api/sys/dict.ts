@@ -5,7 +5,7 @@ enum api {
     getDictApi = '/api/zrzy-system/sys/dict/tree',
     delUrl = '/api/zrzy-system/sys/dict/deleteByIdList',
     updateHasChildUrl = '/api/zrzy-system/sys/dict/updateHasChild',
-    getRuleListApi = '/api/zrzy-form/onlWonderRule/getRuleList'
+    getRuleListApi = '/api/zrzy-form/form/rule/getRuleList'
 }
 
 //***其它接口待重构，后续字典相关会统一提取到这个脚本文件  页面只保留业务逻辑处理
@@ -91,36 +91,37 @@ export function getRuleList() {
     const userStore = useUserStore();
     return new Promise((resolve, reject) => {
         defHttp.get({ url: api.getRuleListApi }, { withToken: true }).then((res) => {
-        if (res && res?.result?.records) {
-            let list = res.result.records
-            let sysValidateRuleList = list.filter(f => f.ruleType == 'validate')
-            if (sysValidateRuleList) {
-                userStore.setValidateRuleList(sysValidateRuleList)
+            if (res && res?.result?.records) {
+                let list = res.result.records
+                let sysValidateRuleList = list.filter(f => f.ruleType == 'validate')
+                if (sysValidateRuleList) {
+                    userStore.setValidateRuleList(sysValidateRuleList)
+                }
+                let sysCodeRuleList = list.filter(f => f.ruleType == 'code')
+                if (sysCodeRuleList) {
+                    userStore.setCodeRuleList(sysCodeRuleList)
+                }
+                let sysDataRuleList = list.filter(f => f.ruleType == 'data')
+                if (sysDataRuleList) {
+                    userStore.setDataRuleList(sysDataRuleList)
+                }
+                let sysApiRuleList = list.filter(f => f.ruleType == 'api')
+                if (sysApiRuleList) {
+                    userStore.setApiRuleList(sysApiRuleList)
+                }
+                let sysTransferRuleList = list.filter(f => f.ywlx == 'transfer')
+                if (sysTransferRuleList) {
+                    userStore.setTransferRuleList(sysTransferRuleList)
+                }
+                let sysLineRuleList = list.filter(f => f.ywlx == 'line')
+                if (sysLineRuleList) {
+                    userStore.setLineRuleList(sysLineRuleList)
+                }
+                resolve(true);
+            } else {
+                reject(false);
             }
-            let sysCodeRuleList = list.filter(f => f.ruleType == 'code')
-            if (sysCodeRuleList) {
-                userStore.setCodeRuleList(sysCodeRuleList)
-            }
-            let sysDataRuleList = list.filter(f => f.ruleType == 'data')
-            if (sysDataRuleList) {
-                userStore.setDataRuleList(sysDataRuleList)
-            }
-            let sysApiRuleList = list.filter(f => f.ruleType == 'api')
-            if (sysApiRuleList) {
-                userStore.setApiRuleList(sysApiRuleList)
-            }
-            let sysTransferRuleList = list.filter(f => f.ywlx == 'transfer')
-            if (sysTransferRuleList) {
-                userStore.setTransferRuleList(sysTransferRuleList)
-            }
-            let sysLineRuleList = list.filter(f => f.ywlx == 'line')
-            if (sysLineRuleList) {
-                userStore.setLineRuleList(sysLineRuleList)
-            }
-            resolve(true);
-        } else {
-            reject(false);
-        }})
+        })
     })
 }
 

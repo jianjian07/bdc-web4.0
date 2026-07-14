@@ -1,11 +1,11 @@
 <template>
     <!-- type=0 事项目录 -->
-    <a-form v-if="data.type === 0" :model="flowInfo" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }"
+    <a-form v-if="data.ml === 1" ref="mlFormRef" :model="flowInfo" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }"
         autocomplete="off">
-        <a-form-item label="目录编码" name="sxbm">
+        <a-form-item label="目录编码" name="code" :rules="[{ required: true, message: '请输入目录编码' }]">
             <a-input v-model:value="flowInfo.code" placeholder="请输入目录编码" />
         </a-form-item>
-        <a-form-item label="目录名称" name="sxmc">
+        <a-form-item label="目录名称" name="name" :rules="[{ required: true, message: '请输入目录名称' }]">
             <a-input v-model:value="flowInfo.name" placeholder="请输入目录名称" />
         </a-form-item>
         <a-form-item label="是否流程">
@@ -22,7 +22,9 @@
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 18 }">
             <a-button type="primary" @click="handleMlSave">保存</a-button>
-            <a-button style="margin-left: 10px" @click="handleMlAdd">新增</a-button>
+            <!-- <a-button style="margin-left: 10px" @click="handleMlAdd">新增</a-button> -->
+            <a-button v-if="flowInfo.id" type="primary" ghost style="margin-left: 10px"
+                @click="emit('addMx')">新增事项</a-button>
             <a-popconfirm v-if="flowInfo.id" title="确定删除该目录？" ok-text="确定" cancel-text="取消" @confirm="handleMlDelete">
                 <a-button danger style="margin-left: 10px">删除</a-button>
             </a-popconfirm>
@@ -30,21 +32,24 @@
     </a-form>
 
     <!-- type=1 事项明细 -->
-    <a-form v-if="data.type === 1" :model="flowInfo" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }"
-        autocomplete="off">
+    <a-form v-if="data.ml === 0" ref="mxFormRef" :model="flowInfo" name="basic" :label-col="{ span: 6 }"
+        :wrapper-col="{ span: 14 }" autocomplete="off">
 
-        <a-form-item label="事项编号">
+        <!-- <a-form-item label="事项编号">
             <a-input v-model:value="flowInfo.code" />
-        </a-form-item>
-        <a-form-item label="事项名称">
+        </a-form-item> -->
+        <a-form-item label="事项名称" name="name" :rules="[{ required: true, message: '请输入事项名称' }]">
             <a-input v-model:value="flowInfo.name" />
         </a-form-item>
-        <a-form-item label="关联流程" name="lcid">
-            <a-tree-select v-model:value="flowInfo.lcid" :tree-data="flowList" placeholder="请选择流程"
-                :fieldNames="{ children: 'children', title: 'title', value: 'key' }" allowClear style="width: 40%;">
-            </a-tree-select>&nbsp;&nbsp;{{ "sss" + data.sxlx }}
+        <a-form-item v-if="data.sxlx == 1" label="关联流程" name="lcid" :rules="[{ required: true, message: '请输入关联流程' }]">
+            <a-tree-select v-model:value="flowInfo.lcid" show-search tree-node-filter-prop="title" :tree-data="flowList"
+                placeholder="请选择流程" :fieldNames="{ children: 'children', title: 'title', value: 'key' }" allowClear
+                style="width: 40%;">
+            </a-tree-select>&nbsp;&nbsp;
             <a-button type="primary" @click="handleAddTbl(flowInfo.lcid)">流程设计</a-button>
-            <a-input v-model:value="flowInfo.lcid" readOnly style="width: 40%;" />
+        </a-form-item>
+        <a-form-item v-if="data.sxlx == 0" label="事项编号" name="lcid" :rules="[{ required: true, message: '请输入事项编号' }]">
+            <a-input v-model:value="flowInfo.lcid" style="width: 40%;" />
         </a-form-item>
         <a-form-item label="登记大类">
             <a-input v-model:value="flowInfo.djdl" />
@@ -62,21 +67,21 @@
         <a-form-item label="国标登记类型">
             <a-input v-model:value="flowInfo.gbdjlx" />
         </a-form-item>
-        <a-form-item label="流程前缀">
+        <a-form-item label="事项前缀">
             <a-input v-model:value="flowInfo.prefix" />
         </a-form-item>
-        <a-form-item label="流程时限(小时)">
+        <a-form-item v-if="data.sxlx == 1" label="流程时限(小时)">
             <a-input-number v-model:value="flowInfo.lcsx" />
         </a-form-item>
         <a-form-item label="顺序号">
             <a-input-number v-model:value="flowInfo.orderNum" :min="1" :max="100" />
         </a-form-item>
-        <a-form-item label="流程启用">
+        <a-form-item label="启用">
             <a-switch v-model:checked="flowInfo.status" :checkedValue="1" :unCheckedValue="0" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 14 }">
             <a-button type="primary" @click="handleMxSave">保存</a-button>
-            <a-button style="margin-left: 10px" @click="handleMxAdd">新增</a-button>
+            <!-- <a-button style="margin-left: 10px" @click="handleMxAdd">新增</a-button> -->
             <a-popconfirm v-if="flowInfo.id" title="确定删除该明细？" ok-text="确定" cancel-text="取消" @confirm="handleMxDelete">
                 <a-button danger style="margin-left: 10px">删除</a-button>
             </a-popconfirm>
@@ -96,18 +101,19 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['setBaseInfo', 'refreshTree', 'openFlowDesign'])
+const emit = defineEmits(['setBaseInfo', 'refreshTree', 'openFlowDesign', 'addMx'])
 
 // ==================== 事项目录 ====================
+const mlFormRef = ref()
 // let mlInfo: any = ref({})
 // let mlOptions: any = ref([])
 let flowList: any = ref([])
 enum mlApi {
-    queryByIdUrl = '/api/zrzy-bdc/bpm/sxml/queryById',
-    saveUrl = '/api/zrzy-bdc/bpm/sxml/edit',
-    addUrl = '/api/zrzy-bdc/bpm/sxml/add',
-    deleteUrl = '/api/zrzy-bdc/bpm/sxml/delete',
-    listUrl = '/api/zrzy-bdc/bpm/sxml/list'
+    queryByIdUrl = '/api/zrzy-bdc/flow/sxml/queryById',
+    saveUrl = '/api/zrzy-bdc/flow/sxml/edit',
+    addUrl = '/api/zrzy-bdc/flow/sxml/add',
+    deleteUrl = '/api/zrzy-bdc/flow/sxml/delete',
+    listUrl = '/api/zrzy-bdc/flow/sxml/list'
 }
 loadFlowList()
 function loadFlowList() {
@@ -125,48 +131,33 @@ function loadFlowList() {
 }
 /** 加载目录信息 */
 function getInfo(nodeData: any) {
-    let url = nodeData.type === 0 ? mlApi.queryByIdUrl : mxApi.queryByIdUrl
+    let url = nodeData.ml === 1 ? mlApi.queryByIdUrl : mxApi.queryByIdUrl
     defHttp.get({ url: url, params: { id: nodeData.id } }, { withToken: true }).then((res: any) => {
         if (res.success) {
             flowInfo.value = res.result
+            originalLcid.value = res.result.lcid || ''
+            lcidExists.value = false
         }
     })
 }
-// /** 加载目录信息 */
-// function getMlInfo(id: string) {
-//     defHttp.get({ url: mlApi.queryByIdUrl, params: { id } }, { withToken: true }).then((res: any) => {
-//         if (res.success) {
-//             mlInfo.value = res.result
-//         } else {
-//             // mlInfo.value = { id: props.lcid }
-//         }
-//         // emit('setBaseInfo', mlInfo.value)
-//     })
-// }
-
-// /** 加载目录列表（供明细选择所属目录） */
-// function loadMlOptions() {
-//     defHttp.get({ url: mlApi.listUrl, params: { lcid: props.data.lcid } }, { withToken: true }).then((res: any) => {
-//         if (res.success) {
-//             mlOptions.value = res.result.records || res.result || []
-//         }
-//     })
-// }
+function handleAddTbl(lcid: string) {
+    emit('openFlowDesign', lcid)
+}
 
 /** 保存目录 */
 function handleMlSave() {
-
-    // flowInfo.value.lcid = flowInfo.value.lcid || props.lcid
-    const url = flowInfo.value.id ? mlApi.saveUrl : mlApi.addUrl
-    defHttp.post({ url, data: flowInfo.value }, { withToken: true }).then((res: any) => {
-        if (res.success) {
-            message.success('保存成功')
-            emit('setBaseInfo', flowInfo.value)
-            emit('refreshTree')
-        } else {
-            message.error(res.message || '保存失败')
-        }
-    })
+    mlFormRef.value.validate().then(() => {
+        const url = flowInfo.value.id ? mlApi.saveUrl : mlApi.addUrl
+        defHttp.post({ url, data: flowInfo.value }, { withToken: true }).then((res: any) => {
+            if (res.success) {
+                message.success('保存成功')
+                emit('setBaseInfo', flowInfo.value)
+                emit('refreshTree', { type: 'add', id: res.result })
+            } else {
+                message.error(res.message || '保存失败')
+            }
+        })
+    }).catch(() => { })
 }
 
 /** 新增目录 */
@@ -185,7 +176,7 @@ function handleMlDelete() {
     defHttp.delete({ url: mlApi.deleteUrl, params: { id: flowInfo.value.id } }, { withToken: true }).then((res: any) => {
         if (res.success) {
             message.success('删除成功')
-            emit('refreshTree')
+            emit('refreshTree', { type: 'del' })
         } else {
             message.error(res.message || '删除失败')
         }
@@ -193,13 +184,17 @@ function handleMlDelete() {
 }
 
 // ==================== 事项明细 ====================
+const mxFormRef = ref()
 let flowInfo: any = ref({})
+let lcidExists = ref(false)
+// 记录初始lcid，用于编辑时排除自身重复校验
+let originalLcid = ref('')
 
 enum mxApi {
-    queryByIdUrl = '/api/zrzy-bdc/bpm/sxmx/queryById',
-    saveUrl = '/api/zrzy-bdc/bpm/sxmx/edit',
-    addUrl = '/api/zrzy-bdc/bpm/sxmx/add',
-    deleteUrl = '/api/zrzy-bdc/bpm/sxmx/delete'
+    queryByIdUrl = '/api/zrzy-bdc/flow/sxmx/queryById',
+    saveUrl = '/api/zrzy-bdc/flow/sxmx/edit',
+    addUrl = '/api/zrzy-bdc/flow/sxmx/add',
+    deleteUrl = '/api/zrzy-bdc/flow/sxmx/delete'
 }
 
 // /** 加载明细信息 */
@@ -213,17 +208,26 @@ enum mxApi {
 // }
 
 /** 保存明细 */
-function handleMxSave() {
-    flowInfo.value.islc = flowInfo.value.lcid ? 1 : 0
-    const url = flowInfo.value.id ? mxApi.saveUrl : mxApi.addUrl
-    defHttp.post({ url, data: flowInfo.value }, { withToken: true }).then((res: any) => {
-        if (res.success) {
-            message.success('保存成功')
-            emit('refreshTree')
-        } else {
-            message.error(res.message || '保存失败')
-        }
-    })
+async function handleMxSave() {
+    console.log('保存明细')
+
+    await handleLcidBlur()
+    if (lcidExists.value) {
+        return
+    }
+
+    mxFormRef.value.validate().then(() => {
+        flowInfo.value.islc = flowInfo.value.lcid ? 1 : 0
+        const url = flowInfo.value.id ? mxApi.saveUrl : mxApi.addUrl
+        defHttp.post({ url, data: flowInfo.value }, { withToken: true }).then((res: any) => {
+            if (res.success) {
+                message.success('保存成功')
+                emit('refreshTree', { type: 'add', id: res.result })
+            } else {
+                message.error(res.message || '保存失败')
+            }
+        })
+    }).catch(() => { })
 }
 
 /** 新增明细 */
@@ -236,21 +240,48 @@ function handleMxAdd() {
         orderNum: 1,
         lclx: flowInfo.value.lclx
     }
+    lcidExists.value = false
+    originalLcid.value = ''
 }
 
 /** 删除明细 */
 function handleMxDelete() {
+    if (flowInfo.value.status === 1) {
+        message.warning('该流程已启用，不允许删除')
+        return
+    }
     defHttp.delete({ url: mxApi.deleteUrl, params: { id: flowInfo.value.id } }, { withToken: true }).then((res: any) => {
         if (res.success) {
             message.success('删除成功')
-            emit('refreshTree')
+            emit('refreshTree', 'del')
         } else {
             message.error(res.message || '删除失败')
         }
     })
 }
-function handleAddTbl(lcid: string) {
-    emit('openFlowDesign', lcid)
+/** 关联流程失去焦点时校验lcid是否已存在 */
+async function handleLcidBlur() {
+    const lcid = flowInfo.value.lcid
+    if (!lcid) {
+        lcidExists.value = false
+        return
+    }
+    // 编辑时lcid未变化，无需校验
+    if (flowInfo.value.id && lcid === originalLcid.value) {
+        lcidExists.value = false
+        return
+    }
+    const res = await defHttp.get({ url: "/api/zrzy-bdc/flow/sxmx/getConfigByLcid", params: { lcid } }, { withToken: true })
+    lcidExists.value = res.success
+    if (res.success) {
+        message.warning('该流程ID已存在，flow_sxmx不允许lcid重复')
+    }
+    // defHttp.get({ url: '/api/zrzy-kyq/flow/sxmx/getConfigByLcid', params: { lcid } }, { withToken: true }).then((res: any) => {
+    //     lcidExists.value = res.success
+    //     if (res.success) {
+    //         message.warning('该流程ID已存在，flow_sxmx不允许lcid重复')
+    //     }
+    // })
 }
 
 // ==================== 数据加载 ====================

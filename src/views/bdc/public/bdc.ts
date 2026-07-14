@@ -816,7 +816,7 @@ export async function setQlqtqkByYwh(viewData: any, fields: any, params: any, ba
 export function getQlqtqkBySLBH(slbh: any, viewData: any, params: any = null, basicInfo: any) {
   return new Promise((resolve, reject) => {
     defHttp.post({
-      url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtBySlbh',
+      url: '/api/zrzy-bdc/bdc/qlqtpz/getConfigQlqtBySlbh',
       params: {
         slbh: slbh,
         sfybz: params?.sfybz || '',
@@ -851,7 +851,7 @@ export function getQlqtqkByMap(slbh: any, ywh: any, viewData: any, params: any =
   const param = { quickParam: quickParam, xmlParam: xmlParam }
   return new Promise((resolve, reject) => {
     defHttp.post({
-      url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/getConfigQlqtByMap',
+      url: '/api/zrzy-bdc/bdc/qlqtpz/getConfigQlqtByMap',
       data: param
     }, {
       withToken: true
@@ -876,7 +876,7 @@ export function batchQlqt() {
   return new Promise((resolve, reject) => {
     let slbh = route.query.slbh
     defHttp.post({
-      url: '/api/zrzy-bdc/bdcdj/bdcQlqtpz/updateQlqtBatch',
+      url: '/api/zrzy-bdc/bdc/qlqtpz/updateQlqtBatch',
       params: { slbh: slbh }
     }, {
       withToken: true

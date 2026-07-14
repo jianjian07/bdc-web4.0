@@ -3,21 +3,21 @@
     <div class="sys-rule-table-header">
       <a-button type="primary" @click="handleAddRule">
         <template #icon>
-          <plus-outlined/>
+          <plus-outlined />
         </template>
         新增规则
       </a-button>
     </div>
     <div class="sys-rule-table-body">
       <a-table :columns="columns" :data-source="ruleList" :pagination="pagination" :scroll="{ y: 300 }" rowKey="id"
-               @change="onTableChange">
+        @change="onTableChange">
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'ywlx'">
             <span>{{ getYwlxName(record[column.dataIndex]) }}</span>
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <a @click="handleEditRule(record)">编辑</a>
-            <a-divider type="vertical"/>
+            <a-divider type="vertical" />
             <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该规则吗?" @confirm="handleDelRule(record)">
               <a>删除</a>
             </a-popconfirm>
@@ -26,15 +26,14 @@
       </a-table>
     </div>
   </div>
-  <a-drawer v-model:open="drawerShow" class="custom-class" root-class-name="root-class-name"
-            :title="drawerTitle + '规则'" placement="right" :width="isFullScreen ? '100vw' : 700"
-            :footer-style="{ textAlign: 'right' }">
+  <a-drawer v-model:open="drawerShow" class="custom-class" root-class-name="root-class-name" :title="drawerTitle + '规则'"
+    placement="right" :width="isFullScreen ? '100vw' : 700" :footer-style="{ textAlign: 'right' }">
     <sys-rule-form v-if="drawerShow" ref="ruleForm" :type="drawerTitle" :catalog="selectRuleCatalog"
-                   :record="currentRecord" @formOk="getFormOk">
+      :record="currentRecord" @formOk="getFormOk">
     </sys-rule-form>
     <template #extra>
-      <FullscreenExitOutlined v-if="isFullScreen" @click="toggleFullscreen"/>
-      <FullscreenOutlined v-else @click="toggleFullscreen"/>
+      <FullscreenExitOutlined v-if="isFullScreen" @click="toggleFullscreen" />
+      <FullscreenOutlined v-else @click="toggleFullscreen" />
     </template>
     <template #footer>
       <a-button style="margin-right: 8px" @click="handleCloseDrawer">取消</a-button>
@@ -45,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PlusOutlined,FullscreenOutlined,FullscreenExitOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref, watch } from "vue"
 import SysRuleForm from "/@/views/system/rule/components/sysRuleForm.vue"
 import { defHttp } from "/@/utils/http/axios"
@@ -114,8 +113,8 @@ let currentRecord = ref<any>({})
 let isFullScreen = ref<boolean>(false)
 
 enum api {
-  list = '/api/zrzy-form/onlWonderRule/getRuleList',
-  del = '/api/zrzy-form/onlWonderRule/deleteRule'
+  list = '/api/zrzy-form/form/rule/getRuleList',
+  del = '/api/zrzy-form/form/rule/deleteRule'
 }
 
 watch(() => props.selectRuleCatalog, (newVal) => {
@@ -135,7 +134,7 @@ onMounted(() => {
  * 初始化数据
  */
 function initData() {
-  let arr = getChildrenYwlx(props.selectRuleCatalog,[])
+  let arr = getChildrenYwlx(props.selectRuleCatalog, [])
   let ywlxArr = []
   // arr.forEach((item: any) => {
   //   ywlxArr.push("'" + item + "'")
@@ -143,12 +142,14 @@ function initData() {
   arr.forEach((item: any) => {
     ywlxArr.push(item)
   });
-  defHttp.get({ url: api.list, params: {
+  defHttp.get({
+    url: api.list, params: {
       page: pagination.value.current,
       size: pagination.value.pageSize,
       ywlx: ywlxArr.join(',')
-    }}, { withToken: true }).then((res) => {
-      res.list = res?.result?.records ? res.result.records:[];
+    }
+  }, { withToken: true }).then((res) => {
+    res.list = res?.result?.records ? res.result.records : [];
     ruleList.value = res && res.list ? res.list : []
     pagination.value.total = res.result.total
   }).catch(err => {
@@ -198,15 +199,17 @@ function handleEditRule(record) {
  * @param record
  */
 function handleDelRule(record) {
-  defHttp.post({ url: api.del, params: {
+  defHttp.post({
+    url: api.del, params: {
       id: record.id
-    }}, { withToken: true }).then((res) => {
-      if (res) {
-        message.success('删除成功')
-        initData()
-      } else {
-        message.warning('删除失败')
-      }
+    }
+  }, { withToken: true }).then((res) => {
+    if (res) {
+      message.success('删除成功')
+      initData()
+    } else {
+      message.warning('删除失败')
+    }
   })
 }
 
@@ -293,13 +296,13 @@ function toggleFullscreen() {
   .sys-rule-table-body {
     height: calc(100% - 50px);
     // overflow: auto;
-    
+
 
     :deep(.ant-table-body) {
       overflow-y: scroll;
       max-height: calc(100% - 50px) !important;
     }
-    
+
     :deep(.ant-table-wrapper) {
       height: 100%;
     }
@@ -314,7 +317,7 @@ function toggleFullscreen() {
 
     :deep(.ant-spin-container) {
       height: 100%;
-      overflow: hidden!important;
+      overflow: hidden !important;
     }
 
     :deep(.ant-spin-nested-loading) {

@@ -60,8 +60,8 @@ let props = defineProps({
 enum api {
   nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list',
   lineList = '/api/zrzy-bdc/act/process/extActProcess/getAllLine',
-  getRuleList = '/api/zrzy-bdc/node/list',
-  save = '/api/zrzy-bdc/node/saveAllByJdid'
+  getRuleList = '/api/zrzy-bdc/flow/node/list',
+  save = '/api/zrzy-bdc/flow/node/saveAllByJdid'
 }
 
 let nodeList = ref([])

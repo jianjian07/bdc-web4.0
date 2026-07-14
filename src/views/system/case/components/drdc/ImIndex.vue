@@ -62,7 +62,7 @@ enum api {
   processlist = "/api/zrzy-bdc/act/process/extActProcess/list",
   roleProcesslist = "/api/zrzy-system/role/getRoleProcessList",
   exportUrl = "/api/zrzy-bdc/process/config/exportProcessAll",
-  showImportUrl = "/api/zrzy-bdc/process/config/showImportProcess",
+  showImportUrl = "/api/zrzy-bdc/flow/config/showImportProcess",
   importUrl = "/api/zrzy-bdc/process/config/importProcessAll",
 }
 const formRef = ref();
@@ -70,7 +70,7 @@ let processModel: any = ref({});
 let treeData = ref([]);
 let importpzx: any = ref<string>();
 const pzxList = [
-  { title: "流程设计信息", key: "process" },
+  // { title: "流程设计信息", key: "process" },
   { title: "流程基础配置", key: "flow" },
   { title: "节点表单和按钮配置", key: "form" },
   { title: "权利其它配置", key: "qlqt" },
@@ -108,7 +108,7 @@ function importProcess() {
   importFile(api.importUrl);
 }
 function importFile(url?: string, callback?: any) {
-  if (fileList.length == 0) {
+  if (fileList.value.length == 0) {
     message.error("请选择文件");
     return;
   }

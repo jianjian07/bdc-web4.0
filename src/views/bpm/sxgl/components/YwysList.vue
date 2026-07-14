@@ -97,9 +97,9 @@ const pagination = ref<any>({
 })
 
 const urlList = {
-  queryList: '/api/zrzy-bdc/bdcdj/ywys/list', // 分页列表查询
-  delete: '/api/zrzy-bdc/bdcdj/ywys/delete', // 通过id删除
-  deleteBatch: '/api/zrzy-bdc/bdcdj/ywys/deleteBatch' // 批量删除
+  queryList: '/api/zrzy-bdc/flow/ywys/list', // 分页列表查询
+  delete: '/api/zrzy-bdc/flow/ywys/delete', // 通过id删除
+  deleteBatch: '/api/zrzy-bdc/flow/ywys/deleteBatch' // 批量删除
 }
 
 const props = defineProps({

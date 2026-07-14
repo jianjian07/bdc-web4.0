@@ -4,8 +4,8 @@
 
             <div style="line-height: 3em; background-color: #fff;padding: 10px 10px;">
                 <a-space style="padding-bottom: 10px;">
-                    <a-button type="primary" @click="handleMxAdd()" :disabled="!processInfo">
-                        <PlusOutlined />新增事项
+                    <a-button type="primary" @click="handleMlAdd()" :disabled="!processInfo">
+                        <PlusOutlined />新增目录
                     </a-button>
                 </a-space>
                 <a-alert type="info" :show-icon="true">
@@ -31,27 +31,26 @@
         <div class="userTabContent" style="height: 100%">
             <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
                 <a-tab-pane key="1" tab="基础配置">
-                    <SxxxModal v-if="selectedKeys.length > 0" :data="processInfo" @setBaseInfo="setBaseInfo"
-                        @refreshTree="loadData" @openFlowDesign="openFlowDesign" />
+                    <SxxxModal :data="processInfo" @setBaseInfo="setBaseInfo" @refreshTree="refreshTree"
+                        @openFlowDesign="openFlowDesign" @addMx="handleMxAdd" />
                 </a-tab-pane>
                 <a-tab-pane v-if="showFlow" key="2" tab="流程配置" force-render>
                     <CBpmDesign v-if="showFlow" :key="lcid" :id="lcid"></CBpmDesign>
                 </a-tab-pane>
-                <a-tab-pane key="3" tab="表单配置" force-render>
-                    <!-- {{ JSON.stringify(processInfo) }} -->
-                    <NodeList v-if="activeKey == '3'" :lcid="processInfo.key" />
+                <a-tab-pane v-if="processInfo.ml == 0" key="3" tab="表单配置" force-render>
+                    <NodeList v-if="activeKey == '3'" :lcid="processInfo.key" :isBl="sxlx != 1" />
                 </a-tab-pane>
                 <a-tab-pane key="4" tab="权利其他配置" force-render>
                     <QlqtpzList v-if="activeKey == '4'" :lcid="processInfo.key" :baseInfo="processInfo" />
                 </a-tab-pane>
-                <a-tab-pane key="5" tab="业务约束配置" force-render>
+                <a-tab-pane v-if="processInfo.ml == 0 && sxlx == 1" key="5" tab="业务约束配置" force-render>
                     <YwysList v-if="activeKey == '5'" :lcid="processInfo.key" :baseInfo="processInfo"
                         :treeData="treeData" />
                 </a-tab-pane>
-                <a-tab-pane key="6" tab="材料目录配置" force-render>
+                <a-tab-pane v-if="processInfo.ml == 0" key="6" tab="材料目录配置" force-render>
                     <ClmlList v-if="activeKey == '6'" :lcid="processInfo.key" :baseInfo="processInfo" />
                 </a-tab-pane>
-                <a-tab-pane key="7" tab="权利人配置" force-render>
+                <a-tab-pane v-if="processInfo.ml == 0 && sxlx == 1" key="7" tab="权利人配置" force-render>
                     <qlrpz v-if="activeKey == '7'" :lcid="processInfo.key" :baseInfo="processInfo"></qlrpz>
                 </a-tab-pane>
                 <a-tab-pane key="8" tab="规则配置" force-render>
@@ -87,16 +86,22 @@ let lcid = ref('')
 onMounted(() => {
     loadData()
 })
-
+let sxlx = ref(1)
+let ml = ref(1)
 /**
  * 选中流程事件
  * @param process 选中的流程
  */
 function onSelect(process: any, e: any) {
     processInfo.value = e.node
-    if (processInfo.value.type == 0 || activeKey.value == '2') {
+    selectedKeys.value = [e.node.key]
+    if (e.node.ml == 1) {
         activeKey.value = '1'
+    }
+    sxlx.value = e.node.sxlx
+    if (activeKey.value == '2') {
         showFlow.value = false
+        activeKey.value = '1'
     }
 }
 
@@ -104,21 +109,52 @@ function onSelect(process: any, e: any) {
  * 目录树
  * @param process 选中的流程
  */
-function loadData() {
-    defHttp.get({ url: "/api/zrzy-bdc/bpm/sxml/treeList", params: {} }, { withToken: true }).then((res) => {
-        treeData.value = res.result
-        if (res.result.length > 0 && Object.keys(processInfo.value).length == 0) {
-            expandedKeys.value = [res.result[0].value]
-            if (res.result[0].children.length > 0) {
-                processInfo.value = res.result[0].children[0]
-            } else {
-                processInfo.value = res.result[0]
+async function loadData() {
+    const res = await defHttp.get({ url: "/api/zrzy-bdc/flow/sxml/treeList", params: {} }, { withToken: true })
+    treeData.value = res.result
+    if (res.result.length > 0 && Object.keys(processInfo.value).length == 0) {
+        expandedKeys.value = [res.result[0].value]
+        if (res.result[0].children != undefined && res.result[0].children.length > 0) {
+            processInfo.value = res.result[0].children[0]
+            ml.value = 0
+        } else {
+            processInfo.value = res.result[0]
+        }
+        selectedKeys.value = [processInfo.value.key]
+    }
+}
+async function refreshTree(data: { type: string, id: any }) {
+    await loadData()
+    const _ml = processInfo.value.ml
+    if (_ml == 1) {
+        if (data.type == 'add') {
+            if (processInfo.value.id == undefined) {
+                const findData = treeData.value.filter(t => t.id == data.id)
+                processInfo.value = findData[0]
+                selectedKeys.value = [processInfo.value.key]
             }
+        } else {
+            if (treeData.value.length > 0) {
+                processInfo.value = treeData.value[0]
+                selectedKeys.value = [processInfo.value.key]
+            }
+        }
+    } else {
+        if (data.type == 'add') {
+            if (processInfo.value.id == undefined) {
+                const findData = treeData.value.filter(t => t.key == processInfo.value.lclx)
+                const findSx = findData[0].children.filter(t => t.id == data.id)
+                processInfo.value = findSx[0]
+                selectedKeys.value = [processInfo.value.key]
+            }
+        } else {
+            const findData = treeData.value.filter(t => t.key == processInfo.value.parentId)
+            processInfo.value = findData[0]
             selectedKeys.value = [processInfo.value.key]
         }
-    })
-}
+    }
 
+}
 /**
  * 基础配置
  * @param data 当前选中流程的基础配置
@@ -127,14 +163,23 @@ function setBaseInfo(data: any) {
     // data.prefix = data.prefix || processInfo.value.value
     data.lcmc = data.lcmc || processInfo.value.title
     baseInfo.value = data
+    selectedKeys.value = [data.code]
 }
+/** 新增目录 */
+function handleMlAdd() {
+    processInfo.value = {
+        ml: 1,
+        type: 0,
+        orderNum: 1,
+    }
+}
+/** 新增事项明细（由SxxxModal编辑目录时触发） */
 function handleMxAdd() {
-    const lclx = processInfo.value.type == 1 ? processInfo.value.parentId : processInfo.value.value
-    debugger
+    const lclx = processInfo.value.ml == 1 ? processInfo.value.key : processInfo.value.parentId
     processInfo.value = {
         code: '',
         name: '',
-        type: 1,
+        ml: 0,
         orderNum: 1,
         lclx: lclx,
         sxlx: processInfo.value.sxlx,

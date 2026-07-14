@@ -1,8 +1,9 @@
 <template>
     <a-row>
         <a-col :span="12">
-            <a-form-item label="权利类型">
-                <a-select :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;" @change="onChangeQllx" show-search optionFilterProp="label">
+            <a-form-item label="矿业权类型">
+                <a-select :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;" @change="onChangeQllx"
+                    show-search optionFilterProp="label" v-model:value="nodeInfo.qllx">
                 </a-select>
             </a-form-item>
         </a-col>
@@ -10,11 +11,14 @@
             <a-space>
                 <a-button type="primary" @click="onExport">导出表单配置</a-button>
                 <a-button type="primary" @click="onupload">导入表单配置</a-button>
+                <a-button type="primary" @click="onUnifiedAssign">统赋</a-button>
             </a-space>
         </a-col>
     </a-row>
-    <BdList :nodeInfo="nodeInfo"></BdList>
-    <BtnList :nodeInfo="nodeInfo"></BtnList>
+    <BdList :nodeInfo="nodeInfo" :isBl="isBl"></BdList>
+    <BtnList :nodeInfo="nodeInfo" :isBl="isBl"></BtnList>
+    <UnifiedAssignModal v-if="unifiedAssignOpen" v-model:open="unifiedAssignOpen" :nodeInfo="nodeInfo"
+        :isBl="props.isBl" />
     <!-- <a-form :model="flowNode" layout="inline" autocomplete="off" style="padding-top: 15px;">
         <a-form-item label="权利人分类" name="username">
             <a-select v-model:value="flowNode.qlrfl" :options="getDictItemsByCode('qlrfl')" allowClear
@@ -33,6 +37,7 @@
 import { ref, watch } from 'vue';
 import BdList from '/@/views/system/case/components/BdList.vue';
 import BtnList from '/@/views/system/case/components/BtnList.vue';
+import UnifiedAssignModal from '/@/views/bpm/sxgl/components/UnifiedAssignModal.vue';
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { message } from 'ant-design-vue';
 const props = defineProps({
@@ -43,11 +48,26 @@ const props = defineProps({
     jdid: {
         type: String,
         default: ""
+    },
+    qllx: {
+        type: String,
+        default: ""
+    },
+    jdmc: {
+        type: String,
+        default: ""
+    },
+    isBl: {
+        type: Boolean,
+        default: false
     }
 });
 
-let nodeInfo: any = ref({ lcid: '', jdid: '', qllx: '' })
+let nodeInfo: any = ref({ lcid: '', jdid: '', qllx: '', jdmc: '' })
 nodeInfo.value = JSON.parse(JSON.stringify(props))
+console.log('nodeInfo.value', nodeInfo.value)
+
+const unifiedAssignOpen = ref(false)
 
 function onChangeQllx(value: String, option: any) {
     nodeInfo.value.qllx = value
@@ -56,12 +76,14 @@ watch(() => props.jdid, (newValue, _oldValue) => {
 
     nodeInfo.value.lcid = props.lcid
     nodeInfo.value.jdid = props.jdid
+    nodeInfo.value.jdmc = props.jdmc
 });
 
 watch(() => props.lcid, (newValue, _oldValue) => {
 
     nodeInfo.value.lcid = props.lcid
     nodeInfo.value.jdid = props.jdid
+    nodeInfo.value.jdmc = props.jdmc
 });
 /**
  * 导出
@@ -74,6 +96,20 @@ function onExport() {
  */
 function onupload() {
     message.info('后续开放功能')
+}
+/**
+ * 打开统赋弹窗
+ */
+function onUnifiedAssign() {
+    if (!nodeInfo.value.lcid || !nodeInfo.value.jdid) {
+        message.warning('请先选择流程节点')
+        return
+    }
+    if (!nodeInfo.value.qllx) {
+        message.warning('请先选择权利类型')
+        return
+    }
+    unifiedAssignOpen.value = true
 }
 </script>
 
