@@ -59,11 +59,10 @@ import { UploadOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
 enum api {
-  processlist = "/api/zrzy-bdc/act/process/extActProcess/list",
-  roleProcesslist = "/api/zrzy-system/role/getRoleProcessList",
-  exportUrl = "/api/zrzy-bdc/process/config/exportProcessAll",
-  showImportUrl = "/api/zrzy-bdc/flow/config/showImportProcess",
-  importUrl = "/api/zrzy-bdc/process/config/importProcessAll",
+  processlist = '/api/zrzy-bdc/flow/sxml/treeList',
+  roleProcesslist = '/api/zrzy-system/role/getRoleProcessList',
+  showImportUrl = "/api/zrzy-bdc/flow/public/showImportProcess",
+  importUrl = '/api/zrzy-bdc/process/config/importProcessAll'
 }
 const formRef = ref();
 let processModel: any = ref({});
@@ -71,10 +70,12 @@ let treeData = ref([]);
 let importpzx: any = ref<string>();
 const pzxList = [
   // { title: "流程设计信息", key: "process" },
-  { title: "流程基础配置", key: "flow" },
+  // { title: "流程基础配置", key: "flow" },
   { title: "节点表单和按钮配置", key: "form" },
   { title: "权利其它配置", key: "qlqt" },
   { title: "权利人配置", key: "qlr" },
+  { title: "附件材料配置", key: "fjcl" },
+  // { title: "审查要点配置", key: "scyd" },
 ];
 onMounted(() => {
   loadTreeData();
@@ -102,22 +103,29 @@ function handleImportJson() {
 }
 function bb(result: any) {
   processModel.value = result;
+  processModel.value.lcid = ''
   importpzx.value = processModel.value.pzx;
 }
 function importProcess() {
-  importFile(api.importUrl);
+  formRef.value
+    .validate()
+    .then(() => {
+      importFile(api.importUrl);
+    })
 }
 function importFile(url?: string, callback?: any) {
   if (fileList.value.length == 0) {
     message.error("请选择文件");
     return;
   }
+  debugger
   const fileData = new FormData();
   fileList.value.forEach((ele: any) => {
     fileData.append(`files`, ele.originFileObj);
   });
   if (Object.keys(processModel.value).length != 0) {
     const { lcid, qllx, qllxNew, pzx } = processModel.value;
+
     fileData.append(`lcid`, lcid);
     fileData.append(`qllx`, qllx);
     fileData.append(`qllxNew`, qllxNew);
@@ -140,6 +148,8 @@ function importFile(url?: string, callback?: any) {
         } else {
           message.info(res?.message);
         }
+      } else {
+        message.error(res?.message);
       }
     });
 }

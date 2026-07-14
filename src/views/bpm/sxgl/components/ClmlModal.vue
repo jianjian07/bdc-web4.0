@@ -84,7 +84,7 @@ let formState: any = ref({
   orderNum: 1
 })
 let JDOptions: any = ref([])
-let fieldNames = { label: 'name', value: 'id', children: 'children' }
+let fieldNames = { label: 'processNodeName', value: 'processNodeCode', children: 'children' }
 
 const rules: any = {
   // nodeId: { required: true, message: '请选择节点名称', trigger: 'blur'},
@@ -95,7 +95,7 @@ const rules: any = {
 const urlList = {
   add: '/api/zrzy-bdc/sys/folder/config/add', // 添加
   edit: '/api/zrzy-bdc/sys/folder/config/edit', // 编辑
-  nodelistUrl: '/api/zrzy-bdc/process/getProcessNodeList' //节点列表
+  nodelistUrl: '/api/zrzy-bdc/act/process/extActProcessNode/list' //节点列表
 }
 
 const props = defineProps({
@@ -123,11 +123,13 @@ watch(() => props.formData, (val: any) => {
 })
 
 function getNode() {
-  defHttp.post({ url: urlList.nodelistUrl, params: { processDefId: props.formData.lcid } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: urlList.nodelistUrl, params: { processId: props.formData.lcid } }, { withToken: true }).then((res) => {
     JDOptions.value = res.result;
+    debugger
     if (props.formData.type == 'new') {
-      formState.value.nodeId = formState.value.nodeId || res.result[0].id
-      formState.value.nodeName = formState.value.nodeName || res.result[0].name
+
+      formState.value.nodeId = formState.value.nodeId || res.result[0].processNodeCode
+      formState.value.nodeName = formState.value.nodeName || res.result[0].processNodeName
     }
   });
 }

@@ -4,18 +4,18 @@
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="6" :offset="0">
           <a-form-item label="受理编号">
-            <a-input v-model:value="formData.slbh" allowClear/>
+            <a-input v-model:value="formData.slbh" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="流程类别">
             <a-select v-model:value="formData.lclx" :options="getDictItemsByCode('bpm_process_type')"
-                      @change="onChangeLclx"/>
+              @change="onChangeLclx" />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="流程名称">
-            <a-select v-model:value="formData.lcid" :options="lcmcList"/>
+            <a-select v-model:value="formData.lcid" :options="lcmcList" />
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -32,17 +32,17 @@
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="6" :offset="0">
           <a-form-item label="不动产单元号">
-            <a-input v-model:value="formData.bdcdyh" allowClear/>
+            <a-input v-model:value="formData.bdcdyh" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="坐落">
-            <a-input v-model:value="formData.zl" allowClear/>
+            <a-input v-model:value="formData.zl" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
           <a-form-item label="项目名称">
-            <a-input v-model:value="formData.ajmc" allowClear/>
+            <a-input v-model:value="formData.ajmc" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
@@ -78,47 +78,41 @@
     </div>
 
     <a-spin :spinning="spinning">
-      <a-table
-          :columns="columns"
-          :data-source="datalist"
-          :pagination="pagination"
-          @change="onChange($event, loadData)"
-          :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onSelect: onSelectRow,
-          onSelectAll: onSelectAll
-          }"
-          :row-key="record => record.taskId"
-      >
+      <a-table :columns="columns" :data-source="datalist" :pagination="pagination" @change="onChange($event, loadData)"
+        :row-selection="{
+      selectedRowKeys: selectedRowKeys,
+      onSelect: onSelectRow,
+      onSelectAll: onSelectAll
+    }" :row-key="record => record.taskId">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'ajmc'">
             <a @click="itemView(record)">{{ record.ajmc }}</a>
             <span v-if="record.taskSupervise" style="color: red;">【{{
-                record.taskSuperviseUserRealName + "督办：" + record.taskSuperviseRemark
-              }}】</span>
-            <span v-if="record.taskUrgent"
-                  style="color: red;">【{{ record.taskUrgentUserRealName + "加急：" + record.taskUrgentRemark }}】</span>
+      record.taskSuperviseUserRealName + "督办：" + record.taskSuperviseRemark
+    }}】</span>
+            <span v-if="record.taskUrgent" style="color: red;">【{{ record.taskUrgentUserRealName + "加急：" +
+      record.taskUrgentRemark }}】</span>
           </template>
           <template v-if="column.key === 'taskTimeStatus'">
             <span>
               <a-space>
                 <a-tag color="orange" v-if="record.taskTimeStatus == 1">
-                    <template #icon>
-                        <RollbackOutlined/>
-                    </template>
-                    预警
+                  <template #icon>
+                    <RollbackOutlined />
+                  </template>
+                  预警
                 </a-tag>
                 <a-tag color="red" v-if="record.taskTimeStatus == 2">
-                    <template #icon>
-                        <AlertOutlined/>
-                    </template>
-                    超时
+                  <template #icon>
+                    <AlertOutlined />
+                  </template>
+                  超时
                 </a-tag>
                 <a-tag color="green" v-if="record.taskTimeStatus == 0">正常</a-tag>
                 <a-tooltip key="blue" :title="'委托人: ' + record.taskOwnerName">
                   <a-tag color="blue" v-if="record.taskDelegation" style="cursor: pointer">
                     <template #icon>
-                      <SolutionOutlined/>
+                      <SolutionOutlined />
                     </template>
                     {{ record.taskOwnerName }}
                   </a-tag>
@@ -150,7 +144,7 @@ import { cModal } from "/@/components/cModal/index.ts";
 
 enum api {
   tasklist = '/api/zrzy-bdc/act/task/list',
-  getLcListByLclx = '/api/zrzy-bdc/flow/flowConfig/getLcListByLclx'
+  getLcListByLclx = '/api/zrzy-bdc/flow/sxmx/getLcListByLclx',
 }
 
 // 流程名称下拉
@@ -280,7 +274,7 @@ function getLcmcByLclx(lclx) {
         lcmcList.value = res.result.map(item => {
           return {
             value: item.lcid,
-            label: item.lcmc
+            label: item.name
           }
         })
         if (lcmcList.value.length > 0) {
@@ -307,8 +301,8 @@ function searchData() {
   currentPageSelectedRow.value = []
   selectedRowKeys.value = []
   slbhList.value = []
-  taskDefKeyList.value=[]
-  taskNameList.value=[]
+  taskDefKeyList.value = []
+  taskNameList.value = []
   loadData()
 }
 
@@ -386,7 +380,7 @@ function onSelectAll(selected: any, _selectionRows: any, changeRows: any) {
  */
 function batchHandover() {
   //let firstRecord = datalist.value[0]
-  if(new Set(taskDefKeyList.value).size>1){
+  if (new Set(taskDefKeyList.value).size > 1) {
     message.warning("只允许选择同一个节点进行批量移交，请检查!")
     return;
   }

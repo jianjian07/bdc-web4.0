@@ -132,7 +132,7 @@ enum api {
   delUrl = "/api/zrzy-bdc/bdcdj/lcsc/deleteWfAndBusinessData",
   taskEntrust = '/api/zrzy-bdc/act/task/taskEntrust',
   handleFlagUrl = '/api/zrzy-bdc/hi/taskinst/updateHandleFlag',
-  getLcListByLclx = '/api/zrzy-bdc/flow/flowConfig/getLcListByLclx',
+  getLcListByLclx = '/api/zrzy-bdc/flow/sxmx/getLcListByLclx',
   nodelistUrl = '/api/zrzy-bdc/act/process/extActProcessNode/list'
 }
 let datalist = ref([]);
@@ -345,7 +345,7 @@ function getLcmcByLclx(lclx) {
         lcmcList.value = res.result.map(item => {
           return {
             value: item.lcid,
-            label: item.lcmc
+            label: item.name
           }
         })
         if (lcmcList.value.length > 0) {

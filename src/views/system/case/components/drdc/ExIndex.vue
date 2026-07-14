@@ -10,7 +10,13 @@
         value: 'key',
     }" tree-node-filter-prop="title" @select="selectProcess"></a-tree-select>
         </a-form-item>
-        <a-form-item label="权利类型">
+        <!-- <a-form-item label="权利类型">
+            <a-select v-model:value="processModel.qllx" mode="multiple" :options="getDictItemsByCode('qllx')" allowClear
+                style="width:500px;" show-search optionFilterProp="label">
+            </a-select>
+        </a-form-item> -->
+        <a-form-item label="矿业权类型">
+
             <a-select v-model:value="processModel.qllx" mode="multiple" :options="getDictItemsByCode('qllx')" allowClear
                 style="width:500px;" show-search optionFilterProp="label">
             </a-select>
@@ -42,10 +48,9 @@ import { message } from 'ant-design-vue';
 import { exprotJson_post } from "/@/views/online/utils/file"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 enum api {
-    processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
+    processlist = '/api/zrzy-bdc/flow/sxml/treeList',
     roleProcesslist = '/api/zrzy-system/role/getRoleProcessList',
-    exportUrl = '/api/zrzy-bdc/process/config/exportProcessAll',
-    showImportUrl = '/api/zrzy-bdc/flow/config/showImportProcess',
+    exportUrl = '/api/zrzy-bdc/flow/public/exportProcessAll',
     importUrl = '/api/zrzy-bdc/process/config/importProcessAll'
 }
 const formRef = ref();
@@ -53,10 +58,12 @@ let processModel: any = ref({})
 let treeData = ref([])
 const pzxList = [
     // { title: '流程设计信息', key: 'process' },
-    { title: '流程基础配置', key: 'flow' },
+    // { title: '流程基础配置', key: 'flow' },
     { title: '节点表单和按钮配置', key: 'form' },
     { title: '权利其它配置', key: 'qlqt' },
     { title: '权利人配置', key: 'qlr' },
+    { title: '附件材料配置', key: 'fjcl' },
+    // { title: '审查要点配置', key: 'scyd' },
 ]
 
 onMounted(() => {
@@ -64,7 +71,7 @@ onMounted(() => {
 })
 function loadTreeData() {
     let url = api.processlist
-    defHttp.get({ url: url, params: { ajlx: '1' } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: url, params: {} }, { withToken: true }).then((res) => {
         treeData.value = res.result
     })
 }
