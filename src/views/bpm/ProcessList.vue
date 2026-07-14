@@ -86,7 +86,7 @@
                                 </a>
                                 <template #overlay>
                                     <a-menu>
-                                        <!-- <a-menu-item key="1" @click="handleAction(record, 'jk')">版本监控</a-menu-item> -->
+                                        <a-menu-item key="1" @click="handleAction(record, 'jk')">版本监控</a-menu-item>
                                         <a-menu-item key="2" @click="handleAction(record, 'fz')">流程复制</a-menu-item>
                                         <a-menu-item key="2" @click="handleAction(record, 'sc')">流程删除</a-menu-item>
                                     </a-menu>
@@ -99,13 +99,20 @@
             </template>
         </a-table>
     </div>
+    <a-modal v-model:open="open" title="版本监控" width="100%" wrap-class-name="full-modal" :footer="null">
+        <CRViewer ref="rView" :key="processKey" id="2058741547024576514" :p-router="router" :p-route="route"
+            :p-formData="{ bdc: bdc, key: processKey }" v-bind="attrs"></CRViewer>
+    </a-modal>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, h, createVNode } from 'vue';
+import { computed, onMounted, ref, h, createVNode, useAttrs } from 'vue';
 import { SearchOutlined, PlusOutlined, DownOutlined, RetweetOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { message, Modal, type TableColumnsType } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
-import { router } from "/@/router";
+import { router, currentRoute } from "/@/router";
+import * as bdc from '/@/views/bdc/public/bdc'
+const attrs = useAttrs()
+const route = currentRoute;
 // 选中的值
 let selectedRowKeys = ref<any>([])
 let pagination = ref({
@@ -122,6 +129,7 @@ let processData = ref({
     processType: '',
     processStatus: ''
 })
+let open = ref(false)
 const columns = ref<TableColumnsType>([
     {
         title: '序号',
@@ -213,10 +221,12 @@ function handleDesign(record: any) {
 function handleConfig(record: any) {
     // 实现配置逻辑
 }
-
+let processKey = ref('')
 // 版本监控
 function handleVersionMonitor(record: any) {
     // 实现版本监控逻辑
+    processKey.value = record.processKey
+    open.value = true
 }
 /**
  * 复制流程
@@ -389,3 +399,23 @@ function getLabelByDictCode(code: any) {
     return item?.dictName || ''
 }
 </script>
+<style lang="less">
+.full-modal {
+    .ant-modal {
+        max-width: 100%;
+        top: 0;
+        padding-bottom: 0;
+        margin: 0;
+    }
+
+    .ant-modal-content {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh);
+    }
+
+    .ant-modal-body {
+        flex: 1;
+    }
+}
+</style>

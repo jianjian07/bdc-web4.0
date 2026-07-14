@@ -20,6 +20,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,// 开启跨域
           rewrite: path => path.replace(/^\/api/, '')// 路由重写
         },
+        '/formapi': {
+          target: VITE_GLOB_API_URL,// 代理的目标地址
+          changeOrigin: true,// 开启跨域
+          rewrite: path => path.replace(/^\/formapi/, '')// 路由重写
+        },
         '/bpmapi': {
           target: VITE_GLOB_BPM_API_URL, // 代理的目标地址
           changeOrigin: true, // 开启跨域

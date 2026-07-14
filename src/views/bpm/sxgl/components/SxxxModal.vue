@@ -39,12 +39,12 @@
         <a-form-item label="事项名称">
             <a-input v-model:value="flowInfo.name" />
         </a-form-item>
-        <a-form-item v-if="data.sxlx == 1" label="关联流程" name="lcid">
+        <a-form-item label="关联流程" name="lcid">
             <a-tree-select v-model:value="flowInfo.lcid" :tree-data="flowList" placeholder="请选择流程"
                 :fieldNames="{ children: 'children', title: 'title', value: 'key' }" allowClear style="width: 40%;">
-            </a-tree-select>&nbsp;&nbsp;
+            </a-tree-select>&nbsp;&nbsp;{{ "sss" + data.sxlx }}
             <a-button type="primary" @click="handleAddTbl(flowInfo.lcid)">流程设计</a-button>
-            <!-- <a-input v-model:value="flowInfo.lcid" readOnly style="width: 40%;" /> -->
+            <a-input v-model:value="flowInfo.lcid" readOnly style="width: 40%;" />
         </a-form-item>
         <a-form-item label="登记大类">
             <a-input v-model:value="flowInfo.djdl" />
