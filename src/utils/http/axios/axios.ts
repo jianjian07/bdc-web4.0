@@ -140,9 +140,9 @@ export class RequestHttp {
             }
         }
         // 统一将data中的undefined转为空字符串，避免JSON.stringify丢失字段
-        if (config.data && typeof config.data === 'object') {
-            config.data = this.replaceUndefinedToEmpty(config.data);
-        }
+        // if (config.data && typeof config.data === 'object') {
+        //     config.data = this.replaceUndefinedToEmpty(config.data);
+        // }
         return config;
     }
 
@@ -249,6 +249,7 @@ export class RequestHttp {
                 config.timeout = 0
             }
         }
+
         if (config && config.headers && config.requestOptions) { // 多一步判断
             if (config.requestOptions.xAuthToken != undefined) {
                 Reflect.set(config.headers, 'x-auth-token', config.requestOptions.xAuthToken)
