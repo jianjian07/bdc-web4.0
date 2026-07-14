@@ -1,7 +1,8 @@
 <template>
     <div style="width: 280px;padding: 10px 8px;">
-        <a-directory-tree multiple :tree-data="treeData" :fieldNames="props.isRoleProcess ? { children:'children', title:'lcmc', key:'lcid' } : null " @select="onSelect" v-model:expandedKeys="expandedKeys"
-            v-model:selectedKeys="selectedKeys">
+        <a-directory-tree multiple :tree-data="treeData"
+            :fieldNames="props.isRoleProcess ? { children: 'children', title: 'lcmc', key: 'lcid' } : null"
+            @select="onSelect" v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys">
             <template #icon="">
             </template>
         </a-directory-tree>
@@ -19,7 +20,7 @@ const props = defineProps({
 })
 enum api {
     processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
-    roleProcesslist = '/api/zrzy-system/role/getRoleProcessList',
+    roleProcesslist = '/api/zrzy-bdc/flow/public/getRoleProcessList',
 }
 const expandedKeys = ref<string[]>(['100']);
 const selectedKeys = ref<string[]>([]);

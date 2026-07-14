@@ -1,29 +1,25 @@
 <template>
   <div class="QlqtpzModal">
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      :label-col="{span: 6}"
-      :wrapper-col="{span: 16}"
-    >
+    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
       <a-form-item v-show="false" ref="processName" label="流程名称" name="processName">
-        <a-input v-model:value="formState.processName" disabled/>
+        <a-input v-model:value="formState.processName" disabled />
       </a-form-item>
       <a-form-item v-if="!formData.isBl" ref="nodeId" label="节点名称" name="nodeId">
-        <a-select v-model:value="formState.nodeId" allow-clear :fieldNames="fieldNames" placeholder="请选择节点" :options="JDOptions" @change="onChange"></a-select>
+        <a-select v-model:value="formState.nodeId" allow-clear :fieldNames="fieldNames" placeholder="请选择节点"
+          :options="JDOptions" @change="onChange"></a-select>
       </a-form-item>
       <a-form-item ref="subType" label="权利类型" name="subType">
-        <a-select v-model:value="formState.subType" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型" show-search optionFilterProp="label"/>
+        <a-select v-model:value="formState.subType" :options="getDictItemsByCode('qllx')" placeholder="请选择权利类型"
+          show-search optionFilterProp="label" />
       </a-form-item>
-      <a-form-item ref="materialName" label="目录名称" name="materialName">
-        <a-input v-model:value="formState.materialName" placeholder="请输入目录名称"></a-input>
+      <a-form-item ref="folderName" label="目录名称" name="folderName">
+        <a-input v-model:value="formState.folderName" placeholder="请输入目录名称"></a-input>
       </a-form-item>
       <a-form-item ref="copies" label="份数" name="copies">
         <a-input-number style="width: 100%" v-model:value="formState.copies" placeholder="请输入份数"></a-input-number>
       </a-form-item>
-      <a-form-item ref="sortNo" label="顺序号" name="sortNo">
-        <a-input-number style="width: 100%" v-model:value="formState.sortNo" placeholder="请输入顺序号"></a-input-number>
+      <a-form-item ref="orderNum" label="顺序号" name="orderNum">
+        <a-input-number style="width: 100%" v-model:value="formState.orderNum" placeholder="请输入顺序号"></a-input-number>
       </a-form-item>
       <a-form-item ref="must" label="必须" name="must">
         <a-radio-group v-model:value="formState.must">
@@ -56,7 +52,7 @@
         </a-radio-group>
       </a-form-item>
       <a-form-item ref="remark" label="说明" name="remark">
-        <a-textarea :rows="2" v-model:value="formState.remark"/>
+        <a-textarea :rows="2" v-model:value="formState.remark" />
       </a-form-item>
     </a-form>
   </div>
@@ -76,8 +72,8 @@ let formState: any = ref({
   nodeName: "",
   processId: "",
   processName: "",
-  materialId: "",
-  materialName: "",
+  folderId: "",
+  folderName: "",
   copies: '',
   subType: "",
   must: 0,
@@ -85,21 +81,21 @@ let formState: any = ref({
   xzcz: -1,
   sign: 0,
   remark: "",
-  sortNo: 1
+  orderNum: 1
 })
 let JDOptions: any = ref([])
-let fieldNames = { label: 'processNodeName', value: 'processNodeCode', children: 'children' }
+let fieldNames = { label: 'name', value: 'id', children: 'children' }
 
 const rules: any = {
   // nodeId: { required: true, message: '请选择节点名称', trigger: 'blur'},
-  materialName: { required: true, message: '请输入目录名称', trigger: 'blur'},
-  subType: { required: true, message: '请选择权利类型', trigger: 'blur'}
+  folderName: { required: true, message: '请输入目录名称', trigger: 'blur' },
+  subType: { required: true, message: '请选择权利类型', trigger: 'blur' }
 }
 
 const urlList = {
-  add: '/api/zrzy-bdc/casematerialConfig/add', // 添加
-  edit: '/api/zrzy-bdc/casematerialConfig/edit', // 编辑
-  nodelistUrl: '/api/zrzy-bdc/act/process/extActProcessNode/list' //节点列表
+  add: '/api/zrzy-bdc/sys/folder/config/add', // 添加
+  edit: '/api/zrzy-bdc/sys/folder/config/edit', // 编辑
+  nodelistUrl: '/api/zrzy-bdc/process/getProcessNodeList' //节点列表
 }
 
 const props = defineProps({
@@ -110,7 +106,7 @@ const props = defineProps({
 })
 
 watch(() => props.formData, (val: any) => {
-  if(val.type !== 'new') {
+  if (val.type !== 'new') {
     Object.keys(formState.value).forEach(key => {
       formState.value[key] = val.itemData[key]
     })
@@ -127,69 +123,71 @@ watch(() => props.formData, (val: any) => {
 })
 
 function getNode() {
-  defHttp.get({ url: urlList.nodelistUrl, params: { processId: props.formData.lcid } }, { withToken: true }).then((res) => {
+  defHttp.post({ url: urlList.nodelistUrl, params: { processDefId: props.formData.lcid } }, { withToken: true }).then((res) => {
     JDOptions.value = res.result;
-    formState.value.nodeId = formState.value.nodeId || res.result[0].processNodeCode
-    formState.value.nodeName = formState.value.nodeName || res.result[0].processNodeName
+    if (props.formData.type == 'new') {
+      formState.value.nodeId = formState.value.nodeId || res.result[0].id
+      formState.value.nodeName = formState.value.nodeName || res.result[0].name
+    }
   });
 }
 
 function onChange(value, option) {
-  formState.value.nodeId = value
-  formState.value.nodeName = option.label
+  formState.value.nodeId = value || ''
+  formState.value.nodeName = option?.name || ''
 }
 
 // 保存
 function onSubmit() {
   return new Promise((resolve, reject) => {
     formRef.value
-    .validate()
-    .then(() => {
-      // console.log('values', formState, toRaw(formState));
-      if (!formState.value.nodeId) {
-        formState.value.nodeName = ''
-      }
-      let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
+      .validate()
+      .then(() => {
+        // console.log('values', formState, toRaw(formState));
+        if (!formState.value.nodeId) {
+          formState.value.nodeName = ''
+        }
+        let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
 
-      if(props.formData.type == 'edit') {
-        defHttp.put(
-          {
-            url: url,
-            data: formState.value
-          },
-          { withToken: true }
-        ).then((res: any) => {
-          if(res?.success) {
-            message.success('编辑成功！')
-            resolve(true)
-          } else {
-            message.warning(res?.message || '编辑失败！')
-            reject()
-          }
-        })
-      } else if(props.formData.type == 'new'){
-        defHttp.post(
-          {
-            url: url,
-            data: formState.value
-          },
-          { withToken: true }
-        ).then((res: any) => {
-          if(res?.success) {
-            message.success('添加成功！')
-            resolve(true)
-          } else {
-            message.warning(res?.message || '添加失败')
-            reject()
-          }
-        })
-      } else {
-        resolve(true)
-      }
-    })
-    .catch((error: any) => {
-      console.log('error', error);
-    });
+        if (props.formData.type == 'edit') {
+          defHttp.put(
+            {
+              url: url,
+              data: formState.value
+            },
+            { withToken: true }
+          ).then((res: any) => {
+            if (res?.success) {
+              message.success('编辑成功！')
+              resolve(true)
+            } else {
+              message.warning(res?.message || '编辑失败！')
+              reject()
+            }
+          })
+        } else if (props.formData.type == 'new') {
+          defHttp.post(
+            {
+              url: url,
+              data: formState.value
+            },
+            { withToken: true }
+          ).then((res: any) => {
+            if (res?.success) {
+              message.success('添加成功！')
+              resolve(true)
+            } else {
+              message.warning(res?.message || '添加失败')
+              reject()
+            }
+          })
+        } else {
+          resolve(true)
+        }
+      })
+      .catch((error: any) => {
+        console.log('error', error);
+      });
   })
 }
 

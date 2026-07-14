@@ -82,7 +82,7 @@ const defaultColumns = [{
 {
   title: '目录名称',
   align: 'center',
-  dataIndex: 'materialName',
+  dataIndex: 'folderName',
 },
 {
   title: '必须',
@@ -116,9 +116,9 @@ const pagination = ref<any>({
 })
 
 const urlList = {
-  queryList: '/api/zrzy-bdc/casematerialConfig/list', // 分页列表查询
-  delete: '/api/zrzy-bdc/casematerialConfig/delete', // 通过id删除
-  deleteBatch: '/api/zrzy-bdc/casematerialConfig/deleteBatch' // 批量删除
+  queryList: '/api/zrzy-bdc/sys/folder/config/list', // 分页列表查询
+  delete: '/api/zrzy-bdc/sys/folder/config/delete', // 通过id删除
+  deleteBatch: '/api/zrzy-bdc/sys/folder/config/deleteBatch' // 批量删除
 }
 
 watch(() => props.isBl, (val) => {
@@ -147,7 +147,7 @@ function loadData() {
     pageSize: pagination.value.pageSize,
     processId: props.lcid,
     order: 'desc,asc',
-    column: 'subType,sortNo',
+    column: 'subType,orderNum',
   }
   // 获取业务约束配置列表
   defHttp.get(
@@ -231,7 +231,7 @@ function batchDelete() {
     withToken: true
   }).then(res => {
     if (res && res.success) {
-      message.warning('删除成功！')
+      message.success('删除成功！')
       state.selectedRowKeys = []
       loadData()
     } else {
