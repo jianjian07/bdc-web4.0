@@ -50,8 +50,8 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="目标节点（多选）" required>
-            <a-select v-model:value="formState.targetJdidList" mode="multiple" :options="targetNodeOptions"
-              :loading="nodeLoading" show-search option-filter-prop="label" placeholder="请选择目标节点" />
+            <a-select mode="multiple" :options="targetNodeOptions" :loading="nodeLoading" show-search
+              option-filter-prop="label" placeholder="请选择目标节点" @change="onTargetNodeChange" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -206,7 +206,6 @@ function loadProcessOptions() {
 }
 
 function onTargetLcidChange(value: string) {
-  debugger
   formState.targetJdidList = []
   if (value) {
     loadTargetNodes(value)
@@ -219,7 +218,6 @@ function loadTargetNodes(lcid: string) {
   nodeLoading.value = true
   defHttp.get({ url: api.nodeListUrl, params: { processId: lcid } }, { withToken: true })
     .then((res) => {
-      debugger
       const list: any[] = []
       if (res?.success && Array.isArray(res.result)) {
         for (const node of res.result) {
@@ -245,7 +243,12 @@ function onVfdSelectionChange(keys: string[]) {
 function onBtnSelectionChange(keys: string[]) {
   formState.btnIdList = keys
 }
-
+function onTargetNodeChange(value: string, option: any) {
+  formState.targetJdidList = option.map((opt: any) => ({
+    id: opt.value,
+    name: opt.label
+  }));
+}
 function onSave() {
   if (!formState.vfdIdList.length && !formState.btnIdList.length) {
     message.warning('请至少选择一个表单或按钮配置')
