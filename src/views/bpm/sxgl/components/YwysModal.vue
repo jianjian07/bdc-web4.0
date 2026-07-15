@@ -1,14 +1,9 @@
 <template>
   <div class="QlqtpzModal">
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      :label-col="{ span: 6 }"
-      :wrapper-col="{ span: 16 }"
-    >
+    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
       <a-form-item ref="yblcbm" label="已发生的登记" name="yblcbm">
-        <a-cascader v-model:value="lcKey" :options="options" :fieldNames="fieldNames" placeholder="请选择" @change="onChange"/>
+        <a-cascader v-model:value="lcKey" :options="options" :fieldNames="fieldNames" placeholder="请选择"
+          @change="onChange" />
       </a-form-item>
       <a-form-item ref="yblczt" label="登记状态" name="yblczt">
         <a-radio-group v-model:value="formState.yblczt">
@@ -58,12 +53,12 @@ let fieldNames = { label: 'title', value: 'key', children: 'children' }
 let editZt: any = ref('')
 
 const rules: any = {
-  yblcbm: { required: true, message: '请选择已发生的登记', trigger: 'blur'}
+  yblcbm: { required: true, message: '请选择已发生的登记', trigger: 'blur' }
 }
 
 const urlList = {
-  add: '/api/zrzy-bdc/bdcdj/ywys/add', // 添加
-  edit: '/api/zrzy-bdc/bdcdj/ywys/edit', // 编辑
+  add: '/api/zrzy-bdc/flow/ywys/add', // 添加
+  edit: '/api/zrzy-bdc/flow/ywys/edit', // 编辑
 }
 
 const props = defineProps({
@@ -74,7 +69,7 @@ const props = defineProps({
 })
 
 watch(() => props.formData, (val: any) => {
-  if(val.type !== 'new') {
+  if (val.type !== 'new') {
     Object.keys(formState.value).forEach(key => {
       formState.value[key] = val.itemData[key]
     })
@@ -88,7 +83,7 @@ watch(() => props.formData, (val: any) => {
     formState.value.lcid = val.lcid
   }
   options.value = val.treeData
-  
+
 }, {
   immediate: true,
   deep: true
@@ -98,8 +93,8 @@ function getLcKey(lclx, regType, data) {
   for (let i = 0; i < data.length; i++) {
     if (data[i].key == lclx) {
       let children = data[i].children
-      for(let j = 0; j < children.length; j++) {
-        if(children[j].regType === regType) {
+      for (let j = 0; j < children.length; j++) {
+        if (children[j].regType === regType) {
           lcKey.value = [data[i].key, children[j].key]
           break;
         }
@@ -119,7 +114,7 @@ function onChange(value, selectedOptions) {
 
 function isObtainTwoData(formdata, data) {
   for (let i = 0; i < data.length; i++) {
-    if (data[i].lcid == formdata.lcid && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt && data[i].lclx == formdata.lclx ) {
+    if (data[i].lcid == formdata.lcid && data[i].yblcbm == formdata.yblcbm && data[i].yblczt == formdata.yblczt && data[i].lclx == formdata.lclx) {
       return true
     }
   }
@@ -130,64 +125,64 @@ function isObtainTwoData(formdata, data) {
 function onSubmit() {
   return new Promise((resolve, reject) => {
     formRef.value
-    .validate()
-    .then(() => {
-      console.log('values', formState, toRaw(formState));
-      let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
+      .validate()
+      .then(() => {
+        console.log('values', formState, toRaw(formState));
+        let url = props.formData.type == 'edit' ? urlList.edit : urlList.add
 
-      if(props.formData.type == 'edit') {
-        // 判断
-        if (editZt.value != formState.value.yblczt) {
-          let edit = isObtainTwoData(formState.value, props.formData.dataList)
-          if (edit) {
+        if (props.formData.type == 'edit') {
+          // 判断
+          if (editZt.value != formState.value.yblczt) {
+            let edit = isObtainTwoData(formState.value, props.formData.dataList)
+            if (edit) {
+              message.warning('已存在当前数据！')
+              return resolve(true)
+            }
+          }
+          defHttp.put(
+            {
+              url: url,
+              data: formState.value
+            },
+            { withToken: true }
+          ).then((res: any) => {
+            if (res?.success) {
+              message.success('编辑成功！')
+              resolve(true)
+            } else {
+              message.warning(res?.message || '编辑失败！')
+              reject()
+            }
+          })
+        } else if (props.formData.type == 'new') {
+          // 判断
+          let add = isObtainTwoData(formState.value, props.formData.dataSource)
+          if (add) {
             message.warning('已存在当前数据！')
             return resolve(true)
           }
+          defHttp.post(
+            {
+              url: url,
+              data: formState.value
+            },
+            { withToken: true }
+          ).then((res: any) => {
+            if (res?.success) {
+              message.success('添加成功！')
+              resolve(true)
+            } else {
+              message.warning(res?.message || '添加失败')
+              reject()
+            }
+          })
+        } else {
+          resolve(true)
         }
-        defHttp.put(
-          {
-            url: url,
-            data: formState.value
-          },
-          { withToken: true }
-        ).then((res: any) => {
-          if(res?.success) {
-            message.success('编辑成功！')
-            resolve(true)
-          } else {
-            message.warning(res?.message || '编辑失败！')
-            reject()
-          }
-        })
-      } else if(props.formData.type == 'new'){
-        // 判断
-        let add = isObtainTwoData(formState.value, props.formData.dataSource)
-        if (add) {
-          message.warning('已存在当前数据！')
-          return resolve(true)
-        }
-        defHttp.post(
-          {
-            url: url,
-            data: formState.value
-          },
-          { withToken: true }
-        ).then((res: any) => {
-          if(res?.success) {
-            message.success('添加成功！')
-            resolve(true)
-          } else {
-            message.warning(res?.message || '添加失败')
-            reject()
-          }
-        })
-      } else {
-        resolve(true)
-      }
-    })
-    .catch((error: any) => {
-      console.log('error', error);
-    });
+      })
+      .catch((error: any) => {
+        console.log('error', error);
+      });
   })
 }
 

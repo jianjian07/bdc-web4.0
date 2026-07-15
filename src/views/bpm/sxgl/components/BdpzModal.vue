@@ -9,8 +9,8 @@
         </a-col>
         <a-col :span="12">
             <a-space>
-                <a-button type="primary" @click="onExport">导出表单配置</a-button>
-                <a-button type="primary" @click="onupload">导入表单配置</a-button>
+                <!-- <a-button type="primary" @click="onExport">导出表单配置</a-button>
+                <a-button type="primary" @click="onupload">导入表单配置</a-button> -->
                 <a-button type="primary" @click="onUnifiedAssign">统赋</a-button>
             </a-space>
         </a-col>
