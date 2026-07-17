@@ -1,4 +1,4 @@
-import { LoginParams, LoginResultModel } from "./model/userModel";
+import { LoginParams } from "./model/userModel";
 import { defHttp } from "/@/utils/http/axios";
 import * as CryptoJS from "crypto-js";
 import JSEncrypt from "jsencrypt";
@@ -47,16 +47,21 @@ export function login_tyyw(params: LoginParams) {
  */
 export function loginApi(params: LoginParams) {
   return new Promise((resolve) => {
+    let data: LoginParams = { username: params.username, password: params.password }
+    if (params.tenantId) {
+      data.tenantId = params.tenantId
+    }
     defHttp.put({
       url: api.getTokenApi,
-      data: { username: params.username, password: params.password }
+      data: data
     }, { withToken: false }).then((res) => {
       if (res && res.code == 200) {
         resolve({
           // userId: res.user_id,
           username: params.username,
           userpwd: params.password,
-          token: 'Bearer' + ' ' + res.result.access_token
+          token: res.result?.access_token ? 'Bearer' + ' ' + res.result.access_token : undefined,
+          tenantList: res.result?.tenant_list || []
         })
       } else {
         resolve({

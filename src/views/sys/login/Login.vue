@@ -8,7 +8,7 @@
                         style="padding-bottom: 20px;letter-spacing: 0.1em;font-size: calc(0.4rem + 1.8vw);line-height: 1.25;font-weight: 600;">
                         {{ title }}
                     </h1>
-                    <a-form :model="formData" layout="vertical">
+                    <a-form ref="formRef" :model="formData" layout="vertical">
                         <a-form-item label="用户名" name="username" :rules="[{ message: '请输入用户名' }]">
                             <a-input v-model:value="formData.username">
                                 <template #prefix>
@@ -23,6 +23,13 @@
                                     <LockOutlined class="site-form-item-icon" />
                                 </template>
                             </a-input-password>
+                        </a-form-item>
+
+                        <a-form-item v-if="tenantList.length" label="租户" name="tenantId"
+                            :rules="[{ required: true, message: '请选择租户' }]">
+                            <a-select v-model:value="formData.tenantId" :options="tenantList"
+                                :fieldNames="{ label: 'name', value: 'id' }" placeholder="请选择租户" style="width: 100%;"
+                                @change="handleTenantChange" />
                         </a-form-item>
 
                         <a-form-item>
@@ -43,7 +50,7 @@
     </template>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { useUserStore } from '/@/store/modules/user';
 import { message, notification } from 'ant-design-vue';
@@ -55,7 +62,10 @@ const userStore = useUserStore();
 const formData = reactive({
     username: "",
     password: "",
+    tenantId: undefined
 });
+let formRef: any = ref()
+let tenantList = ref<any[]>([])
 const loading = ref<boolean>(false);
 let showLogin = ref<boolean>(false)
 let title = window?.settingConfig?.appTitle || '不动产登记信息管理系统'
@@ -71,17 +81,36 @@ function handleLogin() {
         });
         return
     }
+    if (tenantList.value.length && !formData.tenantId) {
+        formRef.value?.validateFields(['tenantId']).catch(() => { })
+        notification.warning({
+            message: "登录失败",
+            description: "请选择租户",
+            duration: 3, //超时时间
+        });
+        return
+    }
     loading.value = true
     // 登录参数加密
-    let loginParam = {
+    let loginParam: any = {
         username: encryptionAES(formData.username),
         password: encryptionAES(formData.password)
     }
+    if (formData.tenantId) {
+        loginParam.tenantId = formData.tenantId
+    }
     //审计提示中危，不能log账号密码，注释掉
     // console.log("loginParam", loginParam)
-    userStore.login(loginParam).then((res) => {
+    userStore.login(loginParam).then((res: any) => {
         loading.value = false
-        if (res) {
+        if (res?.tenantList?.length && !formData.tenantId) {
+            tenantList.value = res.tenantList
+            notification.warning({
+                message: "登录提示",
+                description: "该用户有多租户，请选择租户",
+                duration: 3, //超时时间
+            });
+        } else if (res) {
             notification.success({
                 message: "登录提示",
                 description: "欢迎回来",
@@ -102,6 +131,16 @@ function handleLogin() {
         });
     });
 }
+
+function handleTenantChange() {
+    formRef.value?.clearValidate(['tenantId'])
+}
+
+watch(() => [formData.username, formData.password], () => {
+    tenantList.value = []
+    formData.tenantId = undefined
+    formRef.value?.clearValidate(['tenantId'])
+})
 /**
  * 忘记密码
  */

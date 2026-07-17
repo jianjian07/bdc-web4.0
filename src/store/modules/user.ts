@@ -239,7 +239,9 @@ export const useUserStore = defineStore({
       setAuthCache(TENANT_ID, id);
       //update-begin---author:liusq  Date:20220102  for：保存用户租户id----
       // @ts-ignore
-      setAuthCache(this.userInfo.username, id);
+      if (this.userInfo?.username) {
+        setAuthCache(this.userInfo.username, id);
+      }
       //update-end---author:liusq  Date:20220102  for：保存用户租户id----
     },
     setSessionTimeout(flag: boolean) {
@@ -329,10 +331,20 @@ export const useUserStore = defineStore({
         if (data && data.message) {
           return Promise.reject(data);
         }
+        if (data?.tenantList?.length && !loginParams.tenantId) {
+          return data;
+        }
         const { token } = data;
         // save token
         this.setToken(token);
-        return this.afterLoginAction(goHome, data);
+        if (loginParams.tenantId) {
+          this.setTenant(loginParams.tenantId);
+        }
+        const loginResult = await this.afterLoginAction(goHome, data);
+        if (loginParams.tenantId) {
+          this.setTenant(loginParams.tenantId);
+        }
+        return loginResult;
       } catch (error) {
         return Promise.reject(error);
       }
