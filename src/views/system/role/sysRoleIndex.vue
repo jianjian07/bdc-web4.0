@@ -41,7 +41,8 @@
           type="info" />
         <div class="sys-role-table-body">
           <a-table :columns="columns" :data-source="roleList" :pagination="pagination" :row-selection="rowSelection"
-            :scroll="{ y: 300 }" rowKey="id" @change="onChange($event, loadRole)" :customRow="customRow" :selectedKeys="selectedKeys">
+            :scroll="{ y: 300 }" rowKey="id" @change="onChange($event, loadRole)" :customRow="customRow"
+            :selectedKeys="selectedKeys">
             <template #bodyCell="{ column, text, record, index }">
               <template v-if="column.dataIndex === 'index'">
                 {{ index + 1 }}
@@ -50,10 +51,6 @@
                 <a @click="handleUser(record)">用户</a>
                 <a-divider type="vertical" />
                 <a @click="handleLcqx(record)" v-permission="'system:role:workflow'">流程权限</a>
-                <!-- <a-divider type="vertical" />
-                <a @click="handleDept(record)">分配</a> -->
-                <a-divider type="vertical" />
-                <a @click="handleFlcqx(record)">非流程权限</a>
                 <a-divider type="vertical" />
                 <a @click="handleEditRole(record)">编辑</a>
                 <a-divider type="vertical" />
