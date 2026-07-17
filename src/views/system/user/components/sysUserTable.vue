@@ -237,6 +237,7 @@ function addUser() {
   title.value = "新增用户"
   dataInfo.value = {
     deptList: props.deptInfo?.id ? [props.deptInfo.id] : [],
+    tenantIdList: []
   }
 }
 /**
@@ -246,6 +247,7 @@ function addUser() {
 function handleEdit(record) {
   drawerOpen.value = true
   title.value = "编辑用户"
+  record.tenantIdList = record.tenantIdList || []
   dataInfo.value = JSON.parse(JSON.stringify(record))
   console.log(dataInfo.value)
 }
@@ -352,7 +354,7 @@ function ok() {
         }
       }
     }
-    
+
     :deep(.ant-spin-container) {
       overflow: hidden!important;
     }

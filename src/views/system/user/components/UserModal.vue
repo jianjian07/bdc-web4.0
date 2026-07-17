@@ -39,12 +39,17 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="所属角色" name="roleList">
-                <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple" 
+                <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple"
                     :options="roleListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
                 </a-select>
             </a-form-item>
             <a-form-item label="所属部门" name="deptList">
                 <a-tree-select showCheckedStrategy="TreeSelect.SHOW_ALL" v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
+            </a-form-item>
+            <a-form-item label="所属租户" name="deptList">
+                 <a-select v-model:value="dataInfo.tenantIdList" allowClear mode="multiple"
+                    :options="tenantListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
+                </a-select>
             </a-form-item>
             <a-form-item label="状态" name="enabled">
                 <a-switch v-model:checked="dataInfo.enabled" checked-children="启用" un-checked-children="禁用"/>
@@ -59,7 +64,7 @@
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
 const props = defineProps({
     open: {
@@ -87,17 +92,21 @@ console.log(JSON.stringify(props.dataInfo))
 let open = ref(props.open)
 const emit = defineEmits(["ok"])
 let deptListOption = ref<any>([])
+let tenantListOption = ref<any>([])
 const formRef = ref()
-
-initTree()
-
 
 enum api {
     add = '/api/zrzy-system/sys/v1/user/add',
     update = '/api/zrzy-system/sys/v1/user/update',
     deptUserSelect = '/api/zrzy-system/sys/dept/treeLazyForUserSelect', // 新增时左侧未选择部门
     currentBranchTree = '/api/zrzy-system/sys/dept/deptCurrentBranchTrees', //1、新增时左侧选择了部门 2、编辑时
+    tenantList = '/api/zrzy-system/sys/tenant/list'
 }
+
+onMounted(() => {
+  initTree()
+  initTenantList()
+})
 /**
  * 保存
  */
@@ -166,7 +175,7 @@ function loadCurrentBranchTrees() {
         })
         resolve(res.result)
       } else {
-        message.error(res?.message)  
+        message.error(res?.message)
       }
     })
   })
@@ -209,6 +218,17 @@ function loadLazyTree(treeNode: any) {
         message.error(res?.message)
       }
     })
+  })
+}
+
+function initTenantList() {
+  defHttp.get({ url: api.tenantList },{ withToken: true }).then((res: any) => {
+      if (res && res.success) {
+        tenantListOption.value = res.result || []
+      } else {
+        tenantListOption.value = []
+        message.error(res?.message)
+      }
   })
 }
 </script>
