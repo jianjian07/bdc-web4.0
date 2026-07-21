@@ -851,7 +851,7 @@ export function hideField(formSetting: any, viewData: any, index: number) {
 export async function getSelectJsonSetting(selectJsonSetting: any) {
     for (const key in selectJsonSetting.value) {
         if (selectJsonSetting.value[key].options.length == 0) {
-            let url = new URL(`/public/json/${key}.json`, import.meta.url).href
+            let url = `${import.meta.env.BASE_URL}json/${key}.json`
             await defHttp.get({ url: url }, { withToken: true }).then((_res) => {
                 if (_res) {
                     if (selectJsonSetting.value[key].remoteLabel == 'label' && selectJsonSetting.value[key].remoteValue == 'value') {

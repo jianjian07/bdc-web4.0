@@ -9,6 +9,7 @@
 import { computed, defineComponent, onBeforeUpdate, reactive, ref, useAttrs, watch } from 'vue'
 import { generateFormHtml } from 'form-imagining'
 import { defHttp } from "/@/utils/http/axios";
+import { getUrl as getAssetUrl } from "/@/utils";
 import {
   formatMultipleSelectValue,
   formatMultipleTreeSelectValue,
@@ -501,7 +502,7 @@ function reloadTable() {
  * @param name
  */
 function getImgUrl(name) {
-  return new URL(`/src/assets/images/${name}`, import.meta.url).href
+  return getAssetUrl(`images/${name}`)
 }
 
 /**

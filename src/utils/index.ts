@@ -1,6 +1,13 @@
 import { isObject } from "./is"
 import { nextTick } from "vue"
 const baseApiUrl = '';
+
+const assetUrls = import.meta.glob('/src/assets/**/*', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+})
+
 /**
  * 深度合并
  * @param src
@@ -36,19 +43,13 @@ export function setObjToUrlParams(baseUrl: string, obj: any): string {
  * 获取images路径下的图片
  */
 export function getImageUrl(name: string) {
-  try {
-    const fullPath = `/src/assets/images/${name}.png`;
-    const url = new URL(fullPath, import.meta.url);
-    return url.href;
-  } catch (error) {
-    return '';
-  }
+  return getUrl(`images/${name}.png`)
 }
+
 export function getUrl(name: string) {
   try {
-    const fullPath = `/src/assets/${name}`;
-    const url = new URL(fullPath, import.meta.url);
-    return url.href;
+    const fullPath = `/src/assets/${name}`
+    return (assetUrls[fullPath] as string | undefined) || ''
   } catch (error) {
     return '';
   }

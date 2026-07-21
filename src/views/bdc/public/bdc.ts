@@ -17,7 +17,7 @@ import {
   setValidateInfos,
   updateFormDatas
 } from 'form-imagining'
-import { guid } from "/@/utils";
+import { getUrl, guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { useAppStore } from "/@/store/modules/app.ts"
@@ -40,13 +40,7 @@ enum api {
  * @param name
  */
 export function getBdcImgUrl(name) {
-  try {
-    const fullPath = `/src/assets/images/${name}`;
-    const url = new URL(fullPath, import.meta.url);
-    return url.href;
-  } catch (error) {
-    return '';
-  }
+  return getUrl(`images/${name}`)
 }
 
 /**

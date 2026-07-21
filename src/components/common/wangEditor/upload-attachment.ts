@@ -3,6 +3,7 @@ import { IButtonMenu, IDomEditor, SlateElement, DomEditor, SlateDescendant } fro
 import { h, VNode } from 'snabbdom'
 import { message } from 'ant-design-vue'
 import { defHttp } from '/@/utils/http/axios'
+import { getUrl } from '/@/utils'
 import { Boot } from '@wangeditor/editor'
 import { ref } from "vue"
 
@@ -206,7 +207,7 @@ class UploadAttachment implements IButtonMenu {
  */
 function renderAttachment(elem: SlateElement, children: VNode[] | null, editor: IDomEditor): VNode {
   const { fileName = '', url = '', fileSize = '', id = '' } = elem as any
-  const filePng =  new URL(`/src/assets/images/user/download.png`, import.meta.url).href
+  const filePng = getUrl('images/user/download.png')
   // 容器卡片
   const container = h('div', {
     props: { contentEditable: false },
