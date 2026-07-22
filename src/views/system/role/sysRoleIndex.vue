@@ -29,7 +29,7 @@
         </a-form>
       </div>
       <div class="right-content">
-        <a-button type="primary" @click="handleSave">
+        <a-button type="primary" :disabled="!canEditCurrentRole" @click="handleSave">
           <template #icon></template>
           保存
         </a-button>
@@ -48,15 +48,17 @@
                 {{ index + 1 }}
               </template>
               <template v-if="column.dataIndex === 'operation'">
-                <a @click="handleUser(record)">用户</a>
-                <a-divider type="vertical" />
-                <a @click="handleLcqx(record)" v-permission="'system:role:workflow'">流程权限</a>
-                <a-divider type="vertical" />
-                <a @click="handleEditRole(record)">编辑</a>
-                <a-divider type="vertical" />
-                <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?" @confirm="handleDelRole(record.id, index)">
-                  <a>删除</a>
-                </a-popconfirm>
+                <template v-if="canEditRole(record)">
+                  <a @click="handleUser(record)">用户</a>
+                  <a-divider type="vertical" />
+                  <a @click="handleLcqx(record)" v-permission="'system:role:workflow'">流程权限</a>
+                  <a-divider type="vertical" />
+                  <a @click="handleEditRole(record)">编辑</a>
+                  <a-divider type="vertical" />
+                  <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?" @confirm="handleDelRole(record.id, index)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                </template>
               </template>
             </template>
           </a-table>
@@ -66,7 +68,8 @@
         <a-collapse v-model:activeKey="activeCollapseKey">
           <a-collapse-panel v-for="item in sysMenuList" :key="item.id" :header="item.title">
             <a-tree :checkedKeys="getCheckedKeys(item.id)" :fieldNames="{ children: 'list' }" :defaultExpandAll="false"
-              :show-line="true" :tree-data="item.list" checkable @check="(keys) => handleTreeCheck(item.id, keys)">
+              :show-line="true" :tree-data="item.list" checkable :disabled="!canEditCurrentRole"
+              @check="(keys) => handleTreeCheck(item.id, keys)">
             </a-tree>
           </a-collapse-panel>
         </a-collapse>
@@ -125,6 +128,12 @@ let selectedKeys = ref<any>([])
 const checkedKeysMap = ref<Record<string | number, any[]>>({});
 const roleMenuList = ref<any[]>([]);
 
+function canEditRole(record: any) {
+  return record?.isEdit === true
+}
+
+const canEditCurrentRole = computed(() => canEditRole(currentRole.value[0]))
+
 function getRawCheckedKeys(keys: any) {
   return Array.isArray(keys) ? keys : (keys?.checked || [])
 }
@@ -134,6 +143,9 @@ function getCheckedKeys(systemId: string | number) {
 }
 
 function handleTreeCheck(systemId: string | number, keys: any) {
+  if (!canEditCurrentRole.value) {
+    return
+  }
   checkedKeysMap.value[systemId] = getRawCheckedKeys(keys)
 }
 
@@ -252,8 +264,9 @@ const rowSelection = computed(() => {
     selectedRowKeys: selectedKeys.value,
     type: 'radio',
     getCheckboxProps: (record) => ({
-      disabled: record.children && record.children.length > 0
+      disabled: !canEditRole(record) || (record.children && record.children.length > 0)
     }),
+    renderCell: (checked, record, index, originNode) => canEditRole(record) ? originNode : null,
     onChange: (selectedRowKeys, selectedRows) => {
       currentRole.value = selectedRows
       selectedKeys.value = selectedRowKeys
@@ -265,6 +278,9 @@ const rowSelection = computed(() => {
 const customRow = (record: any) => {
   return {
     onClick: (event) => {
+      if (!canEditRole(record)) {
+        return
+      }
       selectedKeys.value = [record['id']]
       currentRole.value = [record]
       getRoleSysMenuKeys(record['id'])
@@ -337,6 +353,9 @@ function handleAddRole() {
  * @param record
  */
 function handleEditRole(record) {
+  if (!canEditRole(record)) {
+    return
+  }
   roleModal.value.edit(record)
 }
 
@@ -345,6 +364,9 @@ function handleEditRole(record) {
  * @param record
  */
 function handleDelRole(id: number, index: number) {
+  if (!canEditRole(roleList.value[index])) {
+    return
+  }
   defHttp.post({ url: api.deleteRoleApi, params: { id: id } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       roleList.value.splice(index, 1)
@@ -378,6 +400,9 @@ function handleUser(record) {
  * @param record
  */
 function handleLcqx(record) {
+  if (!canEditRole(record)) {
+    return
+  }
   // 案卷类型 1登记 2补录
   roleProcessModal.value.edit(record, '1')
 }
@@ -408,6 +433,9 @@ function getRoleSysMenuKeys(roleId) {
  * 保存
  */
 function handleSave() {
+  if (!canEditCurrentRole.value) {
+    return
+  }
   const menuList = buildSubmitMenuList()
   if (currentRole.value.length == 0) {
     message.error("请选择角色")
