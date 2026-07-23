@@ -47,7 +47,8 @@ export function login_tyyw(params: LoginParams) {
  */
 export function loginApi(params: LoginParams) {
   return new Promise((resolve) => {
-    let data: LoginParams = { username: params.username, password: params.password }
+    const subsystemId = window.settingConfig?.subsystemId || ''
+    let data: LoginParams = { username: params.username, password: params.password, subsystemId: subsystemId }
     if (params.tenantId) {
       data.tenantId = params.tenantId
     }
