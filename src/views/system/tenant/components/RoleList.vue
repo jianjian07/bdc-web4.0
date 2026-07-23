@@ -40,7 +40,7 @@ const props = defineProps({
 })
 
 enum api {
-  listRoleApi = '/api/zrzy-kyq/kyq/aws/roleList',
+  listRoleApi = '/api/zrzy-system/role/getByTenantId',
   save = '',
   checkList = ''
 }
@@ -141,14 +141,14 @@ function reset() {
  * 加载角色列表
  */
 function loadRole() {
+  console.log('pppp',props.selectInfo)
   tableLoading.value = true
   defHttp.get({
     url: api.listRoleApi,
     params: {
-      group: false,
+      tenantId: props.selectInfo.id,
       pageNo: pagination.value.current,
       pageSize: pagination.value.pageSize,
-      name: searchFormState.value.name
     }
   }, { withToken: true }).then((res) => {
     if (res && res.success) {
