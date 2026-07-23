@@ -11,15 +11,15 @@
       <a-form-item label="菜单图标" v-show="formState.type != 2">
         <a-input v-model:value="formState.icon">
           <template #addonAfter>
-            <setting-outlined @click="handleModal"/>
+            <setting-outlined @click="handleModal" />
           </template>
         </a-input>
         <a-modal v-model:open="iconShow" title="图标选择" @ok="handleIconOk">
           <div class="icon-select-modal">
             <div v-for="(svg, svgI) in svgs" @click="handleIcon(svg)"
-                :class="['icon-item', currentIcon == svg ? 'active' : '']">
-                <svg-icon :name="svg" width="20" height="20" color="#000000">
-                </svg-icon>
+              :class="['icon-item', currentIcon == svg ? 'active' : '']">
+              <svg-icon :name="svg" width="20" height="20" color="#000000">
+              </svg-icon>
             </div>
           </div>
         </a-modal>
@@ -133,26 +133,26 @@ let formState = ref<any>({
   cache: false,
   sortid: 999,
   pid: 0,
-  subsystemId: props.sysId
+  systemId: props.sysId
 })
 formState.value.type = props.powerType
 const rules = computed(() => ({
   type: [{ required: true, message: '请输入菜单类型!' }],
   name: [{ required: !!formState.value.path, message: formState.value.type == 2 ? '请输入按钮名称' : '请输入菜单名称!' }],
   path: [{ required: formState.value.type === 0 || formState.value.type == 1, message: '请输入路由地址!' },
-      {
-        validator: (rule, value) => {
-          if (!value) return Promise.resolve()
+  {
+    validator: (rule, value) => {
+      if (!value) return Promise.resolve()
 
-          if (formState.value.type === 0 || formState.value.pid === '0') {
-            if (!/^\/.*/.test(value)) {
-              return Promise.reject('一级路由应以 / 开头')
-            }
-          }
+      if (formState.value.type === 0 || formState.value.pid === '0') {
+        if (!/^\/.*/.test(value)) {
+          return Promise.reject('一级路由应以 / 开头')
+        }
+      }
 
-          return Promise.resolve()
-        },
-      }],
+      return Promise.resolve()
+    },
+  }],
   component: [{ required: true, message: '请输入组件路径!' }],
   pid: [{ required: true, message: '请选择上级类目!' }]
 }))
@@ -163,8 +163,8 @@ let currentIcon = ref<string>('')
 const svgs = computed(() => {
   let modules = import.meta.glob('/src/assets/svg/*.svg')
   return Object.keys(modules).map(k => {
-      let arr = k.split('/')
-      return arr[arr.length - 1].split('.')[0]
+    let arr = k.split('/')
+    return arr[arr.length - 1].split('.')[0]
   })
 })
 
@@ -216,7 +216,7 @@ function resetFields() {
     cache: false,
     sortid: 999,
     pid: 0,
-    subsystemId: props.sysId
+    systemId: props.sysId
   }
 }
 
@@ -303,11 +303,11 @@ function handleIconOk() {
     cursor: pointer;
 
     &:hover {
-        border: 1px solid #5094f9;
+      border: 1px solid #5094f9;
     }
 
     &.active {
-        border: 1px solid #5094f9;
+      border: 1px solid #5094f9;
     }
   }
 }

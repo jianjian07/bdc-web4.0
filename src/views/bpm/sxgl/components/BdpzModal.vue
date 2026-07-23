@@ -1,7 +1,7 @@
 <template>
     <a-row>
         <a-col :span="12">
-            <a-form-item label="矿业权类型">
+            <a-form-item label="权利类型">
                 <a-select :options="getDictItemsByCode('qllx')" allowClear style="width: 98%;" @change="onChangeQllx"
                     show-search optionFilterProp="label" v-model:value="nodeInfo.qllx">
                 </a-select>

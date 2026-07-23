@@ -4,7 +4,7 @@
     <a-form layout="vertical">
       <a-row :gutter="16">
         <a-col :span="12">
-          <a-form-item label="当前矿业权类型">
+          <a-form-item label="当前权利类型">
             <a-input :value="qllxLabel" disabled />
           </a-form-item>
         </a-col>

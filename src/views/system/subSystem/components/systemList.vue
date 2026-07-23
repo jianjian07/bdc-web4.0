@@ -4,7 +4,7 @@
       <a-row :gutter="[0, 8]" tyle="flex">
         <a-col :span="8" :offset="0">
           <a-form-item label="子系统名称">
-            <a-select v-model:value="formData.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions"
+            <a-select v-model:value="formData.systemId" :fieldNames="systemFieldNames" :options="systemOptions"
               allowClear />
           </a-form-item>
         </a-col>
@@ -74,7 +74,7 @@ const state = reactive({
 })
 
 let formData: any = ref({
-  subsystemid: ''
+  systemId: ''
 })
 
 const systemFieldNames = { label: 'name', value: 'id', }
@@ -88,7 +88,7 @@ const columns = [
   {
     title: '子系统id',
     align: 'center',
-    dataIndex: 'subsystemid',
+    dataIndex: 'systemId',
   },
   {
     title: '区划名称',
@@ -154,7 +154,7 @@ function loadData() {
     pageSize: pagination.value.pageSize,
     order: 'desc,asc',
     column: 'id,areaCode',
-    subsystemid: formData.value.subsystemid
+    systemId: formData.value.systemId
   }
   // 获取宗地归属
   defHttp.get(

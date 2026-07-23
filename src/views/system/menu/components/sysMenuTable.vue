@@ -220,7 +220,7 @@ function getMenuData() {
   return new Promise((resolve) => {
     loading.value = true
     let params = {
-      subsystemId: props.currentSysKey,
+      systemId: props.currentSysKey,
       name: searchFormState.value.name
     }
     defHttp.get({ url: api.getMenuTree, params: params }, { withToken: true }).then((res) => {
@@ -243,7 +243,7 @@ function getMenuData() {
 function getRootMenuData() {
   return new Promise((resolve) => {
     let sysId = props.currentSysKey
-    defHttp.get({ url: api.getRootMenu, params: { subsystemId: sysId } }, { withToken: true }).then((res) => {
+    defHttp.get({ url: api.getRootMenu, params: { systemId: sysId } }, { withToken: true }).then((res) => {
       if (res.code == 200) {
         resolve(res.result)
       } else {

@@ -169,7 +169,7 @@ function editSysMenu(item) {
 function delSysMenu(node) {
   // 先查询该系统下是否有菜单
   defHttp.get(
-    { url: '/api/zrzy-system/menu/tree', params: { subsystemId: node.id } },
+    { url: '/api/zrzy-system/menu/tree', params: { systemId: node.id } },
     { withToken: true }
   ).then((res: any) => {
     if (res?.code == 200 && res.result && res.result.length > 0) {
@@ -240,9 +240,9 @@ function handleExportJson() {
     message.warning('请先选择一个系统')
     return
   }
-  const subsystemId = selectedKeys.value[0]
+  const systemId = selectedKeys.value[0]
   defHttp.get(
-    { url: api.exportJson, params: { subsystemId }, responseType: 'blob' },
+    { url: api.exportJson, params: { systemId }, responseType: 'blob' },
     { withToken: true }
   ).then((res: any) => {
     const now = new Date()
@@ -269,21 +269,21 @@ function handleImportJson(options: any) {
     return
   }
   const { file } = options
-  const subsystemId = selectedKeys.value[0]
+  const systemId = selectedKeys.value[0]
   const fileData = new FormData()
   fileData.append('file', file)
   defHttp.post(
     {
       url: api.importJson,
       data: fileData,
-      params: { subsystemId },
+      params: { systemId },
       headers: { 'Content-Type': 'multipart/form-data' },
     },
     { withToken: true }
   ).then((res: any) => {
     if (res.success) {
       message.success('导入成功')
-      emit('update:currentSysKey', subsystemId)
+      emit('update:currentSysKey', systemId)
     } else {
       message.error(res.message || '导入失败')
     }

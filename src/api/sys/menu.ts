@@ -32,8 +32,8 @@ export function getMenuListByJson() {
  */
 export function getMenuListBySysId() {
     return new Promise((resolve) => {
-        let subsystemId = window?.settingConfig?.subsystemId
-        defHttp.get({ url: api.permissionListApi + `?subsystemId=${subsystemId}` }, { withToken: true }).then((res) => {
+        let systemId = window?.settingConfig?.subsystemId
+        defHttp.get({ url: api.permissionListApi + `?systemId=${systemId}` }, { withToken: true }).then((res) => {
             if (res.code == 200) {
                 resolve(res.result)
             } else {

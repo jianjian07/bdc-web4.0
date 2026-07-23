@@ -2,18 +2,19 @@
   <div style="display: flex; flex-direction: column; padding: 10px; max-height: 100%;">
     <a-spin :spinning="spinning">
       <div style="display: flex;">
-        <a-input-search v-model:value="searchValue" style="margin-bottom: 8px; padding-right: 8px;" placeholder="请输入关键字查询" />
+        <a-input-search v-model:value="searchValue" style="margin-bottom: 8px; padding-right: 8px;"
+          placeholder="请输入关键字查询" />
         <a-dropdown>
           <template #overlay>
             <a-menu>
               <a-menu-item key="1" @click="checkStrictly = !checkStrictly">
-                {{ checkStrictly ? '父子关联' : '取消关联'}}
+                {{ checkStrictly ? '父子关联' : '取消关联' }}
               </a-menu-item>
               <a-menu-item key="2" @click="toggleCheck">
                 {{ checkedAll ? '取消勾选' : '全部勾选' }}
               </a-menu-item>
               <a-menu-item key="3" @click="toggleExpand">
-                {{ expandAll ? '合并所有' : '展开所有'}}
+                {{ expandAll ? '合并所有' : '展开所有' }}
               </a-menu-item>
             </a-menu>
           </template>
@@ -24,19 +25,10 @@
         </a-dropdown>
       </div>
       <div class="regionList" style="flex: 1; overflow-y: auto; min-height: 200px;">
-        <a-tree v-if="gData.length"
-          :expanded-keys="expandedKeys"
-          :auto-expand-parent="autoExpandParent"
-          :tree-data="gData"
-          @expand="onExpand"
-          checkable
-          @select="onSelect"
-          @check="onCheck"
-          :checkStrictly="checkStrictly"
-          :checked-keys="checkKeys"
-          :selected-keys="selectKeys"
-          :fieldNames="{ key: 'areaCode', title: 'titleAndValue' }"
-        >
+        <a-tree v-if="gData.length" :expanded-keys="expandedKeys" :auto-expand-parent="autoExpandParent"
+          :tree-data="gData" @expand="onExpand" checkable @select="onSelect" @check="onCheck"
+          :checkStrictly="checkStrictly" :checked-keys="checkKeys" :selected-keys="selectKeys"
+          :fieldNames="{ key: 'areaCode', title: 'titleAndValue' }">
           <template #title="{ titleAndValue }">
             <span v-if="titleAndValue.indexOf(searchValue) > -1">
               {{ titleAndValue.substring(0, titleAndValue.indexOf(searchValue)) }}
@@ -142,7 +134,7 @@ watch(searchValue, (value) => {
 });
 
 watch(() => props.selectSystem, val => {
-  if(val) {
+  if (val) {
     // TODO 查询当前子系统已添加的区域列表 赋值给 checkKeys
     loadZDGSData()
   } else {
@@ -182,9 +174,9 @@ function loadRegionList() {
 }
 
 function setData(data) {
-  for(let i=0; i< data.length; i++) {
+  for (let i = 0; i < data.length; i++) {
     data[i].disableCheckbox = false
-    if(data[i].children) {
+    if (data[i].children) {
       setData(data[i].children)
     }
   }
@@ -196,7 +188,7 @@ function loadZDGSData() {
     pageSize: -1,
     order: 'desc,asc',
     column: 'id,areaCode',
-    subsystemid: props.selectSystem.id
+    systemId: props.selectSystem.id
   }
   // 获取宗地归属
   defHttp.get(
@@ -206,8 +198,8 @@ function loadZDGSData() {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res?.success) {
-      if( res?.result?.records?.length ) {
+    if (res?.success) {
+      if (res?.result?.records?.length) {
         checkKeys.value = res.result.records.map(ele => {
           return ele.zdgs || ele.areaCode //宗地归属为空，则返回areaCode
         }).join(',').split(',')
@@ -217,7 +209,7 @@ function loadZDGSData() {
             areaCode: ele.areaCode,
             areaName: ele.areaName,
             subsystemname: ele.subsystemname,
-            subsystemid: ele.subsystemid,
+            systemId: ele.systemId,
             zdgs: ele.zdgs
           }
         })
@@ -232,7 +224,7 @@ function loadZDGSData() {
 }
 
 function onSelect(selectedKeys, e) {
-  if(e.selectedNodes[0] && e.selectedNodes[0].disableCheckbox) {
+  if (e.selectedNodes[0] && e.selectedNodes[0].disableCheckbox) {
     return
   }
   selectKeys.value = selectedKeys
@@ -244,11 +236,11 @@ function onCheck(checkedKeys, e) {
       areaCode: ele.type == '2' ? ele.parentCode : ele.areaCode,
       areaName: ele.type == '2' ? ele.parentName : ele.areaName,
       subsystemname: props.selectSystem.name,
-      subsystemid: props.selectSystem.id,
+      systemId: props.selectSystem.id,
       zdgs: ele.type == '2' ? ele.areaCode : '' //选择为区县，宗地归属置空
     }
   })
-  if(checkStrictly.value) {
+  if (checkStrictly.value) {
     checkKeys.value = checkedKeys.checked
   } else {
     checkKeys.value = checkedKeys
@@ -257,7 +249,7 @@ function onCheck(checkedKeys, e) {
 
 function toggleExpand() {
   expandAll.value = !expandAll.value
-  if(expandAll.value) {
+  if (expandAll.value) {
     const expanded = dataList
       .map((item: any) => {
         return getParentKey(item.key, gData.value);
@@ -273,11 +265,11 @@ function toggleExpand() {
 
 function toggleCheck() {
   checkedAll.value = !checkedAll.value
-  if(checkedAll.value) {
+  if (checkedAll.value) {
     const checked = dataList
       .map((item: any) => {
         return getParentKey(item.key, gData.value);
-      }).filter(i =>  i != undefined)
+      }).filter(i => i != undefined)
     checkKeys.value = checked;
   } else {
     checkKeys.value = [];
@@ -293,7 +285,7 @@ function onSave() {
     {
       url: urlList.save,
       data: checkNodes.value,
-      params: { subsystemid: props.selectSystem.id }
+      params: { systemId: props.selectSystem.id }
     },
     { withToken: true }
   ).then((res: any) => {

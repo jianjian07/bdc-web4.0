@@ -2,8 +2,8 @@
   <div class="addNewContent">
     <!-- 新增目录 -->
     <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }" :rules="formRules">
-      <a-form-item label="子系统名称" ref="subsystemid" name="subsystemid">
-        <a-select v-model:value="formState.subsystemid" :fieldNames="systemFieldNames" :options="systemOptions"
+      <a-form-item label="子系统名称" ref="systemId" name="systemId">
+        <a-select v-model:value="formState.systemId" :fieldNames="systemFieldNames" :options="systemOptions"
           @change="onSystemChange" allowClear />
       </a-form-item>
       <a-form-item label="子系统" ref="subsystemname" name="subsystemname" v-show="false">
@@ -35,7 +35,7 @@ const formRef = ref()
 
 const formState = reactive({
   subsystemname: '',
-  subsystemid: '',
+  systemId: '',
   areaName: '',
   areaCode: ''
 });
@@ -67,7 +67,7 @@ const regionOptions = ref([])
 watch(() => props.formData, (val) => {
   if (val.type == 'edit') {
     formState.subsystemname = val.itemData.subsystemname
-    formState.subsystemid = val.itemData.subsystemid
+    formState.systemId = val.itemData.systemId
     formState.areaName = val.itemData.areaName
     formState.areaCode = val.itemData.areaCode
     showCode.value = setShowCode(val.itemData.areaCode)
@@ -115,7 +115,7 @@ function loadSystemList() {
 }
 
 function onSystemChange(value, selectedOptions) {
-  formState.subsystemid = selectedOptions.id
+  formState.systemId = selectedOptions.id
   formState.subsystemname = selectedOptions.name
 }
 

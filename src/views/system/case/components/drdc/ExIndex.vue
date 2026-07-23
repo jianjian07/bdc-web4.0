@@ -15,7 +15,7 @@
                 style="width:500px;" show-search optionFilterProp="label">
             </a-select>
         </a-form-item> -->
-        <a-form-item label="矿业权类型">
+        <a-form-item label="权利类型">
 
             <a-select v-model:value="processModel.qllx" mode="multiple" :options="getDictItemsByCode('qllx')" allowClear
                 style="width:500px;" show-search optionFilterProp="label">

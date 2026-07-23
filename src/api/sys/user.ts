@@ -47,8 +47,8 @@ export function login_tyyw(params: LoginParams) {
  */
 export function loginApi(params: LoginParams) {
   return new Promise((resolve) => {
-    const subsystemId = window.settingConfig?.subsystemId || ''
-    let data: LoginParams = { username: params.username, password: params.password, subsystemId: subsystemId }
+    const systemId = window.settingConfig?.subsystemId || ''
+    let data: LoginParams = { username: params.username, password: params.password, systemId: systemId }
     if (params.tenantId) {
       data.tenantId = params.tenantId
     }
@@ -80,13 +80,13 @@ export function loginApi(params: LoginParams) {
  * 退出 清理token
  */
 export function doLogout() {
-    return new Promise((resolve) => {
-        defHttp.post({ url: api.logoutApi }, { withToken: true }).then((res) => {
-            resolve(true)
-        }).catch(err => {
-            resolve(false)
-        })
+  return new Promise((resolve) => {
+    defHttp.post({ url: api.logoutApi }, { withToken: true }).then((res) => {
+      resolve(true)
+    }).catch(err => {
+      resolve(false)
     })
+  })
 }
 
 /**
@@ -94,19 +94,19 @@ export function doLogout() {
  */
 export function getUserInfo() {
   return new Promise((resolve) => {
-     defHttp.get({ url: api.getUserInfoApi }, { withToken: true }).then((res) => {
-        if (res && res.code == 200) {
-            resolve({
-                username: res.result.username,
-                userId: res.result.id,
-                realname: res.result.realName,
-                loginTraceId: res.result.loginTraceId
-            })
-        } else {
-            resolve(null)
-        }
-    }).catch((err => {
+    defHttp.get({ url: api.getUserInfoApi }, { withToken: true }).then((res) => {
+      if (res && res.code == 200) {
+        resolve({
+          username: res.result.username,
+          userId: res.result.id,
+          realname: res.result.realName,
+          loginTraceId: res.result.loginTraceId
+        })
+      } else {
         resolve(null)
+      }
+    }).catch((err => {
+      resolve(null)
     }))
   })
 }

@@ -5,7 +5,7 @@ export interface LoginParams {
   username: string;
   password: string;
   tenantId?: string | number;
-  subsystemId?: string | number;
+  systemId?: string | number;
 }
 
 export interface ThirdLoginParams {

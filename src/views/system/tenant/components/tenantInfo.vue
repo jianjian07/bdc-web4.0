@@ -3,11 +3,11 @@
         <a-form ref="formRef" :model="formData" :rules="rules" :label-col="{ style: { width: '160px' } }"
             style="padding: 20px;">
             <a-row :gutter="24">
-                <!-- <a-col :span="12">
-                    <a-form-item label="租户ID" name="tenantId">
-                        <a-input v-model:value="formData.tenantId" placeholder="系统自动生成" :disabled="true" />
+                <a-col :span="12">
+                    <a-form-item label="租户ID" name="id">
+                        <a-input v-model:value="formData.id" placeholder="系统自动生成" :disabled="true" />
                     </a-form-item>
-                </a-col> -->
+                </a-col>
                 <a-col :span="24">
                     <a-form-item label="租户名称" name="name">
                         <a-input v-model:value="formData.name" placeholder="请输入租户名称" allow-clear />
