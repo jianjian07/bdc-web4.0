@@ -190,7 +190,7 @@ export function removeMagicApiById(id) {
 }
 
 
-/** 
+/**
  * 目录数据改变
  * 其子接口对应的数据也改变
  * @param e
@@ -301,12 +301,18 @@ export function sendExCommonApi(sendParams) {
       resolve('body 参数格式错误：' + parseErr);
       return
     }
-    if (sendParams.dparams == '') {
+    let _body = JSON.parse(sendParams.body)
+    const hasBodyContent = Array.isArray(_body)
+      ? _body.length > 0
+      : _body !== null && typeof _body === 'object'
+        ? Object.keys(_body).length > 0
+        : Boolean(_body)
+    if (hasBodyContent && !sendParams.dparams) {
       message.warning('动态参数不能为空!')
       resolve('动态参数不能为空');
       return;
     }
-    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: JSON.parse(sendParams.dparams) }, { withToken: true, isTransformResponse: false }).then((res) => {
+    defHttp.post({ url: '/api/zrzy-api/commonapi/' + sendParams.url, data: sendParams.dparams ? JSON.parse(sendParams.dparams) : null }, { withToken: true, isTransformResponse: false }).then((res) => {
       if (res.status == 200) {
         resolve(JSON.stringify(res.data))
         message.success('请求成功')
