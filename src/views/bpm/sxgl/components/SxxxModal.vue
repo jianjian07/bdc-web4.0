@@ -79,6 +79,26 @@
         <a-form-item label="启用">
             <a-switch v-model:checked="flowInfo.status" :checkedValue="1" :unCheckedValue="0" />
         </a-form-item>
+        <a-form-item label="属性扩展">
+            <div v-for="(item, index) in extensionItems" :key="item.id" class="extension-row">
+                <a-select v-model:value="item.key" class="extension-key-input" placeholder="请选择键名">
+                    <a-select-option v-for="key in getAvailableExtensionKeys(item.key)" :key="key" :value="key">
+                        {{ key }}
+                    </a-select-option>
+                </a-select>
+                <a-input v-model:value="item.value" class="extension-value-input" placeholder="值" />
+                <div class="extension-actions">
+                    <MinusCircleOutlined v-if="extensionItems.length > 1" class="extension-icon extension-remove"
+                        @click="removeExtension(index)" />
+                    <span v-else class="extension-icon-placeholder"></span>
+                </div>
+            </div>
+            <div class="extension-add-row">
+                <a-button type="dashed" block :disabled="!canAddExtension" @click="addExtension">
+                    <PlusOutlined />
+                </a-button>
+            </div>
+        </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 14 }">
             <a-button type="primary" @click="handleMxSave">保存</a-button>
             <!-- <a-button style="margin-left: 10px" @click="handleMxAdd">新增</a-button> -->
@@ -90,7 +110,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { defHttp } from '/@/utils/http/axios'
 import { message } from 'ant-design-vue'
 
@@ -137,6 +158,9 @@ function getInfo(nodeData: any) {
             flowInfo.value = res.result
             originalLcid.value = res.result.lcid || ''
             lcidExists.value = false
+            if (nodeData.ml === 0) {
+                initExtensions()
+            }
         }
     })
 }
@@ -150,6 +174,7 @@ function handleMlSave() {
         const url = flowInfo.value.id ? mlApi.saveUrl : mlApi.addUrl
         defHttp.post({ url, data: flowInfo.value }, { withToken: true }).then((res: any) => {
             if (res.success) {
+                markExtensionsPersisted()
                 message.success('保存成功')
                 emit('setBaseInfo', flowInfo.value)
                 emit('refreshTree', { type: 'add', id: res.result })
@@ -189,6 +214,17 @@ let flowInfo: any = ref({})
 let lcidExists = ref(false)
 // 记录初始lcid，用于编辑时排除自身重复校验
 let originalLcid = ref('')
+type ExtensionItem = {
+    id: number,
+    key: string,
+    value: string,
+}
+
+let extensionItems = ref<ExtensionItem[]>([])
+let nextExtensionId = 1
+const extensionKeys = ['ext1', 'ext2', 'ext3', 'ext4', 'ext5']
+const canAddExtension = computed(() => extensionItems.value.length < extensionKeys.length)
+let persistedExtensionKeys = new Set<string>()
 
 enum mxApi {
     queryByIdUrl = '/api/zrzy-bdc/flow/sxmx/queryById',
@@ -217,6 +253,7 @@ async function handleMxSave() {
     }
 
     mxFormRef.value.validate().then(() => {
+        syncExtensionsToFlowInfo()
         flowInfo.value.islc = flowInfo.value.lcid ? 1 : 0
         const url = flowInfo.value.id ? mxApi.saveUrl : mxApi.addUrl
         defHttp.post({ url, data: flowInfo.value }, { withToken: true }).then((res: any) => {
@@ -242,6 +279,82 @@ function handleMxAdd() {
     }
     lcidExists.value = false
     originalLcid.value = ''
+}
+
+function initExtensions() {
+    const extensions = Object.entries(flowInfo.value)
+        .filter(([key, value]) => extensionKeys.includes(key) && value != null)
+        .sort(([keyA], [keyB]) => extensionKeys.indexOf(keyA) - extensionKeys.indexOf(keyB))
+
+    persistedExtensionKeys = new Set(extensions.map(([key]) => key))
+
+    extensionItems.value = extensions.map(([key, value]) => ({
+        id: nextExtensionId++,
+        key,
+        value: value == null ? '' : String(value),
+    }))
+
+    if (!extensionItems.value.length) {
+        extensionItems.value = [{ id: nextExtensionId++, key: 'ext1', value: '' }]
+    }
+}
+
+function addExtension() {
+    if (!canAddExtension.value) {
+        return
+    }
+    extensionItems.value.push({
+        id: nextExtensionId++,
+        key: '',
+        value: '',
+    })
+}
+
+function removeExtension(index: number) {
+    if (extensionItems.value.length <= 1) {
+        return
+    }
+    extensionItems.value.splice(index, 1)
+}
+
+function syncExtensionsToFlowInfo() {
+    const currentExtensionKeys = new Set(
+        extensionItems.value
+            .map((item) => item.key.trim())
+            .filter((key) => extensionKeys.includes(key))
+    )
+    const removedExtensionKeys = Array.from(persistedExtensionKeys)
+        .filter((key) => !currentExtensionKeys.has(key))
+
+    Object.keys(flowInfo.value)
+        .filter((key) => extensionKeys.includes(key))
+        .forEach((key) => delete flowInfo.value[key])
+
+    extensionItems.value.forEach(({ key, value }) => {
+        const trimmedKey = key.trim()
+        if (trimmedKey) {
+            flowInfo.value[trimmedKey] = String(value ?? '')
+        }
+    })
+
+    removedExtensionKeys.forEach((key) => {
+        flowInfo.value[key] = null
+    })
+}
+
+function markExtensionsPersisted() {
+    persistedExtensionKeys = new Set(
+        extensionItems.value
+            .map((item) => item.key.trim())
+            .filter((key) => extensionKeys.includes(key))
+    )
+}
+
+function getAvailableExtensionKeys(currentKey: string) {
+    const usedKeys = extensionItems.value
+        .map((item) => item.key)
+        .filter((key) => key && key !== currentKey)
+    return extensionKeys.filter((key) => !usedKeys.includes(key))
 }
 
 /** 删除明细 */
@@ -291,6 +404,9 @@ watch(() => props.data, (newVal) => {
         getInfo(newVal)
     } else {
         flowInfo.value = newVal
+        if (newVal.ml === 0) {
+            initExtensions()
+        }
     }
 
     // if (props.data.type === 0) {
@@ -305,4 +421,50 @@ watch(() => props.data, (newVal) => {
 }, { immediate: true })
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.extension-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.extension-row:last-child {
+    margin-bottom: 0;
+}
+
+.extension-row .extension-key-input {
+    flex: 0 1 20%;
+    min-width: 0;
+}
+
+.extension-row .extension-value-input {
+    flex: 1 1 80%;
+    min-width: 0;
+}
+
+.extension-actions {
+    display: flex;
+    flex: 0 0 44px;
+    align-items: center;
+    gap: 8px;
+}
+
+.extension-icon {
+    flex: 0 0 18px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.extension-icon-placeholder {
+    flex: 0 0 18px;
+}
+
+.extension-add-row {
+    padding-right: 52px;
+}
+
+.extension-remove {
+    color: #ff4d4f;
+}
+</style>
