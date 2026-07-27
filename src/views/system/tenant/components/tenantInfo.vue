@@ -189,6 +189,7 @@ function loadParentTenantList() {
 async function saveTenant() {
     try {
         await formRef.value.validate();
+        formData.parentTenantId = formData.parentTenantId || null
         const url = formData.id
             ? '/api/zrzy-system/sys/tenant/update'
             : '/api/zrzy-system/sys/tenant/add';
