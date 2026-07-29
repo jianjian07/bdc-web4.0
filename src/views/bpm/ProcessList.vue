@@ -42,6 +42,7 @@
     </div>
     <div style="padding:0 20px;">
         <a-button type="primary" :icon="h(PlusOutlined)" @click="handleAdd">新建流程</a-button>
+        <a-button style="margin-left: 8px" :icon="h(UploadOutlined)" @click="handleUpload">上传流程</a-button>
         <a-alert show-icon type="info" style="margin: 10px 0px;">
             <template #message>
                 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}&nbsp;</a>项
@@ -88,7 +89,8 @@
                                     <a-menu>
                                         <a-menu-item key="1" @click="handleAction(record, 'jk')">版本监控</a-menu-item>
                                         <a-menu-item key="2" @click="handleAction(record, 'fz')">流程复制</a-menu-item>
-                                        <a-menu-item key="2" @click="handleAction(record, 'sc')">流程删除</a-menu-item>
+                                        <a-menu-item key="3" @click="handleAction(record, 'xz')">下载流程</a-menu-item>
+                                        <a-menu-item key="4" @click="handleAction(record, 'sc')">流程删除</a-menu-item>
                                     </a-menu>
                                 </template>
                             </a-dropdown>
@@ -106,7 +108,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref, h, createVNode, useAttrs } from 'vue';
-import { SearchOutlined, PlusOutlined, DownOutlined, RetweetOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined, PlusOutlined, DownOutlined, RetweetOutlined, ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message, Modal, type TableColumnsType } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
 import { router, currentRoute } from "/@/router";
@@ -198,12 +200,70 @@ function handleAction(record: any, type: string) {
         case 'fz':
             copyProcess(record)
             break;
+        case 'xz':
+            downloadProcess(record)
+            break;
         case 'sc':
             delProcess(record)
             break;
     }
 }
 
+/**
+ * 下载流程
+ * @param record 行数据
+ */
+function downloadProcess(record: any) {
+    defHttp.get(
+        { url: '/bpmapi/act/process/extActProcess/exportBpmn', params: { id: record.id }, responseType: 'blob' },
+        { withToken: true }
+    ).then((res: any) => {
+        if (!res || res.size === 0) {
+            message.error('下载失败')
+            return
+        }
+        const blob = new Blob([res])
+        const elink = document.createElement('a')
+        elink.download = (record.processKey || 'process') + '.bpmn'
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href)
+        document.body.removeChild(elink)
+    }).catch(() => {
+        message.error('下载失败')
+    })
+}
+/**
+ * 上传流程
+ */
+function handleUpload() {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.bpmn'
+    input.onchange = async () => {
+        const file = input.files?.[0]
+        if (!file) return
+        const formData = new FormData()
+        formData.append('file', file)
+        try {
+            const res = await defHttp.post(
+                { url: '/bpmapi/act/process/extActProcess/importBpmn', data: formData, headers: { 'Content-Type': 'multipart/form-data' } },
+                { withToken: true }
+            )
+            if (res.success) {
+                message.success(res.message || '上传成功')
+                loadData()
+            } else {
+                message.error(res.message || '上传失败')
+            }
+        } catch (e) {
+            message.error('上传失败')
+        }
+    }
+    input.click()
+}
 /**
  * 新增流程
  */
