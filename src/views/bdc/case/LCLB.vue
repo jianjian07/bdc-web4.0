@@ -35,7 +35,8 @@ onMounted(() => {
 function loadTreeData() {
     let url = props.isRoleProcess ? api.roleProcesslist : api.processlist
     defHttp.get({ url: url, params: { ajlx: '1' } }, { withToken: true }).then((res) => {
-        treeData.value = res.result.filter(t => t.sxlx == props.sxlx)
+      // treeData.value = res.result.filter(t => t.sxlx == props.sxlx)
+      treeData.value = res.result
         emit('setTreeData', treeData.value)
         if (res.result.length > 0) {
             const firstProcess = res.result[0].children[0]
@@ -47,8 +48,8 @@ function loadTreeData() {
 const emit = defineEmits(['select', 'setTreeData'])
 /**
  * 选中工作流
- * @param _selectedKeys 
- * @param e 
+ * @param _selectedKeys
+ * @param e
  */
 function onSelect(_selectedKeys: any, e: any) {
     const process = e.node
