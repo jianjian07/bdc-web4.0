@@ -16,10 +16,14 @@ const props = defineProps({
     isRoleProcess: {
         type: Boolean,
         default: false
+    },
+    sxlx: {
+        type: Number,
+        default: 1
     }
 })
 enum api {
-    processlist = '/api/zrzy-bdc/act/process/extActProcess/list',
+    processlist = '/api/zrzy-bdc/flow/sxml/treeList',
     roleProcesslist = '/api/zrzy-bdc/flow/public/getRoleProcessList',
 }
 const expandedKeys = ref<string[]>(['100']);
@@ -31,7 +35,7 @@ onMounted(() => {
 function loadTreeData() {
     let url = props.isRoleProcess ? api.roleProcesslist : api.processlist
     defHttp.get({ url: url, params: { ajlx: '1' } }, { withToken: true }).then((res) => {
-        treeData.value = res.result
+        treeData.value = res.result.filter(t => t.sxlx == props.sxlx)
         emit('setTreeData', treeData.value)
         if (res.result.length > 0) {
             const firstProcess = res.result[0].children[0]
