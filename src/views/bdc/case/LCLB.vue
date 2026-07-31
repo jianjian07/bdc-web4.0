@@ -36,7 +36,7 @@ function loadTreeData() {
     let url = props.isRoleProcess ? api.roleProcesslist : api.processlist
     defHttp.get({ url: url, params: { ajlx: '1' } }, { withToken: true }).then((res) => {
       // treeData.value = res.result.filter(t => t.sxlx == props.sxlx)
-      treeData.value = res.result
+      treeData.value = props.isRoleProcess ? res.result : res.result.filter(t => t.sxlx == props.sxlx)
         emit('setTreeData', treeData.value)
         if (res.result.length > 0) {
             const firstProcess = res.result[0].children[0]
