@@ -39,10 +39,10 @@
                     新增
                 </a-button>
                 <a-button @click="handleStore">
-                  <template #icon>
-                    <RedoOutlined />
-                  </template>
-                  同步缓存
+                    <template #icon>
+                        <RedoOutlined />
+                    </template>
+                    同步缓存
                 </a-button>
                 <a-button @click="handleCache">
                     redis缓存
@@ -68,9 +68,9 @@
                             </a>
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item v-if="record.dictCode == 'bpm_process_type'">
+                                    <!-- <a-menu-item v-if="record.dictCode == 'bpm_process_type'">
                                         <a @click="syncData(record.id)">同步</a>
-                                    </a-menu-item>
+                                    </a-menu-item> -->
                                     <a-menu-item>
                                         <a @click="copy(record)">复制</a>
                                     </a-menu-item>
@@ -246,12 +246,12 @@ function handleCache() {
 }
 
 async function handleStore() {
-  let res = await getDataDict()
-  if (res) {
-    message.success('同步缓存成功!')
-  } else {
-    message.warning('同步缓存失败!')
-  } 
+    let res = await getDataDict()
+    if (res) {
+        message.success('同步缓存成功!')
+    } else {
+        message.warning('同步缓存失败!')
+    }
 }
 
 function syncData(id: String) {

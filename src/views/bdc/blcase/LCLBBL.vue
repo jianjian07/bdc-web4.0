@@ -23,7 +23,7 @@ onMounted(() => {
   loadTreeData()
 })
 function loadTreeData() {
-  defHttp.get({ url: api.processlist, params: { ajlx: '2' } }, { withToken: true }).then((res) => {
+  defHttp.get({ url: api.processlist, params: { ajlx: '0' } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       let arr = res.result
       treeData.value = arr

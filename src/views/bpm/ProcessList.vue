@@ -15,7 +15,7 @@
                 <a-col :span="8">
                     <a-form-item label="流程类型">
                         <a-select ref="select" v-model:value="processData.processType" style="width: 100%"
-                            :options="dictOptions" :field-names="{ label: 'dictName', value: 'dictCode' }" allow-clear>
+                            :options="dictOptions" :field-names="{ label: 'name', value: 'code' }" allow-clear>
                         </a-select>
                     </a-form-item>
                 </a-col>
@@ -437,14 +437,14 @@ onMounted(async () => {
 })
 
 let dictOptions = ref([])
-getDictLcfl('bpm_process_type')
+getDictLcfl()
 
-async function getDictLcfl(dictCode: string) {
+async function getDictLcfl() {
     const i = await defHttp.get(
-        { url: '/bpmapi/bpm/design/getDict', params: { dictCode } },
+        { url: '/api/zrzy-bdc/flow/sxml/list', params: { type: 1 } },
         { withToken: true }
     );
-    dictOptions.value = i || []; // 更简洁
+    dictOptions.value = i.result || []; // 更简洁
 }
 /**
  * 数据字典获取标题
@@ -455,8 +455,8 @@ function getLabelByDictCode(code: any) {
     if (!code) {
         return ''
     }
-    const item = dictOptions.value.find(t => t.dictCode == code)
-    return item?.dictName || ''
+    const item = dictOptions.value.find(t => t.code == code)
+    return item?.name || ''
 }
 </script>
 <style lang="less">

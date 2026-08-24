@@ -46,6 +46,7 @@
                 placeholder="请选择流程" :fieldNames="{ children: 'children', title: 'title', value: 'key' }" allowClear
                 style="width: 40%;">
             </a-tree-select>&nbsp;&nbsp;
+            <a-input v-model:value="flowInfo.lcid" disabled style="width: 200px;" />&nbsp;&nbsp;
             <a-button type="primary" @click="handleAddTbl(flowInfo.lcid)">流程设计</a-button>
         </a-form-item>
         <a-form-item v-if="data.sxlx == 0" label="事项编号" name="lcid" :rules="[{ required: true, message: '请输入事项编号' }]">
