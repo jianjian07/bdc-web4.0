@@ -53,10 +53,10 @@
                 <a-tab-pane v-if="processInfo.ml == 0 && sxlx == 1" key="7" tab="权利人配置" force-render>
                     <qlrpz v-if="activeKey == '7'" :lcid="processInfo.key" :baseInfo="processInfo"></qlrpz>
                 </a-tab-pane>
-                <a-tab-pane key="8" tab="规则配置" force-render>
+                <!-- <a-tab-pane key="8" tab="规则配置" force-render>
                     <node-line-list v-if="activeKey == '8'" :lcid="processInfo.key"
                         :baseInfo="processInfo"></node-line-list>
-                </a-tab-pane>
+                </a-tab-pane> -->
             </a-tabs>
         </div>
 

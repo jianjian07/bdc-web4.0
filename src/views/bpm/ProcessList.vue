@@ -3,6 +3,11 @@
         <a-form :label-col="{ style: { width: '100px' } }">
             <a-row>
                 <a-col :span="8">
+                    <a-form-item label="流程ID">
+                        <a-input v-model:value="processData.id" allow-clear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="8">
                     <a-form-item label="流程名称">
                         <a-input v-model:value="processData.processName" allow-clear />
                     </a-form-item>
@@ -12,13 +17,13 @@
                         <a-input v-model:value="processData.processKey" allow-clear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8">
+                <!-- <a-col :span="8">
                     <a-form-item label="流程类型">
                         <a-select ref="select" v-model:value="processData.processType" style="width: 100%"
                             :options="dictOptions" :field-names="{ label: 'name', value: 'code' }" allow-clear>
                         </a-select>
                     </a-form-item>
-                </a-col>
+                </a-col> -->
             </a-row>
             <a-row>
                 <a-col :span="8">
@@ -126,6 +131,7 @@ let fieldInfo: any = ref([]);
 let orderInfo: any = ref([]);
 let loading = ref(false)
 let processData = ref({
+    id: '',
     processName: '',
     processKey: '',
     processType: '',
@@ -138,6 +144,12 @@ const columns = ref<TableColumnsType>([
         dataIndex: 'index',
         key: 'index',
         width: 80,
+    },
+    {
+        title: '流程ID',
+        dataIndex: 'id',
+        key: 'id',
+        width: 200,
     },
     {
         title: '流程名称',
@@ -154,11 +166,11 @@ const columns = ref<TableColumnsType>([
         minWidth: 200,
         maxWidth: 400,
     },
-    {
-        title: '流程类型',
-        dataIndex: 'processType',
-        key: 'processType',
-    },
+    // {
+    //     title: '流程类型',
+    //     dataIndex: 'processType',
+    //     key: 'processType',
+    // },
     {
         title: '流程状态',
         dataIndex: 'processStatus',
