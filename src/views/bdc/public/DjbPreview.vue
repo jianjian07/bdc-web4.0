@@ -3,16 +3,10 @@
     <a-spin :spinning="spinning">
       <div class="djb-content">
         <a-col :md="4" style="border-right:1px solid #ebedf0; height: 100%">
-          <h4 style="text-align: center;padding-top: 14px;color: #1890ff">不动产登记簿目录</h4>
-          <div class="djb-tree">  
-            <a-tree
-              v-if="list.length>0"
-              v-model:selectedKeys="selectedKeys"
-              @select="onSelect"
-              :tree-data="list"
-              :field-names="{ children:'children', title:'name', key:'id' }"
-              class="djb-tree"
-            >
+          <h4 style="text-align: center;padding-top: 14px;color: var(--primary-color)">不动产登记簿目录</h4>
+          <div class="djb-tree">
+            <a-tree v-if="list.length > 0" v-model:selectedKeys="selectedKeys" @select="onSelect" :tree-data="list"
+              :field-names="{ children: 'children', title: 'name', key: 'id' }" class="djb-tree">
             </a-tree>
             <a-empty v-else />
           </div>
@@ -20,7 +14,7 @@
         <a-col :md="20" style="height: 100%;">
           <div class="djb-iframe">
             <iframe :src="iframeUrl" frameborder="0" width="100%" height="100%" scrolling="auto"
-                    style="background-color: #fff;"></iframe>
+              style="background-color: #fff;"></iframe>
           </div>
         </a-col>
       </div>
@@ -29,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { useUserStore } from "/@/store/modules/user"
@@ -71,9 +65,9 @@ function initData() {
           list.value = res.result.djbList || []
           let params = res.result.queryParam || {}
           const result = Object.entries(params)
-              .filter(([key, value]) => value !== null) 
-              .map(([key, value], index) => `${index === 0 ? '?' : '&'}${key}=${value}`) 
-              .join('') 
+            .filter(([key, value]) => value !== null)
+            .map(([key, value], index) => `&${key}=${value}`)
+            .join('')
           queryString = result
           if (list.value.length) {
             selectedKeys.value = [list.value[0].id]
@@ -83,10 +77,10 @@ function initData() {
       } else {
         message.warning(res?.message)
       }
-       spinning.value = false
+      spinning.value = false
     }).catch(err => {
-       message.warning(err)
-       spinning.value = true
+      message.warning(err)
+      spinning.value = true
     })
   }
 }
@@ -107,8 +101,10 @@ function onSelect(keys, e) {
  * @param id
  */
 function setUrl(id) {
-  let domain = `${window.settingConfig.jmreportDomain}/zrzy-form/`
-  let url = `${domain}jmreport/view/${id}${queryString}${queryString ? `&token=${token}` : `?token=${token}`}`
+  // let server = 'zrzy-form'
+  // let domain = `${window.settingConfig.jmreportDomain}/${server}/`
+  // let url = `${domain}jmreport/view/${id}${queryString}${queryString ? `&token=${token.value}` : `?token=${token.value}`}`
+  let url = `${import.meta.env.VITE_PUBLIC_PATH}viewpdf?id=${id}${queryString}&token=${token}`
   iframeUrl.value = url
 }
 </script>
@@ -117,17 +113,17 @@ function setUrl(id) {
 .djb-preview {
   width: 100%;
   height: 100%;
-  
+
   .djb-content {
     height: 100%;
     width: 100%;
     display: flex;
-    
+
     .djb-tree {
       height: calc(100% - 60px);
       overflow: auto;
     }
-    
+
     .djb-iframe {
       height: 100%;
       overflow: hidden;

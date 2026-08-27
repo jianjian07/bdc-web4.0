@@ -107,7 +107,7 @@
         </a-table>
     </div>
     <a-modal v-model:open="open" title="版本监控" width="100%" wrap-class-name="full-modal" :footer="null">
-        <CRViewer ref="rView" :key="processKey" id="2058741547024576514" :p-router="router" :p-route="route"
+        <CRViewer ref="rView" v-if="open" id="2058741547024576514" :p-router="router" :p-route="route"
             :p-formData="{ bdc: bdc, key: processKey }" v-bind="attrs"></CRViewer>
     </a-modal>
 </template>
