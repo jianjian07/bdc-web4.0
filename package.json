@@ -11,7 +11,6 @@
     "start:debug": "cross-env NODE_OPTIONS=--trace-deprecation npm run start"
   },
   "dependencies": {
-    "@bpmn-io/properties-panel": "2.2.1",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "ant-design-vue": "4.2.6",
