@@ -100,7 +100,8 @@ export function getUserInfo() {
           username: res.result.username,
           userId: res.result.id,
           realname: res.result.realName,
-          loginTraceId: res.result.loginTraceId
+          loginTraceId: res.result.loginTraceId,
+          tenantId: res.result.tenantId
         })
       } else {
         resolve(null)
