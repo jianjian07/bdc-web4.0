@@ -19,7 +19,7 @@
                 </a-alert>
             </div>
             <div class="tenantList"
-                style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); min-width: 500px; overflow: auto">
+                style="margin-top: 8px;line-height: 3em; background-color: #fff; flex: 1;height: calc(100% - 60px); min-width: 300px; overflow: auto">
                 <TenantList ref="tenantListRef" @select="onSelect"> </TenantList>
             </div>
         </div>
@@ -34,7 +34,15 @@
                         </template>
                     </a-empty>
                 </a-tab-pane>
-                <a-tab-pane key="2" tab="流程关联" force-render>
+                <a-tab-pane key="2" tab="租户套餐" force-render>
+                    <a-empty v-if='!selectInfo.id'>
+                        <template #description>
+                            请先选择一个租户
+                        </template>
+                    </a-empty>
+                    <tenant-pack-manager v-else :tenant-id="selectInfo.id" tenant-scoped />
+                </a-tab-pane>
+                <a-tab-pane key="3" tab="流程关联" force-render>
                     <a-empty v-if='!selectInfo.id'>
                         <template #description>
                             请先选择一个租户
@@ -42,7 +50,7 @@
                     </a-empty>
                     <ProcessTree v-else :selectInfo="selectInfo" />
                 </a-tab-pane>
-                <a-tab-pane key="3" tab="角色关联" force-render>
+                <a-tab-pane key="4" tab="角色关联" force-render>
                     <a-empty v-if='!selectInfo.id'>
                         <template #description>
                             请先选择一个租户
@@ -50,7 +58,7 @@
                     </a-empty>
                     <role-list v-else :selectInfo="selectInfo"></role-list>
                 </a-tab-pane>
-                <a-tab-pane key="4" tab="跨租户共享" force-render>
+                <a-tab-pane key="5" tab="跨租户共享" force-render>
                     <a-empty v-if='!selectInfo.id'>
                         <template #description>
                             请先选择一个租户
@@ -70,6 +78,7 @@
 import { ref, defineAsyncComponent } from "vue";
 import TenantList from "/@/views/system/tenant/components/tenantList.vue"
 import RoleList from "/@/views/system/tenant/components/RoleList.vue"
+import TenantPackManager from "/@/views/system/tenantpack/index.vue"
 const BaseInfo = defineAsyncComponent(() => import("./components/tenantInfo.vue"))
 const ProcessTree = defineAsyncComponent(() => import("./components/ProcessTree.vue"))
 const activeKey = ref('1');
