@@ -8,16 +8,15 @@
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
-          <a-form-item label="流程类别">
-            <a-select v-model:value="formData.lclx" allowClear show-search
-              :options="bpmList"  :field-names="{ label: 'title', value: 'key' }" @change="onChangeLclx" optionFilterProp="label" />
+          <a-form-item label="事项类别">
+            <a-select v-model:value="formData.sxlb" allowClear show-search :options="bpmList"
+              :field-names="{ label: 'title', value: 'key' }" @change="onChangeLclx" optionFilterProp="label" />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
-          <a-form-item label="流程名称">
-             <a-select v-model:value="formData.lcid" :options="lcmcList"
-                       :field-names="{ label: 'title', value: 'key' }" allowClear show-search @change="onChangeAjlx"
-                       optionFilterProp="label" />
+          <a-form-item label="事项名称">
+            <a-select v-model:value="formData.lcid" :options="lcmcList" :field-names="{ label: 'title', value: 'key' }"
+              allowClear show-search @change="onChangeAjlx" optionFilterProp="label" />
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -126,7 +125,6 @@ import { SearchOutlined, RedoOutlined, RollbackOutlined, AlertOutlined, Exclamat
 import { router } from "/@/router";
 import { Modal, message } from "ant-design-vue";
 import { cModal } from "/@/components/cModal/index"
-import { getDictItemsByCode } from "/@/views/online/utils/commonUtils.ts";
 import { getBpmList } from "/@/views/bdc/utils/case.ts"
 enum api {
   // list = '/tyyw/zrzy-cloud-bpm/act/task/list?column=createTime&order=des',//统一运维
@@ -178,7 +176,8 @@ onMounted(async () => {
 function loadData() {
   spinning.value = true
   let data = {
-    lcid: formData.value.lcid,
+    sxlb: formData.value.sxlb,
+    lcid: formData.value?.lcid ? [formData.value.lcid] : [],
     ajmc: formData.value.ajmc,
     slbh: formData.value.slbh,
     bdcdyh: formData.value.bdcdyh,
