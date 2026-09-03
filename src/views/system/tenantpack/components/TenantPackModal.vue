@@ -1,19 +1,19 @@
 <template>
   <a-modal v-model:open="modalVisible" :title="modalTitle" :footer="readOnly ? null : undefined"
-           :confirm-loading="confirmLoading" @ok="handleModalOk">
+    :confirm-loading="confirmLoading" @ok="handleModalOk">
     <a-form ref="formRef" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" :rules="rules" :model="formState">
       <a-form-item label="套餐包名称" name="packName">
-        <a-input v-model:value="formState.packName" placeholder="请输入套餐包名称" :disabled="readOnly"/>
+        <a-input v-model:value="formState.packName" placeholder="请输入套餐包名称" :disabled="readOnly" />
       </a-form-item>
       <a-form-item label="备注说明" name="remarks">
         <a-textarea v-model:value="formState.remarks" :auto-size="{ minRows: 4 }" placeholder="请输入备注说明"
-                    :disabled="readOnly"/>
+          :disabled="readOnly" />
       </a-form-item>
-      <a-form-item label="自动分配用户" name="izSysn">
+      <!-- <a-form-item label="自动分配用户" name="izSysn">
         <a-switch v-model:checked="formState.izSysn" checked-value="1" un-checked-value="0" :disabled="readOnly"/>
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="开启状态" name="status">
-        <a-switch v-model:checked="formState.status" checked-value="1" un-checked-value="0" :disabled="readOnly"/>
+        <a-switch v-model:checked="formState.status" checked-value="1" un-checked-value="0" :disabled="readOnly" />
       </a-form-item>
     </a-form>
   </a-modal>

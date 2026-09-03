@@ -55,7 +55,8 @@
                   <a-divider type="vertical" />
                   <a @click="handleEditRole(record)">编辑</a>
                   <a-divider type="vertical" />
-                  <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?" @confirm="handleDelRole(record.id, index)">
+                  <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?"
+                    @confirm="handleDelRole(record.id, index)">
                     <a>删除</a>
                   </a-popconfirm>
                 </template>
@@ -104,7 +105,7 @@ let roleList = ref([])
 let pagination = ref({
   total: 0,
   current: 1,
-  pageSize: 10,
+  pageSize: 20,
 })
 
 // 查询内容

@@ -11,6 +11,14 @@
                         </a-select>
                     </a-form-item>
                 </a-col>
+                <a-col :span="8">
+
+                    <a-form-item label="拦截策略" name="permissionMode">
+                        <a-select :options="getDictItemsByCode('ljcl')" allowClear style="width: 98%;" show-search
+                            optionFilterProp="label" v-model:value="reportData.permissionMode">
+                        </a-select>
+                    </a-form-item>
+                </a-col>
             </a-row>
             <a-row :gutter="24">
                 <a-col :span="8">
@@ -76,6 +84,7 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { formatToDateTime } from "/@/views/online/utils/dateUtil"
 import { encryptByBase64 } from '/@/utils/cipher';
+import { getDictItemsByCode } from "/@/views/online/utils/commonUtils.ts";
 const props = defineProps({
     open: {
         type: Boolean,

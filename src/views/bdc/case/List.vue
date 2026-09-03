@@ -8,15 +8,15 @@
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
-          <a-form-item label="流程类别">
-            <a-select v-model:value="formData.lclx" allowClear show-search
-              :options="bpmList"  :field-names="{ label: 'title', value: 'key' }" @change="onChangeLclx" optionFilterProp="label" />
+          <a-form-item label="事项类别">
+            <a-select v-model:value="formData.sxlb" allowClear show-search :options="bpmList"
+              :field-names="{ label: 'title', value: 'key' }" @change="onChangeLclx" optionFilterProp="label" />
           </a-form-item>
         </a-col>
         <a-col :span="6" :offset="0">
-          <a-form-item label="流程名称">
-            <a-select v-model:value="formData.lcid" :options="lcmcList" :field-names="{ label: 'title', value: 'key' }" allowClear show-search @change="onChangeLc"
-              optionFilterProp="label" />
+          <a-form-item label="事项名称">
+            <a-select v-model:value="formData.lcid" :options="lcmcList" :field-names="{ label: 'title', value: 'key' }"
+              allowClear show-search @change="onChangeLc" optionFilterProp="label" />
           </a-form-item>
         </a-col>
         <a-col :span="4" :offset="0">
@@ -179,7 +179,8 @@ onMounted(async () => {
 function loadData() {
   spinning.value = true
   let data = {
-    lcid: formData.value.lcid,
+    sxlb: formData.value.sxlb,
+    lcid: formData.value?.lcid ? [formData.value.lcid] : [],
     ajmc: formData.value.ajmc,
     slbh: formData.value.slbh,
     bdcdyh: formData.value.bdcdyh,
