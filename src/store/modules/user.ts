@@ -337,13 +337,7 @@ export const useUserStore = defineStore({
         const { token } = data;
         // save token
         this.setToken(token);
-        if (loginParams.tenantId) {
-          this.setTenant(loginParams.tenantId);
-        }
         const loginResult = await this.afterLoginAction(goHome, data);
-        if (loginParams.tenantId) {
-          this.setTenant(loginParams.tenantId);
-        }
         return loginResult;
       } catch (error) {
         return Promise.reject(error);
@@ -490,6 +484,7 @@ export const useUserStore = defineStore({
       const userInfo: any = await getUserInfo();
       if (userInfo) {
         this.setUserInfo(userInfo);
+        this.setTenant(userInfo.tenantId);
       }
       await getDict()
       // 规则

@@ -58,16 +58,16 @@
                     </a-empty>
                     <role-list v-else :selectInfo="selectInfo"></role-list>
                 </a-tab-pane>
-                <a-tab-pane key="5" tab="跨租户共享" force-render>
-                    <a-empty v-if='!selectInfo.id'>
-                        <template #description>
-                            请先选择一个租户
-                        </template>
-                    </a-empty>
-                    <div v-else style="padding: 20px; text-align: center; color: #999;">
-                        跨租户共享功能开发中...
-                    </div>
-                </a-tab-pane>
+<!--                <a-tab-pane key="5" tab="跨租户共享" force-render>-->
+<!--                    <a-empty v-if='!selectInfo.id'>-->
+<!--                        <template #description>-->
+<!--                            请先选择一个租户-->
+<!--                        </template>-->
+<!--                    </a-empty>-->
+<!--                    <div v-else style="padding: 20px; text-align: center; color: #999;">-->
+<!--                        跨租户共享功能开发中...-->
+<!--                    </div>-->
+<!--                </a-tab-pane>-->
             </a-tabs>
         </div>
 

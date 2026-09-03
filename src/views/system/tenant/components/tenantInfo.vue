@@ -10,7 +10,7 @@
                 </a-col>
                 <a-col :span="24">
                     <a-form-item label="租户名称" name="name">
-                        <a-input v-model:value="formData.name" placeholder="请输入租户名称" allow-clear />
+                        <a-input v-model:value="formData.name" placeholder="请输入租户名称" allow-clear :disabled="readonly" />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -19,13 +19,13 @@
                 <a-col :span="12">
                     <a-form-item label="上级租户" name="parentTenantId">
                         <a-select v-model:value="formData.parentTenantId" placeholder="请选择上级租户"
-                            :options="parentTenantList" allow-clear :field-names="{ label: 'name', value: 'id' }">
+                            :options="parentTenantList" allow-clear :disabled="readonly" :field-names="{ label: 'name', value: 'id' }">
                         </a-select>
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="租户层级" name="tenantLevel">
-                        <a-select v-model:value="formData.tenantLevel" placeholder="请选择租户层级">
+                        <a-select v-model:value="formData.tenantLevel" placeholder="请选择租户层级" :disabled="readonly">
                             <a-select-option value="省级">省级</a-select-option>
                             <a-select-option value="市级">市级</a-select-option>
                             <a-select-option value="县级">县级</a-select-option>
@@ -36,11 +36,21 @@
             </a-row>
 
             <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item label="共享租户" name="sharedTenantId">
+                  <a-select v-model:value="formData.sharedTenantId" placeholder="请先选择租户层级"
+                            :options="shareTenantOptions"
+                            :disabled="readonly || !formData.tenantLevel" allow-clear mode="multiple" :field-names="{ label: 'name', value: 'id' }"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+
+            <a-row :gutter="24">
                 <a-col :span="24">
                     <a-form-item label="关联区域" name="qxdm">
                         <a-tree-select v-model:value="formData.qxdm" tree-data-simple-mode treeDefaultExpandAll
                             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" :tree-data="gData" tree-checkable
-                            allow-clear />
+                            allow-clear :disabled="readonly" />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -50,7 +60,7 @@
                     <a-form-item label="关联机构" name="department">
                         <a-tree-select v-model:value="formData.department" :tree-data="deptListOption"
                             :fieldNames="{ label: 'name', value: 'id' }" treeDefaultExpandAll style="width: 100%"
-                            allow-clear placeholder="请选择部门" />
+                            allow-clear placeholder="请选择部门" :disabled="readonly" />
                         <!-- <a-select v-model:value="formData.department" placeholder="请选择关联机构" allow-clear>
                             <a-select-option v-for="item in orgList" :key="item.id" :value="item.id">
                                 {{ item.orgName }}
@@ -64,13 +74,13 @@
                 <a-col :span="12">
                     <a-form-item label="租户开始日期" name="beginDate">
                         <a-date-picker v-model:value="formData.beginDate" style="width: 100%;" placeholder="请选择租户开始日期"
-                            format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
+                            format="YYYY-MM-DD" value-format="YYYY-MM-DD" :disabled="readonly" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="租户结束日期" name="endDate">
                         <a-date-picker v-model:value="formData.endDate" style="width: 100%;" placeholder="请选择租户结束日期"
-                            format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
+                            format="YYYY-MM-DD" value-format="YYYY-MM-DD" :disabled="readonly" />
                     </a-form-item>
                 </a-col>
 
@@ -78,12 +88,12 @@
             <a-row :gutter="24">
                 <a-col :span="12">
                     <a-form-item label="租户联系人" name="lxr">
-                        <a-input v-model:value="formData.lxr" placeholder="请输入联系人" />
+                        <a-input v-model:value="formData.lxr" placeholder="请输入联系人" :disabled="readonly" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="联系人电话" name="lxdh">
-                        <a-input v-model:value="formData.lxdh" placeholder="请输入联系电话" />
+                        <a-input v-model:value="formData.lxdh" placeholder="请输入联系电话" :disabled="readonly" />
                     </a-form-item>
                 </a-col>
 
@@ -92,7 +102,7 @@
             <a-row :gutter="24">
                 <a-col :span="12">
                     <a-form-item label="租户状态">
-                        <a-radio-group v-model:value="formData.status">
+                        <a-radio-group v-model:value="formData.status" :disabled="readonly">
                             <a-radio :value="0">停用</a-radio>
                             <a-radio :value="1">正常</a-radio>
                             <a-radio :value="2">注销</a-radio>
@@ -102,11 +112,11 @@
                 <a-col :span="12">
                     <a-form-item label="租户管理员" name="tenantAdmin">
                         <c-input-table v-model="formData.tenantAdmin" :columns="columns" :dataSource="userList"
-                            searchField="username" displayField="username" @select="handleSelect" />
+                            searchField="username" displayField="username" :disabled="readonly" @select="handleSelect" />
                     </a-form-item>
                 </a-col>
             </a-row>
-            <a-row :gutter="24" v-if="showActionButtons">
+            <a-row :gutter="24" v-if="showActionButtons && !readonly">
                 <a-col :span="24" style="text-align: center;">
                     <a-space>
                         <a-button type="primary" @click="saveTenant">保存</a-button>
@@ -132,6 +142,10 @@ const props = defineProps({
     isAddMode: {
         type: Boolean,
         default: false
+    },
+    readonly: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -139,7 +153,31 @@ const emit = defineEmits(['refreshList', 'cancelAdd']);
 let deptListOption = ref<any>([])
 const formRef = ref();
 const parentTenantList = ref<any[]>([]);
+const tenantOptions = ref<any[]>([]);
 const formData = reactive<any>({});
+
+const tenantLevelOrder: Record<string, number> = {
+    '省级': 1,
+    '市级': 2,
+    '县级': 3,
+    '乡镇级': 4,
+}
+
+/**
+ * 根据当前租户层级，先下兼容
+ */
+const shareTenantOptions = computed(() => {
+    const currentLevelOrder = tenantLevelOrder[formData.tenantLevel]
+    const currentTenantId = formData.id || props.selectInfo?.id
+    if (!currentLevelOrder) return []
+
+    return tenantOptions.value
+        .filter((tenant: any) => {
+            return String(tenant.id) !== String(currentTenantId)
+                && tenantLevelOrder[tenant.tenantLevel] >= currentLevelOrder
+        })
+        .map((tenant: any) => ({ ...tenant, id: String(tenant.id) }))
+})
 
 // 初始化空表单
 function initEmptyForm() {
@@ -149,6 +187,7 @@ function initEmptyForm() {
     formData.tenantLevel = ''
     formData.qxdm = []
     formData.department = ''
+    formData.sharedTenantId = []
     formData.lxr = ''
     formData.lxdh = ''
     formData.status = '1'
@@ -174,11 +213,13 @@ function loadParentTenantList() {
         { withToken: true }
     ).then((res: any) => {
         if (res && res.success) {
-            parentTenantList.value = res.result || []
+            tenantOptions.value = res.result || []
+            parentTenantList.value = [...tenantOptions.value]
             // 移除当前选中的租户，避免自己选择自己作为上级租户
             if (props.selectInfo && props.selectInfo.id) {
                 parentTenantList.value = parentTenantList.value.filter((tenant: any) => tenant.id !== props.selectInfo.id)
             }
+            clearInvalidShareTenant()
         }
     })
 }
@@ -197,7 +238,13 @@ async function saveTenant() {
         defHttp.post(
             {
                 url: url,
-                data: { ...formData, qxdm: formData.qxdm.join(',') }
+                data: {
+                    ...formData,
+                    qxdm: formData.qxdm.join(','),
+                    sharedTenantId: Array.isArray(formData.sharedTenantId)
+                        ? formData.sharedTenantId.join(',')
+                        : formData.sharedTenantId || ''
+                }
             },
             { withToken: true }
         ).then((res: any) => {
@@ -263,7 +310,14 @@ function loadTenantDetail() {
             { withToken: true }
         ).then((res: any) => {
             if (res && res.success) {
-                Object.assign(formData, { ...res.result, qxdm: res.result.qxdm === "" ? [] : res.result.qxdm.split(',') })
+                Object.assign(formData, {
+                    ...res.result,
+                    qxdm: res.result.qxdm === "" ? [] : res.result.qxdm.split(','),
+                    sharedTenantId: res.result.sharedTenantId
+                        ? String(res.result.sharedTenantId).split(',').filter(Boolean)
+                        : []
+                })
+                clearInvalidShareTenant()
             }
         })
     } else if (props.isAddMode) {
@@ -386,6 +440,18 @@ function handleCancel() {
     }
 }
 
+/**
+ * 租户层级变化后，不保留向上共享或不存在的租户
+ */
+function clearInvalidShareTenant() {
+    if (!tenantOptions.value.length) return
+    const selectedTenantIds = Array.isArray(formData.sharedTenantId)
+        ? formData.sharedTenantId
+        : (formData.sharedTenantId ? String(formData.sharedTenantId).split(',') : [])
+    const validTenantIdSet = new Set(shareTenantOptions.value.map((tenant: any) => String(tenant.id)))
+    formData.sharedTenantId = selectedTenantIds.filter((tenantId: any) => validTenantIdSet.has(String(tenantId)))
+}
+
 defineExpose({
     saveTenant
 })
@@ -395,6 +461,8 @@ watch(() => [props.selectInfo, props.isAddMode], () => {
     loadTenantDetail()
     loadParentTenantList()
 }, { deep: true })
+
+watch(() => formData.tenantLevel, clearInvalidShareTenant)
 
 onMounted(() => {
     loadParentTenantList()
