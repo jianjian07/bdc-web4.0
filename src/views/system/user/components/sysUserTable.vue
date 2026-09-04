@@ -31,7 +31,7 @@
           </template>
           <template v-if="column.dataIndex == 'enabled'">
             <a-switch v-model:checked="record.enabled" checked-children="启用" un-checked-children="禁用"
-              @change="changeEnabled($event, record)" disabled/>
+              @change="changeEnabled($event, record)" disabled />
           </template>
           <template v-if="column.dataIndex == 'loginLocked'">
             <span v-if="record.loginLocked" style="color:rgb(245,34,45)">已锁定</span>
@@ -56,8 +56,10 @@
         </template>
       </a-table>
     </div>
-    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :roleListOption="roleList" @ok="ok"></user-modal>
-    <change-password v-if="passwordOpen" :open="passwordOpen" :title="passwordTitle" :dataInfo="dataInfo" @ok="ok"></change-password>
+    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :roleListOption="roleList"
+      @ok="ok"></user-modal>
+    <change-password v-if="passwordOpen" :open="passwordOpen" :title="passwordTitle" :dataInfo="dataInfo"
+      @ok="ok"></change-password>
   </div>
 </template>
 
@@ -68,6 +70,9 @@ import { defHttp } from "/@/utils/http/axios"
 import UserModal from "/@/views/system/user/components/UserModal.vue"
 import changePassword from "/@/views/system/user/components/changePassword.vue"
 import { message } from "ant-design-vue"
+import { useUserStore } from "/@/store/modules/user";
+const userStore = useUserStore();
+const userInfo = userStore.getUserInfo
 let drawerOpen = ref(false)
 let passwordOpen = ref(false)
 let title = ref('')
@@ -173,7 +178,9 @@ enum api {
 
 onMounted(() => {
   initRoleList()
-  initData()
+  if (userInfo.tenantId == null) {
+    initData()
+  }
 })
 
 /**
@@ -265,7 +272,7 @@ function handleDel(record, index) {
       message.warning('删除失败!')
     }
   }).catch(err => {
-     message.warning('删除失败!')
+    message.warning('删除失败!')
   })
 }
 
@@ -277,12 +284,12 @@ function unLock(record, index) {
   defHttp.post({ url: api.unLock, params: { userName: record.username } }, { withToken: true }).then((res) => {
     if (res && res.success) {
       message.success('解锁成功!')
-      userList.value[index].loginLocked=false
+      userList.value[index].loginLocked = false
     } else {
       message.warning('解锁失败!')
     }
   }).catch(err => {
-     message.warning('解锁失败!')
+    message.warning('解锁失败!')
   })
 }
 
@@ -356,7 +363,7 @@ function ok() {
     }
 
     :deep(.ant-spin-container) {
-      overflow: hidden!important;
+      overflow: hidden !important;
     }
   }
 }
