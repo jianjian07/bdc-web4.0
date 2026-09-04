@@ -8,7 +8,7 @@
             </a-tabs>
         </a-col>
         <a-col :span="(nodeList && nodeList.length) ? 21 : 24">
-            <BdpzModal :lcid="lcid" :jdid="jdid"></BdpzModal>
+            <BdpzModal :lcid="lcid" :jdid="jdid" :jdmc="jdmc"></BdpzModal>
         </a-col>
     </a-row>
 </template>
@@ -34,6 +34,7 @@ enum api {
 let nodeList = ref([])
 let lcid = ref(props.lcid)
 let jdid = ref()
+let jdmc = ref()
 let activeKey = ref()
 function getNode() {
     defHttp.get({ url: api.nodelistUrl, params: { processId: lcid.value } }, { withToken: true }).then((res) => {
@@ -41,6 +42,7 @@ function getNode() {
             nodeList.value = res.result;
             if (res.result.length) {
                 jdid.value = res.result[0].processNodeCode
+                jdmc.value = res.result[0].processNodeName
                 activeKey.value = res.result[0].processNodeCode
             }
         }
