@@ -53,6 +53,7 @@ function getNode() {
  */
 function nodeClick(key: any) {
     jdid.value = key
+    jdmc.value = nodeList.value.find(item => item.processNodeCode == key).processNodeName
 }
 watch(() => props.lcid, (newValue, _oldValue) => {
     lcid.value = newValue
