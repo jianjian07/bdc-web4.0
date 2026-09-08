@@ -25,7 +25,7 @@
         </a-form>
       </div>
       <div class="sys-role-user-list-content">
-        <a-button type="primary" @click="handleUserPermission" style="margin-bottom: 10px">授权用户</a-button>
+        <a-button v-if="!props.readonly" type="primary" @click="handleUserPermission" style="margin-bottom: 10px">授权用户</a-button>
         <a-table :columns="columns" :data-source="userList" :pagination="pagination"
           @change="onTableChange" rowKey="id" bordered :loading="loading">
           <template #bodyCell="{ column, record, index }">
@@ -48,6 +48,13 @@ import { computed, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index.ts"
 import { message } from "ant-design-vue"
+
+const props = defineProps({
+  readonly: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const columns = [
   {

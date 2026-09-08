@@ -26,6 +26,14 @@ import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { findNode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { getBpmList } from "/@/views/bdc/utils/case.ts"
+
+const props = defineProps({
+  tenantId: {
+    type: [String, Number],
+    default: undefined
+  }
+})
+
 // 弹窗是否显示
 let modalVisible = ref<boolean>(false)
 // 确认loading
@@ -53,6 +61,7 @@ let allParentNodes = ref<any>([])
 
 enum api {
   processlist = '/api/zrzy-bdc/bdc/flow/flowList',
+  tenantSxTreeList = '/api/zrzy-bdc/flow/sxml/tenantSxTreeList',
   save = '/api/zrzy-system/role/addRoleProcess',
   checkList = '/api/zrzy-system/role/roleProcessList'
 }
@@ -66,23 +75,37 @@ defineExpose({
 })
 
 /**
- * 加载流程列表
+ * 加载流程权限树；租户模式下仅加载该租户关联的事项目录树
  */
-function initData() {
-  return new Promise(async (resolve) => {
-    allParentNodes.value = []
-    if (currentAjlx.value == '1') {
-      let treeDict = await getBpmList()
-      treeDict = filterTree(treeDict)
-      treeData.value = setList(treeDict)
-      resolve(true)
-    } else {
-      let arr = await getBpmList(0)
-      arr = filterTree(arr)
-      treeData.value = setList(arr)
-      resolve(true)
-    }
-  })
+async function initData() {
+  allParentNodes.value = []
+
+  if (props.tenantId) {
+    return defHttp.get({
+      url: api.tenantSxTreeList,
+      params: { tenantId: props.tenantId }
+    }, { withToken: true }).then((res) => {
+      if (res?.success) {
+        treeData.value = setList(filterTree(Array.isArray(res.result) ? res.result : []))
+      } else {
+        treeData.value = []
+        message.warning(res?.message || '获取租户事项目录树失败')
+      }
+    }).catch((err) => {
+      treeData.value = []
+      console.info(err)
+    })
+  }
+
+  if (currentAjlx.value == '1') {
+    let treeDict = await getBpmList()
+    treeDict = filterTree(treeDict)
+    treeData.value = setList(treeDict)
+  } else {
+    let arr = await getBpmList(0)
+    arr = filterTree(arr)
+    treeData.value = setList(arr)
+  }
 }
 
 function filterTree(nodes) {
