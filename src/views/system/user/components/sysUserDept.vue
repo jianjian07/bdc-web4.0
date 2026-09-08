@@ -123,7 +123,6 @@ function onSearchDept() {
 }
 
 function onDeptSelect(selectedKeys: any, info: any) {
-  debugger
   if (selectedKeys.length == 0) {
     emit("deptInfo", null)
   } else {
