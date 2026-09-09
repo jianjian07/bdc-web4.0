@@ -2,10 +2,10 @@
   <div class="tenant-process-tree">
     <div class="tenant-process-tree-header">
       <a-input-search v-model:value="searchName" placeholder="请输入关键字搜索" enter-button @search="onSearch"/>
-      <a-button type="primary" :loading="confirmLoading" @click="handleSave">保存</a-button>
+      <a-button v-if="!props.readonly" type="primary" :loading="confirmLoading" @click="handleSave">保存</a-button>
     </div>
     <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys" :defaultExpandAll="false"
-            :show-icon="true" :tree-data="treeData" checkable>
+            :show-icon="true" :tree-data="treeData" :disabled="props.readonly" checkable>
       <template #title="{ title }">
                 <span v-if="searchName && title.indexOf(searchName) > -1">
                     {{ title.substr(0, title.indexOf(searchName)) }}
@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue"
 import { message } from "ant-design-vue"
+import { defHttp } from "/@/utils/http/axios"
 import { findNode } from "/@/views/online/utils/commonUtils"
 import { getBpmList } from "/@/views/bdc/utils/case.ts"
 
@@ -28,6 +29,10 @@ const props = defineProps({
   selectInfo: {
     type: Object,
     default: () => ({})
+  },
+  readonly: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -53,8 +58,8 @@ let currentAjlx = ref<string>('1')
 let allParentNodes = ref<any>([])
 
 enum api {
-  save = '',
-  checkList = ''
+  save = '/api/zrzy-system/sys/tenantSx/addTenantSx',
+  checkList = '/api/zrzy-system/sys/tenantSx/tenantSxList'
 }
 
 watch(() => searchName.value, () => {
@@ -187,39 +192,59 @@ function hasKeyWord(tree, keyword) {
 }
 
 /**
- * 保存租户流程关联
+ * 保存租户事项关联
  */
 function handleSave() {
-  let tenantId = props.selectInfo?.id
-  let keys = Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
-  let nodes = keys.map((key) => {
-    let node = findNode(treeData.value, key, 'key')
+  const tenantId = props.selectInfo?.id
+  const keys = Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
+  const list = keys.map((key) => {
+    const node = findNode(treeData.value, key, 'key')
+    const sxCode = node?.key || key
+
     return {
       tenantId,
-      lcid: key,
-      lcmc: node?.title,
-      ajlx: currentAjlx.value,
-      lclb: node?.pid,
-      orderNum: node?.orderNum
+      sxCode,
+      sxlb: node?.parentId
     }
   })
 
-  let data = {
+  const data = {
     tenantId,
-    list: nodes,
-    ajlx: currentAjlx.value
+    list
   }
 
-  console.log('租户流程关联保存参数:', data, api.save)
-  message.info('保存接口待接入')
+  confirmLoading.value = true
+  defHttp.post({ url: api.save, data }, { withToken: true }).then((res) => {
+    if (res?.success) {
+      message.success(res?.message || '保存成功')
+      getCheckedList(tenantId)
+    } else {
+      message.warning(res?.message || '保存失败')
+    }
+  }).catch((err) => {
+    console.info(err)
+  }).finally(() => {
+    confirmLoading.value = false
+  })
 }
 
 /**
- * 获取租户流程列表
+ * 获取租户已关联事项
  */
 function getCheckedList(tenantId) {
-  console.log('租户流程关联选中keys接口待接入:', tenantId, api.checkList)
-  checkedKeys.value = formatCheckedKeys([])
+  defHttp.get({
+    url: api.checkList,
+    params: { tenantId }
+  }, { withToken: true }).then((res) => {
+    if (res?.success) {
+      const tenantSxList = Array.isArray(res.result) ? res.result : []
+      checkedKeys.value = formatCheckedKeys(tenantSxList.map((item) => item.sxCode))
+    } else {
+      message.warning(res?.message || '获取租户事项失败')
+    }
+  }).catch((err) => {
+    console.info(err)
+  })
 }
 
 /**

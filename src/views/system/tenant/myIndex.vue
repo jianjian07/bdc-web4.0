@@ -5,10 +5,10 @@
         <tenant-info :select-info="{ id: tenantId }" readonly />
       </a-tab-pane>
       <a-tab-pane key="process" tab="流程关联" force-render>
-        <process-tree :select-info="{ id: tenantId }" />
+        <process-tree :select-info="{ id: tenantId }" readonly />
       </a-tab-pane>
       <a-tab-pane key="role" tab="角色关联" force-render>
-        <role-list :select-info="{ id: tenantId }" />
+        <role-list :select-info="{ id: tenantId }" readonly />
       </a-tab-pane>
     </a-tabs>
     <a-empty v-else description="当前用户非租户" />

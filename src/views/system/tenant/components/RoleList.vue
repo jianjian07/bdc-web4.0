@@ -12,7 +12,7 @@
           <a-button @click="reset">重置</a-button>
         </a-form-item>
       </a-form>
-      <a-button type="primary" @click="openRelateRoleModal">关联</a-button>
+      <a-button v-if="!props.readonly" type="primary" @click="openRelateRoleModal">关联</a-button>
     </div>
 
     <a-table
@@ -44,6 +44,10 @@ const props = defineProps({
   selectInfo: {
     type: Object,
     default: () => ({})
+  },
+  readonly: {
+    type: Boolean,
+    default: false
   }
 })
 

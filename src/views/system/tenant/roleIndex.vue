@@ -12,10 +12,18 @@
           <a-form-item>
             <a-button @click="reset">重置</a-button>
           </a-form-item>
+          <a-form-item>
+            <a-button @click="handleAddRole">
+              <template #icon>
+                <plus-outlined />
+              </template>
+              新增
+            </a-button>
+          </a-form-item>
         </a-form>
       </div>
       <div class="right-content">
-        <a-button type="primary" :disabled="!currentRole.length" @click="handleSave">保存</a-button>
+        <a-button type="primary" :disabled="!canManageCurrentRole" @click="handleSave">保存</a-button>
       </div>
     </div>
 
@@ -58,7 +66,7 @@
               :show-line="true"
               :tree-data="item.list"
               checkable
-              :disabled="!currentRole.length"
+              :disabled="!canManageCurrentRole"
               @check="(keys) => handleTreeCheck(item.id, keys)"
             />
           </a-collapse-panel>
@@ -66,8 +74,9 @@
       </div>
     </div>
 
+    <sys-role-modal ref="roleModal" :tenant-id="tenantId" @ok="loadRoleList" />
     <sys-role-process-modal ref="roleProcessModal" :tenant-id="tenantId" />
-    <sys-role-user-list ref="roleUserListDrawer" readonly />
+    <sys-role-user-list ref="roleUserListDrawer" />
   </div>
   <a-empty v-else description="当前用户非租户" />
 </template>
@@ -77,8 +86,10 @@ import { computed, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { defHttp } from '/@/utils/http/axios'
 import { useUserStore } from '/@/store/modules/user'
+import SysRoleModal from '/@/views/system/role/components/sysRoleModal.vue'
 import SysRoleProcessModal from '/@/views/system/role/components/sysRoleProcessModal.vue'
 import SysRoleUserList from '/@/views/system/role/components/sysRoleUserList.vue'
+import { PlusOutlined } from "@ant-design/icons-vue"
 
 enum api {
   tenantRoleList = '/api/zrzy-system/sys/tenantRole/getTenantRoleList',
@@ -100,6 +111,7 @@ const checkedKeysMap = ref<Record<string | number, any[]>>({})
 const activeCollapseKey = ref<any>()
 const roleProcessModal = ref<any>()
 const roleUserListDrawer = ref<any>()
+const roleModal = ref<any>()
 const pagination = ref({
   current: 1,
   pageSize: 10,
@@ -126,6 +138,7 @@ const tablePagination = computed(() => ({
   ...pagination.value,
   total: filteredRoleList.value.length
 }))
+const canManageCurrentRole = computed(() => canManageRole(currentRole.value[0]))
 const rowSelection = computed(() => ({
   selectedRowKeys: selectedKeys.value,
   type: 'radio' as const,
@@ -163,13 +176,26 @@ function selectRole(record: any) {
   getRoleSysMenuKeys(record.id)
 }
 
+/**
+ * 当前租户仅可管理自己创建的角色
+ */
+function canManageRole(record: any) {
+  return Boolean(tenantId.value) && String(record?.tenantId) === String(tenantId.value)
+}
+
 function searchData() {
   pagination.value.current = 1
+  loadRoleList()
 }
 
 function reset() {
   searchFormState.value.name = ''
   pagination.value.current = 1
+  loadRoleList()
+}
+
+function handleAddRole() {
+  roleModal.value?.add()
 }
 
 function loadRoleList() {
@@ -213,11 +239,11 @@ function loadMenu() {
 }
 
 function handleUser(record: any) {
-  roleUserListDrawer.value?.edit(record)
+  roleUserListDrawer.value?.edit(record, !canManageRole(record))
 }
 
 function handleProcessPermission(record: any) {
-  roleProcessModal.value?.edit(record, '1')
+  roleProcessModal.value?.edit(record, '1', !canManageRole(record))
 }
 
 function getRawCheckedKeys(keys: any) {
@@ -229,7 +255,7 @@ function getCheckedKeys(systemId: string | number) {
 }
 
 function handleTreeCheck(systemId: string | number, keys: any) {
-  if (!currentRole.value.length) return
+  if (!canManageCurrentRole.value) return
   checkedKeysMap.value[systemId] = getRawCheckedKeys(keys)
 }
 
@@ -317,7 +343,7 @@ function getRoleSysMenuKeys(roleId: string | number) {
  * 保存
  */
 function handleSave() {
-  if (!currentRole.value.length) {
+  if (!canManageCurrentRole.value) {
     message.error('请选择角色')
     return
   }

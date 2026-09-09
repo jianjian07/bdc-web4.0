@@ -55,6 +55,10 @@ const props = defineProps({
   modalShow: {
     type: Boolean,
     default: false
+  },
+  tenantId: {
+    type: [String, Number],
+    default: undefined
   }
 })
 
@@ -94,7 +98,12 @@ function handleModalOk() {
     if (formState.value.id) {
       _url = api.updateRoleApi
     }
-    defHttp.post({ url: _url, data: formState.value }, { withToken: true }).then((res) => {
+    const data = { ...formState.value }
+    if (!formState.value.id && props.tenantId) {
+      data.tenantId = props.tenantId
+    }
+
+    defHttp.post({ url: _url, data }, { withToken: true }).then((res) => {
       if (res && res.success) {
         message.success(modalTitle.value + '成功')
         modalVisible.value = false

@@ -1,12 +1,12 @@
 <template>
   <div class="sys-role-process-modal">
     <a-modal v-model:open="modalVisible" :width="760" title="流程权限分配" :confirm-loading="confirmLoading"
-      @ok="handleModalOk" @cancel="handleModalCancel"
+      @cancel="handleModalCancel"
       :body-style="{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }">
       <a-input-search style="margin-bottom: 10px" v-model:value="searchName" placeholder="请输入关键字搜索" enter-button
         @search="onSearch" />
       <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys" :defaultExpandAll="false"
-        :show-icon="true" :tree-data="treeData" checkable>
+        :show-icon="true" :tree-data="displayTreeData" checkable>
         <template #title="{ title }">
           <span v-if="title.indexOf(searchName) > -1">
             {{ title.substr(0, title.indexOf(searchName)) }}
@@ -16,12 +16,16 @@
           <span v-else>{{ title }}</span>
         </template>
       </a-tree>
+      <template #footer>
+        <a-button @click="handleModalCancel">取消</a-button>
+        <a-button v-if="!readonly" type="primary" :loading="confirmLoading" @click="handleModalOk">确定</a-button>
+      </template>
     </a-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { findNode, getTreeDictItemsByCode } from "/@/views/online/utils/commonUtils"
@@ -52,8 +56,12 @@ let checkedKeys = ref<any>([])
 let expandedKeys = ref<any>([])
 // 树
 let treeData = ref<any>([])
+// 查看模式下禁用复选框
+const displayTreeData = computed(() => readonly.value ? disableTreeCheckbox(treeData.value) : treeData.value)
 // 当前编辑
 let currentRecord = ref<any>()
+// 是否仅查看流程权限
+let readonly = ref<boolean>(false)
 // 当前案卷类型
 let currentAjlx = ref<string>('')
 // 所有父节点
@@ -117,6 +125,14 @@ function filterTree(nodes) {
         ? filterTree(node.children)
         : []
     }))
+}
+
+function disableTreeCheckbox(nodes) {
+  return (nodes || []).map((node) => ({
+    ...node,
+    disableCheckbox: true,
+    children: disableTreeCheckbox(node.children)
+  }))
 }
 
 function setList(newArr) {
@@ -228,6 +244,7 @@ function hasKeyWord(tree, keyword) {
  * 确认弹窗
  */
 function handleModalOk() {
+  if (readonly.value) return
   let keys = Array.isArray(checkedKeys.value) ? checkedKeys.value : checkedKeys.value.checked
   let nodes = keys.map((key) => {
     let node = findNode(treeData.value, key, 'key')
@@ -266,6 +283,7 @@ function handleModalOk() {
  */
 function handleModalCancel() {
   reset()
+  modalVisible.value = false
 }
 
 /**
@@ -281,8 +299,9 @@ function reset() {
  * 编辑
  * @param record
  */
-async function edit(record, ajlx) {
+async function edit(record, ajlx, readonlyMode = false) {
   currentAjlx.value = ajlx
+  readonly.value = readonlyMode
   await initData()
   modalVisible.value = true
   currentRecord.value = record
