@@ -5,7 +5,7 @@
       <a-button v-if="!props.readonly" type="primary" :loading="confirmLoading" @click="handleSave">保存</a-button>
     </div>
     <a-tree v-model:checkedKeys="checkedKeys" v-model:expandedKeys="expandedKeys" :defaultExpandAll="false"
-            :show-icon="true" :tree-data="treeData" :disabled="props.readonly" checkable>
+            :show-icon="true" :tree-data="treeData" checkable>
       <template #title="{ title }">
                 <span v-if="searchName && title.indexOf(searchName) > -1">
                     {{ title.substr(0, title.indexOf(searchName)) }}

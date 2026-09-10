@@ -48,8 +48,10 @@
               </template>
               <template v-else-if="column.dataIndex === 'operation'">
                 <a @click.stop="handleUser(record)">用户</a>
-                <a-divider type="vertical" />
-                <a @click.stop="handleProcessPermission(record)">流程权限</a>
+                <template v-if="canManageRole(record)">
+                  <a-divider type="vertical" />
+                  <a @click.stop="handleProcessPermission(record)">流程权限</a>
+                </template>
               </template>
             </template>
           </a-table>
