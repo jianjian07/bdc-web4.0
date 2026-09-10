@@ -25,7 +25,7 @@
         </a-form>
       </div>
       <div class="sys-role-user-list-content">
-        <a-button v-if="!readonly" type="primary" @click="handleUserPermission" style="margin-bottom: 10px">授权用户</a-button>
+        <a-button type="primary" @click="handleUserPermission" style="margin-bottom: 10px">授权用户</a-button>
         <a-table :columns="columns" :data-source="userList" :pagination="pagination"
           @change="onTableChange" rowKey="id" bordered :loading="loading">
           <template #bodyCell="{ column, record, index }">
@@ -48,13 +48,6 @@ import { computed, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index.ts"
 import { message } from "ant-design-vue"
-
-const props = defineProps({
-  readonly: {
-    type: Boolean,
-    default: false
-  }
-})
 
 const columns = [
   {
@@ -85,7 +78,6 @@ const columns = [
   }
 ]
 let open = ref<boolean>(false)
-let readonly = ref<boolean>(props.readonly)
 
 // 查询条件
 let searchForm = ref<any>({
@@ -119,8 +111,7 @@ enum api {
   updateRole = '/api/zrzy-system/sys/v1/user/updateRoleByUserId'
 }
 
-function edit(record, readonlyMode = props.readonly) {
-  readonly.value = readonlyMode
+function edit(record) {
   currentRoleId.value = record.id
   open.value = true
   initData()
