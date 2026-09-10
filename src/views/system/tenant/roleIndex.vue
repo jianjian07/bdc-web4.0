@@ -241,7 +241,7 @@ function loadMenu() {
 }
 
 function handleUser(record: any) {
-  roleUserListDrawer.value?.edit(record, !canManageRole(record))
+  roleUserListDrawer.value?.edit(record)
 }
 
 function handleProcessPermission(record: any) {
