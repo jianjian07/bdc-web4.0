@@ -5,7 +5,7 @@
         <a-row :gutter="[0, 8]" tyle="flex">
           <a-col :span="8" :offset="0">
             <a-form-item label="用户">
-              <a-input v-model:value="formState.realName"/>
+              <a-input v-model:value="formState.realName" />
             </a-form-item>
           </a-col>
           <a-col :span="4" :offset="0">
@@ -30,8 +30,8 @@
       </a-form>
     </div>
     <div class="wonder-table-css">
-      <a-table :columns="columns" :data-source="datalist" :pagination="pagination" 
-                 row-key="id" @change="onChange($event, initData)" :loading="loading">
+      <a-table :columns="columns" :data-source="datalist" :pagination="pagination" row-key="id"
+        @change="onChange($event, initData)" :loading="loading">
         <template #bodyCell="{ column, record, index }">
           <template v-if="column.dataIndex == 'index'">
             {{ index + 1 }}
@@ -96,7 +96,7 @@ let modalRef = ref()
 enum api {
   dbList = '/api/zrzy-bdc/process/extActSuperviseAuthority/list',
   jjList = '/api/zrzy-bdc/process/extActUrgentAuthority/list',
-  processlist = '/api/zrzy-bdc/bdc/flow/flowList',
+  processlist = '/api/zrzy-bdc/flow/sxml/tenantSxTreeList',
 }
 
 onMounted(() => {
@@ -194,7 +194,7 @@ function handleSetting(record: any) {
 function getProcessName(process: any) {
   if (!process) return ''
   let processArr = process.split(',')
-  let processNameArr:any = []
+  let processNameArr: any = []
   processArr.forEach((item: any) => {
     let node = findNode(treeData.value, item, 'key')
     if (node) {
