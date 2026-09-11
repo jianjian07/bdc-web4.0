@@ -101,7 +101,8 @@ export function getUserInfo() {
           userId: res.result.id,
           realname: res.result.realName,
           loginTraceId: res.result.loginTraceId,
-          tenantId: res.result.tenantId
+          tenantId: res.result.tenantId,
+          permissions: Array.isArray(res.result.permissions) ? res.result.permissions : []
         })
       } else {
         resolve(null)

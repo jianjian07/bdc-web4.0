@@ -1,29 +1,24 @@
 <template>
   <div class="wonder-table-form">
-    <a-form :label-col="{ style: { width: '100px' } }" :labelWrap="true">
-      <a-row :gutter="[0, 8]" tyle="flex">
-        <a-col :span="8" :offset="0">
+    <a-form :label-col="{ style: { width: '100px' } }" :label-wrap="true">
+      <a-row :gutter="[0, 8]">
+        <a-col :span="8">
           <a-form-item label="表名">
-            <a-input v-model:value="formData.tblName" allowClear/>
+            <a-input v-model:value="formData.tblName" allow-clear @press-enter="loadData('query')"/>
           </a-form-item>
         </a-col>
-        <a-col :span="8" :offset="0">
-          <a-form-item label="字段名">
-            <a-input v-model:value="formData.colName" allowClear/>
-          </a-form-item>
-        </a-col>
-        <a-col :span="4" :offset="0">
-          <a-form-item style="text-align: center;">
+        <a-col :span="4">
+          <a-form-item style="text-align: center">
             <a-space>
               <a-button type="primary" @click="loadData('query')">
                 <template #icon>
-                  <component :is="SearchOutlined"></component>
+                  <SearchOutlined/>
                 </template>
                 查询
               </a-button>
-              <a-button @click="refreshData">
+              <a-button @click="resetSearch">
                 <template #icon>
-                  <component :is="RedoOutlined"></component>
+                  <RedoOutlined/>
                 </template>
                 重置
               </a-button>
@@ -35,169 +30,159 @@
   </div>
   <div class="wonder-table-css">
     <div class="wonder-table-toolbar">
-      <a-button v-permission="'online:report:view'" type="primary" @click="addData">
+      <a-button type="primary" @click="addTable">
         <template #icon>
-          <plus-outlined/>
+          <PlusOutlined/>
         </template>
-        新增
+        新增表
       </a-button>
     </div>
-    <a-table :columns="columns" :data-source="datalist" :pagination="pagination" :loading="loading"
-             @change="onChange($event, loadData)">
+    <a-table row-key="id" :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading"
+             @change="onPageChange">
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'isEncode'">
-                    <span>
-                        <a-tag v-if="record.isEncode === 1" color="green"
-                               style="padding-left:15px;padding-right:15px;">是</a-tag>
-                        <a-tag v-else color="red" style="padding-left:15px;padding-right:15px;">否</a-tag>
-                    </span>
+        <template v-if="column.dataIndex === 'status'">
+          <a-tag :color="record.status === 1 ? 'green' : 'red'">{{ record.status === 1 ? '启用' : '停用' }}</a-tag>
         </template>
-        <template v-if="column.key === 'action'">
-                    <span>
-                        <a @click="editData(record)">编辑</a><a-divider type="vertical"/>
-                        <a-popconfirm title="是否确定删除该项？" ok-text="确定" cancel-text="取消"
-                                      @confirm="deleteData(record)">
-                            <a>删除</a>
-                        </a-popconfirm>
-                    </span>
+        <template v-else-if="column.key === 'action'">
+          <a-space>
+            <template #split>
+              <a-divider type="vertical"/>
+            </template>
+            <a @click="editTable(record)">编辑</a>
+            <a @click="manageColumns(record)">字段管理</a>
+            <a-popconfirm title="确定删除该元数据表吗？" ok-text="确定" cancel-text="取消"
+                          @confirm="deleteTable(record)"><a class="danger-link">删除</a></a-popconfirm>
+          </a-space>
         </template>
       </template>
     </a-table>
   </div>
-  <data-modal v-if="open" :open="open" :data="data" :title="title" @ok="handOver"></data-modal>
+  <TableModal v-if="tableModalOpen" :open="tableModalOpen" :title="tableModalTitle" :data="currentTable"
+              @close="closeTableModal" @saved="handleTableSaved"/>
+  <ColumnDrawer v-if="columnDrawerOpen" :open="columnDrawerOpen" :table="currentTable"
+                @close="columnDrawerOpen = false"/>
 </template>
 
 <script lang="ts" setup>
-import { defHttp } from "/@/utils/http/axios"
-import { ref, onMounted, defineAsyncComponent } from "vue"
-import { PlusOutlined, SearchOutlined, RedoOutlined } from '@ant-design/icons-vue'
+import { defineAsyncComponent, onMounted, reactive, ref } from 'vue'
+import { PlusOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { defHttp } from '/@/utils/http/axios'
 
-enum api {
-  list = '/api/zrzy-form/metadata/list',
-  del = '/api/zrzy-form/metadata/del',
-}
-
-const DataModal = defineAsyncComponent(() => import("/@/views/system/metadata/components/DataModal.vue"))
+const TableModal = defineAsyncComponent(() => import('./components/TableModal.vue'))
+const ColumnDrawer = defineAsyncComponent(() => import('./components/ColumnDrawer.vue'))
 const columns = [
-  { title: "ID", dataIndex: "id", width: 80 },
-  { title: "表名", dataIndex: "tblName", width: 180 },
-  { title: "字段名", dataIndex: "colName", width: 200 },
-  { title: "加密", dataIndex: "isEncode", width: 150 },
-  { title: "字段描述", dataIndex: "colComment" },
-  { title: '操作', key: 'action', width: 150 }
+  { title: '表名', dataIndex: 'tblName', width: 210 }, { title: '表名简称', dataIndex: 'tblShortName', width: 160 },
+  { title: '表说明', dataIndex: 'tblText', minWidth: 180 }, { title: '数据源', dataIndex: 'dbKey', width: 150 },
+  { title: '状态', dataIndex: 'status', width: 100 }, { title: '排序', dataIndex: 'orderNum', width: 90 },
+  { title: '操作', key: 'action', width: 200, fixed: 'right' },
 ]
-let datalist: any = ref([])
-let formData: any = ref([])
-let data = ref({})
-let title = ref('')
-let open = ref(false)
-onMounted(() => {
-  loadData() // 初始化加载数据
-})
-let pagination = ref({
-  total: 0,
-  current: 1,
-  pageSize: 10,
-})
-let loading = ref(false)
+const api = { list: '/api/zrzy-form/metadata/tbl/list', del: '/api/zrzy-form/metadata/tbl/del' }
+const tableList = ref<any[]>([])
+const formData = reactive({ tblName: '' })
+const loading = ref(false)
+const pagination = ref({ total: 0, current: 1, pageSize: 10 })
+const tableModalOpen = ref(false)
+const columnDrawerOpen = ref(false)
+const tableModalTitle = ref('')
+const currentTable = ref<any>({})
+
+onMounted(() =>
+    loadData()
+)
 
 /**
- * 表格数据加载
+ * 加载列表
  */
-async function loadData(type?: string | undefined) {
-  // 解决翻页后查询不到的问题
-  if (type == 'query') {
-    pagination.value = {
-      total: 0,
-      current: 1,
-      pageSize: 10,
-    }
-  }
+function loadData(type?: 'query') {
+  if (type === 'query') pagination.value.current = 1
   loading.value = true
   defHttp.post({
     url: api.list,
-    data: { tblName: formData.value.tblName || '', colName: formData.value.colName || '' },
+    data: { tblName: formData.tblName || '' },
     params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }
-  }, { withToken: true }).then((res) => {
-    if (res.success) {
-      const { records, total } = res.result
-      datalist.value = records
-      pagination.value.total = total
-    }
-
-    loading.value = false
-  }).catch(err => {
-    console.info(err)
-    loading.value = false
-  })
+  }, { withToken: true })
+      .then((res: any) => {
+        if (res.success) {
+          tableList.value = res.result?.records || []
+          pagination.value.total = res.result?.total || 0
+        } else message.error(res.message || '查询失败')
+      })
+      .catch(() => {
+        message.error('查询失败')
+      })
+      .finally(() => {
+        loading.value = false
+      })
 }
 
-/**
- * 重置
- */
-function refreshData() {
-  formData.value = {}
+function resetSearch() {
+  formData.tblName = ''
+  loadData('query')
+}
+
+function onPageChange(page: any) {
+  pagination.value.current = page.current
+  pagination.value.pageSize = page.pageSize
   loadData()
 }
 
 /**
- * 分页
- * @param pag
- * @param callback 回调函数
+ * 新增
  */
-function onChange(pag: any, callback: any) {
-  pagination.value = pag
-  callback()
+function addTable() {
+  tableModalTitle.value = '新增元数据表'
+  currentTable.value = { status: 1, orderNum: 0 }
+  tableModalOpen.value = true
 }
 
 /**
- * 添加表单
+ * 编辑
  */
-function addData() {
-  title.value = "新增"
-  data.value = {}
-  open.value = true
+function editTable(record: any) {
+  tableModalTitle.value = '编辑元数据表'
+  currentTable.value = { ...record }
+  tableModalOpen.value = true
 }
 
 /**
- * 编辑表单
+ * 字段管理
  */
-function editData(record: any) {
-  title.value = '编辑'
-  data.value = record
-  open.value = true
+function manageColumns(record: any) {
+  currentTable.value = { ...record }
+  columnDrawerOpen.value = true
 }
 
 /**
- * 删除表单
+ * 删除
  */
-function deleteData(record) {
-  if (!record.id) return
-  defHttp.post({ url: api.del, params: { id: record.id } }, { withToken: true }).then((res) => {
-    if (!res.message) {
-      message.success('删除成功')
-      loadData()
-    } else {
-      message.error('删除失败' + res.message)
-    }
-  }).catch(err => {
-    message.error('删除失败')
-  })
+function deleteTable(record: any) {
+  defHttp.post({ url: api.del, data: record }, { withToken: true })
+      .then((res: any) => {
+        if (res.success) {
+          message.success('删除成功')
+          if (tableList.value.length === 1 && pagination.value.current > 1) pagination.value.current -= 1
+          loadData()
+        } else message.error(res.message || '删除失败')
+      })
+      .catch(() => {
+        message.error('删除失败')
+      })
 }
 
-/**
- * 表单创建后回调
- * @param val { refresh: boolean}
- */
-function handOver(val: any) {
-  if (val.refresh) {
-    loadData()
-  }
-  open.value = false
+function closeTableModal() {
+  tableModalOpen.value = false
+}
+
+function handleTableSaved() {
+  tableModalOpen.value = false
+  loadData()
 }
 </script>
 <style lang="less" scoped>
-// table通用样式，保持项目内样式一致
 @import url('/@/assets/less/table.less');
+
+.danger-link {
+  color: #ff4d4f;
+}
 </style>
