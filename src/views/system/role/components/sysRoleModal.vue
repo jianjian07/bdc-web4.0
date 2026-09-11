@@ -12,6 +12,7 @@
             <a-select-option value="zuhuadmin">租户管理员</a-select-option>
             <a-select-option value="manager">部门管理员</a-select-option>
             <a-select-option value="common">普通用户</a-select-option>
+            <a-select-option value="developer">开发用户</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="说明">

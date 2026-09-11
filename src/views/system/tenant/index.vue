@@ -27,21 +27,22 @@
         <div class="tenantTabContent" style="height: 100%">
             <a-tabs v-model:activeKey="activeKey" style="padding: 5px; height: 100%;">
                 <a-tab-pane key="1" tab="基本信息">
-                    <BaseInfo v-if='selectInfo.id || isAddMode' :selectInfo="selectInfo" :isAddMode="isAddMode" @refreshList="onRefreshList" @cancelAdd="onCancelAdd" />
+                    <BaseInfo v-if='selectInfo.id || isAddMode' :selectInfo="selectInfo" :isAddMode="isAddMode"
+                        @refreshList="onRefreshList" @cancelAdd="onCancelAdd" />
                     <a-empty v-else>
                         <template #description>
                             请先选择一个租户，或点击"添加租户"按钮创建新租户
                         </template>
                     </a-empty>
                 </a-tab-pane>
-                <a-tab-pane key="2" tab="租户套餐" force-render>
+                <!-- <a-tab-pane key="2" tab="租户套餐" force-render>
                     <a-empty v-if='!selectInfo.id'>
                         <template #description>
                             请先选择一个租户
                         </template>
                     </a-empty>
                     <tenant-pack-manager v-else :tenant-id="selectInfo.id" tenant-scoped />
-                </a-tab-pane>
+                </a-tab-pane> -->
                 <a-tab-pane key="3" tab="流程关联" force-render>
                     <a-empty v-if='!selectInfo.id'>
                         <template #description>
@@ -58,16 +59,16 @@
                     </a-empty>
                     <role-list v-else :selectInfo="selectInfo"></role-list>
                 </a-tab-pane>
-<!--                <a-tab-pane key="5" tab="跨租户共享" force-render>-->
-<!--                    <a-empty v-if='!selectInfo.id'>-->
-<!--                        <template #description>-->
-<!--                            请先选择一个租户-->
-<!--                        </template>-->
-<!--                    </a-empty>-->
-<!--                    <div v-else style="padding: 20px; text-align: center; color: #999;">-->
-<!--                        跨租户共享功能开发中...-->
-<!--                    </div>-->
-<!--                </a-tab-pane>-->
+                <!--                <a-tab-pane key="5" tab="跨租户共享" force-render>-->
+                <!--                    <a-empty v-if='!selectInfo.id'>-->
+                <!--                        <template #description>-->
+                <!--                            请先选择一个租户-->
+                <!--                        </template>-->
+                <!--                    </a-empty>-->
+                <!--                    <div v-else style="padding: 20px; text-align: center; color: #999;">-->
+                <!--                        跨租户共享功能开发中...-->
+                <!--                    </div>-->
+                <!--                </a-tab-pane>-->
             </a-tabs>
         </div>
 
