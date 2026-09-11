@@ -3,7 +3,7 @@
     <a-input-search v-model:value="searchDept" placeholder="请输入部门名称" style="margin-bottom: 10px" allow-clear />
     <a-spin :spinning="loading">
       <a-tree v-if="showTree" :defaultExpandAll="false" :fieldNames="deptFieldNames" :load-data="onLoadData"
-        :tree-data="treeData" @select="onDeptSelect" v-model:expandedKeys="expandedKeys"
+        :tree-data="treeData" :selectedKeys="selectedDeptKeys" @select="onDeptSelect" v-model:expandedKeys="expandedKeys"
         :auto-expand-parent="autoExpandParent" blockNode>
         <template #switcherIcon="{ switcherCls, data, expanded }">
           <template v-if="data.children && data.children.length">
@@ -48,6 +48,8 @@ let dataList = ref<any>([])
 let autoExpandParent = ref<boolean>(false)
 // 展开
 let expandedKeys = ref<any>([])
+// 当前选中的部门
+let selectedDeptKeys = ref<any>([])
 
 const deptFieldNames = { title: 'name', key: 'id' }
 
@@ -103,8 +105,28 @@ async function onLoadData() {
   loading.value = false
   showTree.value = true
   if (userInfo.tenantId != null) {
-    emit("deptInfo", treeData.value[0] || null)
+    const tenantDept = findDeptById(treeData.value, userInfo.tenantId) || treeData.value[0]
+    if (tenantDept) {
+      selectedDeptKeys.value = [tenantDept.id]
+      emit("deptInfo", tenantDept)
+    }
   }
+}
+
+/**
+ * 在部门树中查找指定部门。
+ */
+function findDeptById(nodes: any[], deptId: string | number): any {
+  for (const node of nodes) {
+    if (String(node.id) === String(deptId)) {
+      return node
+    }
+    const target = findDeptById(node.children || [], deptId)
+    if (target) {
+      return target
+    }
+  }
+  return null
 }
 /**
  * 搜索部门
@@ -123,9 +145,14 @@ function onSearchDept() {
 }
 
 function onDeptSelect(selectedKeys: any, info: any) {
-  if (selectedKeys.length == 0) {
+  if (selectedKeys.length === 0) {
+    if (userInfo.tenantId != null) {
+      return
+    }
+    selectedDeptKeys.value = []
     emit("deptInfo", null)
   } else {
+    selectedDeptKeys.value = selectedKeys
     emit("deptInfo", info.node.dataRef || null)
   }
 }
