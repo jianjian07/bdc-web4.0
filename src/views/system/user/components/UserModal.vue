@@ -44,7 +44,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="所属部门" name="deptList">
-                <a-tree-select showCheckedStrategy="TreeSelect.SHOW_ALL" v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
+                <a-tree-select showCheckedStrategy="TreeSelect.SHOW_ALL" v-model:value="dataInfo.deptList" :disabled="!canSelectDept" :tree-data="deptListOption" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
             </a-form-item>
             <a-form-item label="所属租户" name="deptList">
                  <a-select v-model:value="dataInfo.tenantIdList" :disabled="!isSuperAdmin" allowClear mode="multiple"
@@ -80,6 +80,10 @@ const props = defineProps({
         type: Object,
         default: {}
     },
+    deptInfo: {
+        type: Object,
+        default: () => ({})
+    },
     roleListOption: {
         type: Array,
         default: []
@@ -104,12 +108,12 @@ const hasCurrentTenant = computed(() => {
   const tenantId = userStore.getTenant
   return tenantId != null && tenantId !== ''
 })
+const canSelectDept = computed(() => isSuperAdmin.value || hasCurrentTenant.value)
 
 enum api {
     add = '/api/zrzy-system/sys/v1/user/add',
     update = '/api/zrzy-system/sys/v1/user/update',
-    deptUserSelect = '/api/zrzy-system/sys/dept/treeLazyForUserSelect', // 新增时左侧未选择部门
-    currentBranchTree = '/api/zrzy-system/sys/dept/deptCurrentBranchTrees', //1、新增时左侧选择了部门 2、编辑时
+    deptTree = '/api/zrzy-system/sys/dept/deptTree',
     tenantList = '/api/zrzy-system/sys/tenant/list'
 }
 
@@ -165,81 +169,58 @@ function onClose() {
 /**
  * 统一入口，根据状态选择初始化树
  */
-function initTree() {
-  // 1、新增时左侧选择了部门 2、编辑时
+async function initTree() {
   props.dataInfo.deptList = props.dataInfo.deptList || []
-  if (props.dataInfo.deptList && props.dataInfo.deptList.length > 0) {
-    loadCurrentBranchTrees()
-  } else { // 新增时左侧未选择部门
-    loadLazyTree({ dataRef: { id: 0 }})
+  await loadDeptTree()
+}
+
+/**
+ * 接口已返回当前登录用户的租户范围部门树
+ */
+function loadDeptTree() {
+  return new Promise(resolve => {
+    defHttp.get({ url: api.deptTree }, { withToken: true }).then((res: any) => {
+      if (res?.success) {
+        deptListOption.value = filterDeptTree(res.result || [])
+        resolve(res.result)
+      } else {
+        deptListOption.value = []
+        message.error(res?.message || '加载部门树失败')
+        resolve([])
+      }
+    }).catch(() => {
+      deptListOption.value = []
+      message.error('加载部门树失败')
+      resolve([])
+    })
+  })
+}
+
+/**
+ * 在已按租户过滤的树中
+ * 进一步限制为左侧所选部门及其子树
+ */
+function filterDeptTree(deptTree: any[]) {
+  const selectedDeptId = (props.deptInfo as any)?.id
+  if (selectedDeptId == null || selectedDeptId === '') {
+    return deptTree
   }
+
+  const selectedDept = findDeptNode(deptTree, selectedDeptId)
+  return selectedDept ? [selectedDept] : []
 }
 
-/**
- * 初始化树
- * 1、新增时左侧选择了部门 2、编辑时
- */
-function loadCurrentBranchTrees() {
-  return new Promise(resolve => {
-    defHttp.post({
-      url: api.currentBranchTree,
-      data: props.dataInfo.deptList
-    }, {
-      withToken: true
-    }).then((res: any) => {
-      if (res?.success) {
-        deptListOption.value = res.result.map((item: any) => {
-          return {
-            ...item,
-            isLeaf: !item.hasChildren
-          }
-        })
-        resolve(res.result)
-      } else {
-        message.error(res?.message)
-      }
-    })
-  })
-}
-
-/**
- * 懒加载
- * 初始化树
- * 新增时左侧未选择部门
- */
-function loadLazyTree(treeNode: any) {
-  return new Promise(resolve => {
-    const { id } = treeNode.dataRef;
-    defHttp.get({
-      url: api.deptUserSelect,
-      params: {
-        deptPid: id,
-      }
-    },{
-      withToken: true
-    }).then((res: any) => {
-      if (res?.success) {
-        if(id == 0) {
-          deptListOption.value = res.result.map((item: any) => {
-            return {
-              ...item,
-              isLeaf: !item.hasChildren
-            }
-          })
-        } else if(treeNode.dataRef.children.length == 0) {
-          treeNode.dataRef.children = res.result.map((item: any) => {
-            return {
-              ...item,
-              isLeaf: !item.hasChildren
-            }
-          })
-        }
-        resolve(res.result)
-      } else {
-        message.error(res?.message)
-      }
-    })
-  })
+function findDeptNode(nodes: any[], deptId: string | number) {
+  for (const node of nodes) {
+    if (String(node.id) === String(deptId)) {
+      return node
+    }
+    const target = findDeptNode(node.children || [], deptId)
+    if (target) {
+      return target
+    }
+  }
+  return null
 }
 
 function initTenantList() {

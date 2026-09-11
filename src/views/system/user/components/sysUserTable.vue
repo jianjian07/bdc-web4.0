@@ -56,7 +56,7 @@
         </template>
       </a-table>
     </div>
-    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :roleListOption="roleList"
+    <user-modal v-if="drawerOpen" :open="drawerOpen" :title="title" :dataInfo="dataInfo" :dept-info="deptInfo" :roleListOption="roleList"
       @ok="ok"></user-modal>
     <change-password v-if="passwordOpen" :open="passwordOpen" :title="passwordTitle" :dataInfo="dataInfo"
       @ok="ok"></change-password>
