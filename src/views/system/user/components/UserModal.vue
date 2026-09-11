@@ -47,7 +47,7 @@
                 <a-tree-select showCheckedStrategy="TreeSelect.SHOW_ALL" v-model:value="dataInfo.deptList" :tree-data="deptListOption" :load-data="loadLazyTree" :fieldNames="{ label: 'name', value: 'id'}" treeDefaultExpandAll multiple style="width: 100%" allow-clear placeholder="请选择部门"/>
             </a-form-item>
             <a-form-item label="所属租户" name="deptList">
-                 <a-select v-model:value="dataInfo.tenantIdList" allowClear mode="multiple"
+                 <a-select v-model:value="dataInfo.tenantIdList" :disabled="!isSuperAdmin" allowClear mode="multiple"
                     :options="tenantListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
                 </a-select>
             </a-form-item>
@@ -64,8 +64,9 @@
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils";
+import { useUserStore } from '/@/store/modules/user';
 const props = defineProps({
     open: {
         type: Boolean,
@@ -94,6 +95,11 @@ const emit = defineEmits(["ok"])
 let deptListOption = ref<any>([])
 let tenantListOption = ref<any>([])
 const formRef = ref()
+const userStore = useUserStore()
+const isSuperAdmin = computed(() => {
+  const permissions = (userStore.getUserInfo as any).permissions
+  return Array.isArray(permissions) && permissions.includes('admin')
+})
 
 enum api {
     add = '/api/zrzy-system/sys/v1/user/add',
@@ -104,9 +110,20 @@ enum api {
 }
 
 onMounted(() => {
+  initTenantSelection()
   initTree()
   initTenantList()
 })
+
+/**
+ * 非超级管理员只能使用当前租户，未关联租户时保持为空
+ */
+function initTenantSelection() {
+  if (!isSuperAdmin.value) {
+    const tenantId = userStore.getTenant
+    props.dataInfo.tenantIdList = tenantId != null && tenantId !== '' ? [tenantId] : []
+  }
+}
 /**
  * 保存
  */
