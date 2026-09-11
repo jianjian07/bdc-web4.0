@@ -39,7 +39,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="所属角色" name="roleList">
-                <a-select v-model:value="dataInfo.roleList" allowClear mode="multiple"
+                <a-select v-model:value="dataInfo.roleList" :disabled="!isSuperAdmin && !hasCurrentTenant" allowClear mode="multiple"
                     :options="roleListOption" :fieldNames="{ label: 'name', value: 'id'} " style="width: 100%;">
                 </a-select>
             </a-form-item>
@@ -99,6 +99,10 @@ const userStore = useUserStore()
 const isSuperAdmin = computed(() => {
   const permissions = (userStore.getUserInfo as any).permissions
   return Array.isArray(permissions) && permissions.includes('admin')
+})
+const hasCurrentTenant = computed(() => {
+  const tenantId = userStore.getTenant
+  return tenantId != null && tenantId !== ''
 })
 
 enum api {

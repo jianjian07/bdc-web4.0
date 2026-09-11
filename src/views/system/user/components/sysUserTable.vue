@@ -173,7 +173,8 @@ enum api {
   list = '/api/zrzy-system/sys/v1/user/page',
   del = '/api/zrzy-system/sys/v1/user/delete',
   unLock = '/api/zrzy-system/sys/v1/user/unLock',
-  roleList = '/api/zrzy-system/role/list'
+  roleList = '/api/zrzy-system/role/list',
+  tenantRoleList = '/api/zrzy-system/sys/tenantRole/getTenantRoleList'
 }
 
 onMounted(() => {
@@ -222,6 +223,38 @@ function searchData() {
  * 加载角色列表
  */
 function initRoleList() {
+  const permissions = (userStore.getUserInfo as any).permissions
+  const isSuperAdmin = Array.isArray(permissions) && permissions.includes('admin')
+  const tenantId = userStore.getTenant
+
+  if (!isSuperAdmin) {
+    if (tenantId == null || tenantId === '') {
+      // 无租户用户仅只读展示
+      loadAllRoleList()
+      return
+    }
+
+    defHttp.get({ url: api.tenantRoleList, params: { tenantId } }, { withToken: true }).then((res) => {
+      if (res?.success) {
+        roleList.value = Array.isArray(res.result?.allRoles) ? res.result.allRoles : []
+      } else {
+        roleList.value = []
+        message.warning(res?.message || '加载租户角色出错')
+      }
+    }).catch(() => {
+      roleList.value = []
+      message.warning('加载租户角色出错')
+    })
+    return
+  }
+
+  loadAllRoleList()
+}
+
+/**
+ * 加载角色列表
+ */
+function loadAllRoleList() {
   defHttp.get({ url: api.roleList, params: { pageNo: 1, pageSize: -1 } }, { withToken: true }).then((res) => {
     if (res.code == 200) {
       roleList.value = res.result.records
