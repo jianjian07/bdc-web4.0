@@ -34,7 +34,7 @@
         :data-source="columnList"
         :pagination="false"
         :row-selection="rowSelection"
-        :scroll="{ x: 1450 }"
+        :scroll="{ x: 1600 }"
         :loading="loading"
     >
       <template #bodyCell="{ column, record }">
@@ -53,7 +53,12 @@
         </template>
         <template v-else-if="column.dataIndex === 'widgetType'">
           <a-select v-model:value="record.widgetType" :options="getDictItemsByCode('kjlx')" allow-clear show-search
-                    option-filter-prop="label" placeholder="控件类型" style="width: 100%"/>
+                    option-filter-prop="label" placeholder="控件类型" style="width: 100%" @change="handleWidgetTypeChange(record)"/>
+        </template>
+        <template v-else-if="column.dataIndex === 'dictCode'">
+          <a-select v-model:value="record.dictCode" :options="getDictCodeOptions(record.widgetType)"
+                    :disabled="!getDictCodeOptions(record.widgetType).length" allow-clear show-search
+                    option-filter-prop="label" placeholder="字典编码" style="width: 100%"/>
         </template>
         <template v-else-if="column.dataIndex === 'isEncode'">
           <a-select v-model:value="record.isEncode" :options="booleanOptions" style="width: 100%"/>
@@ -87,12 +92,14 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { defHttp } from '/@/utils/http/axios'
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils'
+import { useUserStore } from '/@/store/modules/user'
 
 const props = defineProps({
   open: { type: Boolean, default: false },
   table: { type: Object, required: true },
 })
 const emit = defineEmits(['close'])
+const userStore = useUserStore()
 const api = {
   list: '/api/zrzy-form/metadata/col/list',
   saveOrUpdate: '/api/zrzy-form/metadata/col/saveOrUpdate',
@@ -104,6 +111,7 @@ const columns = [
   { title: '字段类型', dataIndex: 'colType', width: 155 },
   { title: '字段长度', dataIndex: 'colLength', width: 115 },
   { title: '控件类型', dataIndex: 'widgetType', width: 155 },
+  { title: '字典编码', dataIndex: 'dictCode', width: 175 },
   { title: '是否加密', dataIndex: 'isEncode', width: 105 },
   { title: '状态', dataIndex: 'status', width: 100 },
   { title: '排序', dataIndex: 'orderNum', width: 100 },
@@ -189,6 +197,20 @@ function normaliseColumn(item: any) {
 
 function createRowKey() {
   return `new-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+/**
+ * 根据控件类型返回字典
+ */
+function getDictCodeOptions(widgetType: string) {
+  const type = String(widgetType || '').toLowerCase()
+  if (['treeselect', 'cascader'].includes(type)) return userStore.getAllCategory as any[]
+  if (['select', 'checkbox', 'radio', 'switch'].includes(type)) return userStore.getAllDicts as any[]
+  return []
+}
+
+function handleWidgetTypeChange(record: any) {
+  record.dictCode = ''
 }
 
 /**
