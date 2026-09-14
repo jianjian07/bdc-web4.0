@@ -48,6 +48,14 @@ import { computed, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
 import { cModal } from "/@/components/cModal/index.ts"
 import { message } from "ant-design-vue"
+import { getDeptOptions } from "/@/views/bdc/public/bdc"
+import { useUserStore } from "/@/store/modules/user"
+
+const userStore = useUserStore()
+const isSuperAdmin = computed(() => {
+  const permissions = (userStore.getUserInfo as any).permissions
+  return Array.isArray(permissions) && permissions.includes('admin')
+})
 
 const columns = [
   {
@@ -89,6 +97,9 @@ let searchForm = ref<any>({
 let currentRoleId = ref<string>('')
 // 当前角色用户列表
 let userList = ref<any>([])
+// 当前角色完整授权集合，保存时必须保留其中的跨租户用户。
+let allRoleUsers = ref<any>([])
+let currentTenantDeptIds = ref<Set<string>>(new Set())
 let loading = ref(false)
 
 let page = ref<any>({
@@ -111,10 +122,14 @@ enum api {
   updateRole = '/api/zrzy-system/sys/v1/user/updateRoleByUserId'
 }
 
-function edit(record) {
+async function edit(record) {
   currentRoleId.value = record.id
   open.value = true
-  initData()
+  page.value.current = 1
+  loading.value = true
+  await loadCurrentTenantDeptIds()
+  await loadAllRoleUsers()
+  loading.value = false
 }
 
 function searchData() {
@@ -132,38 +147,17 @@ function reset() {
 }
 
 function initData() {
-  loading.value = true
-  let params = {
-    userName: searchForm.value.name,
-    enabled: searchForm.value.state,
-    roleId: currentRoleId.value,
-    pageNo: page.value.current,
-    pageSize: pagination.value.pageSize
-  }
-  defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
-    if (res.code == 200) {
-      userList.value = res.result.records.map((record) => {
-        record.roleList = record.roleList || []
-        return record
-      })
-      page.value.current = res.result.current
-      page.value.total = res.result.total
-    } else {
-      userList.value = []
-    }
-    loading.value = false
-  }).catch(err => {
-    userList.value = []
-    loading.value = false
-  })
+  page.value.current = 1
+  refreshUserList()
 }
 
 function onTableChange(pagination) {
   page.value.current = pagination.current
-  initData()
+  refreshUserList()
 }
 
-function handleUserPermission() {
+async function handleUserPermission() {
+  await loadAllRoleUsers()
   let modal = cModal({
     title: '选择用户',
     width: 1000,
@@ -171,7 +165,8 @@ function handleUserPermission() {
     formData: {
       modeType: 'checkbox',
       filterKeyName: 'id',
-      currentKeys: userList.value && userList.value.length ? userList.value.map(m => m.id) : [],
+      showTenantSelectionSummary: true,
+      currentKeys: allRoleUsers.value.map(m => m.id),
     },
     footerStyle: { 'text-align': 'center' },
     onOk: async (res: any) => {
@@ -179,7 +174,7 @@ function handleUserPermission() {
         let userList = res.selectedRow.map(m => m.id)
         let isSuccess = await updateRoleByUserId(userList)
         if (isSuccess) {
-          initData()
+          await loadAllRoleUsers()
           modal.destroy()
         }
       } else {
@@ -190,6 +185,68 @@ function handleUserPermission() {
       modal.destroy()
     }
   })
+}
+
+/**
+ *  按 roleId 获取完整授权用户；
+ *  目前接口不支持 不能使用当前分页数据作为保存依据
+ */
+function loadAllRoleUsers() {
+  return new Promise<void>((resolve) => {
+    defHttp.get({
+      url: api.list,
+      params: { roleId: currentRoleId.value, pageNo: 1, pageSize: -1 }
+    }, { withToken: true }).then((res: any) => {
+      allRoleUsers.value = res?.code === 200 ? (res.result?.records || []) : []
+      refreshUserList()
+      resolve()
+    }).catch(() => {
+      allRoleUsers.value = []
+      refreshUserList()
+      resolve()
+    })
+  })
+}
+
+/**
+ * 获取后端已按当前登录租户过滤的部门树
+ * 构造当前租户部门范围
+ */
+async function loadCurrentTenantDeptIds() {
+  const deptTree: any = await getDeptOptions()
+  currentTenantDeptIds.value = collectDeptIds(deptTree)
+}
+
+function collectDeptIds(nodes: any[], ids = new Set<string>()) {
+  nodes.forEach((node) => {
+    ids.add(String(node.id))
+    collectDeptIds(node.children || [], ids)
+  })
+  return ids
+}
+
+/**
+ * 从完整授权集合中仅展示当前租户范围的用户
+ * 再进行前端搜索和分页
+ */
+function refreshUserList() {
+  let records = allRoleUsers.value.filter((record: any) => {
+    if (isSuperAdmin.value) return true
+    return (record.deptInfoList || []).some((dept: any) => currentTenantDeptIds.value.has(String(dept.id)))
+  })
+
+  records = records.filter((record: any) => {
+    const matchesName = !searchForm.value.name || record.username?.includes(searchForm.value.name)
+    const enabled = record.enabled === true || record.enabled === 1 || record.enabled === '1'
+    const matchesState = !searchForm.value.state || (searchForm.value.state === '1' ? enabled : !enabled)
+    return matchesName && matchesState
+  })
+
+  page.value.total = records.length
+  const maxPage = Math.max(1, Math.ceil(records.length / pagination.value.pageSize))
+  if (page.value.current > maxPage) page.value.current = maxPage
+  const start = (page.value.current - 1) * pagination.value.pageSize
+  userList.value = records.slice(start, start + pagination.value.pageSize)
 }
 
 /**

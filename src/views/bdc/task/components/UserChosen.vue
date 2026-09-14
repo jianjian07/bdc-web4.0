@@ -8,9 +8,9 @@
           style="margin-bottom: 10px"
       />
       <a-spin :spinning="deptLoading">
-        <a-tree v-if="showTree" v-model:expandedKeys="expandedKeys" :auto-expand-parent="autoExpandParent" :defaultExpandAll="false"
+        <a-tree v-if="showTree" v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedDeptKeys" :auto-expand-parent="autoExpandParent" :defaultExpandAll="false"
                 :fieldNames="deptFieldNames"
-                :load-data="onLoadData" :tree-data="treeData" blockNode
+                :tree-data="treeData" blockNode
                 showLine @select="onDeptSelect">
           <template #switcherIcon="{ switcherCls, data, expanded }">
             <template v-if="data.children && data.children.length">
@@ -45,7 +45,17 @@
        <div style="margin-bottom: 10px">
           <a-alert show-icon type="info">
             <template #message>
-              已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}&nbsp;</a>项
+              <template v-if="showTenantSelectionSummary && !isSuperAdmin">
+                已授权共 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a> 项（当前租户范围内
+                <a style="font-weight: 600">{{ currentTenantSelectedCount }}</a> 项，其他租户保留
+                <a style="font-weight: 600">{{ otherTenantSelectedCount }}</a> 项）
+              </template>
+              <template v-else-if="showTenantSelectionSummary">
+                已授权共 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a> 项
+              </template>
+              <template v-else>
+                已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}&nbsp;</a>项
+              </template>
             </template>
           </a-alert>
        </div>
@@ -72,6 +82,14 @@ import { defHttp } from "/@/utils/http/axios"
 import { PlusSquareOutlined, MinusSquareOutlined, FileOutlined } from '@ant-design/icons-vue'
 import { getDeptOptions } from "/@/views/bdc/public/bdc"
 import { getParentId } from "/@/utils"
+import { useUserStore } from "/@/store/modules/user"
+
+const userStore = useUserStore()
+const isSuperAdmin = computed(() => {
+  const permissions = (userStore.getUserInfo as any).permissions
+  return Array.isArray(permissions) && permissions.includes('admin')
+})
+const tenantDeptId = computed(() => (userStore.getUserInfo as any).tenantDeptId)
 // 搜索部门
 let searchDept = ref<string>('')
 // 部门loading
@@ -91,6 +109,8 @@ let dataList = ref<any>([])
 let autoExpandParent = ref<boolean>(false)
 // 展开
 let expandedKeys = ref<any>([])
+// 左侧当前选中的部门
+let selectedDeptKeys = ref<any>([])
 
 const deptFieldNames = { title: 'name', key: 'id', children: 'children' }
 
@@ -141,12 +161,16 @@ const pagination = computed(() => ({
 }))
 // 用户列表
 let userList = ref<any>([])
+// 接口返回的完整用户集合；仅对该集合做前端部门范围过滤。
+let allUserList = ref<any>([])
 // 选中的部门数据
 let deptInfo = ref<any>()
 // 选中的用户key
 let selectedRowKeys = ref<any>([])
 // 选中的用户key
 let selectedRow = ref<any>([])
+// 初始选中项只恢复一次，后续切换部门时保留用户的选择。
+let initialSelectionRestored = false
 // 列表项是否可选择
 const rowSelection = computed(() => {
   return {
@@ -208,6 +232,18 @@ const props = defineProps({
     default: {}
   }
 })
+const showTenantSelectionSummary = computed(() => Boolean((props.formData as any).showTenantSelectionSummary))
+const currentTenantSelectedCount = computed(() => {
+  if (isSuperAdmin.value) {
+    return selectedRow.value.length
+  }
+
+  const tenantDeptIds = collectDeptIds(treeData.value)
+  return selectedRow.value.filter((user: any) => {
+    return (user.deptInfoList || []).some((dept: any) => tenantDeptIds.has(String(dept.id)))
+  }).length
+})
+const otherTenantSelectedCount = computed(() => selectedRow.value.length - currentTenantSelectedCount.value)
 
 enum api {
   list = '/api/zrzy-system/sys/v1/user/page'
@@ -235,20 +271,19 @@ defineExpose({
 
 watch(() => deptInfo.value, (newVal) => {
   if (newVal && newVal.id) {
-    // 根据id查询
     searchForm.value.deptId = newVal.id
-    initData()
   } else {
-    // 查询所有
     searchForm.value.deptId = ''
-    initData()
   }
+  page.value.current = 1
+  refreshUserList()
 })
 
-onMounted(() => {
+onMounted(async () => {
   deptLoading.value = true
-  onLoadData()
-  initData()
+  await onLoadData()
+  setDefaultDeptSelection()
+  loadAllUsers()
 })
 
 function selectRow(selected: any, record: any) {
@@ -289,6 +324,37 @@ function generateList(data: any) {
   }
 }
 
+/**
+ * 非超级管理员默认选中当前租户关联机构
+ */
+function setDefaultDeptSelection() {
+  if (isSuperAdmin.value || tenantDeptId.value == null || tenantDeptId.value === '') {
+    return false
+  }
+
+  const defaultDept = findDeptNode(treeData.value, tenantDeptId.value)
+  if (!defaultDept) {
+    return false
+  }
+
+  selectedDeptKeys.value = [defaultDept.id]
+  deptInfo.value = defaultDept
+  return true
+}
+
+function findDeptNode(nodes: any[], deptId: string | number) {
+  for (const node of nodes) {
+    if (String(node.id) === String(deptId)) {
+      return node
+    }
+    const target = findDeptNode(node.children || [], deptId)
+    if (target) {
+      return target
+    }
+  }
+  return null
+}
+
 
 /**
  * 选中部门
@@ -297,44 +363,100 @@ function generateList(data: any) {
  */
 function onDeptSelect(selectedKeys: any, info: any) {
   if (selectedKeys.length == 0) {
-    deptInfo.value = null
+    if (!setDefaultDeptSelection()) {
+      deptInfo.value = null
+    }
   } else {
     deptInfo.value = info.node.dataRef || null
   }
 }
 
 /**
- * 加载用户数据
+ * 获取完整用户集合部门范围及搜索条件均在前端处理
  */
-function initData() {
-  let params = {
-    userName: searchForm.value.name,
-    enabled: searchForm.value.state,
-    deptId: searchForm.value.deptId,
-    pageNo: page.value.current,
-    pageSize: pagination.value.pageSize
-  }
-  defHttp.get({ url: api.list, params: params }, { withToken: true }).then((res) => {
+function loadAllUsers() {
+  defHttp.get({
+    url: api.list,
+    params: { pageNo: 1, pageSize: -1 }
+  }, { withToken: true }).then((res) => {
     if (res.code == 200) {
-      userList.value = res.result.records.map((record) => {
+      allUserList.value = res.result.records.map((record) => {
         record.roleList = record.roleList || []
         return record
       })
-      page.value.current = res.result.current
-      page.value.total = res.result.total
-      if (props.formData.currentKeys && props.formData.currentKeys.length) {
+      if (!initialSelectionRestored && props.formData.currentKeys && props.formData.currentKeys.length) {
         selectedRow.value = props.formData.currentKeys.map((key) => {
           let filterKeyName = props.formData.filterKeyName ? props.formData.filterKeyName : 'username'
-          let find = userList.value.find(f => f[filterKeyName] == key)
+          let find = allUserList.value.find(f => f[filterKeyName] == key)
           return find ? find : { id: key }
         })
         selectedRowKeys.value = selectedRow.value.map(s => s?.id)
+        initialSelectionRestored = true
       }
+      refreshUserList()
     } else {
+      allUserList.value = []
       userList.value = []
     }
-  }).catch(err => {
+  }).catch(() => {
+    allUserList.value = []
     userList.value = []
+  })
+}
+
+/**
+ * 根据当前租户部门树、左侧部门和搜索条件筛选后进行前端分页
+ */
+function refreshUserList() {
+  let records = allUserList.value.filter((record: any) => {
+    return !searchForm.value.name || record.username?.includes(searchForm.value.name)
+  })
+
+  const allowedDeptIds = getAllowedDeptIds()
+  if (allowedDeptIds) {
+    records = records.filter((record: any) => {
+      return (record.deptInfoList || []).some((dept: any) => allowedDeptIds.has(String(dept.id)))
+    })
+  }
+
+  page.value.total = records.length
+  const maxPage = Math.max(1, Math.ceil(records.length / pagination.value.pageSize))
+  if (page.value.current > maxPage) {
+    page.value.current = maxPage
+  }
+  const start = (page.value.current - 1) * pagination.value.pageSize
+  userList.value = records.slice(start, start + pagination.value.pageSize)
+  updateSelectedRows(userList.value)
+}
+
+function getAllowedDeptIds(): Set<string> | null {
+  const selectedDeptId = deptInfo.value?.id
+  if (selectedDeptId) {
+    const selectedDept = findDeptNode(treeData.value, selectedDeptId)
+    return selectedDept ? collectDeptIds([selectedDept]) : new Set()
+  }
+  return isSuperAdmin.value ? null : collectDeptIds(treeData.value)
+}
+
+function collectDeptIds(nodes: any[], ids = new Set<string>()) {
+  nodes.forEach((node) => {
+    ids.add(String(node.id))
+    collectDeptIds(node.children || [], ids)
+  })
+  return ids
+}
+
+/**
+ * 当前页出现已选用户时
+ * 用完整用户信息替换原有缓存项
+ * 不清除其他部门已选用户
+ */
+function updateSelectedRows(records: any[]) {
+  records.forEach((record) => {
+    const selectedIndex = selectedRow.value.findIndex((item: any) => item.id === record.id)
+    if (selectedIndex >= 0) {
+      selectedRow.value.splice(selectedIndex, 1, record)
+    }
   })
 }
 
@@ -343,7 +465,7 @@ function initData() {
  */
 function searchData() {
   page.value.current = 1
-  initData()
+  refreshUserList()
 }
 
 
@@ -357,7 +479,7 @@ function searchData() {
 function onTableChange(pagination, filters, sorter, { currentDataSource }) {
   page.value.current = pagination.current
   page.value.total = pagination.total
-  initData()
+  refreshUserList()
 }
 
 /**
@@ -366,10 +488,11 @@ function onTableChange(pagination, filters, sorter, { currentDataSource }) {
 function reset() {
   searchForm.value = {
     name: '',
-    state: ''
+    state: '',
+    deptId: deptInfo.value?.id || ''
   }
   page.value.current = 1
-  initData()
+  refreshUserList()
 }
 
 
