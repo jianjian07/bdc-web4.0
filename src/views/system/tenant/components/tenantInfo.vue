@@ -50,7 +50,7 @@
                     <a-form-item label="关联区域" name="qxdm">
                         <a-tree-select v-model:value="formData.qxdm" tree-data-simple-mode treeDefaultExpandAll
                             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" :tree-data="gData" tree-checkable
-                            allow-clear :disabled="readonly" />
+                            allow-clear :disabled="readonly" treeCheckStrictly/>
                     </a-form-item>
                 </a-col>
             </a-row>
