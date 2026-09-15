@@ -7,9 +7,11 @@
         </a-form-item>
         <a-form-item label="权限标识" name="permission">
           <a-select v-model:value="formState.permission" placeholder="权限标识">
-            <a-select-option value="admin">超级管理员</a-select-option>
-            <a-select-option value="sysmanager">系统管理员</a-select-option>
-            <a-select-option value="zuhuadmin">租户管理员</a-select-option>
+            <template v-if="isSuperAdmin || formState.id">
+              <a-select-option value="admin">超级管理员</a-select-option>
+              <a-select-option value="sysmanager">系统管理员</a-select-option>
+              <a-select-option value="zuhuadmin">租户管理员</a-select-option>
+            </template>
             <a-select-option value="manager">部门管理员</a-select-option>
             <a-select-option value="common">普通用户</a-select-option>
             <a-select-option value="developer">开发用户</a-select-option>
@@ -28,9 +30,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { defHttp } from '/@/utils/http/axios';
 import { message } from "ant-design-vue";
+import { useUserStore } from '/@/store/modules/user';
 enum api {
   updateRoleApi = '/api/zrzy-system/role/update',//修改角色
   addRoleApi = '/api/zrzy-system/role/add',//新增角色
@@ -45,6 +48,12 @@ let confirmLoading = ref<boolean>(false)
 let formRef = ref()
 // 表单数据
 let formState = ref<any>({})
+
+const userStore = useUserStore()
+const isSuperAdmin = computed(() => {
+  const permissions = (userStore.getUserInfo as any).permissions
+  return Array.isArray(permissions) && permissions.includes('admin')
+})
 
 const rules = ref<any>({
   name: [{ required: true, message: '请输入菜单名称!' }],
@@ -122,5 +131,4 @@ function handleModalOk() {
     })
 }
 </script>
-
 <style lang="less" scoped></style>
