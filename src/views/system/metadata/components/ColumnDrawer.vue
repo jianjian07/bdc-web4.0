@@ -1,25 +1,19 @@
 <template>
-  <a-drawer
-      :title="`${table.tblText || table.tblName || ''} - 字段管理`"
-      :width="1500"
-      v-model:open="drawerOpen"
-      :body-style="{ paddingBottom: '80px' }"
-      @close="requestClose"
-      @after-open-change="afterOpenChange"
-  >
+  <a-drawer :title="`${table.tblText || table.tblName || ''} - 字段管理`" :width="1500" v-model:open="drawerOpen"
+    :body-style="{ paddingBottom: '80px' }" @close="requestClose" @after-open-change="afterOpenChange">
     <div class="drawer-toolbar">
       <a-space>
         <a-button type="primary" @click="addColumn">
           <template #icon>
-            <PlusOutlined/>
+            <PlusOutlined />
           </template>
           新增字段
         </a-button>
         <a-popconfirm v-if="selectedRowKeys.length" title="确定删除已选字段吗？" ok-text="确定" cancel-text="取消"
-                      @confirm="deleteSelected">
+          @confirm="deleteSelected">
           <a-button danger :disabled="!selectedRowKeys.length">
             <template #icon>
-              <DeleteOutlined/>
+              <DeleteOutlined />
             </template>
             批量删除
           </a-button>
@@ -27,47 +21,40 @@
       </a-space>
     </div>
 
-    <a-table
-        row-key="_rowKey"
-        size="small"
-        :columns="columns"
-        :data-source="columnList"
-        :pagination="false"
-        :row-selection="rowSelection"
-        :scroll="{ x: 1600 }"
-        :loading="loading"
-    >
+    <a-table row-key="_rowKey" size="small" :columns="columns" :data-source="columnList" :pagination="false"
+      :row-selection="rowSelection" :loading="loading">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'colName'">
-          <a-input v-model:value="record.colName" :maxlength="255" placeholder="字段名"/>
+          <a-input v-model:value="record.colName" :maxlength="255" placeholder="字段名" />
         </template>
         <template v-else-if="column.dataIndex === 'colComment'">
-          <a-input v-model:value="record.colComment" :maxlength="1000" placeholder="字段描述"/>
+          <a-input v-model:value="record.colComment" :maxlength="1000" placeholder="字段描述" />
         </template>
         <template v-else-if="column.dataIndex === 'colType'">
           <a-select v-model:value="record.colType" :options="fieldTypeOptions" allow-clear show-search
-                    option-filter-prop="label" placeholder="字段类型" style="width: 100%"/>
+            option-filter-prop="label" placeholder="字段类型" style="width: 100%" />
         </template>
         <template v-else-if="column.dataIndex === 'colLength'">
-          <a-input-number v-model:value="record.colLength" :min="0" :precision="0" style="width: 100%"/>
+          <a-input-number v-model:value="record.colLength" :min="0" :precision="0" style="width: 100%" />
         </template>
         <template v-else-if="column.dataIndex === 'widgetType'">
           <a-select v-model:value="record.widgetType" :options="getDictItemsByCode('kjlx')" allow-clear show-search
-                    option-filter-prop="label" placeholder="控件类型" style="width: 100%" @change="handleWidgetTypeChange(record)"/>
+            option-filter-prop="label" placeholder="控件类型" style="width: 100%"
+            @change="handleWidgetTypeChange(record)" />
         </template>
         <template v-else-if="column.dataIndex === 'dictCode'">
           <a-select v-model:value="record.dictCode" :options="getDictCodeOptions(record.widgetType)"
-                    :disabled="!getDictCodeOptions(record.widgetType).length" allow-clear show-search
-                    option-filter-prop="label" placeholder="字典编码" style="width: 100%"/>
+            :disabled="!getDictCodeOptions(record.widgetType).length" allow-clear show-search option-filter-prop="label"
+            placeholder="字典编码" style="width: 100%" />
         </template>
         <template v-else-if="column.dataIndex === 'isEncode'">
-          <a-select v-model:value="record.isEncode" :options="booleanOptions" style="width: 100%"/>
+          <a-select v-model:value="record.isEncode" :options="booleanOptions" style="width: 100%" />
         </template>
         <template v-else-if="column.dataIndex === 'status'">
-          <a-select v-model:value="record.status" :options="statusOptions" style="width: 100%"/>
+          <a-select v-model:value="record.status" :options="statusOptions" style="width: 100%" />
         </template>
         <template v-else-if="column.dataIndex === 'orderNum'">
-          <a-input-number v-model:value="record.orderNum" :min="0" :precision="0" style="width: 100%"/>
+          <a-input-number v-model:value="record.orderNum" :min="0" :precision="0" style="width: 100%" />
         </template>
         <template v-else-if="column.key === 'action'">
           <a-popconfirm title="确定删除该字段吗？" ok-text="确定" cancel-text="取消" @confirm="deleteRows([record])">
@@ -106,15 +93,15 @@ const api = {
   batchDelCol: '/api/zrzy-form/metadata/col/batchDelCol',
 }
 const columns = [
-  { title: '字段名', dataIndex: 'colName', width: 170 },
+  { title: '字段名', dataIndex: 'colName', width: 120 },
   { title: '字段描述', dataIndex: 'colComment', width: 200 },
-  { title: '字段类型', dataIndex: 'colType', width: 155 },
-  { title: '字段长度', dataIndex: 'colLength', width: 115 },
-  { title: '控件类型', dataIndex: 'widgetType', width: 155 },
-  { title: '字典编码', dataIndex: 'dictCode', width: 175 },
-  { title: '是否加密', dataIndex: 'isEncode', width: 105 },
-  { title: '状态', dataIndex: 'status', width: 100 },
-  { title: '排序', dataIndex: 'orderNum', width: 100 },
+  { title: '字段类型', dataIndex: 'colType', width: 100 },
+  { title: '字段长度', dataIndex: 'colLength', width: 80 },
+  { title: '控件类型', dataIndex: 'widgetType', width: 100 },
+  { title: '字典编码', dataIndex: 'dictCode', width: 100 },
+  { title: '是否加密', dataIndex: 'isEncode', width: 80 },
+  { title: '状态', dataIndex: 'status', width: 80 },
+  { title: '排序', dataIndex: 'orderNum', width: 80 },
   { title: '操作', key: 'action', fixed: 'right', width: 75 },
 ]
 const booleanOptions = [{ label: '是', value: 1 }, { label: '否', value: 0 }]
@@ -154,17 +141,17 @@ onMounted(() => {
 function loadColumns() {
   loading.value = true
   defHttp.post({
-      url: api.list,
-      data: { tblId: (props.table as any).id },
-      params: { pageNo: 1, pageSize: 1000 },
-    }, { withToken: true })
+    url: api.list,
+    data: { tblId: (props.table as any).id },
+    params: { pageNo: 1, pageSize: 1000 },
+  }, { withToken: true })
     .then((res: any) => {
-    if (res.success) {
-      columnList.value = (res.result?.records || []).map((item: any) => normaliseColumn(item))
-      selectedRowKeys.value = []
-    } else {
-      message.error(res.message || '获取字段列表失败')
-    }
+      if (res.success) {
+        columnList.value = (res.result?.records || []).map((item: any) => normaliseColumn(item))
+        selectedRowKeys.value = []
+      } else {
+        message.error(res.message || '获取字段列表失败')
+      }
     })
     .catch(() => {
       message.error('获取字段列表失败')
@@ -252,16 +239,16 @@ function saveAll() {
 
   saving.value = true
   defHttp.post({
-      url: api.saveOrUpdate,
-      data: columnList.value.map(toPayload),
-    }, { withToken: true })
+    url: api.saveOrUpdate,
+    data: columnList.value.map(toPayload),
+  }, { withToken: true })
     .then((res: any) => {
-    if (res.success) {
-      message.success('保存成功')
-      loadColumns()
-    } else {
-      message.error(res.message || '保存失败')
-    }
+      if (res.success) {
+        message.success('保存成功')
+        loadColumns()
+      } else {
+        message.error(res.message || '保存失败')
+      }
     })
     .catch(() => {
       message.error('保存失败')

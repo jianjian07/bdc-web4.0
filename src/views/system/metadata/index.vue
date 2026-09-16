@@ -4,7 +4,7 @@
       <a-row :gutter="[0, 8]">
         <a-col :span="8">
           <a-form-item label="表名">
-            <a-input v-model:value="formData.tblName" allow-clear @press-enter="loadData('query')"/>
+            <a-input v-model:value="formData.tblName" allow-clear @press-enter="loadData('query')" />
           </a-form-item>
         </a-col>
         <a-col :span="4">
@@ -12,15 +12,21 @@
             <a-space>
               <a-button type="primary" @click="loadData('query')">
                 <template #icon>
-                  <SearchOutlined/>
+                  <SearchOutlined />
                 </template>
                 查询
               </a-button>
               <a-button @click="resetSearch">
                 <template #icon>
-                  <RedoOutlined/>
+                  <RedoOutlined />
                 </template>
                 重置
+              </a-button>
+              <a-button type="primary" @click="initData()">
+                <template #icon>
+                  <SearchOutlined />
+                </template>
+                初始化
               </a-button>
             </a-space>
           </a-form-item>
@@ -32,13 +38,13 @@
     <div class="wonder-table-toolbar">
       <a-button type="primary" @click="addTable">
         <template #icon>
-          <PlusOutlined/>
+          <PlusOutlined />
         </template>
         新增表
       </a-button>
     </div>
     <a-table row-key="id" :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading"
-             @change="onPageChange">
+      @change="onPageChange">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'status'">
           <a-tag :color="record.status === 1 ? 'green' : 'red'">{{ record.status === 1 ? '启用' : '停用' }}</a-tag>
@@ -46,21 +52,21 @@
         <template v-else-if="column.key === 'action'">
           <a-space>
             <template #split>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
             </template>
             <a @click="editTable(record)">编辑</a>
             <a @click="manageColumns(record)">字段管理</a>
-            <a-popconfirm title="确定删除该元数据表吗？" ok-text="确定" cancel-text="取消"
-                          @confirm="deleteTable(record)"><a class="danger-link">删除</a></a-popconfirm>
+            <a-popconfirm title="确定删除该元数据表吗？" ok-text="确定" cancel-text="取消" @confirm="deleteTable(record)"><a
+                class="danger-link">删除</a></a-popconfirm>
           </a-space>
         </template>
       </template>
     </a-table>
   </div>
   <TableModal v-if="tableModalOpen" :open="tableModalOpen" :title="tableModalTitle" :data="currentTable"
-              @close="closeTableModal" @saved="handleTableSaved"/>
+    @close="closeTableModal" @saved="handleTableSaved" />
   <ColumnDrawer v-if="columnDrawerOpen" :open="columnDrawerOpen" :table="currentTable"
-                @close="columnDrawerOpen = false"/>
+    @close="columnDrawerOpen = false" />
 </template>
 
 <script lang="ts" setup>
@@ -88,9 +94,20 @@ const tableModalTitle = ref('')
 const currentTable = ref<any>({})
 
 onMounted(() =>
-    loadData()
+  loadData()
 )
-
+function initData() {
+  defHttp.post({ url: '/api/zrzy-form/metadata/syncByTableName', params: { tblName: formData.tblName || '' } }, { withToken: true })
+    .then((res: any) => {
+      if (res.success) {
+        message.success('初始化成功')
+        loadData()
+      } else message.error(res.message || '初始化失败')
+    })
+    .catch(() => {
+      message.error('初始化失败')
+    })
+}
 /**
  * 加载列表
  */
@@ -102,18 +119,18 @@ function loadData(type?: 'query') {
     data: { tblName: formData.tblName || '' },
     params: { pageNo: pagination.value.current, pageSize: pagination.value.pageSize }
   }, { withToken: true })
-      .then((res: any) => {
-        if (res.success) {
-          tableList.value = res.result?.records || []
-          pagination.value.total = res.result?.total || 0
-        } else message.error(res.message || '查询失败')
-      })
-      .catch(() => {
-        message.error('查询失败')
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .then((res: any) => {
+      if (res.success) {
+        tableList.value = res.result?.records || []
+        pagination.value.total = res.result?.total || 0
+      } else message.error(res.message || '查询失败')
+    })
+    .catch(() => {
+      message.error('查询失败')
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 function resetSearch() {
@@ -158,16 +175,16 @@ function manageColumns(record: any) {
  */
 function deleteTable(record: any) {
   defHttp.post({ url: api.del, data: record }, { withToken: true })
-      .then((res: any) => {
-        if (res.success) {
-          message.success('删除成功')
-          if (tableList.value.length === 1 && pagination.value.current > 1) pagination.value.current -= 1
-          loadData()
-        } else message.error(res.message || '删除失败')
-      })
-      .catch(() => {
-        message.error('删除失败')
-      })
+    .then((res: any) => {
+      if (res.success) {
+        message.success('删除成功')
+        if (tableList.value.length === 1 && pagination.value.current > 1) pagination.value.current -= 1
+        loadData()
+      } else message.error(res.message || '删除失败')
+    })
+    .catch(() => {
+      message.error('删除失败')
+    })
 }
 
 function closeTableModal() {
