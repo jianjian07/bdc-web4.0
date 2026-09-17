@@ -240,7 +240,7 @@ async function saveTenant() {
                 url: url,
                 data: {
                     ...formData,
-                    qxdm: formData.qxdm.join(','),
+                    qxdm: getQxdmValues(formData.qxdm).join(','),
                     sharedTenantId: Array.isArray(formData.sharedTenantId)
                         ? formData.sharedTenantId.join(',')
                         : formData.sharedTenantId || ''
@@ -312,7 +312,7 @@ function loadTenantDetail() {
             if (res && res.success) {
                 Object.assign(formData, {
                     ...res.result,
-                    qxdm: res.result.qxdm === "" ? [] : res.result.qxdm.split(','),
+                    qxdm: toLabeledQxdm(res.result.qxdm),
                     sharedTenantId: res.result.sharedTenantId
                         ? String(res.result.sharedTenantId).split(',').filter(Boolean)
                         : []
@@ -333,20 +333,55 @@ const showActionButtons = computed(() => {
 
 const gData = ref<any>();
 
-function loadRegionList() {
-    defHttp.get(
+function getQxdmValues(qxdm: any): string[] {
+    const selectedValues = Array.isArray(qxdm) ? qxdm : (qxdm ? [qxdm] : [])
+    return selectedValues
+        .flatMap((item: any) => {
+            const value = typeof item === 'object' && item !== null ? item.value : item
+            return typeof value === 'string' ? value.split(',') : [value]
+        })
+        .filter((value: any) => value !== undefined && value !== null && value !== '')
+        .map((value: any) => String(value))
+}
+
+function findRegionByCode(areaCode: string, regions: any[] = gData.value || []): any {
+    for (const region of regions) {
+        if (String(region.value) === areaCode) return region
+        const matchedRegion = findRegionByCode(areaCode, region.children || [])
+        if (matchedRegion) return matchedRegion
+    }
+}
+
+/**
+ * 回显
+ */
+function toLabeledQxdm(qxdm: any) {
+    return getQxdmValues(qxdm).map((value: string) => {
+        const region = findRegionByCode(value)
+        return {
+            label: region?.title ?? region?.areaName ?? value,
+            value,
+        }
+    })
+}
+
+async function loadRegionList() {
+    try {
+        const res: any = await defHttp.get(
         {
             url: '/api/zrzy-system/sys/areacode/queryAreaTreeAndZdgs',
             params: { bAllCheck: true }
         },
         { withToken: true }
-    ).then((res: any) => {
+        )
         if (res?.success) {
             gData.value = normalizeTreeData(res?.result || [])
         } else {
             message.warning(res?.message || '未查询到数据！')
         }
-    })
+    } catch (error) {
+        console.error('加载区域树失败:', error)
+    }
 }
 function normalizeTreeData(list: any[]) {
     return list.map(item => {
@@ -464,12 +499,13 @@ watch(() => [props.selectInfo, props.isAddMode], () => {
 
 watch(() => formData.tenantLevel, clearInvalidShareTenant)
 
-onMounted(() => {
+onMounted(async () => {
     loadParentTenantList()
     loadCurrentBranchTrees()
     loadUserList()
+    // 先加载区域树，确保详情回显时可一次性得到中文 label 避免编码闪烁
+    await loadRegionList()
     loadTenantDetail()
-    loadRegionList()
 })
 </script>
 
