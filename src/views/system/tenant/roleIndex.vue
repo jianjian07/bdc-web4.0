@@ -51,6 +51,13 @@
                 <template v-if="canManageRole(record)">
                   <a-divider type="vertical" />
                   <a @click.stop="handleProcessPermission(record)">流程权限</a>
+                  <a-divider type="vertical" />
+                  <a @click="handleEditRole(record)">编辑</a>
+                  <a-divider type="vertical" />
+                  <a-popconfirm cancel-text="否" ok-text="是" title="确定要删除该用户吗?"
+                    @confirm="handleDelRole(record.id, index)">
+                    <a>删除</a>
+                  </a-popconfirm>
                 </template>
               </template>
             </template>
@@ -97,7 +104,8 @@ enum api {
   tenantRoleList = '/api/zrzy-system/sys/tenantRole/getTenantRoleList',
   tenantAdminMenu = '/api/zrzy-system/menu/getTenantAdminMenu',
   getMenusByRoleId = '/api/zrzy-system/role/getMenusByRoleId',
-  saveRoleMenu = '/api/zrzy-system/role/saveRoleMenu'
+  saveRoleMenu = '/api/zrzy-system/role/saveRoleMenu',
+  deleteRoleApi = '/api/zrzy-system/role/removeById'
 }
 
 const userStore = useUserStore()
@@ -127,7 +135,7 @@ const columns = [
   { title: '角色权限', dataIndex: 'permission', key: 'permission' },
   { title: '说明', dataIndex: 'remark', key: 'remark' },
   { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
-  { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 180 }
+  { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 200 }
 ]
 
 const filteredRoleList = computed(() => {
@@ -246,6 +254,31 @@ function handleUser(record: any) {
 
 function handleProcessPermission(record: any) {
   roleProcessModal.value?.edit(record, '1', !canManageRole(record))
+}
+
+/**
+ * 编辑角色
+ * @param record
+ */
+function handleEditRole(record) {
+  roleModal.value.edit(record)
+}
+
+/**
+ * 删除角色
+ * @param record
+ */
+function handleDelRole(id: number, index: number) {
+  defHttp.post({ url: api.deleteRoleApi, params: { id: id } }, { withToken: true }).then((res) => {
+    if (res && res.success) {
+      roleList.value.splice(index, 1)
+      message.success('删除成功')
+    } else {
+      message.warning('删除失败')
+    }
+  }).catch(err => {
+    console.info(err)
+  })
 }
 
 function getRawCheckedKeys(keys: any) {
