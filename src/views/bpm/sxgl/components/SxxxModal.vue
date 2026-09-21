@@ -11,9 +11,6 @@
         <a-form-item label="是否流程">
             <a-switch v-model:checked="flowInfo.type" :checkedValue="1" :unCheckedValue="0" />
         </a-form-item>
-        <!-- <a-form-item label="事项类型" name="sxlx">
-            <a-input v-model:value="flowInfo.sxlx" placeholder="请输入事项类型" />
-        </a-form-item> -->
         <a-form-item label="排序号" name="orderNum">
             <a-input-number v-model:value="flowInfo.orderNum" :min="1" style="width:100px" />
         </a-form-item>
@@ -22,7 +19,6 @@
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 18 }">
             <a-button type="primary" @click="handleMlSave">保存</a-button>
-            <!-- <a-button style="margin-left: 10px" @click="handleMlAdd">新增</a-button> -->
             <a-button v-if="flowInfo.id" type="primary" ghost style="margin-left: 10px"
                 @click="emit('addMx')">新增事项</a-button>
             <a-popconfirm v-if="flowInfo.id" title="确定删除该目录？" ok-text="确定" cancel-text="取消" @confirm="handleMlDelete">
@@ -35,9 +31,9 @@
     <a-form v-if="data.ml === 0" ref="mxFormRef" :model="flowInfo" name="basic" :label-col="{ span: 6 }"
         :wrapper-col="{ span: 14 }" autocomplete="off">
 
-        <!-- <a-form-item label="事项编号">
+        <a-form-item label="事项编码" name="code" :rules="[{ required: true, message: '请输入事项编码' }]">
             <a-input v-model:value="flowInfo.code" />
-        </a-form-item> -->
+        </a-form-item>
         <a-form-item label="事项名称" name="name" :rules="[{ required: true, message: '请输入事项名称' }]">
             <a-input v-model:value="flowInfo.name" />
         </a-form-item>
@@ -52,6 +48,31 @@
         <a-form-item v-if="data.sxlx == 0" label="事项编号" name="lcid" :rules="[{ required: true, message: '请输入事项编号' }]">
             <a-input v-model:value="flowInfo.lcid" style="width: 40%;" />
         </a-form-item>
+
+        <a-form-item label="是否组合流程">
+            <a-switch v-model:checked="flowInfo.isZh" :checkedValue="1" :unCheckedValue="0" />
+        </a-form-item>
+        <template v-if="flowInfo.isZh === 1">
+            <a-form-item label="组合流程" required>
+                <a-select v-model:value="comb1" placeholder="请选择" style="width:30%" allowClear>
+                    <a-select-option v-for="opt in combOptions" :key="opt.value" :value="opt.value">
+                        {{ opt.label }}
+                    </a-select-option>
+                </a-select>
+                <a-select v-if="comb2Options.length" v-model:value="comb2" placeholder="请选择"
+                    style="width:30%;margin-left:8px" allowClear>
+                    <a-select-option v-for="opt in comb2Options" :key="opt.value" :value="opt.value">
+                        {{ opt.label }}
+                    </a-select-option>
+                </a-select>
+                <a-select v-if="comb3Options.length" v-model:value="comb3" placeholder="请选择"
+                    style="width:30%;margin-left:8px" allowClear>
+                    <a-select-option v-for="opt in comb3Options" :key="opt.value" :value="opt.value">
+                        {{ opt.label }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+        </template>
         <a-form-item label="登记大类">
             <a-input v-model:value="flowInfo.djdl" />
         </a-form-item>
@@ -60,13 +81,13 @@
             <div style="color: #5094f9;font-size: 10px;padding-top: 5px;">默认为空，特殊情况需填写，如区分经营权和承包经营权、强制转移等</div>
         </a-form-item>
         <a-form-item label="RegType" name="regType" :rules="[{ required: true, message: '请输入登记类型' }]">
-            <a-input v-model:value="flowInfo.regType" />
+            <a-input v-model:value="flowInfo.regType" :disabled="flowInfo.isZh === 1" />
         </a-form-item>
         <a-form-item label="显示类型">
-            <a-input v-model:value="flowInfo.xslx" />
+            <a-input v-model:value="flowInfo.xslx" :disabled="flowInfo.isZh === 1" />
         </a-form-item>
         <a-form-item label="国标登记类型">
-            <a-input v-model:value="flowInfo.gbdjlx" />
+            <a-input v-model:value="flowInfo.gbdjlx" :disabled="flowInfo.isZh === 1" />
         </a-form-item>
         <a-form-item label="事项前缀">
             <a-input v-model:value="flowInfo.prefix" />
@@ -102,7 +123,8 @@
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 14 }">
             <a-button type="primary" @click="handleMxSave">保存</a-button>
-            <!-- <a-button style="margin-left: 10px" @click="handleMxAdd">新增</a-button> -->
+            <a-button v-if="flowInfo.id" type="primary" ghost style="margin-left: 10px"
+                @click="handleMxCopy">复制</a-button>
             <a-popconfirm v-if="flowInfo.id" title="确定删除该明细？" ok-text="确定" cancel-text="取消" @confirm="handleMxDelete">
                 <a-button danger style="margin-left: 10px">删除</a-button>
             </a-popconfirm>
@@ -111,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { defHttp } from '/@/utils/http/axios'
 import { message } from 'ant-design-vue'
@@ -127,8 +149,6 @@ const emit = defineEmits(['setBaseInfo', 'refreshTree', 'openFlowDesign', 'addMx
 
 // ==================== 事项目录 ====================
 const mlFormRef = ref()
-// let mlInfo: any = ref({})
-// let mlOptions: any = ref([])
 let flowList: any = ref([])
 enum mlApi {
     queryByIdUrl = '/api/zrzy-bdc/flow/sxml/queryById',
@@ -159,6 +179,26 @@ function getInfo(nodeData: any) {
             flowInfo.value = res.result
             originalLcid.value = res.result.lcid || ''
             lcidExists.value = false
+            // 恢复组合流程：暂存 regType，等 combOptions 加载完后由 watch 还原
+            if (res.result.isZh === 1 && res.result.regType) {
+                if (combOptions.value.length) {
+                    // combOptions 已加载，直接还原
+                    pendingRegType = ''
+                    restoreComb(res.result.regType)
+                } else {
+                    pendingRegType = res.result.regType
+                }
+            } else {
+                pendingRegType = ''
+                // 非组合流程：清空残留的下拉框选中状态，避免切换事项时串值
+                isRestoringComb = true
+                comb1.value = ''
+                comb2.value = ''
+                comb3.value = ''
+                comb2Options.value = []
+                comb3Options.value = []
+                nextTick(() => { isRestoringComb = false })
+            }
             if (nodeData.ml === 0) {
                 initExtensions()
             }
@@ -184,17 +224,6 @@ function handleMlSave() {
             }
         })
     }).catch(() => { })
-}
-
-/** 新增目录 */
-function handleMlAdd() {
-    flowInfo.value = {
-        code: '',
-        name: '',
-        type: 0,
-        orderNum: 1,
-        bz: ''
-    }
 }
 
 /** 删除目录 */
@@ -227,26 +256,153 @@ const extensionKeys = ['ext1', 'ext2', 'ext3', 'ext4', 'ext5']
 const canAddExtension = computed(() => extensionItems.value.length < extensionKeys.length)
 let persistedExtensionKeys = new Set<string>()
 
+// ==================== 组合流程 ====================
+const combOptions = ref<any[]>([])
+loadCombOptions()
+function loadCombOptions() {
+    fetch('/json/zh.json')
+        .then(res => res.json())
+        .then(data => { combOptions.value = data })
+}
+
+const comb1 = ref<string>('')
+const comb2 = ref<string>('')
+const comb3 = ref<string>('')
+const comb2Options = ref<any[]>([])
+const comb3Options = ref<any[]>([])
+let isRestoringComb = false
+let pendingRegType = ''
+
+watch(combOptions, (opts) => {
+    if (!opts.length || !pendingRegType) return
+    const regType = pendingRegType
+    pendingRegType = ''
+    restoreComb(regType)
+})
+
+/**
+ * 根据 regType（如 "0214,0101,0201"）还原三级组合流程下拉框选中状态
+ * 注意：Vue 的 watch 默认异步触发，必须在 nextTick 之后再清除 isRestoringComb 标志位，
+ * 否则 comb1/comb2 的级联清空逻辑会把刚还原的值清掉，导致 regType 只剩第一段。
+ */
+async function restoreComb(regType: string) {
+    if (!regType || !combOptions.value.length) return
+    // 还原前先清空，避免切换不同事项时残留上一条记录的选中值
+    isRestoringComb = true
+    comb1.value = ''
+    comb2.value = ''
+    comb3.value = ''
+    comb2Options.value = []
+    comb3Options.value = []
+    const parts = regType.split(',')
+    let children: any[] = combOptions.value
+    for (const part of parts) {
+        const node = children.find((o: any) => o.value === part)
+        if (!node) break
+        if (!comb1.value) {
+            comb1.value = part
+            comb2Options.value = node.children || []
+        } else if (!comb2.value) {
+            comb2.value = part
+            comb3Options.value = node.children || []
+        } else {
+            comb3.value = part
+        }
+        children = node.children || []
+    }
+    // 等待 watcher 队列在标志位仍为 true 时执行完毕，避免级联重置
+    await nextTick()
+    isRestoringComb = false
+    syncCombToFlowInfo()
+}
+
+watch(comb1, (val) => {
+    if (isRestoringComb) return
+    comb2.value = ''
+    comb3.value = ''
+    comb3Options.value = []
+    if (!val) {
+        comb2Options.value = []
+        syncCombToFlowInfo()
+        return
+    }
+    const node = combOptions.value.find(o => o.value === val)
+    comb2Options.value = node?.children || []
+    syncCombToFlowInfo()
+})
+
+watch(comb2, (val) => {
+    if (isRestoringComb) return
+    comb3.value = ''
+    if (!val) {
+        comb3Options.value = []
+        syncCombToFlowInfo()
+        return
+    }
+    const parent = combOptions.value.find(o => o.value === comb1.value)
+    const node = parent?.children?.find((c: any) => c.value === val)
+    comb3Options.value = node?.children || []
+    syncCombToFlowInfo()
+})
+
+watch(comb3, () => {
+    syncCombToFlowInfo()
+})
+
+watch(() => flowInfo.value.isZh, (val) => {
+    if (val === 1) {
+        flowInfo.value.regType = ''
+        flowInfo.value.xslx = ''
+        flowInfo.value.gbdjlx = ''
+    }
+})
+
+/** 将组合流程选中值同步到 regType / xslx / gbdjlx */
+function syncCombToFlowInfo() {
+    if (flowInfo.value.isZh !== 1) return
+    const nodes: any[] = []
+    if (comb1.value) {
+        const n1 = combOptions.value.find(o => o.value === comb1.value)
+        if (n1) nodes.push(n1)
+        if (comb2.value) {
+            const n2 = n1?.children?.find((c: any) => c.value === comb2.value)
+            if (n2) nodes.push(n2)
+            if (comb3.value) {
+                const n3 = n2?.children?.find((c: any) => c.value === comb3.value)
+                if (n3) nodes.push(n3)
+            }
+        }
+    }
+    flowInfo.value.regType = nodes.map(n => n.value).join(',')
+    flowInfo.value.xslx = nodes.map(n => n.xslx).filter(Boolean).join(',')
+    flowInfo.value.gbdjlx = nodes.map(n => n.gbdjlx).filter(Boolean).join(',')
+}
+
 enum mxApi {
     queryByIdUrl = '/api/zrzy-bdc/flow/sxmx/queryById',
     saveUrl = '/api/zrzy-bdc/flow/sxmx/edit',
     addUrl = '/api/zrzy-bdc/flow/sxmx/add',
-    deleteUrl = '/api/zrzy-bdc/flow/sxmx/delete'
+    deleteUrl = '/api/zrzy-bdc/flow/sxmx/delete',
+    copyUrl = '/api/zrzy-bdc/flow/sxmx/copy'
 }
-
-// /** 加载明细信息 */
-// function getMxInfo(id: string) {
-//     defHttp.get({ url: mxApi.queryByIdUrl, params: { id } }, { withToken: true }).then((res: any) => {
-//         if (res.success) {
-//             flowInfo.value = res.result
-//         }
-//         // emit('setBaseInfo', flowInfo.value)
-//     })
-// }
 
 /** 保存明细 */
 async function handleMxSave() {
-    console.log('保存明细')
+    // 组合流程必填校验
+    if (flowInfo.value.isZh === 1) {
+        if (!comb1.value) {
+            message.error('请选择组合流程1')
+            return
+        }
+        if (!comb2.value) {
+            message.error('请选择组合流程2')
+            return
+        }
+        if (comb3Options.value.length > 0 && !comb3.value) {
+            message.error('请选择组合流程3')
+            return
+        }
+    }
 
     await handleLcidBlur()
     if (lcidExists.value) {
@@ -266,20 +422,6 @@ async function handleMxSave() {
             }
         })
     }).catch(() => { })
-}
-
-/** 新增明细 */
-function handleMxAdd() {
-    flowInfo.value = {
-        code: '',
-        name: '',
-        lcid: '',
-        type: 1,
-        orderNum: 1,
-        lclx: flowInfo.value.lclx
-    }
-    lcidExists.value = false
-    originalLcid.value = ''
 }
 
 function initExtensions() {
@@ -373,6 +515,18 @@ function handleMxDelete() {
         }
     })
 }
+
+/** 复制事项明细 */
+function handleMxCopy() {
+    defHttp.post({ url: mxApi.copyUrl, params: { id: flowInfo.value.id } }, { withToken: true }).then((res: any) => {
+        if (res.success) {
+            message.success('复制成功')
+            emit('refreshTree', { type: 'add', id: res.result })
+        } else {
+            message.error(res.message || '复制失败')
+        }
+    })
+}
 /** 关联流程失去焦点时校验lcid是否已存在 */
 async function handleLcidBlur() {
     const lcid = flowInfo.value.lcid
@@ -390,12 +544,6 @@ async function handleLcidBlur() {
     if (res.success) {
         message.warning('该流程ID已存在，flow_sxmx不允许lcid重复')
     }
-    // defHttp.get({ url: '/api/zrzy-kyq/flow/sxmx/getConfigByLcid', params: { lcid } }, { withToken: true }).then((res: any) => {
-    //     lcidExists.value = res.success
-    //     if (res.success) {
-    //         message.warning('该流程ID已存在，flow_sxmx不允许lcid重复')
-    //     }
-    // })
 }
 
 // ==================== 数据加载 ====================
@@ -409,16 +557,6 @@ watch(() => props.data, (newVal) => {
             initExtensions()
         }
     }
-
-    // if (props.data.type === 0) {
-    //     getMlInfo(newVal.id)
-    // } else if (props.data.type === 1) {
-    //     if (newVal.id != undefined) {
-    //         getMxInfo(newVal.id)
-    //     } else {
-    //         flowInfo.value = newVal
-    //     }
-    // }
 }, { immediate: true })
 </script>
 
