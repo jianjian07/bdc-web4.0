@@ -263,6 +263,7 @@ function handleRowSelect(record: DataSourceType) {
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     overflow: hidden;
+    padding: 10px;
 
     .search-wrapper {
         padding: 8px;
@@ -271,7 +272,7 @@ function handleRowSelect(record: DataSourceType) {
 
     .table-wrapper {
         max-height: 400px;
-        overflow: auto;
+        //overflow: auto;
 
         .input-table {
             margin: 0;
