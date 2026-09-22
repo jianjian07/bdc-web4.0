@@ -26,6 +26,12 @@
 				"gbdjlx":"200"
 			},
 			{
+				"label":"抵押首次",
+				"value":"0201",
+				"xslx":"DYZT",
+				"gbdjlx":"100"
+			},
+			{
 				"label":"抵押转移",
 				"value":"0202",
 				"xslx":"DYZT",
@@ -38,6 +44,12 @@
 						"gbdjlx":"300"
 					}
 				]
+			},
+			{
+				"label":"抵押变更",
+				"value":"0203",
+				"xslx":"DYZT",
+				"gbdjlx":"300"
 			}
 		]
 	},
