@@ -430,7 +430,7 @@ function loadUserList() {
     defHttp.get(
         {
             url: '/api/zrzy-system/sys/v1/user/page?userName=&deptId=',
-            params: { pageNo: 1, pageSize: 10, permission: 'zuhuadmin' }
+            params: { pageNo: 1, pageSize: 1000, permission: 'zuhuadmin' }
         },
         { withToken: true }
     ).then((res: any) => {
