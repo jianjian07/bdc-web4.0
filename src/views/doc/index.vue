@@ -12,34 +12,42 @@
             </a-breadcrumb>
         </div>
 
-        <!-- 工具栏（只读协作者隐藏） -->
-        <div v-if="!filePreview && currentFolderPerm !== 1" class="toolbar">
+        <!-- 工具栏 -->
+        <div v-if="!filePreview" class="toolbar">
             <a-space>
-                <a-button type="primary" @click="showNewFolderModal">
-                    <template #icon>
-                        <FolderAddOutlined />
-                    </template>
-                    新建文件夹
-                </a-button>
-                <a-upload :multiple="true" :show-upload-list="false" :custom-request="handleUpload">
-                    <a-button type="primary" ghost>
+                <template v-if="currentFolderPerm !== 1">
+                    <a-button type="primary" @click="showNewFolderModal">
                         <template #icon>
-                            <UploadOutlined />
+                            <FolderAddOutlined />
                         </template>
-                        上传文件
+                        新建文件夹
                     </a-button>
-                </a-upload>
+                    <a-upload :multiple="true" :show-upload-list="false" :custom-request="handleUpload">
+                        <a-button type="primary" ghost>
+                            <template #icon>
+                                <UploadOutlined />
+                            </template>
+                            上传文件
+                        </a-button>
+                    </a-upload>
+                </template>
+                <a-input-search v-model:value="searchKeyword" placeholder="搜索文档名称"
+                    style="width: 340px; margin-left: auto" allow-clear @search="onSearch" @clear="onSearchClear" />
             </a-space>
         </div>
 
         <!-- 可滚动内容区 -->
         <div v-if="!filePreview" class="content-scroll">
-            <!-- 统一列表（文件夹+文件） -->
-            <a-table :columns="columns" :data-source="mergedList" :pagination="false" row-key="id" size="middle">
+            <!-- 搜索结果提示 -->
+            <div v-if="isSearching" class="search-hint">
+                搜索 "{{ searchKeyword }}" 的结果
+            </div>
+            <!-- 统一列表（文件夹 + 文件） -->
+            <a-table :columns="columns" :data-source="displayList" :pagination="false" row-key="id" size="middle">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'name'">
                         <span v-if="record._type === 'folder'" class="name-cell folder-link"
-                            @click="navigateTo(record.id, record.myPermType)">
+                            @click="onSearchResultClick(record)">
                             <FileIcon type="folder" />
                             {{ record.folderName }}
                         </span>
@@ -83,7 +91,7 @@
             </a-table>
 
             <!-- 空状态 -->
-            <a-empty v-if="mergedList.length === 0" description="当前目录为空" />
+            <a-empty v-if="displayList.length === 0" :description="isSearching ? '未找到匹配的文档' : '当前目录为空'" />
         </div>
 
         <!-- 新建/编辑文件夹弹窗 -->
@@ -143,6 +151,7 @@ const api = {
     folderDelete: '/api/zrzy-bdc/doc/folder/delete',
     folderBreadcrumb: '/api/zrzy-bdc/doc/folder/breadcrumb',
     folderTree: '/api/zrzy-bdc/doc/folder/tree',
+    folderSearch: '/api/zrzy-bdc/doc/folder/search',
     fileList: '/api/zrzy-bdc/doc/file/list',
     fileUpload: '/api/zrzy-bdc/doc/file/upload',
     fileDelete: '/api/zrzy-bdc/doc/file/delete',
@@ -150,7 +159,7 @@ const api = {
     fileMove: '/api/zrzy-bdc/doc/file/move',
 }
 
-// 当前文件夹ID
+// 当前文件夹 ID
 const currentFolderId = ref('0')
 
 // 当前文件夹权限：0=所有者 1=只能查看 2=可编辑
@@ -165,11 +174,31 @@ const folderList = ref<any[]>([])
 // 文件列表
 const fileList = ref<any[]>([])
 
+// 搜索关键词
+const searchKeyword = ref('')
+
+// 是否正在搜索
+const isSearching = ref(false)
+
+// 搜索结果
+const searchFolders = ref<any[]>([])
+const searchFiles = ref<any[]>([])
+
 // 合并列表：文件夹在前，文件在后
 const mergedList = computed(() => {
     const folders = folderList.value.map((f) => ({ ...f, _type: 'folder' }))
     const files = fileList.value.map((f) => ({ ...f, _type: 'file' }))
     return [...folders, ...files]
+})
+
+// 显示列表（正常浏览或搜索结果）
+const displayList = computed(() => {
+    if (isSearching.value) {
+        const folders = searchFolders.value.map((f) => ({ ...f, _type: 'folder' }))
+        const files = searchFiles.value.map((f) => ({ ...f, _type: 'file' }))
+        return [...folders, ...files]
+    }
+    return mergedList.value
 })
 
 // 统一表格列
@@ -279,6 +308,46 @@ function navigateTo(folderId: string, perm?: number) {
         closePreview()
     }
     loadData()
+}
+
+/** 搜索 */
+function onSearch() {
+    const keyword = searchKeyword.value?.trim()
+    if (!keyword) {
+        onSearchClear()
+        return
+    }
+    isSearching.value = true
+    defHttp.get({ url: api.folderSearch, params: { keyword } }, { withToken: true })
+        .then((res: any) => {
+            if (res?.success || res?.code === 200) {
+                searchFolders.value = res.result?.folders || []
+                searchFiles.value = res.result?.files || []
+            } else {
+                searchFolders.value = []
+                searchFiles.value = []
+            }
+        })
+        .catch(() => {
+            searchFolders.value = []
+            searchFiles.value = []
+        })
+}
+
+/** 清除搜索 */
+function onSearchClear() {
+    searchKeyword.value = ''
+    isSearching.value = false
+    searchFolders.value = []
+    searchFiles.value = []
+}
+
+/** 点击搜索结果中的文件夹 */
+function onSearchResultClick(record: any) {
+    // 跳转到该文件夹
+    navigateTo(record.id, record.myPermType)
+    // 清除搜索状态
+    onSearchClear()
 }
 
 /** 新建文件夹弹窗 */
@@ -495,6 +564,16 @@ function formatFileSize(size: string | number) {
 .toolbar {
     flex-shrink: 0;
     margin-bottom: 16px;
+}
+
+.search-hint {
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    background: #e6f7ff;
+    border: 1px solid #91d5ff;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #1890ff;
 }
 
 .content-scroll {
