@@ -13,6 +13,7 @@ import {
   LAST_OPERATE_TIME,
   LOCK_STATUS,
   LOGIN_INFO_KEY,
+  REFRESH_TOKEN_KEY,
   TENANT_ID,
   TOKEN_KEY,
   USER_INFO_KEY,
@@ -38,6 +39,8 @@ import { getDict, getRuleList } from "/@/api/sys/dict"
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
+  // refresh token，用于 access token 过期时无感刷新
+  refreshToken?: string;
   //   roleList: RoleEnum[];
   // 数据字典,
   dicts?: any[];
@@ -75,6 +78,8 @@ export const useUserStore = defineStore({
     userInfo: null,
     // token
     token: undefined,
+    // refresh token
+    refreshToken: undefined,
     // 角色列表
     // roleList: [],
     // 数据字典,
@@ -121,6 +126,12 @@ export const useUserStore = defineStore({
     },
     getToken(): string {
       return this.token || getAuthCache<string>(TOKEN_KEY);
+    },
+    /**
+     * 获取 refresh token（用于 access token 过期时无感刷新）
+     */
+    getRefreshToken(): string {
+      return this.refreshToken || getAuthCache<string>(REFRESH_TOKEN_KEY) || '';
     },
     getIsLocked(): string {
       // 这里得直接用localstorage
@@ -190,6 +201,14 @@ export const useUserStore = defineStore({
       this.token = info ? info : ''; // for null or undefined value
       setAuthCache(TOKEN_KEY, info);
       // setCookie(TOKEN_KEY, info)//存储localStorage的同时，也存储一个cookie来监听
+    },
+    /**
+     * 设置 refresh token（持久化到 cache，与 access token 同生命周期管理）
+     * @param info refresh token 字符串；传 undefined / null / '' 时清空
+     */
+    setRefreshToken(info: string | undefined | null) {
+      this.refreshToken = info ? info : '';
+      setAuthCache(REFRESH_TOKEN_KEY, info ? info : undefined);
     },
     // setRoleList(roleList: RoleEnum[]) {
     //   this.roleList = roleList;
@@ -284,6 +303,7 @@ export const useUserStore = defineStore({
     resetState() {
       this.setUserInfo(null);
       this.setToken('');
+      this.setRefreshToken('');
       this.resetLockState()
       //   this.roleList = [];
       this.sessionTimeout = false;
@@ -334,9 +354,11 @@ export const useUserStore = defineStore({
         if (data?.tenantList?.length && !loginParams.tenantId) {
           return data;
         }
-        const { token } = data;
+        const { token, refreshToken } = data;
         // save token
         this.setToken(token);
+        // 同步保存 refresh token，用于后续 access token 过期时无感刷新
+        this.setRefreshToken(refreshToken);
         const loginResult = await this.afterLoginAction(goHome, data);
         return loginResult;
       } catch (error) {
@@ -503,6 +525,8 @@ export const useUserStore = defineStore({
         }
       }
       this.setToken('');
+      // 退出时同步清理 refresh token，避免被复用
+      this.setRefreshToken('');
       this.resetLockState()
       // setAuthCache(TOKEN_KEY, null);
       this.setSessionTimeout(false);

@@ -19,6 +19,7 @@ import 'virtual:svg-icons-register'; // 引入svg icon注册脚本
 import setDirectives from './directives/index'
 import { registerUploadAttachmentModule } from "/@/components/common/wangEditor/upload-attachment.ts"
 import { registerImageModule } from "/@/components/common/wangEditor/image-attachment.ts"
+import { refreshAccessToken } from "/@/utils/http/axios/axios"
 
 async function bootstrap() {
   // 加载nacos配置
@@ -42,7 +43,10 @@ async function bootstrap() {
   // 注册富文本组件附件上传按钮
   registerUploadAttachmentModule()
   // 配置存储 先挂载pinna实例
-  setupStore(app)
+  setupStore(app);
+  // 暴露全局 token 刷新钩子：供 form-imagining 等独立子包在 token 过期时
+  // 复用主应用的「单飞刷新 + token 旋转」逻辑，避免子包各自刷新互相作废 refreshToken
+  (window as any).__bdcRefreshToken__ = refreshAccessToken
   // 注册全局
   registerGlobComp(app)
   // 加载全局配置

@@ -8,8 +8,54 @@ import { useUserStoreWithOut } from "/@/store/modules/user";
 import { encryptByMd5 } from "/@/utils/cipher";
 import { setObjToUrlParams } from "/@/utils"
 import { AxiosOptions } from "/@/utils/http/axios/axiosModel"
+import { refreshTokenApi } from "/@/api/sys/user"
 // import { options } from "/@/views/bigscreen/cchart";
 // const { notification } = useMessage();
+
+/**
+ * 全局单飞刷新锁。
+ * 主应用与 form-imagining 等独立子包共用同一把锁，保证同一时刻只发起一次刷新，
+ * 避免后端 refreshToken 旋转机制下「多方各自刷新互相作废」的连环失败。
+ */
+let refreshingPromise: Promise<string | null> | null = null
+
+/**
+ * 单飞刷新 access token（全局共享）。
+ * - 并发调用复用同一次刷新请求；
+ * - 成功后新的 access/refresh token 会写入 store 与共享 localStorage
+ *   （CC__COMMON__LOCAL__KEY__ -> TOKEN__ / REFRESH__TOKEN__），
+ *   form-imagining 等子包通过实时读取 localStorage 即可拿到新 token。
+ * @returns 新的 access token（含 Bearer 前缀）；失败返回 null
+ */
+export function refreshAccessToken(): Promise<string | null> {
+    // 已有刷新在进行中：直接复用，避免重复旋转 refreshToken
+    if (refreshingPromise) return refreshingPromise
+    const userStore = useUserStoreWithOut()
+    const refreshToken = userStore.getRefreshToken
+    // 没有 refreshToken 无法刷新
+    if (!refreshToken) return Promise.resolve(null)
+    const task = refreshTokenApi(refreshToken)
+        .then((result: any) => {
+            if (result && result.token) {
+                // 同步新 token 到 store（内部会立即写入共享 localStorage）
+                userStore.setToken(result.token)
+                if (result.refreshToken) {
+                    userStore.setRefreshToken(result.refreshToken)
+                }
+                return result.token as string
+            }
+            // 多租户降级或刷新失败
+            return null
+        })
+        .catch(() => null)
+    refreshingPromise = task
+    // 本次刷新结束后释放锁，允许后续再次刷新
+    task.finally(() => {
+        if (refreshingPromise === task) refreshingPromise = null
+    })
+    return task
+}
+
 export class RequestHttp {
     private axiosInstance: AxiosInstance;
     private readonly options: AxiosOptions;
@@ -61,17 +107,73 @@ export class RequestHttp {
         this.axiosInstance.interceptors.response.use(
             response => {
                 if (response.status == 200) {
-                    this.checkStatus(response.data.code, true);
+                    const bizCode = response.data?.code
+                    // 401/424 视为 token 失效，先尝试用 refreshToken 无感刷新，失败再跳登录
+                    if (bizCode === 401 || bizCode === 424) {
+                        return this.handleTokenExpired(response) as Promise<AxiosResponse>
+                    }
+                    this.checkStatus(bizCode, true);
                     return Promise.resolve(response);
-                } else {
-                    this.handleErrorData(response.data)
                 }
+                this.handleErrorData(response.data)
+                return Promise.reject(response)
             },
             error => {
+                // HTTP 层 401/424（部分网关直接返回 HTTP 状态码）
+                const httpStatus = error?.response?.status
+                if (httpStatus === 401 || httpStatus === 424) {
+                    return this.handleTokenExpired(error.response) as Promise<AxiosResponse>
+                }
                 this.handleErrorData(error)
+                return Promise.reject(error)
                 // console.log(error);
             }
         );
+    }
+
+    /**
+     * 处理 token 过期：尝试用 refreshToken 无感刷新，成功后重放原请求；
+     * 并发场景下只发起一次刷新，其余请求挂起等待新 token。
+     *
+     * @param response 触发 401/424 的原始响应
+     */
+    private async handleTokenExpired(response: AxiosResponse | undefined): Promise<any> {
+        const originalConfig = response?.config as AxiosRequestConfig | undefined
+
+        // 没有原始请求上下文，无法重放，直接走登出
+        if (!originalConfig) {
+            this.checkStatus(401, true)
+            return Promise.reject(response)
+        }
+
+        // 标记本次请求已尝试过刷新，避免刷新后仍 401 导致死循环
+        const retryFlag = '__isRetryRequest__'
+        if ((originalConfig as any)[retryFlag]) {
+            this.checkStatus(401, true)
+            return Promise.reject(response)
+        }
+
+        // 刷新接口本身、登录接口、注销接口不参与刷新流程，避免循环调用
+        const skipUrls = ['/auth/refresh', '/auth/authorization', '/auth/logOut', '/auth/authorizationTyyw']
+        if (originalConfig.url && skipUrls.some(u => originalConfig.url!.includes(u))) {
+            this.checkStatus(401, true)
+            return Promise.reject(response)
+        }
+
+        // 共享单飞刷新：并发请求与 form-imagining 等子包复用同一次刷新，
+        // 刷新成功后新 token 已写入 store 与共享 localStorage
+        const newToken = await refreshAccessToken()
+        if (newToken) {
+            // 用新 token 重放当前请求
+            ; (originalConfig as any)[retryFlag] = true
+            if (originalConfig.headers) {
+                originalConfig.headers.Authorization = newToken
+            }
+            return this.axiosInstance.request(originalConfig)
+        }
+        // 刷新失败（含多租户降级）：清理状态并跳登录
+        this.checkStatus(401, true)
+        return Promise.reject(response)
     }
 
     /**

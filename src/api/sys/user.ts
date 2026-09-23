@@ -8,7 +8,8 @@ enum api {
   getTokenApiTyyw = '/tyyw/auth/oauth/token',
   getTokenApi = '/api/zrzy-system/api/v1/auth/authorization',
   getUserInfoApi = '/api/zrzy-system/sys/v1/user/getUserInfo',
-  logoutApi = '/api/zrzy-system/api/v1/auth/logOut'
+  logoutApi = '/api/zrzy-system/api/v1/auth/logOut',
+  refreshTokenApi = '/api/zrzy-system/api/v1/auth/refresh'
   // licenseApi = '/onemap/zrzy-om-licence/licence',
 }
 
@@ -47,7 +48,7 @@ export function login_tyyw(params: LoginParams) {
  */
 export function loginApi(params: LoginParams) {
   return new Promise((resolve) => {
-    const systemId = window.settingConfig?.subsystemId || ''
+    const systemId = (window as any).settingConfig?.subsystemId || ''
     let data: LoginParams = { username: params.username, password: params.password, systemId: systemId }
     if (params.tenantId) {
       data.tenantId = params.tenantId
@@ -62,7 +63,11 @@ export function loginApi(params: LoginParams) {
           username: params.username,
           userpwd: params.password,
           token: res.result?.access_token ? 'Bearer' + ' ' + res.result.access_token : undefined,
-          tenantList: res.result?.tenant_list || []
+          // refresh token 不带 Bearer 前缀，刷新接口由后端按 Authorization: Bearer {refreshToken} 解析
+          refreshToken: res.result?.refresh_token || undefined,
+          tenantList: res.result?.tenant_list || [],
+          needTenantSelect: res.result?.need_tenant_select || false,
+          passwordTip: res.result?.password_tip || ''
         })
       } else {
         resolve({
@@ -73,6 +78,40 @@ export function loginApi(params: LoginParams) {
     }).catch((err => {
       resolve(null)
     }))
+  })
+}
+
+/**
+ * @description: 使用 refreshToken 刷新 accessToken
+ * 后端：POST /api/v1/auth/refresh，请求头 Authorization: Bearer {refreshToken}
+ * 返回：{ access_token, refresh_token }（refresh token 已旋转，旧的失效）
+ */
+export function refreshTokenApi(refreshToken: string) {
+  return new Promise<any>((resolve) => {
+    if (!refreshToken) {
+      resolve(null)
+      return
+    }
+    defHttp.post({
+      url: api.refreshTokenApi,
+      headers: { Authorization: `Bearer ${refreshToken}` }
+    }, { withToken: false }).then((res: any) => {
+      if (res && res.code == 200 && res.result) {
+        // 后端可能返回 needTenantSelect=true（多租户降级），此时无 access_token
+        if (res.result.need_tenant_select) {
+          resolve({ needTenantSelect: true, tenantList: res.result.tenant_list || [] })
+          return
+        }
+        resolve({
+          token: res.result.access_token ? 'Bearer ' + res.result.access_token : undefined,
+          refreshToken: res.result.refresh_token || undefined
+        })
+      } else {
+        resolve(null)
+      }
+    }).catch(() => {
+      resolve(null)
+    })
   })
 }
 

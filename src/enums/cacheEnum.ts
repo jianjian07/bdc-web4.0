@@ -1,6 +1,9 @@
 // token key
 export const TOKEN_KEY = 'TOKEN__';
 
+// refresh token key（用于 access token 过期时无感刷新）
+export const REFRESH_TOKEN_KEY = 'REFRESH__TOKEN__';
+
 export const LOCALE_KEY = 'LOCALE__';
 
 // user info key
