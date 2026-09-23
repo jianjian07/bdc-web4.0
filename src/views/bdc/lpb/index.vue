@@ -1,22 +1,14 @@
-<template>
+﻿<template>
   <div style="width: 100%; text-align: center; height: 100%">
     <div class="legend-tool-bar">
       <div style="flex: 1"></div>
       <div class="legend-icon">
         <a-space>
           <span style="white-space: nowrap">图例版：</span>
-          <span class="zt" style="background-color: #FE9E38"></span><span style="white-space: nowrap">合同备案</span>
-          <span class="zt" style="background-color: #75FBD4"></span><span style="white-space: nowrap"> 拆迁限制</span>
-          <span class="zt" style="background-color: #50A68D"></span><span style="white-space: nowrap"> 地役权</span>
-          <span class="zt" style="background-color: #0000FF"></span><span style="white-space: nowrap"> 抵押权</span>
-          <span class="zt" style="background-color: #805B23"></span><span style="white-space: nowrap"> 公共部位</span>
-          <span class="zt" style="background-color: #A5D147"></span><span style="white-space: nowrap"> 居住权</span>
-          <span class="zt" style="background-color: #FCFC60"></span><span style="white-space: nowrap"> 合同签约</span>
-          <span class="zt" style="background-color: #FF0000"></span><span style="white-space: nowrap"> 不动产权</span>
-          <span class="zt" style="background-color: #BF6B97"></span><span style="white-space: nowrap"> 限制登记</span>
-          <span class="zt" style="background-color: #C0C0C0"></span><span style="white-space: nowrap"> 查封(其他限制)</span>
-          <span class="zt" style="background-color: #9900FF"></span><span style="white-space: nowrap"> 预告</span>
-          <span class="zt" style="background-color: #9A992F"></span><span style="white-space: nowrap"> 异议</span>
+          <template v-for="item in ZT_CONFIG" :key="'legend-' + item.ybKey">
+            <span class="zt" :style="{ backgroundColor: item.color }"></span>
+            <span style="white-space: nowrap">{{ item.label }}</span>
+          </template>
         </a-space>
       </div>
       <div class="legend-btn">
@@ -81,9 +73,9 @@
           </a-form>
         </div>
         <div class="search-result">
-          <a-table class="zrz-table ant-table-striped" :columns="zrzColumns" :data-source="zrzTableData"
+          <a-table id="table_ld" class="zrz-table ant-table-striped" :columns="zrzColumns" :data-source="zrzTableData"
             :pagination="pagination" :loading="tableLoading" :scroll="{ y: 300 }" :custom-row="customRow"
-            :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : ( getTemClass(_record) ? 'tem-table-row' : null)"
+            :row-class-name="(_record, index) => _record.zbm == currentZrzInfo.zbm ? 'active-table-row' : (getTemClass(_record) ? 'tem-table-row' : null)"
             row-key="zbm" @change="handleTableChange" size="small">
           </a-table>
         </div>
@@ -119,65 +111,41 @@
               </tr>
             </thead>
             <tbody class="ant-table-tbody">
-              <tr v-for="(cInfo, cIndex) in cxx" :key="cInfo.wlc">
-                <td class="title">{{ cInfo.wlc }}</td>
-                <td class="title">{{ getMycStr(cInfo.myc) }}</td>
-                <template v-for="(dy, dyIndex) in dyxx" :key="cInfo.wlc.toString()+dy.dyh">
-                  <td v-for="(fwInfo, fwIndex) in fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)"
-                    :colspan="fwInfo.colspan" :rowspan="fwInfo.rowspan"
-                    :key="fwInfo.wlc + '-' + fwInfo.dyh + '-' + fwIndex"
-                    :class="checkFw?.bdcdyh === fwInfo.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(fwInfo)">
+              <tr v-for="(row, cIndex) in lpbRows" :key="row.cInfo.wlc">
+                <td class="title">{{ row.cInfo.wlc }}</td>
+                <td class="title">{{ getMycStr(row.cInfo.myc) }}</td>
+                <template v-for="(unit, dyIndex) in row.units" :key="row.cInfo.wlc.toString()+unit.dy.dyh">
+                  <td v-for="(cell, fwIndex) in unit.cells" :colspan="cell.fw.colspan" :rowspan="cell.fw.rowspan"
+                    :key="cell.fw.wlc + '-' + cell.fw.dyh + '-' + fwIndex"
+                    :class="checkFw?.bdcdyh === cell.fw.bdcdyh ? 'dy-css' : 'dy-css-base'" @click="onCheck(cell.fw)">
 
+                    <!-- 在办状态色块(公共部位/限制登记不展示在办态) -->
                     <div class="fw-td">
-                      <span v-if="fwInfo.zbhtbazt == 1" class="zbzt" style="background-color: #FE9E38"></span>
-                      <span v-if="fwInfo.zbcqxzzt == 1" class="zbzt" style="background-color: #75FBD4"></span>
-                      <span v-if="fwInfo.zbdyqzt == 1" class="zbzt" style="background-color: #50A68D"></span>
-                      <span v-if="fwInfo.zbdyzt == 1" class="zbzt" style="background-color: #0000FF"></span>
-<!--                      <span v-if="fwInfo.zbggbwzt == 1" class="zbzt" style="background-color: #805B23"></span>-->
-                      <span v-if="fwInfo.zbjzqzt == 1" class="zbzt" style="background-color: #A5D147"></span>
-                      <span v-if="fwInfo.zbhtqyzt == 1" class="zbzt" style="background-color: #FCFC60"></span>
-                      <span v-if="fwInfo.zbcqzt == 1" class="zbzt" style="background-color: #FF0000"></span>
-<!--                      <span v-if="fwInfo.zbxzdjzt == 1" class="zbzt" style="background-color: #BF6B97"></span>-->
-                      <span v-if="fwInfo.zbcfzt == 1" class="zbzt" style="background-color: #C0C0C0"></span>
-                      <span v-if="fwInfo.zbygzt == 1" class="zbzt" style="background-color: #9900FF"></span>
-                      <span v-if="fwInfo.zbyyzt == 1" class="zbzt" style="background-color: #9A992F"></span>
+                      <template v-for="item in ZT_CONFIG_ZB" :key="'zb-' + item.zbKey">
+                        <span v-if="cell.fw[item.zbKey] == 1" class="zbzt"
+                          :style="{ backgroundColor: item.color }"></span>
+                      </template>
                     </div>
-                    <a-checkbox v-if="getClass(fwInfo) || checkShow(fwInfo)" :class="{ caseCheck: getClass(fwInfo) }"
-                      :checked="fwInfo.checked" :col="fwIndex" :row="cIndex" :dy="dyIndex"
-                      @change="onChangeCheckedBox(fwIndex, cIndex, dyIndex, fwInfo)">
+                    <a-checkbox v-if="cell.inCase || cell.canCheck" :class="{ caseCheck: cell.inCase }"
+                      :checked="cell.fw.checked" :col="fwIndex" :row="cIndex" :dy="dyIndex"
+                      @change="onChangeCheckedBox(fwIndex, cIndex, dyIndex, cell.fw)">
                     </a-checkbox>
                     <span style="cursor: pointer"
-                      :class="[(getClass(fwInfo) || checkShow(fwInfo)) ? 'checked-shbw' : 'unchecked-shbw']">{{
-            fwInfo.shbw }}</span>
+                      :class="[(cell.inCase || cell.canCheck) ? 'checked-shbw' : 'unchecked-shbw']">{{
+            cell.fw.shbw }}</span>
+                    <!-- 已办状态色块 -->
                     <div class="fw-td">
-                      <span v-if="fwInfo.htbazt == 1" class="zt" style="background-color: #FE9E38"></span>
-                      <span v-if="fwInfo.cqxzzt == 1" class="zt" style="background-color: #75FBD4"></span>
-                      <span v-if="fwInfo.dyqzt == 1" class="zt" style="background-color: #50A68D"></span>
-                      <span v-if="fwInfo.dyzt == 1" class="zt" style="background-color: #0000FF"></span>
-                      <span v-if="fwInfo.ggbw == 1" class="zt" style="background-color: #805B23"></span>
-                      <span v-if="fwInfo.jzqzt == 1" class="zt" style="background-color: #A5D147"></span>
-                      <span v-if="fwInfo.htqyzt == 1" class="zt" style="background-color: #FCFC60"></span>
-                      <span v-if="fwInfo.cqzt == 1" class="zt" style="background-color: #FF0000"></span>
-                      <span v-if="fwInfo.xzdj == 1" class="zt" style="background-color: #BF6B97"></span>
-                      <span v-if="fwInfo.cfzt == 1" class="zt" style="background-color: #C0C0C0"></span>
-                      <span v-if="fwInfo.ygzt == 1" class="zt" style="background-color: #9900FF"></span>
-                      <span v-if="fwInfo.yyzt == 1" class="zt" style="background-color: #9A992F"></span>
+                      <template v-for="item in ZT_CONFIG" :key="'yb-' + item.ybKey">
+                        <span v-if="cell.fw[item.ybKey] == 1" class="zt"
+                          :style="{ backgroundColor: item.color }"></span>
+                      </template>
                     </div>
 
-                    <!-- {{ fwInfo.shbw + '|' + fwInfo.colspan }} -->
+                    <!-- {{ cell.fw.shbw + '|' + cell.fw.colspan }} -->
                   </td>
-                  <template
-                    v-for="blanc in (dy.maxHs - fwxx.filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh).length)">
+                  <template v-for="blanc in unit.blanks">
                     <td></td>
                   </template>
-                  <!-- <td v-for="(item) in cInfo.hh" :key="cInfo.wlc.toString() + item" class="dy-css"
-                        :rowspan="getShbw(cInfo.wlc, dy.dyh, item)?.conspan">
-                        <div v-if="getShbw(cInfo.wlc, dy.dyh, item)">
-                            {{ getShbw(cInfo.wlc, dy.dyh, item).shbw }}
-
-                        </div>
-                        <div v-else></div>
-                    </td> -->
                 </template>
               </tr>
             </tbody>
@@ -213,13 +181,13 @@
           <div class="lpb-info-title lpb-info-row">
             <a @click="queryHis(checkFw.bdcdyh)">{{ checkFw.bdcdyh }}</a>
           </div>
-<!--          <div class="lpb-info-btn lpb-info-row">-->
-<!--            <a-space>-->
-<!--              <a-button type="primary" size="small">-->
-<!--                登记簿-->
-<!--              </a-button>-->
-<!--            </a-space>-->
-<!--          </div>-->
+          <!--          <div class="lpb-info-btn lpb-info-row">-->
+          <!--            <a-space>-->
+          <!--              <a-button type="primary" size="small">-->
+          <!--                登记簿-->
+          <!--              </a-button>-->
+          <!--            </a-space>-->
+          <!--          </div>-->
           <a-form :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
             <template v-for="(item) in fwKeys">
               <a-form-item :label="item.label">
@@ -248,16 +216,14 @@
       </div>
     </div>
   </div>
-  <a-button @click="handleOk" style="display: none">ddd</a-button>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { defHttp } from '/@/utils/http/axios';
 import { CheckSquareOutlined, UnorderedListOutlined, PauseOutlined, SearchOutlined, PushpinOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue"
-import { checkShowForSingle, checkShowForZh, getYwStr, getDictStr, getTreeDictStr } from "/@/views/bdc/lpb/lpb"
-import { extractDataLpb } from '/@/utils/bdc/bdc';
+import { checkShowLpb, getYwStr, getDictStr, getTreeDictStr, ZT_CONFIG, ZT_CONFIG_ZB } from "/@/views/bdc/lpb/lpb"
 import { cModal } from "/@/components/cModal/index"
 import { currentRoute } from "/@/router"
 const route = currentRoute;
@@ -351,12 +317,6 @@ let temFwList = ref<any>([])
 // }
 // let zl = '园林办事处（城南）第二十五街坊潜江市红梅东路3号名筑仕嘉16栋'
 let showAll = ref(false)
-const date1 = new Date().getTime()
-console.log('date1:' + date1)
-// console.log(fwxx)
-const date2 = new Date().getTime()
-console.log('date2:' + date2)
-console.log('时间差:' + (date2 - date1))
 let regType = ref<string>()
 
 // 详细信息
@@ -377,7 +337,7 @@ const fwKeys = [
   { label: '建筑面积(㎡)', value: 'jzmj' },
   { label: '土地独用面积(㎡)', value: 'dytdmj' },
   { label: '土地分摊面积(㎡)', value: 'ftjzmj' },
-  { label: '测绘状态', value: 'chzt', dict: 'chzt'  }
+  { label: '测绘状态', value: 'chzt', dict: 'chzt' }
 ]
 
 enum api {
@@ -491,6 +451,7 @@ function loadList(flag?: boolean) {
 async function loadFwxx(isFilter = false, initCheck = false) {
   if (!regType.value) {
     message.warning("未获取到登记类型，请刷新地址重试！")
+    return
   }
   if (currentZrzInfo.value && currentZrzInfo.value.zbm) {
     const res = await defHttp.get({ url: api.lpb, params: { zbm: currentZrzInfo.value.zbm } }, { withToken: true })
@@ -523,7 +484,7 @@ async function loadFwxx(isFilter = false, initCheck = false) {
         })
       }
       // if (initCheck) {
-        initFwxxChecked(false, false, _case)
+      initFwxxChecked(false, false, _case)
       // }
       lpbData.value = {
         dyhList: dyxx.value,
@@ -538,7 +499,8 @@ async function loadFwxx(isFilter = false, initCheck = false) {
 function onCheck(item: any) {
   defHttp.get({ url: api.detail, params: { bdcdyh: item.bdcdyh } }, { withToken: true }).then((res) => {
     if (res && res.success) {
-      checkFw.value = Object.assign(item, res.result)
+      // 浅拷贝合并,避免污染 fwxx 中的原始对象
+      checkFw.value = { ...item, ...res.result }
     } else {
       message.warning('获取房屋属性失败')
     }
@@ -549,6 +511,8 @@ function onCheck(item: any) {
  * 设置最大户数
  */
 function setMaxHs() {
+  let _total = 0
+  let _max = 0
   dyxx.value.forEach((dy) => {
     let dyMaxhs = 0
     cxx.value.forEach((cInfo) => {
@@ -556,9 +520,11 @@ function setMaxHs() {
       dyMaxhs = fwList.length > dyMaxhs ? fwList.length : dyMaxhs
     })
     dy.maxHs = dyMaxhs
-    totalHs.value += dy.maxHs
-    maxHs.value = dyMaxhs
+    _total += dyMaxhs
+    _max = dyMaxhs > _max ? dyMaxhs : _max
   })
+  totalHs.value = _total
+  maxHs.value = _max
 }
 
 function onShowAll() {
@@ -585,29 +551,25 @@ function handleTableChange(pag) {
  * 设置所有fwxx选中状态
  * @param isChecked
  * @param reverse
- * @param currentCase
+ * @param caseList 案卷中已有的不动产单元(命中则强制选中)
  */
-function initFwxxChecked(isChecked, reverse = false, currentCase = []) {
-  let _cxx = cxx.value || []
-  let _dyxx = dyxx.value || []
-  _cxx.forEach((_cxxItem, _cxxIndex) => {
-    _dyxx.forEach((_dyxxItem, _dyxxIndex) => {
-      let _fwxx = fwxx.value.filter((t: any) => t.wlc === _cxxItem.wlc && t.dyh === _dyxxItem.dyh)
-      for (let i = 0; i < _fwxx.length; i++) {
-        _fwxx[i].checked = reverse ? !_fwxx[i].checked : isChecked
-        // 初始化已选中
-        if (currentCase && currentCase.length) {
-          for (let j = 0; j < currentCase.length; j++) {
-            let caseItem = currentCase[j]
-            if (caseItem.bdcdyh == _fwxx[i].bdcdyh) {
-              _fwxx[i].checked = true
-              break;
-            }
-          }
-        }
+function initFwxxChecked(isChecked, reverse = false, caseList: any[] = []) {
+  const _cxx = cxx.value || []
+  const _dyxx = dyxx.value || []
+  // 楼盘表展示的过滤条件:物理层号、单元号必须同时命中
+  // 这里用 Set 做严格等值匹配,与矩阵中的 `t.wlc === cInfo.wlc && t.dyh === dy.dyh` 保持一致
+  // (避免层号/单元号存在数字与字符串类型差异时,把未展示的户也置为选中)
+  const wlcSet = new Set<any>(_cxx.map((item: any) => item.wlc))
+  const dyhSet = new Set<any>(_dyxx.map((item: any) => item.dyh))
+  const caseKeys = new Set<any>((caseList || []).map((item: any) => item.bdcdyh))
+    ; (fwxx.value || []).forEach((fw: any) => {
+      if (!wlcSet.has(fw.wlc) || !dyhSet.has(fw.dyh)) return
+      fw.checked = reverse ? !fw.checked : isChecked
+      // 初始化已选中
+      if (caseList && caseList.length && caseKeys.has(fw.bdcdyh)) {
+        fw.checked = true
       }
     })
-  })
 }
 
 /**
@@ -698,45 +660,73 @@ function handleTemSave() {
 }
 
 /**
- * 勾选框状态
+ * 勾选框状态(当前户是否已属于本案卷)
  * @param fwInfo
  */
 function getClass(fwInfo) {
-  let caseBdcdyh = currentCase.value.filter(item => (item.zbm == currentZrzInfo.value.zbm) && item.bdcdyh == fwInfo.bdcdyh)
-  return caseBdcdyh.length > 0
+  return caseBdcdyhSet.value.has(fwInfo.bdcdyh)
 }
 
 /**
  * 当前户是否可以选择
+ * 已重构: 统一走 checkShowLpb 规则引擎,支持任意组合登记类型
  * @param fwInfo
  */
 function checkShow(fwInfo) {
-  if (regType.value && fwInfo && fwInfo.shbw) {
-    // 限制登记不允许
-    if (fwInfo.xzdj == 1) {
-      return false
-    }
-    if (fwInfo.ggbw == 1) {
-      // 公共部位只允许产权首次
-      if (regType.value == '0101') {
-        return checkShowForSingle(regType.value, fwInfo)
-      } else {
-        return false
-      }
-    } else {
-      if (regType.value.split(',').length == 1) {
-        return checkShowForSingle(regType.value, fwInfo)
-      } else {
-        return checkShowForZh(regType.value, fwInfo)
-      }
-    }
-  } else {
-    return false
-  }
+  if (!regType.value) return false
+  return checkShowLpb(regType.value, fwInfo)
 }
 
 defineExpose({
   handleOk
+})
+/**
+ * 本案卷中当前幢已包含的不动产单元号(缓存,案卷数据变化才重算)
+ */
+const caseBdcdyhSet = computed(() => {
+  const zbm = currentZrzInfo.value?.zbm
+  const set = new Set<any>()
+    ; (currentCase.value || []).forEach((item: any) => {
+      if (item.zbm == zbm) {
+        set.add(item.bdcdyh)
+      }
+    })
+  return set
+})
+/**
+ * 每户可勾选结果缓存(只与 登记类型 + 房屋自身状态 有关)
+ * 单独缓存的原因:checkShowLpb 是纯业务校验,
+ * 与"选中哪一幢、显示哪一层、渲染了几次"无关,
+ * 放在模板里调用会被组件的每次重渲染反复触发(一户也会被调用多次)
+ */
+const fwCheckMap = computed(() => {
+  const map = new Map<any, boolean>()
+    ; (fwxx.value || []).forEach((fw: any) => {
+      map.set(fw, checkShow(fw))
+    })
+  return map
+})
+/**
+ * 楼盘表单元格矩阵(层 -> 单元 -> 户)
+ * 只负责组装展示结构,勾选校验统一走 fwCheckMap 缓存,避免重复计算
+ */
+const lpbRows = computed<any[]>(() => {
+  const _cxx = cxx.value || []
+  const _dyxx = dyxx.value || []
+  const _fwxx = fwxx.value || []
+  return _cxx.map((cInfo: any) => ({
+    cInfo,
+    units: _dyxx.map((dy: any) => {
+      const cells = _fwxx
+        .filter((t: any) => t.wlc === cInfo.wlc && t.dyh === dy.dyh)
+        .map((fw: any) => ({
+          fw,
+          inCase: getClass(fw),
+          canCheck: fwCheckMap.value.get(fw) === true
+        }))
+      return { dy, cells, blanks: Math.max((dy.maxHs || 0) - cells.length, 0) }
+    })
+  }))
 })
 /**
  * 筛选楼盘表
@@ -747,11 +737,9 @@ function handleFilterLpb() {
   cxxData.value = wlc
     ? lpbData.value.cxxList.filter(item => item.wlc == wlc)
     : lpbData.value.cxxList;
-  cxx.value = [];
-  nextTick(() => {
-    cxx.value = cxxData.value;
-    fwxx.value = wlc ? lpbData.value.fwList.filter(item => item.wlc == wlc) : lpbData.value.fwList
-  })
+  // 同批次赋值,避免先清空再赋值造成的两次渲染(勾选校验重复计算)
+  cxx.value = cxxData.value;
+  fwxx.value = wlc ? lpbData.value.fwList.filter(item => item.wlc == wlc) : lpbData.value.fwList
 }
 /**
  * 提取数据
@@ -765,12 +753,12 @@ function handleOk() {
   let okData = []
   if (!temFwList.value.length) {
     temFwList.value = [{
-        zbm: currentZrzInfo.value.zbm,
-        fwxxList: data.map((item) => {
-          item.zddm = currentZrzInfo.value.zddm
-          item.zbm = currentZrzInfo.value.zbm
-          return item
-        })
+      zbm: currentZrzInfo.value.zbm,
+      fwxxList: data.map((item) => {
+        item.zddm = currentZrzInfo.value.zddm
+        item.zbm = currentZrzInfo.value.zbm
+        return item
+      })
     }]
   } else {
     updateOrPush(temFwList.value, {
@@ -784,8 +772,8 @@ function handleOk() {
   }
 
   okData = temFwList.value
-  .filter(item => item.fwxxList && item.fwxxList.length > 0)
-  .flatMap(item => item.fwxxList)
+    .filter(item => item.fwxxList && item.fwxxList.length > 0)
+    .flatMap(item => item.fwxxList)
   if (okData.length == 0) {
     message.error("请选择要提取的房源")
   } else {
