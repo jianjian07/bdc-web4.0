@@ -112,7 +112,7 @@
     </a-modal>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, h, createVNode, useAttrs } from 'vue';
+import { computed, onMounted, ref, h, createVNode, useAttrs, watch } from 'vue';
 import { SearchOutlined, PlusOutlined, DownOutlined, RetweetOutlined, ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message, Modal, type TableColumnsType } from 'ant-design-vue';
 import { defHttp } from '/@/utils/http/axios';
@@ -186,7 +186,7 @@ const columns = ref<TableColumnsType>([
     {
         title: '操作',
         key: 'action',
-        width: 350,
+        width: 300,
     },
 ]);
 let processList = ref([])
@@ -386,6 +386,7 @@ loadData()
  * 加载数据
  */
 function loadData() {
+
     loading.value = true
     defHttp.get({ url: '/bpmapi/bpm/design/list', params: { field: fieldInfo.value.join(','), order: orderInfo.value.join(','), pageNo: pagination.value.current, pageSize: pagination.value.pageSize, ...processData.value } }, { withToken: true }).then((res) => {
         if (res.success) {
@@ -396,6 +397,11 @@ function loadData() {
         }
     })
 }
+watch(open, (val) => {
+    if (!val) {
+        loadData();
+    }
+});
 /**
  * 重置
  */

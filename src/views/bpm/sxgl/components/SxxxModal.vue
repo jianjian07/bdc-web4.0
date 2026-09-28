@@ -354,6 +354,9 @@ watch(() => flowInfo.value.isZh, (val) => {
         flowInfo.value.regType = ''
         flowInfo.value.xslx = ''
         flowInfo.value.gbdjlx = ''
+        flowInfo.value.djdl = 'ZH'
+    } else {
+        flowInfo.value.djdl = ''
     }
 })
 
