@@ -127,10 +127,8 @@ onMounted(() => {
  * 非超级管理员只能使用当前租户，未关联租户时保持为空
  */
 function initTenantSelection() {
-  if (!isSuperAdmin.value) {
-    const tenantId = userStore.getTenant
-    props.dataInfo.tenantIdList = tenantId != null && tenantId !== '' ? [tenantId] : []
-  }
+  const tenantId = userStore.getTenant
+  props.dataInfo.tenantIdList = isAdd.value ? (tenantId != null && tenantId !== '' ? [tenantId] : [])  : props.dataInfo.tenantIdList
 }
 /**
  * 保存
