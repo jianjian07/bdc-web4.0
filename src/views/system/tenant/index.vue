@@ -79,7 +79,6 @@
 import { ref, defineAsyncComponent } from "vue";
 import TenantList from "/@/views/system/tenant/components/tenantList.vue"
 import RoleList from "/@/views/system/tenant/components/RoleList.vue"
-import TenantPackManager from "/@/views/system/tenantpack/index.vue"
 const BaseInfo = defineAsyncComponent(() => import("./components/tenantInfo.vue"))
 const ProcessTree = defineAsyncComponent(() => import("./components/ProcessTree.vue"))
 const activeKey = ref('1');
