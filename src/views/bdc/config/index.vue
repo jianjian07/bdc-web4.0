@@ -9,7 +9,7 @@
         <div class="header-text">
           <h2 class="header-title">组合登记 JSON 配置</h2>
           <p class="header-desc">
-            可视化维护 <code>zh.json</code> 文件中的多级登记组合，支持新增、修改、删除节点，点击「保存」写回静态文件
+            可视化维护 <code>zh.json</code> 多级登记组合配置，支持新增、修改、删除节点，点击「保存」后写入数据库 <code>flow_config_json</code> 表
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <a-input-search v-model:value="searchText" placeholder="搜索名称 / 编码" style="width: 240px" allow-clear />
       <a-button type="primary" size="large" :icon="h(SaveOutlined)" :loading="saving" :disabled="!dirty"
         @click="handleSave">
-        保存到 zh.json
+        全部保存到数据库
       </a-button>
     </div>
 

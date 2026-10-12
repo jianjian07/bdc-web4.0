@@ -260,9 +260,20 @@ let persistedExtensionKeys = new Set<string>()
 const combOptions = ref<any[]>([])
 loadCombOptions()
 function loadCombOptions() {
-    fetch('/json/zh.json')
-        .then(res => res.json())
-        .then(data => { combOptions.value = data })
+    // 组合登记配置由后端 /config/json/list 提供（数据持久化在 flow_config_json 表），
+    // 避免依赖前端静态资源路径，前后端可独立部署
+    defHttp
+        .get({ url: '/api/zrzy-bdc/config/json/list' }, { withToken: true })
+        .then((res: any) => {
+            if (res?.success) {
+                combOptions.value = Array.isArray(res.result) ? res.result : []
+            } else {
+                combOptions.value = []
+            }
+        })
+        .catch(() => {
+            combOptions.value = []
+        })
 }
 
 const comb1 = ref<string>('')
