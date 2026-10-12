@@ -164,8 +164,7 @@ function loadFlowList() {
         // 假设 treeData 是你从接口获取的原始树形数据
         const processedTreeData = res.result.map(item => ({
             ...item,
-            disabled: true, // 直接将一级节点设为禁用
-            // 如果下面还有多级子节点，且子节点不需要禁用，保持原样即可
+            disabled: !!(item.children && item.children.length > 0), // 仅禁用有子节点的分组节点，叶子流程节点可选
             children: item.children || []
         }))
         flowList.value = processedTreeData
