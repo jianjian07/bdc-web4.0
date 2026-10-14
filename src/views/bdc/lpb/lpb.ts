@@ -464,7 +464,7 @@ export function getYwStr(type: string, item: any): string {
     yb: { cqzt: '不动产权', ygzt: '预告', dyzt: '抵押', cfzt: '查封', jzqzt: '居住权', yyzt: '异议' },
     zb: { zbcqzt: '不动产权', zbygzt: '预告', zbdyzt: '抵押', zbcfzt: '查封', zbjzqzt: '居住权', zbyyzt: '异议' }
   }
-
+  debugger
   const mapping = statusMap[type]
   if (!mapping) return ''
 
@@ -475,6 +475,12 @@ export function getYwStr(type: string, item: any): string {
       if (mapping[key] == '预告') {
         let ywblqkStr = String(item.ywblqk ?? '')
         let ywblqkArr = ywblqkStr.replace(/,+$/, '').split(',')
+        // 按 type 过滤: yb 只取末位为 1 的, zb 只取末位为 0 的
+        if (type === 'yb') {
+          ywblqkArr = ywblqkArr.filter(x => x.slice(-1) === '1')
+        } else if (type === 'zb') {
+          ywblqkArr = ywblqkArr.filter(x => x.slice(-1) === '0')
+        }
         for (let i = 0; i < ywblqkArr.length; i++) {
           if (ywblqkArr[i].includes('YGZT')) {
             result.push(mapping[key])
