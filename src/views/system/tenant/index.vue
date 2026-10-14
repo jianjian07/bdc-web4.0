@@ -59,6 +59,14 @@
                     </a-empty>
                     <role-list v-else :selectInfo="selectInfo"></role-list>
                 </a-tab-pane>
+                <a-tab-pane key="5" tab="证书信息" force-render>
+                    <a-empty v-if='!selectInfo.id'>
+                        <template #description>
+                            请先选择一个租户
+                        </template>
+                    </a-empty>
+                    <ZsModel v-else :selectInfo="selectInfo" />
+                </a-tab-pane>
                 <!--                <a-tab-pane key="5" tab="跨租户共享" force-render>-->
                 <!--                    <a-empty v-if='!selectInfo.id'>-->
                 <!--                        <template #description>-->
@@ -79,6 +87,7 @@
 import { ref, defineAsyncComponent } from "vue";
 import TenantList from "/@/views/system/tenant/components/tenantList.vue"
 import RoleList from "/@/views/system/tenant/components/RoleList.vue"
+import ZsModel from "/@/views/system/subSystem/components/ZsModel.vue"
 const BaseInfo = defineAsyncComponent(() => import("./components/tenantInfo.vue"))
 const ProcessTree = defineAsyncComponent(() => import("./components/ProcessTree.vue"))
 const activeKey = ref('1');

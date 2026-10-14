@@ -48,6 +48,14 @@
             </template>
           </a-empty>
         </a-tab-pane>
+        <a-tab-pane key="2" tab="证书信息">
+          <ZsModel v-if="selectSystem" :selectSystem="selectSystem" />
+          <a-empty v-else>
+            <template #description>
+              请先选择一个子系统
+            </template>
+          </a-empty>
+        </a-tab-pane>
       </a-tabs>
     </div>
 
@@ -60,6 +68,7 @@ import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import RegionList from "/@/views/system/subSystem/components/regionList.vue"
+import ZsModel from "/@/views/system/subSystem/components/ZsModel.vue"
 const activeKey = ref('1');
 
 const urlList = {
@@ -77,7 +86,7 @@ function loadSystemList() {
   defHttp.get(
     {
       url: urlList.systemList,
-      params: { pageSize: -1, pageNo: 1, column: 'sortid', order: 'asc'}
+      params: { pageSize: -1, pageNo: 1, column: 'sortid', order: 'asc' }
     },
     { withToken: true }
   ).then((res: any) => {

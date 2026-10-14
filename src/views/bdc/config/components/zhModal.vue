@@ -79,7 +79,7 @@ const formState = reactive({
 const rules = {
   label: [{ required: true, message: '请输入名称', trigger: 'blur' }],
   value: [{ required: true, message: '请输入编码', trigger: 'blur' }],
-  xslx: [{ required: true, message: '请选择证书类型', trigger: 'change' }],
+  xslx: [{ required: true, message: '请选择显示类型', trigger: 'change' }],
   gbdjlx: [{ required: true, message: '请选择国标登记类型', trigger: 'change' }],
 };
 

@@ -133,11 +133,11 @@ const RULE_REGISTRY: Record<string, AtomicRule> = {
     produces: ['dyzt'],
   },
   '0312': { // 预抵变更
-    required: ['ygzt', 'dyzt'],
+    required: ['ygzt'],
     forbidden: ['cqzt', 'cfzt', 'zbcfzt'],
   },
   '0313': { // 预抵转移
-    required: ['ygzt', 'dyzt'],
+    required: ['ygzt'],
     forbidden: ['zbygzt', 'zbdyzt', 'cqzt', 'zbcqzt', 'cfzt', 'zbcfzt'],
   },
 
@@ -464,7 +464,6 @@ export function getYwStr(type: string, item: any): string {
     yb: { cqzt: '不动产权', ygzt: '预告', dyzt: '抵押', cfzt: '查封', jzqzt: '居住权', yyzt: '异议' },
     zb: { zbcqzt: '不动产权', zbygzt: '预告', zbdyzt: '抵押', zbcfzt: '查封', zbjzqzt: '居住权', zbyyzt: '异议' }
   }
-  debugger
   const mapping = statusMap[type]
   if (!mapping) return ''
 
