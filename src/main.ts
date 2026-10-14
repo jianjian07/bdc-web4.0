@@ -8,7 +8,7 @@ import { setupStore } from './store';
 import { router, setupRouter } from './router';
 import { setupRouterGuard } from './router/guard';
 import { fetchNacosConfig, getGlobalFontSize, initGlobalSetting } from './settings/initSetting'
-import checkTimeout from '/@/utils/sysUtil'
+import checkTimeout from './utils/lockUtil'
 import formImagining from 'form-imagining'
 import 'form-imagining/dist/style.css'
 import bpmDesigner from 'bpm-designer'

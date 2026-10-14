@@ -200,7 +200,6 @@ export const useUserStore = defineStore({
     setToken(info: string | undefined) {
       this.token = info ? info : ''; // for null or undefined value
       setAuthCache(TOKEN_KEY, info);
-      // setCookie(TOKEN_KEY, info)//存储localStorage的同时，也存储一个cookie来监听
     },
     /**
      * 设置 refresh token（持久化到 cache，与 access token 同生命周期管理）
