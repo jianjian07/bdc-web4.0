@@ -34,7 +34,7 @@ import { SlidersOutlined } from '@ant-design/icons-vue';
 import LookPublic from "/@/views/bdc/public/LookPublic.vue"
 import { defHttp } from "/@/utils/http/axios"
 const ProcessModule = defineAsyncComponent(() => import("/@/views/bpm/BpmView.vue"))
-const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/LookIndex.vue"))
+const SsoFile = defineAsyncComponent(() => import("/@/views/archive/index.vue"))
 import { currentRoute } from "/@/router"
 const route = currentRoute;
 // 当前选中tab

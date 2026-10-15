@@ -176,15 +176,15 @@ function refreshData() {
 }
 
 function add() {
-  router.push({ path: '/system/syncdesign' })
+  router.push({ path: '/sync/design' })
 }
 
 function edit(record) {
-  router.push({ path: '/system/syncdesign', query: { id: record.id } })
+  router.push({ path: '/sync/design', query: { id: record.id } })
 }
 
 function sync(record) {
-  router.push({ path: '/system/syncdesign', query: { id: record.id, sync: '1' } })
+  router.push({ path: '/sync/design', query: { id: record.id, sync: '1' } })
 }
 /**
  * 启动
