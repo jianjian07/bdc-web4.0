@@ -7,6 +7,10 @@ const modules = import.meta.glob(['/src/views/**/*.vue', '/src/layouts/**/*.vue'
  * 1. 精确：相对 src 的路径     layouts/default/index → /src/layouts/default/index.vue
  * 2. 后缀：相对 views 的路径   system/pwd/index      → /src/views/system/pwd/index.vue
  */
+// 后台对"纯分组目录"（不套布局、只做路径分组）填的占位值，不参与组件解析
+const GROUP_PLACEHOLDERS = ['', '/', 'layout', 'Layout', 'LAYOUT'];
+const isGroupOnly = (componentPath: string) => GROUP_PLACEHOLDERS.includes(componentPath);
+
 function resolveModuleKey(componentPath: string): string | undefined {
     // 1. 精确匹配（相对 src）
     const exactKey = `/src/${componentPath}.vue`;
@@ -24,6 +28,7 @@ function resolveModuleKey(componentPath: string): string | undefined {
 function resolveModule(componentPath: string) {
     const moduleKey = resolveModuleKey(componentPath);
     const moduleLoader = moduleKey ? modules[moduleKey] : undefined;
+
     if (!moduleLoader) {
         console.error(`[routeHelper] 组件解析失败: "${componentPath}" -> ${moduleKey}，请检查该菜单的 component 配置`);
         return undefined;
@@ -36,11 +41,13 @@ export function dynamicRouter(routeList: AppRouteModule[]) {
     routeList.forEach(async (item) => {
         if (item.component !== "wonderform" && item.component && item.path) {
             const componentName = getComponentName(item); // 使用缓存路由必须 确保 name 唯一
+            const isDir = !!(item.children && item.children.length);
+            // 纯分组目录（component 为 "/" 等占位值）不解析组件，子路由提升到上层 router-view
+            const layoutComponent = isDir && !isGroupOnly(item.component) ? resolveModule(item.component) : undefined;
             let tab: any = {
                 ...item,
-                name: item.children && item.children.length ? item.title : componentName,
-                component: item.children && item.children.length ? resolveModule(item.component)
-                  : () =>  getComponent(item.component, componentName),
+                name: isDir ? item.title : componentName,
+                component: isDir ? layoutComponent : () => getComponent(item.component, componentName),
                 meta: {
                     cache: item.cache,
                     component: item.component,
@@ -93,7 +100,7 @@ export function dynamicRouterOld(routeList: AppRouteModule[]) {
         if (item.component != "wonderform") {
             list.push({
                 ...item,
-                component: resolveModule(item.component),
+                component: isGroupOnly(item.component) ? undefined : resolveModule(item.component),
                 meta: {
                     cache: item.cache,
                     component: item.component,

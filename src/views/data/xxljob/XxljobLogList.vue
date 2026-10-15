@@ -67,14 +67,14 @@
         </a-form>
     </div>
     <div class="wonder-table-css">
-<!--        <div class="wonder-table-toolbar">-->
-<!--            <a-button type="primary" @click="addData">-->
-<!--                <template #icon>-->
-<!--                    <plus-outlined />-->
-<!--                </template>-->
-<!--                新增-->
-<!--            </a-button>-->
-<!--        </div>-->
+        <!--        <div class="wonder-table-toolbar">-->
+        <!--            <a-button type="primary" @click="addData">-->
+        <!--                <template #icon>-->
+        <!--                    <plus-outlined />-->
+        <!--                </template>-->
+        <!--                新增-->
+        <!--            </a-button>-->
+        <!--        </div>-->
         <a-table :columns="columns" :data-source="datalist" :pagination="pagination"
             @change="onChange($event, loadData)">
             <template #bodyCell="{ column, record }">
@@ -119,7 +119,7 @@ import { PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined } from '@ant
 import { message } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
 import { formatToDate } from "/@/views/online/utils/dateUtil";
-const JobLogModal = defineAsyncComponent(() => import("/@/views/data/cdc/modules/JobLogModal.vue"));
+const JobLogModal = defineAsyncComponent(() => import("/@/views/data/xxljob/modules/JobLogModal.vue"));
 const columns = [
     { title: "任务ID", dataIndex: "jobId", width: 80 },
     { title: "调度时间", dataIndex: "triggerTime" },
@@ -159,7 +159,7 @@ let pagination = ref({
     current: 1,
     pageSize: 10,
     showTotal: () => {
-      return `共 ${pagination.value.total} 条数据`
+        return `共 ${pagination.value.total} 条数据`
     }
 })
 
@@ -183,13 +183,13 @@ function loadJobGroup() {
  * 表格数据加载
 */
 async function loadData() {
-  if (timeValue.value && timeValue.value.length == 2) {
-    let startTime = dayjs(timeValue.value[0]).format(dateFormat)
-    let endTime = dayjs(timeValue.value[1]).format(dateFormat)
-    formData.value.filterTime = startTime + ' - ' + endTime
-  } else {
-    formData.value.filterTime = ''
-  }
+    if (timeValue.value && timeValue.value.length == 2) {
+        let startTime = dayjs(timeValue.value[0]).format(dateFormat)
+        let endTime = dayjs(timeValue.value[1]).format(dateFormat)
+        formData.value.filterTime = startTime + ' - ' + endTime
+    } else {
+        formData.value.filterTime = ''
+    }
     formData.value.jobId = jobId.value == "" ? 0 : jobId.value
     let jobGroupValue = (jobGroup.value == '' || jobGroup.value == undefined) ? 0 : jobGroup.value
     defHttp.get({ url: Api.list, params: { start: (pagination.value.current - 1) * pagination.value.pageSize, length: pagination.value.pageSize, jobGroup: jobGroupValue, ...formData.value } }, { withToken: true, isTransformResponse: false }).then((res) => {
@@ -206,8 +206,8 @@ async function loadData() {
  * 查询
  */
 function searchData() {
-  pagination.value.current = 1
-  loadData()
+    pagination.value.current = 1
+    loadData()
 }
 /**
  * 重置
@@ -217,14 +217,14 @@ function refreshData() {
     const time = new Date().getTime();
     const dayValue = formatToDate(time);
     timeValue.value = ([
-      dayjs(dayValue + " 00:00:00", dateFormat),
-      dayjs(dayValue + " 23:59:59", dateFormat),
+        dayjs(dayValue + " 00:00:00", dateFormat),
+        dayjs(dayValue + " 23:59:59", dateFormat),
     ])
     pagination.value.current = 1
     formData.value = {
-      logStatus: '-1',
-      filterTime: '',
-      jobId: '',
+        logStatus: '-1',
+        filterTime: '',
+        jobId: '',
     }
     jobGroup.value = undefined
     loadData()

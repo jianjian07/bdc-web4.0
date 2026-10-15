@@ -140,7 +140,7 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-const JobInfoModal = defineAsyncComponent(() => import("/@/views/data/cdc/modules/JobInfoModal.vue"));
+const JobInfoModal = defineAsyncComponent(() => import("/@/views/data/xxljob/modules/JobInfoModal.vue"));
 const columns = [
     { title: "任务ID", dataIndex: "id", width: 80 },
     { title: "任务描述", dataIndex: "jobDesc" },
@@ -209,10 +209,10 @@ async function loadData() {
 */
 function refreshData() {
     formData.value = {
-      triggerStatus: '-1',
-      jobDesc: '',
-      executorHandler: '',
-      author: ''
+        triggerStatus: '-1',
+        jobDesc: '',
+        executorHandler: '',
+        author: ''
     }
     jobGroup.value = undefined
     loadData()

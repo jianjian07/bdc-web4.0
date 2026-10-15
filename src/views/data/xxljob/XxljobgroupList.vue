@@ -71,11 +71,10 @@ import { defHttp } from "/@/utils/http/axios";
 import { ref, onMounted, defineAsyncComponent, computed } from "vue"
 import { PlusOutlined, SearchOutlined, RedoOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { get } from "http";
 import { usePermissionStore } from "/@/store/modules/permission";
 const permissionStore = usePermissionStore()
 const showCreate = computed(() => permissionStore.showCreateBtn)
-const JobGropModal = defineAsyncComponent(() => import("/@/views/data/cdc/modules/JobGropModal.vue"));
+const JobGropModal = defineAsyncComponent(() => import("/@/views/data/xxljob/modules/JobGropModal.vue"));
 const columns = [
     { title: "任务ID", dataIndex: "id", width: 80 },
     { title: "AppName", dataIndex: "appname" },
