@@ -1,5 +1,35 @@
 import { AppRouteModule } from "/@/router/types";
-const modules = import.meta.glob('/src/views/**/*.vue');
+const modules = import.meta.glob(['/src/views/**/*.vue', '/src/layouts/**/*.vue']);
+
+/**
+ * 解析菜单 component 字符串对应的实际组件模块 key
+ * 匹配级别：
+ * 1. 精确：相对 src 的路径     layouts/default/index → /src/layouts/default/index.vue
+ * 2. 后缀：相对 views 的路径   system/pwd/index      → /src/views/system/pwd/index.vue
+ */
+function resolveModuleKey(componentPath: string): string | undefined {
+    // 1. 精确匹配（相对 src）
+    const exactKey = `/src/${componentPath}.vue`;
+    if (modules[exactKey]) return exactKey;
+    // 2. 相对 views 匹配
+    const viewsKey = `/src/views/${componentPath}.vue`;
+    if (modules[viewsKey]) return viewsKey;
+    // 兜底：按相对 views 处理（保持旧逻辑，未找到时 modules[...] 为 undefined）
+    return viewsKey;
+}
+
+/**
+ * 取 component 对应的模块加载器，解析失败时告警（避免白屏且难排查）
+ */
+function resolveModule(componentPath: string) {
+    const moduleKey = resolveModuleKey(componentPath);
+    const moduleLoader = moduleKey ? modules[moduleKey] : undefined;
+    if (!moduleLoader) {
+        console.error(`[routeHelper] 组件解析失败: "${componentPath}" -> ${moduleKey}，请检查该菜单的 component 配置`);
+        return undefined;
+    }
+    return moduleLoader;
+}
 
 export function dynamicRouter(routeList: AppRouteModule[]) {
     const list: AppRouteModule[] = [];
@@ -9,7 +39,7 @@ export function dynamicRouter(routeList: AppRouteModule[]) {
             let tab: any = {
                 ...item,
                 name: item.children && item.children.length ? item.title : componentName,
-                component: item.children && item.children.length ? modules[`/src/views/${item.component}.vue`]
+                component: item.children && item.children.length ? resolveModule(item.component)
                   : () =>  getComponent(item.component, componentName),
                 meta: {
                     cache: item.cache,
@@ -40,9 +70,9 @@ export function dynamicRouter(routeList: AppRouteModule[]) {
  * @param componentName
  */
 const getComponent = async (componentPath: string, componentName: string) => {
-    const importPath = `/src/views/${componentPath}.vue`;
-
-    const mod = await modules[importPath](); // 动态加载组件
+    const moduleLoader = resolveModule(componentPath);
+    if (!moduleLoader) return undefined;
+    const mod: any = await moduleLoader(); // 动态加载组件
     const component = mod.default;
 
     if (component) {
@@ -63,7 +93,7 @@ export function dynamicRouterOld(routeList: AppRouteModule[]) {
         if (item.component != "wonderform") {
             list.push({
                 ...item,
-                component: modules[`/src/views/${item.component}.vue`],
+                component: resolveModule(item.component),
                 meta: {
                     cache: item.cache,
                     component: item.component,

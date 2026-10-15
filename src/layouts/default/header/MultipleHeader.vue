@@ -28,7 +28,7 @@ import { RedoOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-d
 import { useRouter } from "vue-router"
 import { router } from "/@/router"
 import { usePermissionStore } from "/@/store/modules/permission"
-const TabAction = defineAsyncComponent(() => import("/@/views/layouts/default/header/TabAction.vue"));
+const TabAction = defineAsyncComponent(() => import("/@/layouts/default/header/TabAction.vue"));
 const tabStore = useTabsStore()
 // tab选中面板key
 const activeKeys = computed(() => tabStore.getTabActiveKey)

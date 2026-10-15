@@ -45,7 +45,7 @@ import { getUrl } from '/@/utils';
 import { useUserStore } from '/@/store/modules/user';
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
 import { toggleBlackWhite } from "/@/settings/initSetting"
-const CNotice = defineAsyncComponent(() => import("/@/views/layouts/default/header/Notice.vue"));
+const CNotice = defineAsyncComponent(() => import("/@/layouts/default/header/Notice.vue"));
 const userStore = useUserStore();
 const userInfo = userStore.getUserInfo
 const { toggleShowTabs } = useTabsSetting()

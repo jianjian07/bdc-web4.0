@@ -28,11 +28,9 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { usePermissionStore } from '/@/store/modules/permission'
 import { useAppStore } from "/@/store/modules/app"
 const appStore = useAppStore()
-import { SettingOutlined } from '@ant-design/icons-vue'
-import { menuModel } from '/@/api/sys/model/menuModel'
 import { router } from '/@/router'
 import { useTabsStore } from "/@/store/modules/tabs"
-import SubMenu from "/@/views/layouts/default/sider/subMenu.vue"
+import SubMenu from "/@/layouts/default/sider/subMenu.vue"
 import { useRouter } from "vue-router"
 import { PageEnum } from "/@/enums/pageEnum"
 import { findNode } from "/@/views/online/utils/commonUtils"
@@ -58,7 +56,7 @@ let selectedKeys = ref<string[] | number[]>([])
 
 watch(() => tabActiveKeys.value, (newVal, oldVal) => {
   selectedKeys.value = [newVal]
-  let find = findNode(menuList,newVal,'path')
+  let find = findNode(menuList, newVal, 'path')
   if (find) {
     let result = getAllParentIds(menuList, find);
     state.openKeys = result
@@ -146,7 +144,7 @@ function onOpenChange(openKeys) {
  */
 function getAllParentIds(menuList, find, key = 'id', pidKey = 'pid') {
   let arr = [find[pidKey]]
-  
+
   function findParent(menuList, currentPid) {
     if (!currentPid || currentPid === '0') {
       return
@@ -157,7 +155,7 @@ function getAllParentIds(menuList, find, key = 'id', pidKey = 'pid') {
       findParent(menuList, parent[pidKey])
     }
   }
-  
+
   findParent(menuList, find[pidKey]);
 
   return arr;

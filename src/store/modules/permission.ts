@@ -15,7 +15,7 @@ interface PermissionState {
     menuList: menuModel[];
     permissionList: string[];
     toolBarInfo: toolbarModel[],
-    igsInfo: IgsInfoModel[],
+    igsInfo: any[],
     showCreateBtn: boolean;
 }
 /**

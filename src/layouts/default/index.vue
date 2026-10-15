@@ -6,7 +6,8 @@
     <Layout :class="[layoutClass]" style="min-height: calc(100% - 50px)">
       <!-- 左侧导航 -->
       <!-- 这里测试如果sider的放里面会导致莫名其妙渲染100多次-->
-      <a-layout-sider class="menu-sider" width="250" v-model:collapsed="getCollapsed" collapsible :trigger="null" v-show="!fullscreen">
+      <a-layout-sider class="menu-sider" width="250" v-model:collapsed="getCollapsed" collapsible :trigger="null"
+        v-show="!fullscreen">
         <LayoutSideBar />
       </a-layout-sider>
 
@@ -24,9 +25,9 @@
 <script lang="ts" setup>
 import { Layout, Modal } from 'ant-design-vue'
 import { computed, onMounted, unref, ref, defineAsyncComponent, toRefs, onBeforeUnmount } from 'vue'
-import LayoutHeader from '/@/views/layouts/default/header/index.vue'
-import LayoutMultipleHeader from '/@/views/layouts/default/header/MultipleHeader.vue'
-import LayoutSideBar from '/@/views/layouts/default/sider/index.vue'
+import LayoutHeader from '/@/layouts/default/header/index.vue'
+import LayoutMultipleHeader from '/@/layouts/default/header/MultipleHeader.vue'
+import LayoutSideBar from '/@/layouts/default/sider/index.vue'
 // import LayoutContent from './content/index.vue';
 import { useAppStore } from '/@/store/modules/app';
 import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
@@ -35,8 +36,6 @@ import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 import { PageEnum } from "/@/enums/pageEnum";
 import { currentRoute } from "/@/router"
 import { useUserStore } from "/@/store/modules/user.ts"
-// const LayoutHeader = defineAsyncComponent(() => import("/@/views/layouts/default/header/index.vue"));
-// const LayoutMultipleHeader = defineAsyncComponent(() => import("/@/views/layouts/default/header/MultipleHeader.vue"));
 const LayoutContent = defineAsyncComponent(() => import("./content/index.vue"));
 const appStore = useAppStore()
 const tabStore = useTabsStore()
