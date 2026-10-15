@@ -24,7 +24,8 @@
                     <template v-if="editableData[record.id0]">
                         <a-input v-if="column.componentType == 'input'"
                             v-model:value="editableData[record.id0][column.dataIndex]"
-                            @blur="column.blur ? searchFormInfo(editableData[record.id0]) : ''" style="margin: -5px 0" />
+                            @blur="column.blur ? searchFormInfo(editableData[record.id0]) : ''"
+                            style="margin: -5px 0" />
                         <a-select v-once v-else-if="column.componentType == 'select'"
                             v-model:value="editableData[record.id0][column.dataIndex]"
                             :options="getDictItemsByCode(column.dict)"
@@ -137,7 +138,7 @@ dataSource.value = bdList.value
 watch(props.nodeInfo, (_newValue, _oldValue) => {
     getList()
 }, {
-  immediate: true
+    immediate: true
 });
 function getList() {
     defHttp.post({ url: api.listUrl, data: { ...props.nodeInfo } }, { withToken: true }).then((res) => {

@@ -35,8 +35,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import BdList from '/@/views/system/case/components/BdList.vue';
-import BtnList from '/@/views/system/case/components/BtnList.vue';
+import BdList from '/@/views/bpm/sxgl/components/BdList.vue';
+import BtnList from '/@/views/bpm/sxgl/components/BtnList.vue';
 import UnifiedAssignModal from '/@/views/bpm/sxgl/components/UnifiedAssignModal.vue';
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { message } from 'ant-design-vue';

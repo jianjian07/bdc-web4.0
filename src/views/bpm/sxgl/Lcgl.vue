@@ -12,8 +12,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import ExIndex from '/@/views/system/case/components/drdc/ExIndex.vue';
-import ImIndex from '/@/views/system/case/components/drdc/ImIndex.vue';
+import ExIndex from '/@/views/bpm/sxgl/components/ExIndex.vue';
+import ImIndex from '/@/views/bpm/sxgl/components/ImIndex.vue';
 
 
 

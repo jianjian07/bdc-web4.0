@@ -442,7 +442,7 @@ function onSelectTreeNode(keys, e) {
     let modal = cModal({
       title: '添加收费条目',
       width: 600,
-      filePath: 'views/system/case/SfbzpzModal',
+      filePath: 'views/bpm/sfpz/SfbzpzModal',
       formData: record,
       onOk: async (res: any) => {
         if (res) {
