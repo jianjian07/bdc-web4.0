@@ -2,33 +2,26 @@
   <div style="padding: 0 10px;">
     <a-space style="padding-bottom: 10px;">
       <a-button type="primary" @click="onShowModal()">
-        <template #icon><PlusOutlined /></template>
+        <template #icon>
+          <PlusOutlined />
+        </template>
         新增
       </a-button>
       <a-button type="primary" @click="loadData()">
-        <template #icon><RedoOutlined /></template>
+        <template #icon>
+          <RedoOutlined />
+        </template>
         刷新
       </a-button>
     </a-space>
-    <a-table 
-      bordered 
-      :data-source="dataList"
-      :columns="columns"
-      :pagination="pagination"
-      :row-key="record => record.id"
-      size="small"
-    >
+    <a-table bordered :data-source="dataList" :columns="columns" :pagination="pagination" :row-key="record => record.id"
+      size="small">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operation'">
           <a @click="onShowModal(record, 'edit')">编辑</a>
           <a-divider type="vertical" />
-          <a-popconfirm
-            title="确定删除？"
-            ok-text="确定"
-            cancel-text="取消"
-            @confirm="onDelete(record.id)"
-          >
-          <a style="color:#ff4d4f">删除</a>
+          <a-popconfirm title="确定删除？" ok-text="确定" cancel-text="取消" @confirm="onDelete(record.id)">
+            <a style="color:#ff4d4f">删除</a>
           </a-popconfirm>
         </template>
       </template>
@@ -71,12 +64,12 @@ const columns = [
   },
 ]
 // 分页
-const pagination = ref<any>({ 
+const pagination = ref<any>({
   total: 0,
   current: 1,
   pageSize: 100,
-  showSizeChanger: false, 
-  showTotal: (total: Number) => `共 ${total} 条数据` 
+  showSizeChanger: false,
+  showTotal: (total: Number) => `共 ${total} 条数据`
 })
 
 const urlList = {
@@ -87,7 +80,7 @@ const urlList = {
 const emit = defineEmits(['refreshList'])
 
 watch(() => props.selectInfo, val => {
-  if(val) {
+  if (val) {
     loadData()
   }
 }, {
@@ -110,7 +103,7 @@ function loadData() {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res?.success) {
+    if (res?.success) {
       dataList.value = res.result
       pagination.value.total = res.result.length
     } else {
@@ -126,15 +119,15 @@ function onShowModal(data: any = null, type: String = 'new') {
   let modal = cModal({
     title: `${title}`,
     width: 600,
-    filePath: 'views/system/regionmanage/components/addZD',
-    footerStyle: {'text-align': 'center'},
+    filePath: 'views/system/region/components/addZD',
+    footerStyle: { 'text-align': 'center' },
     footer: type == 'view' ? false : true,
     formData: {
       type: type, // 新增/编辑
       itemData: data || props.selectInfo, //当前操作的数据行
     },
     onOk: async (res: any) => {
-      if(type == 'view') {
+      if (type == 'view') {
         modal.destroy()
       } else {
         modal.setConfirmLoading(true)
@@ -147,7 +140,7 @@ function onShowModal(data: any = null, type: String = 'new') {
         }
         modal.setConfirmLoading(false)
       }
-      
+
     },
     onCancel: () => {
       modal.destroy()
@@ -163,7 +156,7 @@ function onDelete(id: any) {
     },
     { withToken: true }
   ).then((res: any) => {
-    if(res && res.success) {
+    if (res && res.success) {
       message.success('删除成功！')
       loadData()
       emit('refreshList')
@@ -175,6 +168,4 @@ function onDelete(id: any) {
 
 </script>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>
