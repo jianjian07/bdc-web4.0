@@ -43,11 +43,11 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import ApiHeader from "/@/views/data/apimanage/modules/apiHeader.vue"
-import ApiQuery from "/@/views/data/apimanage/modules/apiQuery.vue"
-import ApiBody from "/@/views/data/apimanage/modules/apiBody.vue"
+import ApiHeader from "/@/views/data/api/manage/modules/apiHeader.vue"
+import ApiQuery from "/@/views/data/api/manage/modules/apiQuery.vue"
+import ApiBody from "/@/views/data/api/manage/modules/apiBody.vue"
 import CodeEditor from '/@/components/common/CodeEditor.vue'
-import ApiDataSource from '/@/views/data/apimanage/modules/apiDataSource.vue'
+import ApiDataSource from '/@/views/data/api/manage/modules/apiDataSource.vue'
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 // 选中tab
 let activeKey = ref<string>('header')

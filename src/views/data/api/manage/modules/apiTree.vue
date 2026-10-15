@@ -128,7 +128,7 @@ import {
   getMagicApiInfo,
   getParentId,
   removeMagicApiById
-} from "/@/views/data/apimanage/modules/apiUtil"
+} from "/@/views/data/api/manage/modules/apiUtil"
 import { exprotJson, importJson } from "/@/views/online/utils/file"
 import { usePermissionStore } from "/@/store/modules/permission"
 const permissionStore = usePermissionStore()

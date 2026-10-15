@@ -99,10 +99,10 @@
 import { PlusOutlined, CheckOutlined, MinusOutlined, FolderOutlined, EllipsisOutlined, ColumnHeightOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { findNode, getDictItemsByCode } from '/@/views/online/utils/commonUtils'
-import MqConfigForm from "/@/views/data/pzxx/modules/MqConfigForm.vue"
+import MqConfigForm from "/@/views/data/mq/modules/MqConfigForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { findNodeById } from "/@/views/data/apimanage/modules/apiUtil"
+import { findNodeById } from "/@/views/data/api/manage/modules/apiUtil"
 import { usePermissionStore } from "/@/store/modules/permission"
 const permissionStore = usePermissionStore()
 const showCreate = computed(() => permissionStore.showCreateBtn)

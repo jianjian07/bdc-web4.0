@@ -94,7 +94,7 @@ import { nextTick, ref, watch, onMounted } from "vue"
 import { AppstoreAddOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 import { guid } from "/@/utils"
-import { escapeJsonString } from "/@/views/data/apimanage/modules/apiUtil"
+import { escapeJsonString } from "/@/views/data/api/manage/modules/apiUtil"
 
 const props = defineProps({
   apiData: {

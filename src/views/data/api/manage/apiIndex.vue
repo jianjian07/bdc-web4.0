@@ -10,12 +10,12 @@
 </template>
 
 <script lang="ts" setup>
-import ApiTree from "/@/views/data/apimanage/modules/apiTree.vue"
+import ApiTree from "/@/views/data/api/manage/modules/apiTree.vue"
 import { onMounted, ref } from "vue"
-import ApiManage from "/@/views/data/apimanage/modules/apiManage.vue"
+import ApiManage from "/@/views/data/api/manage/modules/apiManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { setParentId } from "/@/views/data/apimanage/modules/apiUtil"
+import { setParentId } from "/@/views/data/api/manage/modules/apiUtil"
 // 树
 let apiTreeData = ref<any>([])
 // 当前选中数据

@@ -11,11 +11,11 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import ApiTree from "/@/views/data/apimanage/modules/apiTree.vue"
-import ApiExManage from "/@/views/data/apimanage/modules/apiExManage.vue"
+import ApiTree from "/@/views/data/api/manage/modules/apiTree.vue"
+import ApiExManage from "/@/views/data/api/manage/modules/apiExManage.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
-import { setParentId } from "/@/views/data/apimanage/modules/apiUtil"
+import { setParentId } from "/@/views/data/api/manage/modules/apiUtil"
 
 let loading = ref<boolean>(false)
 // 树

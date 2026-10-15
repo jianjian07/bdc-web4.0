@@ -177,10 +177,10 @@ import {
   sendExCommonApi,
   sendMagicApi,
   validateNoIllegalChars
-} from "/@/views/data/apimanage/modules/apiUtil"
+} from "/@/views/data/api/manage/modules/apiUtil"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
-import ApiExParam from "/@/views/data/apimanage/modules/apiExParam.vue"
-import ApiResult from "/@/views/data/apimanage/modules/apiResult.vue"
+import ApiExParam from "/@/views/data/api/manage/modules/apiExParam.vue"
+import ApiResult from "/@/views/data/api/manage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons-vue'

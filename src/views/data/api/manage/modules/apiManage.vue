@@ -181,8 +181,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue"
-import ApiParam from "/@/views/data/apimanage/modules/apiParam.vue"
-import ApiResult from "/@/views/data/apimanage/modules/apiResult.vue"
+import ApiParam from "/@/views/data/api/manage/modules/apiParam.vue"
+import ApiResult from "/@/views/data/api/manage/modules/apiResult.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons-vue'
@@ -198,7 +198,7 @@ import {
   sendMagicApi,
   sendCommonApi,
   validateNoIllegalChars
-} from "/@/views/data/apimanage/modules/apiUtil"
+} from "/@/views/data/api/manage/modules/apiUtil"
 
 const props = defineProps({
   apiTreeData: {
