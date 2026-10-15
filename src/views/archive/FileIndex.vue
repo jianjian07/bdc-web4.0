@@ -7,8 +7,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import FileTree from "/@/views/system/filemanage/components/FileTree.vue"
-import FileForm from "/@/views/system/filemanage/components/FileForm.vue"
+import FileTree from "/@/views/archive/components/FileTree.vue"
+import FileForm from "/@/views/archive/components/FileForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 import { message } from "ant-design-vue"
 // 树
@@ -52,13 +52,13 @@ function initTree(tree) {
  * @param parentKey
  */
 function addKeys(node, parentKey = '-1') {
-    node.key = `${node.type}-${node.id}`;
-    node.pkey = parentKey;
-    node.isNeedGetInfo = true;
+  node.key = `${node.type}-${node.id}`;
+  node.pkey = parentKey;
+  node.isNeedGetInfo = true;
 
-    if (node.children && node.children.length > 0) {
-        node.children.forEach(child => addKeys(child, node.key));
-    }
+  if (node.children && node.children.length > 0) {
+    node.children.forEach(child => addKeys(child, node.key));
+  }
 }
 </script>
 

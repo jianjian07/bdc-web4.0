@@ -7,8 +7,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import FileCodeList from "/@/views/system/filemanage/components/FileCodeList.vue"
-import FileCodeForm from "/@/views/system/filemanage/components/FileCodeForm.vue"
+import FileCodeList from "/@/views/archive/components/FileCodeList.vue"
+import FileCodeForm from "/@/views/archive/components/FileCodeForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 // 树
 let treeData = ref<any>([])
@@ -47,12 +47,12 @@ function initTree(tree) {
  * @param parentKey
  */
 function addKeys(node) {
-    node.isNeedGetInfo = true
-    node.key = node.ruleCode
+  node.isNeedGetInfo = true
+  node.key = node.ruleCode
 
-    if (node.children && node.children.length > 0) {
-        node.children.forEach(child => addKeys(child));
-    }
+  if (node.children && node.children.length > 0) {
+    node.children.forEach(child => addKeys(child));
+  }
 }
 </script>
 
