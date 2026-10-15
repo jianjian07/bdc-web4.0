@@ -59,7 +59,7 @@
 import { RedoOutlined, SearchOutlined } from "@ant-design/icons-vue"
 import { onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
-import PermissionModal from "/@/views/system/permission/modules/PermissionModal.vue"
+import PermissionModal from "/@/views/bpm/config/modules/PermissionModal.vue"
 import { message } from "ant-design-vue"
 import { findNode } from "/@/views/online/utils/commonUtils.ts"
 

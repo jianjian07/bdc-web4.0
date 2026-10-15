@@ -7,8 +7,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import FileCodeList from "/@/views/archive/components/FileCodeList.vue"
-import FileCodeForm from "/@/views/archive/components/FileCodeForm.vue"
+import FileCodeList from "/@/views/tools/code/FileCodeList.vue"
+import FileCodeForm from "/@/views/tools/code/FileCodeForm.vue"
 import { defHttp } from "/@/utils/http/axios"
 // 树
 let treeData = ref<any>([])

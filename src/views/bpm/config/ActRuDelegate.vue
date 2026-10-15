@@ -4,7 +4,7 @@
       <a-space>
         <a-button type="primary" @click="handleAdd">
           <template #icon>
-            <PlusOutlined/>
+            <PlusOutlined />
           </template>
           新增
         </a-button>
@@ -13,7 +13,7 @@
             <a-menu>
               <a-popconfirm title="确定删除?" @confirm="handleBatchDelete">
                 <a-menu-item key="1">
-                  <DeleteOutlined/>
+                  <DeleteOutlined />
                   删除
                 </a-menu-item>
               </a-popconfirm>
@@ -21,7 +21,7 @@
           </template>
           <a-button>
             批量操作
-            <DownOutlined/>
+            <DownOutlined />
           </a-button>
         </a-dropdown>
       </a-space>
@@ -34,15 +34,8 @@
         </template>
       </a-alert>
     </div>
-    <a-table
-        :columns="columns"
-        :data-source="dataSource"
-        :loading="loading"
-        :pagination="pagination"
-        :row-selection="rowSelection"
-        bordered
-        row-key="id"
-        @change="onTableChange">
+    <a-table :columns="columns" :data-source="dataSource" :loading="loading" :pagination="pagination"
+      :row-selection="rowSelection" bordered row-key="id" @change="onTableChange">
       <template #bodyCell="{ column, text, record, index }">
         <template v-if="column.dataIndex == 'index'">
           {{ index + 1 }}
@@ -53,7 +46,7 @@
         <template v-if="column.dataIndex == 'action'">
           <a-space :size="2">
             <template #split>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
             </template>
             <template v-if="record.estate == '1'">
               <a @click="cancelEntrust(record, 0)">撤销</a>
@@ -78,7 +71,7 @@ import { PlusOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons-vu
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils'
 import { computed, onMounted, ref } from "vue"
 import { defHttp } from "/@/utils/http/axios"
-import ActRuDelegateModal from "/@/views/bdc/task/components/ActRuDelegateModal.vue"
+import ActRuDelegateModal from "/@/views/bpm/config/modules/ActRuDelegateModal.vue"
 import { message } from "ant-design-vue"
 
 const columns = [

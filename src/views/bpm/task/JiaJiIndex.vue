@@ -41,16 +41,16 @@
               <template #split>
                 <a-divider type="vertical" />
               </template>
-              <a-popconfirm v-if="record.isSupervise != '' && record.isSupervise === '1'" title="确定取消督办吗?"
+              <a-popconfirm v-if="record.isUrgent != '' && record.isUrgent === '1'" title="确定取消加急吗?"
                 @confirm="() => queryInfo(record)">
                 <a>取消</a>
               </a-popconfirm>
-              <a v-if="record.isSupervise != '' && record.isSupervise === '0'" @click="handleOper(record)">督办</a>
+              <a v-if="record.isUrgent != '' && record.isUrgent === '0'" @click="handleOper(record)">加急</a>
             </a-space>
           </template>
-          <template v-if="column.dataIndex === 'isSupervise'">
-            <a-tag :color="record.isSupervise === '1' ? 'green' : 'red'">
-              {{ record.isSupervise === '1' ? '已督办' : '未督办' }}
+          <template v-if="column.dataIndex === 'isUrgent'">
+            <a-tag :color="record.isUrgent === '1' ? 'green' : 'red'">
+              {{ record.isUrgent === '1' ? '已加急' : '未加急' }}
             </a-tag>
           </template>
         </template>
@@ -74,8 +74,8 @@ const userInfo = userStore.getUserInfo
 
 enum api {
   tasklist = '/api/zrzy-bdc/act/task/susperviseAndUrgentlist',
-  edit = '/api/zrzy-bdc/process/extActSupervise/edit', // 编辑
-  queryByInstId = '/api/zrzy-bdc/process/extActSupervise/queryByInstId', //通过实例id查询
+  edit = '/api/zrzy-bdc/process/extActUrgent/edit', // 编辑
+  queryByInstId = '/api/zrzy-bdc/process/extActUrgent/queryByInstId', //通过实例id查询
 }
 let datalist = ref([]);
 let formData: any = ref({})
@@ -114,7 +114,7 @@ const columns = [
   {
     title: '状态',
     align: 'center',
-    dataIndex: 'isSupervise',
+    dataIndex: 'isUrgent',
     width: 100
   },
   {
@@ -143,7 +143,7 @@ function loadData() {
   spinning.value = true
   defHttp.get({
     url: api.tasklist, params: {
-      ajmc: formData.value.ajmc, slbh: formData.value.slbh, type: 'suspervise',
+      ajmc: formData.value.ajmc, slbh: formData.value.slbh, type: 'urgent',
       pageNo: pagination.value.current, pageSize: pagination.value.pageSize
     }
   }, { withToken: true }).then(res => {
@@ -164,6 +164,11 @@ function searchData() {
   pagination.value.current = 1
   loadData()
 }
+
+function itemView(record: any) {
+  router.push('/task/hisTaskDeal?slbh=' + record.slbh)
+}
+
 /**
 * 分页
 * @param pag
@@ -173,11 +178,6 @@ function onChange(pag: any, callback: any) {
   pagination.value.current = pag.current
   callback()
 }
-
-function itemView(record: any) {
-  router.push('/task/hisTaskDeal?slbh=' + record.slbh)
-}
-
 /**
 * 重置
 */
@@ -186,22 +186,22 @@ function clear() {
   loadData()
 }
 /**
-* 取消督办
+* 取消加急
 * @param id
 */
 function handleRestart(record) {
   let params = { ...record }
-  params.isSupervise = '0'
-  params.superviseMan = userInfo?.userId
+  params.isUrgent = '0'
+  params.urgentMan = userInfo?.userId
   params.operateDate = getNowDate()
-  params.superviseStatus = '0'
+  params.urgentStatus = '0'
 
   defHttp.put({
     url: api.edit,
     data: params
   }, { withToken: true }).then((res: any) => {
     if (res?.success) {
-      message.success(res?.message)
+      message.success(res.message)
       loadData()
     } else {
       message.warn(res?.message || '操作失败！')
@@ -230,14 +230,14 @@ function getNowDate() {
 }
 
 /**
-* 督办
+* 加急
 * @param record
 */
 function handleOper(record: any) {
   let modal = cModal({
-    title: '督办',
+    title: '加急',
     width: 600,
-    filePath: 'views/bdc/dbgl/dbModal',
+    filePath: 'views/bpm/task/components/jjModal',
     footerStyle: { 'text-align': 'center' },
     formData: {
       record: record
