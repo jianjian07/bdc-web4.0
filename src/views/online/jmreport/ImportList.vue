@@ -1,7 +1,7 @@
 <template>
   <div class="import-list">
-    <a-table :columns="columns" :data-source="listData" :pagination="false" row-key="id" :rowSelection="rowSelection" bordered
-             size="small">
+    <a-table :columns="columns" :data-source="listData" :pagination="false" row-key="id" :rowSelection="rowSelection"
+      bordered size="small">
       <template #bodyCell="{ column, text, record, index }">
         <div v-if="column.dataIndex == 'isExist'">
           {{ record.existsList.length ? '是' : '否' }}
@@ -12,7 +12,7 @@
         <div v-if="column.dataIndex == 'importType'">
           <template v-if="record.isChecked">
             <a-select v-model:value="record[column.dataIndex]" style="width: 100%"
-                      :options="getImportTypeOptions(record.existsList)">
+              :options="getImportTypeOptions(record.existsList)">
             </a-select>
           </template>
         </div>
@@ -23,7 +23,6 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue"
-import { message } from "ant-design-vue"
 
 const props = defineProps({
   formData: {
@@ -146,6 +145,4 @@ defineExpose({
 })
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

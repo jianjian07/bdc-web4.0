@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="title">{{ slbh }}：{{ formConfig.ajmc }}</div>
-    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :isAllFinished="isAllFinished"/>
+    <CBtnsVue v-model:spinning="spinning" :btnList="btnList" :vueRefs="demoRefs" :isAllFinished="isAllFinished" />
     <a-spin :spinning="spinning" wrapperClassName="form-content-spin">
       <div class="form-content" ref="formContent">
         <div class="left-content" :style="{ width: leftWidth + 'px' }">
@@ -14,7 +14,7 @@
               </template>
             </a-space-compact>
             <a-drawer v-if="open" v-model:open="open" :footer-style="{ textAlign: 'right' }"
-              :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' :1000" @close="onClose">
+              :style="{ position: 'absolute' }" title="数据提取" :width="eType == 'lpb' ? '80%' : 1000" @close="onClose">
               <template #extra>
                 <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
                 <a-button type="primary" :loading="okLoading" @click="handleOk">确定</a-button>
@@ -26,18 +26,20 @@
           <div :class="['form-body', formBtnList.length == 0 ? 'form-body-without-btn' : '']">
             <template v-for="(form, index) in formList">
               <template v-if="form.bdlb == '0'">
-                <component v-bind:is="generateForm" :id="form.formId" :key="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setRef(el, form.formId)" :reload="reload" >
+                <component v-bind:is="generateForm" :id="form.formId" :key="form.formId" :formCode="form.vfd"
+                  :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setRef(el, form.formId)"
+                  :reload="reload">
                 </component>
               </template>
               <template v-else>
-                <component v-bind:is="component(form.vfd)" :id="form.formId" :key="form.formId"
-                  :formCode="form.vfd" :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setCRef(el, form.formId)" :reload="reload" >
+                <component v-bind:is="component(form.vfd)" :id="form.formId" :key="form.formId" :formCode="form.vfd"
+                  :disabled="form.iszd == '1'" :formData="{ jdmc: jdmc }" :ref="(el) => setCRef(el, form.formId)"
+                  :reload="reload">
                 </component>
               </template>
-<!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
-<!--                :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">-->
-<!--              </component>-->
+              <!--              <component v-bind:is="form.bdlb == '0' ? generateForm : component(form.vfd)" :id="form.formId"-->
+              <!--                :formCode="form.vfd" :disabled="form.iszd == '1'" :ref="setRef" :reload="reload">-->
+              <!--              </component>-->
             </template>
             <template v-if="qlr && isAllFinished">
               <qlr-list v-if="showQlr" :qlr="qlr"></qlr-list>
@@ -87,7 +89,7 @@ const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })
 const LookLpb = defineAsyncComponent(() => import("/@/views/bdc/lpb/index.vue"))
-const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/index.vue"))
+const SsoFile = defineAsyncComponent(() => import("/@/views/tools/ssofile/index.vue"))
 const route = currentRoute;
 let open = ref(false)
 // 表单配置
@@ -246,7 +248,7 @@ function getFormConfig() {
  * @param btn
  */
 async function handleClick(btn) {
-   if (!isAllFinished.value) {
+  if (!isAllFinished.value) {
     message.warning('表单还未加载完毕!')
     return
   }
@@ -504,11 +506,11 @@ function onShowFile(manage) {
 }
 
 :deep(.ant-input-disabled) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-input[disabled]) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input)) {
@@ -518,11 +520,10 @@ function onShowFile(manage) {
 }
 
 :deep(.ant-picker.ant-picker-disabled) {
-    background-color: rgba(0, 0, 0, 0.02)
+  background-color: rgba(0, 0, 0, 0.02)
 }
 
 :deep(.ant-input-number-disabled) {
   background-color: rgba(0, 0, 0, 0.02)
 }
-
 </style>

@@ -219,7 +219,7 @@ import { router } from "/@/router"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
 import { SwapRightOutlined, MinusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
-import SyncModal from "/@/views/system/sync/components/SyncModal.vue"
+import SyncModal from "/@/views/dataops/sync/components/SyncModal.vue"
 import { message } from "ant-design-vue"
 import { closeCurrentTab } from "/@/utils/sysUtil"
 // 当前页

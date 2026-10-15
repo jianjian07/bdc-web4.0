@@ -95,7 +95,7 @@ const generateForm = computed(() => {
   return defineAsyncComponent(() => import("/@/views/online/form/FViewOnline.vue"))
 })
 const LookLpb = defineAsyncComponent(() => import("/@/views/bdc/lpb/index.vue"))
-const SsoFile = defineAsyncComponent(() => import("/@/views/system/ssofile/index.vue"))
+const SsoFile = defineAsyncComponent(() => import("/@/views/tools/ssofile/index.vue"))
 const route = currentRoute;
 let open = ref(false)
 // 表单配置

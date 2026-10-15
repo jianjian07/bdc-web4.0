@@ -105,7 +105,6 @@ import { message } from 'ant-design-vue'
 import { exprotJson } from "/@/views/online/utils/file"
 import { cModal } from "/@/components/cModal/index"
 import { useUserStoreWithOut } from "/@/store/modules/user"
-import { Http2ServerRequest } from "http2"
 import { usePermissionStore } from "/@/store/modules/permission"
 const permissionStore = usePermissionStore()
 const showCreate = computed(() => permissionStore.showCreateBtn)
@@ -313,7 +312,7 @@ function importData() {
       let modal = cModal({
         title: '选择上传文件',
         width: 1200,
-        filePath: 'views/jmreport/ImportList',
+        filePath: 'views/online/jmreport/ImportList',
         formData: {
           validateList: res.result
         },
