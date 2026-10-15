@@ -369,7 +369,7 @@ function handleModal(type: any, record: any = null) {
   let modal = cModal({
     title: type == 'new' ? '新增' : type == 'edit' ? `编辑【${record.title}】` : `查看【${record.title}】`,
     width: 1000,
-    filePath: 'views/system/tzgg/components/tzggModal',
+    filePath: 'views/tools/tzgg/components/tzggModal',
     footerStyle: { 'text-align': 'center' },
     footer: type != 'view',
     formData: {

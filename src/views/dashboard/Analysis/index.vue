@@ -73,7 +73,7 @@
 import { ref, reactive } from 'vue';
 import { getUrl } from '/@/utils';
 import { router } from "/@/router"
-import tzggList from '/@/views/system/tzgg/index.vue';
+import tzggList from '/@/views/tools/tzgg/index.vue';
 import dydqList from './components/dydqList.vue'
 import cfdqList from './components/cfdqList.vue'
 import { addFlow } from "/@/views/bdc/utils/case";

@@ -190,7 +190,7 @@ function showModal(record: any) {
   let modal = cModal({
     title: `查看【${record.title}】`,
     width: 1000,
-    filePath: 'views/system/tzgg/components/tzggModal',
+    filePath: 'views/tools/tzgg/components/tzggModal',
     footer: false,
     formData: {
       type: 'view',
