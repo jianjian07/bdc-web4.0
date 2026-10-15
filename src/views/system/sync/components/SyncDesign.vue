@@ -204,7 +204,7 @@
       <a-button v-if="current == steps.length - 1" type="primary" @click="handleComplete">
         完成
       </a-button>
-      <a-button v-if="current == steps.length - 1" type="primary" style="margin-left: 8px" @click="handleClose">
+      <a-button v-if="current == steps.length - 1" type="primary" style="margin-left: 8px" @click="closeCurrentTab">
         关闭
       </a-button>
       <a-button v-if="!isJustTb && current > 0" style="margin-left: 8px" @click="prev">上一步</a-button>
@@ -214,15 +214,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from "vue"
+import { onMounted, ref } from "vue"
 import { router } from "/@/router"
 import { getDictItemsByCode } from '/@/views/online/utils/commonUtils';
 import { defHttp } from "/@/utils/http/axios"
-import { SwapRightOutlined, MinusOutlined, MinusCircleOutlined, FormOutlined, EnterOutlined, AppstoreAddOutlined } from '@ant-design/icons-vue';
+import { SwapRightOutlined, MinusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
 import SyncModal from "/@/views/system/sync/components/SyncModal.vue"
 import { message } from "ant-design-vue"
-import { useTabsStore } from "/@/store/modules/tabs"
-import { useTabsSetting } from "/@/hooks/setting/useTabsSetting"
+import { closeCurrentTab } from "/@/utils/sysUtil"
 // 当前页
 const current = ref<number>(0);
 // 表单实例
@@ -467,7 +466,7 @@ function selectAll(type) {
  * @param type
  */
 function isAllChecked(type) {
-  console.log('viewTables.value.source',viewTables.value.source)
+  console.log('viewTables.value.source', viewTables.value.source)
   const allItems = viewTables.value.source[type].map(i => i.tablename);
   const selectedItems = formState.value[`${type}Check`] || [];
   if (allItems.length === 0) {
@@ -601,39 +600,10 @@ function handleComplete() {
     if (res && res.success) {
       message.success('保存成功!')
       initData(true)
-      // closeCurrentTab()
     } else {
       message.warning(res?.message)
     }
   })
-}
-
-function handleClose() {
-  closeCurrentTab()
-}
-
-/**
- * 关闭当前标签页
- */
-function closeCurrentTab() {
-  const tabStore = useTabsStore()
-  const { getTabsShow } = useTabsSetting()
-  if (getTabsShow.value) {
-    const currentTab = computed(() => tabStore.getCurrentTab)
-    tabStore.removeTab(currentTab.value)
-
-    if (tabStore.getCurrentTab.meta.cache) {
-      setTimeout(() => {
-        if (tabStore.getCurrentTab.fullPath == '/system/sync') {
-          const tabStore = useTabsStore()
-          tabStore.refreshTab()
-          // router.push('/refresh')
-        }
-      }, 300)
-    }
-  } else {
-    router.push('/analysis')
-  }
 }
 
 /**

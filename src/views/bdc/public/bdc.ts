@@ -20,8 +20,7 @@ import {
 import { getUrl, guid } from "/@/utils";
 import { getDictItemsByCode } from "/@/views/online/utils/commonUtils"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
-import { useAppStore } from "/@/store/modules/app.ts"
-import { downloadPdfByCanvas, generatePdfByHtml } from "/@/views/system/contract/genPdf.ts"
+import { closeCurrentTab } from "/@/utils/sysUtil"
 
 const userStore = useUserStore()
 // 权利人信息
@@ -228,28 +227,6 @@ export async function handOver(demoRefs: any, btn: any, loading: any, jdmc: stri
   }
   return res
 }
-
-/**
- * 关闭当前页面
- */
-export function closeCurrentTab() {
-  const tabStore = useTabsStore()
-  const { getTabsShow } = useTabsSetting()
-  if (getTabsShow.value) {
-    const currentTab = computed(() => tabStore.getCurrentTab)
-    tabStore.removeTab(currentTab.value)
-    setTimeout(() => {
-      if (tabStore.getCurrentTab.fullPath == '/bdc/case/list' || tabStore.getCurrentTab.fullPath == '/bdc/case/AdminList') {
-        const tabStore = useTabsStore()
-        tabStore.refreshTab()
-        // router.push('/refresh')
-      }
-    }, 500)
-  } else {
-    router.push('/analysis')
-  }
-}
-
 /**
  * 提交(查封台账)
  * @param demoRefs

@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { closeCurrentTab } from "/@/views/bdc/public/bdc"
+import { closeCurrentTab } from "/@/utils/sysUtil"
 
 /**
  * 返回首页
@@ -19,6 +19,4 @@ function handleBackHome() {
 }
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>
