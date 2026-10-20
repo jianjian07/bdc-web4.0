@@ -81,6 +81,8 @@ const basic = reactive({
   enableCheckpoint: true,
   enableAutoCompare: false,
   autoCompareStrategy: 'CHECKSUM' as 'ROW_COUNT' | 'CHECKSUM' | 'DIFF_ROWS',
+  /** 标识符大小写策略: 转小写后 PG 目标库查询免带双引号 */
+  identifierCase: 'PRESERVE' as 'PRESERVE' | 'LOWERCASE' | 'UPPERCASE',
   compareTables: [] as string[],
   remark: ''
 })
@@ -99,6 +101,13 @@ const modeOptions = (Object.keys(MIGRATION_MODE_DESCRIPTIONS) as MigrationMode[]
   value: m,
   label: MIGRATION_MODE_LABELS[m]
 }))
+
+/** 标识符大小写策略选项 */
+const identifierCaseOptions = [
+  { value: 'LOWERCASE', label: '转为小写（推荐，查询免带双引号）' },
+  { value: 'PRESERVE', label: '保留原样（查询需带双引号）' },
+  { value: 'UPPERCASE', label: '转为大写' }
+]
 
 //endregion
 
@@ -501,9 +510,14 @@ function targetTableValue(srcTable: string, stored: string): string {
     : stored
 }
 
-/** 目标表名占位提示: 留空即与源表同名(目标 schema 由后端按目标数据源补齐) */
+/** 目标表名占位提示: 留空即与源表同名(名字按任务级大小写策略显示, schema 由后端按目标数据源补齐) */
 function targetPlaceholder(srcTable: string): string {
-  return `${bareName(srcTable)}(默认同名)`
+  const name = bareName(srcTable)
+  const cased =
+    basic.identifierCase === 'LOWERCASE' ? name.toLowerCase()
+      : basic.identifierCase === 'UPPERCASE' ? name.toUpperCase()
+        : name
+  return `${cased}(默认同名)`
 }
 
 /** 写入策略分页: 每行含多个表单组件, 分页渲染显著降低开销 */
@@ -550,6 +564,8 @@ const payloadPreview = computed<CreateMigrationTask>(() => ({
   enableCheckpoint: basic.enableCheckpoint,
   enableAutoCompare: basic.enableAutoCompare,
   autoCompareStrategy: basic.enableAutoCompare ? basic.autoCompareStrategy : undefined,
+  // 标识符大小写策略只作用于表/列 DDL, 脚本模式无表配置
+  identifierCase: isScriptMode.value ? undefined : basic.identifierCase,
   compareTables: !isScriptMode.value && basic.enableAutoCompare ? [...basic.compareTables] : undefined,
   includeTables: [...selectedTableNames.value],
   tableOverrides: buildTableOverrides() as CreateMigrationTask['tableOverrides'],
@@ -704,6 +720,7 @@ async function loadTaskForEdit(id: number) {
     basic.enableCheckpoint = task.enableCheckpoint ?? true
     basic.enableAutoCompare = task.enableAutoCompare ?? false
     basic.autoCompareStrategy = task.autoCompareStrategy ?? 'CHECKSUM'
+    basic.identifierCase = task.identifierCase ?? 'LOWERCASE'
     basic.compareTables = task.compareTables ?? []
     basic.remark = task.remark ?? ''
 
@@ -765,7 +782,7 @@ onMounted(async () => {
 
       <!-- Step 1: 基本信息 -->
       <div v-if="step === 0">
-        <a-form ref="basicFormRef" :model="basic" :rules="basicRules" layout="vertical" style="max-width: 640px">
+        <a-form ref="basicFormRef" :model="basic" :rules="basicRules" layout="vertical" style="max-width: 800px">
           <a-form-item label="任务名" name="name" required>
             <a-input v-model:value="basic.name" placeholder="如 lims-full-load-2026" allow-clear />
           </a-form-item>
@@ -785,6 +802,13 @@ onMounted(async () => {
             <a-select v-model:value="basic.migrationMode" :options="modeOptions" />
             <div class="mode-desc">{{ MIGRATION_MODE_DESCRIPTIONS[basic.migrationMode] }}</div>
           </a-form-item>
+          <a-form-item v-if="!isScriptMode" label="表名/字段名大小写" name="identifierCase">
+            <a-select v-model:value="basic.identifierCase" :options="identifierCaseOptions" />
+            <div class="mode-desc">
+              作用于目标表名与列名。SQL Server 混合大小写表名(如 Bdc_Djzb)建议「转为小写」:
+              目标库对象为小写, 后续查询无需带双引号;「保留原样」时目标库查询必须带双引号。
+            </div>
+          </a-form-item>
           <a-space size="large">
             <a-form-item label="并行 Worker">
               <a-input-number v-model:value="basic.parallelWorkers" :min="1" :max="64" />
@@ -800,6 +824,7 @@ onMounted(async () => {
             <a-form-item label="迁移后自动比对">
               <a-switch v-model:checked="basic.enableAutoCompare" />
             </a-form-item>
+            &nbsp;&nbsp;&nbsp;&nbsp;
             <a-form-item v-if="basic.enableAutoCompare" label="比对策略">
               <a-select v-model:value="basic.autoCompareStrategy" style="width: 400px">
                 <a-select-option value="CHECKSUM">CHECKSUM（行数 + SHA-256 校验和）</a-select-option>

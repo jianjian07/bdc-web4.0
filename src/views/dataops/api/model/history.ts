@@ -40,7 +40,7 @@ export interface DirtyDataItem {
   sourcePk?: Record<string, unknown> | null
   errorMessage?: string | null
   rawValue?: Record<string, unknown> | null
-  createdAt?: string
+  createTime?: string
 }
 
 /** 历史表级结果(复用任务表结构) */

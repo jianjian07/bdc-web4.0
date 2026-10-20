@@ -249,7 +249,7 @@ const columns: TableColumnsType = [
   { title: '表数', key: 'tableCount', width: 80 },
   {
     title: '创建时间',
-    dataIndex: 'createdAt',
+    dataIndex: 'createTime',
     width: 170,
     customRender: ({ text }) => (text ? formatDateTime(text) : '-')
   },

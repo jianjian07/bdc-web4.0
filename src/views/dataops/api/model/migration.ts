@@ -162,6 +162,11 @@ export interface CreateMigrationTask {
   enableAutoCompare?: boolean
   /** 自动比对策略(默认 CHECKSUM) */
   autoCompareStrategy?: 'ROW_COUNT' | 'CHECKSUM' | 'DIFF_ROWS'
+  /**
+   * 标识符大小写策略(默认 PRESERVE)
+   * LOWERCASE 推荐: 目标表名/列名统一转小写, PG 目标库查询免带双引号
+   */
+  identifierCase?: 'PRESERVE' | 'LOWERCASE' | 'UPPERCASE'
   /** SQL_SCRIPT 模式自动比对表清单(元素为 "table" 或 "schema.table") */
   compareTables?: string[]
   includeTables: string[]
@@ -199,8 +204,8 @@ export interface MigrationTask extends CreateMigrationTask {
   status: TaskStatus
   sourceName?: string
   targetName?: string
-  createdAt?: string
-  updatedAt?: string
+  createTime?: string
+  updateTime?: string
   taskTables?: MigrationTaskTable[]
   /** SQL_SCRIPT 模式下的脚本清单 */
   scripts?: ScriptResponse[]

@@ -20,7 +20,7 @@ export interface CompareTask {
   parallelWorkers: number
   startedAt?: string
   finishedAt?: string
-  createdAt?: string
+  createTime?: string
 }
 
 /** 创建比对任务请求 */
@@ -58,7 +58,7 @@ export interface CompareResult {
   comparedMode?: string | null
   /** 比对口径备注: 已自动排除的自增列 / 行级对齐降级说明 */
   note?: string | null
-  createdAt?: string
+  createTime?: string
 }
 
 /** 比对差异块明细(P1-10) */

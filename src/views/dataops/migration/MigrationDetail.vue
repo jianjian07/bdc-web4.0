@@ -374,8 +374,8 @@ onBeforeUnmount(() => {
         <a-descriptions-item label="断点续传">
           <a-tag :color="task.enableCheckpoint ? 'green' : 'default'">{{ task.enableCheckpoint ? '开' : '关' }}</a-tag>
         </a-descriptions-item>
-        <a-descriptions-item label="创建时间">{{ formatDateTime(task.createdAt) }}</a-descriptions-item>
-        <a-descriptions-item label="更新时间">{{ formatDateTime(task.updatedAt) }}</a-descriptions-item>
+        <a-descriptions-item label="创建时间">{{ formatDateTime(task.createTime) }}</a-descriptions-item>
+        <a-descriptions-item label="更新时间">{{ formatDateTime(task.updateTime) }}</a-descriptions-item>
         <a-descriptions-item label="备注">{{ task.remark || '-' }}</a-descriptions-item>
       </a-descriptions>
 

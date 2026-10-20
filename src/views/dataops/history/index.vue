@@ -173,7 +173,7 @@ const dirtyColumns: TableColumnsType = [
   { title: '表', dataIndex: 'tableName', width: 180, ellipsis: true },
   { title: '主键', key: 'sourcePk', width: 140, ellipsis: true },
   { title: '错误', dataIndex: 'errorMessage', ellipsis: true },
-  { title: '记录时间', dataIndex: 'createdAt', width: 170 }
+  { title: '记录时间', dataIndex: 'createTime', width: 170 }
 ]
 
 //endregion
@@ -361,8 +361,8 @@ onMounted(loadData)
                   <template v-if="column.key === 'sourcePk'">
                     <code>{{ JSON.stringify(record.sourcePk) }}</code>
                   </template>
-                  <template v-else-if="column.dataIndex === 'createdAt'">
-                    {{ formatDateTime(record.createdAt) }}
+                  <template v-else-if="column.dataIndex === 'createTime'">
+                    {{ formatDateTime(record.createTime) }}
                   </template>
                 </template>
               </a-table>

@@ -26,6 +26,6 @@ export interface DataSource {
   dbType: DbType
   /** "host:port/database" 概要地址 */
   address?: string
-  /** 默认 schema(后端 options 暂未返回; 缺省时向导不剥 schema 前缀, 行为安全) */
+  /** 默认 schema（/options 返回，schema_name 为空时后端按类型兜底 dbo/public；向导用它剥掉目标表名的 schema 前缀） */
   schemaName?: string
 }
