@@ -34,37 +34,40 @@ import { reactive, ref } from 'vue';
 import MonacoEditor from "/@/components/monaco/monacoEditor.vue"
 import { CaretRightOutlined, MinusOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import { onUnmounted } from 'vue';
+import { createWsBroad } from '/@/utils/wsBroad'
+import type { WsBroadClient } from '/@/utils/wsBroad'
 const selectTags = ref([true, false]);
 const tagsData = reactive(['zrzy-api', 'zrzy-cdc', 'zrzy-bdc', 'zrzy-system']);
 
 let currentTag = ref("zrzy-api");
 let logs: any = ref([]);
-let socket: any = null;
+let wsBroad: WsBroadClient | null = null;
 let open = ref(false)
 let disabled = ref(false)
 // let logContent = ref("")
 function start() {
-    let a = currentTag.value
-    let b = window.settingConfig.wsbaseDomain + "/" + a + "/cdc/log"
-    socket = new WebSocket(b);
-    socket.onopen = function (event) {
-        socket.send("---------------开启实时日志---------------");
-    };
+    const svc = currentTag.value
+    // 统一 WS 平台: 连接目标服务的 /ws/broad, 订阅 log 通道(selector=服务名),
+    // 替代旧 /{service}/cdc/log 裸文本端点
+    wsBroad = createWsBroad({
+        url: (window as any).settingConfig.wsbaseDomain + "/" + svc + "/ws/broad",
+        channel: 'log',
+        selector: svc,
+        onMessage: (data: any) => {
+            logs.value.push(typeof data === 'string' ? data : JSON.stringify(data));
+        }
+    })
     message.success("启动成功!");
     open.value = true
-    // 接收服务器返回的消息
-    socket.onmessage = (event) => {
-        logs.value.push(event.data);
-    };
 }
 
 function stop() {
-    socket.send("---------------停止实时日志---------------");
-    setTimeout(() => {
-        socket.close();
-        open.value = false
-        message.success("停止成功!");
-    }, 3000);
+    if (wsBroad) {
+        wsBroad.close();
+        wsBroad = null;
+    }
+    open.value = false
+    message.success("停止成功!");
 }
 
 const handleChange = (tag: string, checked: boolean) => {
@@ -83,8 +86,9 @@ const handleChange = (tag: string, checked: boolean) => {
     }
 };
 onUnmounted(() => {
-    if (socket) {
-        socket.close();
+    if (wsBroad) {
+        wsBroad.close();
+        wsBroad = null;
     }
 })
 </script>

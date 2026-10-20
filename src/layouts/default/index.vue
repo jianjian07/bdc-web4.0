@@ -36,6 +36,8 @@ import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 import { PageEnum } from "/@/enums/pageEnum";
 import { currentRoute } from "/@/router"
 import { useUserStore } from "/@/store/modules/user.ts"
+import { createWsBroad } from '/@/utils/wsBroad'
+import type { WsBroadClient } from '/@/utils/wsBroad'
 const LayoutContent = defineAsyncComponent(() => import("./content/index.vue"));
 const appStore = useAppStore()
 const tabStore = useTabsStore()
@@ -50,7 +52,7 @@ let { maskShow, maskText } = toRefs(appStore.$state)
 const route = currentRoute;
 let prefixCls = 'default-layout'
 let showMenuList = ref(true)
-let socket: any = null;
+let wsBroad: WsBroadClient | null = null;
 
 onMounted(() => {
   onStartWs()
@@ -61,29 +63,32 @@ onBeforeUnmount(() => {
 })
 
 /**
- * 开启ws
+ * 开启ws: 订阅本人通知通道(notification.user, 需 token 鉴权绑定),
+ * 收到踢下线通知时弹窗并登出(负载 traceId 与本地不符则忽略, 多租户同名用户隔离)
  */
 function onStartWs() {
   const userStore = useUserStore();
   const userInfo = userStore.getUserInfo
-  if (userInfo && userInfo.loginTraceId) {
-    let url = window.settingConfig?.wsbaseDomain + "/zrzy-system/ws/" + userInfo.loginTraceId + "/home"
-    socket = new WebSocket(url);
-    socket.onopen = () => {
-      // console.log('WebSocket 连接已打开');
-    };
-    socket.onclose = () => {
-      // console.log('WebSocket 连接已关闭');
-    };
-    socket.onmessage = (event) => {
-      Modal.warning({
-        title: '系统下线通知',
-        content: event.data || '您已在其他设备登录，即将退出！',
-        onOk() {
-          userStore.logout(true);
+  if (userInfo && userInfo.username) {
+    wsBroad = createWsBroad({
+      url: (window as any).settingConfig?.wsbaseDomain + "/zrzy-system/ws/broad",
+      token: () => userStore.getToken,
+      channel: 'notification.user',
+      selector: userInfo.username,
+      onMessage: (data: any) => {
+        const payload = (data && typeof data === 'object') ? data : { message: data };
+        if (payload.traceId && userInfo.loginTraceId && payload.traceId !== userInfo.loginTraceId) {
+          return;
         }
-      });
-    };
+        Modal.warning({
+          title: '系统下线通知',
+          content: payload.message || '您已在其他设备登录，即将退出！',
+          onOk() {
+            userStore.logout(true);
+          }
+        });
+      }
+    })
   }
 }
 
@@ -91,9 +96,9 @@ function onStartWs() {
  * 关闭ws
  */
 function onCloseWs() {
-  if (socket) {
-    socket.close();
-    socket = null;
+  if (wsBroad) {
+    wsBroad.close();
+    wsBroad = null;
   }
 }
 
