@@ -1,6 +1,6 @@
 <template>
   <div :style="{
-    height: getTabsShow ? (fullscreen ? 'calc(100vh - 60px)' : 'calc(100vh - 110px)') : 'calc(100vh - 50px)',
+    height: getTabsShow ? (fullscreen ? 'calc(100vh - 60px)' : 'calc(100vh - 110px)') : 'calc(100vh - 60px)',
     margin: '5px', backgroundColor: 'white'
   }" class="content-main">
     <a-spin style="height: 100%" :spinning="!isRouterAlive" tip="Loading...">
@@ -8,7 +8,7 @@
         <RouterView>
           <template #default="{ Component, route }">
             <keep-alive :include="caches" :key="devMode ? keepAliveKey : undefined">
-              <component :is="Component" v-if="isReload" :key="getTabKey(route)"/>
+              <component :is="Component" v-if="isReload" :key="getTabKey(route)" />
             </keep-alive>
           </template>
         </RouterView>
@@ -108,9 +108,9 @@ watch(() => tabStore.getReloadTab, (newV) => {
 })
 
 const originalWarn = console.warn
-console.warn = function(...args) {
+console.warn = function (...args) {
   if (args[0] && typeof args[0] === 'string' &&
-      args[0].includes('No match found for location with path')) {
+    args[0].includes('No match found for location with path')) {
 
     // 从警告信息中提取目标路径
     const match = args[0].match(/No match found for location with path "([^"]+)"/)
@@ -119,7 +119,7 @@ console.warn = function(...args) {
     // 标记matcher为损坏状态
     window.routerMatcherBroken = true
 
-     setTimeout(() => {
+    setTimeout(() => {
       const lastParams = window.getLastPushParams?.()
       if (lastParams) {
         // 使用保存的完整参数进行替换
