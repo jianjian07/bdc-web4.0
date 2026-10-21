@@ -113,7 +113,9 @@ async function pollProgress() {
           runningProgress[id] = snap
         }
       } catch {
-        /* 单次轮询失败忽略, 下一轮重试 */
+        /* 轮询失败(含任务被删 404): 静默刷一次列表自愈 —— 列表更新后该任务
+           不再 RUNNING, 轮询随之停; 网络瞬断时刷新同样失败被吞, 下一轮重试 */
+        await reloadListSilently()
       }
     })
   )
@@ -620,6 +622,22 @@ onBeforeUnmount(stopProgressPolling)
 </template>
 
 <style scoped>
+.page {
+  --brand: #2563eb;
+  --brand-600: #1d4ed8;
+  --brand-bg: #eff6ff;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --bg-subtle: #fafbfd;
+  --border: #e8ebf2;
+  --border-strong: #d9dee9;
+  --text-1: #171c2c;
+  --text-2: #4a5268;
+  --text-3: #7c8497;
+  --radius-sm: 8px;
+  --radius: 12px;
+}
+
 .filter-bar {
   margin-bottom: 14px;
   padding: 12px 14px;
@@ -644,4 +662,3 @@ onBeforeUnmount(stopProgressPolling)
   word-break: break-all;
 }
 </style>
-../../../utils/message../utils/compare../utils/download../utils/format

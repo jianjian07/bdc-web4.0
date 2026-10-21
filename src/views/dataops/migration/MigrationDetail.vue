@@ -40,6 +40,12 @@ const route = useRoute()
 const router = useRouter()
 // 详情页路由: /dataops/migration/detail?id=xx (query 传参, 与项目 sync 页面一致)
 const taskId = Number(route.query.id)
+// 坏路由参数(缺失/非数字)拦下: 否则以 NaN 打全量接口, 并引导回列表
+const validTaskId = Number.isFinite(taskId)
+if (!validTaskId) {
+  $message('非法的任务 ID, 请从任务列表进入')
+  router.replace('/dataops/migration')
+}
 
 const spinning = ref(false)
 const task = ref<MigrationTask | null>(null)
@@ -327,6 +333,7 @@ async function dryRunScript(row: ScriptResponse) {
 const activeTab = ref('tables')
 
 onMounted(() => {
+  if (!validTaskId) return
   loadData()
   loadDbLogs()
 })

@@ -5,7 +5,12 @@ import type { TableColumnsType } from 'ant-design-vue'
 import {
   SwapOutlined,
   PlusOutlined,
-  ImportOutlined
+  ImportOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  ArrowRightOutlined,
+  DatabaseOutlined,
+  CloudUploadOutlined
 } from '@ant-design/icons-vue'
 import PageHeader from '/@/views/dataops/migration/components/PageHeader.vue'
 import {
@@ -23,7 +28,6 @@ import {
 import type { MigrationTask, PrecheckItem, TaskStatus } from '/@/views/dataops/api/model/migration'
 import {
   MIGRATION_MODE_LABELS,
-  TASK_STATUS_COLORS,
   TASK_STATUS_LABELS
 } from '/@/views/dataops/utils/migration'
 import { formatDateTime } from '/@/views/dataops/utils/format'
@@ -146,6 +150,14 @@ onBeforeUnmount(() => {
 
 /** 搜索(重置回第一页) */
 function handleSearch() {
+  query.page = 1
+  loadData()
+}
+
+/** 清空筛选条件并刷新 */
+function handleReset() {
+  query.keyword = ''
+  query.status = undefined
   query.page = 1
   loadData()
 }
@@ -292,14 +304,31 @@ onMounted(loadData)
         <a-form layout="inline" @submit.prevent>
           <a-form-item label="关键字">
             <a-input v-model:value="query.keyword" placeholder="任务名" allow-clear style="width: 200px"
-              @press-enter="handleSearch" />
+              @press-enter="handleSearch">
+              <template #prefix>
+                <SearchOutlined class="filter-ico" />
+              </template>
+            </a-input>
           </a-form-item>
           <a-form-item label="状态">
             <a-select v-model:value="query.status" :options="statusOptions" allow-clear placeholder="全部"
-              style="width: 130px" @change="handleSearch" />
+              style="width: 150px" @change="handleSearch" />
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" @click="handleSearch">查询</a-button>
+            <a-space :size="8">
+              <a-button type="primary" @click="handleSearch">
+                <template #icon>
+                  <SearchOutlined />
+                </template>
+                查询
+              </a-button>
+              <a-button @click="handleReset">
+                <template #icon>
+                  <ReloadOutlined />
+                </template>
+                重置
+              </a-button>
+            </a-space>
           </a-form-item>
         </a-form>
       </div>
@@ -312,21 +341,40 @@ onMounted(loadData)
       showTotal: (t: number) => `共 ${t} 条`
     }" :scroll="{ x: 1250 }" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'route'">
-            <a-tag color="blue">{{ record.sourceName ?? record.sourceId }}</a-tag>
-            →
-            <a-tag color="green">{{ record.targetName ?? record.targetId }}</a-tag>
+          <template v-if="column.dataIndex === 'id'">
+            <span class="cell-id">#{{ record.id }}</span>
+          </template>
+          <template v-else-if="column.dataIndex === 'name'">
+            <a class="task-name" :title="record.name"
+              @click="router.push({ path: '/dataops/migration/detail', query: { id: record.id } })">{{ record.name }}</a>
+          </template>
+          <template v-else-if="column.key === 'route'">
+            <div class="route">
+              <span class="route-node src">
+                <DatabaseOutlined class="route-ico" />
+                <span class="route-name">{{ record.sourceName ?? record.sourceId }}</span>
+              </span>
+              <ArrowRightOutlined class="route-arrow" />
+              <span class="route-node dst">
+                <CloudUploadOutlined class="route-ico" />
+                <span class="route-name">{{ record.targetName ?? record.targetId }}</span>
+              </span>
+            </div>
           </template>
           <template v-else-if="column.dataIndex === 'status'">
-            <a-tag :color="TASK_STATUS_COLORS[record.status as TaskStatus] ?? 'default'">
+            <span class="status-pill" :data-status="record.status">
+              <i class="status-dot" />
               {{ TASK_STATUS_LABELS[record.status as TaskStatus] ?? record.status }}
-            </a-tag>
+            </span>
           </template>
           <template v-else-if="column.key === 'tableCount'">
-            {{ record.includeTables?.length ?? 0 }}
+            <b class="cell-num">{{ record.includeTables?.length ?? 0 }}</b>
+          </template>
+          <template v-else-if="column.dataIndex === 'createTime'">
+            <span class="cell-time">{{ record.createTime ? formatDateTime(record.createTime) : '-' }}</span>
           </template>
           <template v-else-if="column.key === 'actions'">
-            <a-space :size="4" wrap>
+            <a-space :size="2" wrap class="act-group">
               <a-tooltip v-if="['PENDING', 'FAILED', 'COMPLETED', 'CANCELLED'].includes(record.status)" title="启动">
                 <a-button size="small" type="primary" :loading="actLoading === record.id"
                   @click="handleAction(record.id, startTaskApi, '任务已启动(执行引擎将在阶段 3 接入)')">启动</a-button>
@@ -337,15 +385,17 @@ onMounted(loadData)
                 @click="handleAction(record.id, resumeTaskApi, '已恢复')">恢复</a-button>
               <a-button v-if="['RUNNING', 'PAUSED'].includes(record.status)" size="small" danger
                 :loading="actLoading === record.id" @click="handleAction(record.id, cancelTaskApi, '已取消')">取消</a-button>
-              <a-button size="small" :loading="actLoading === record.id" @click="handlePrecheck(record)">预检查</a-button>
-              <a-button size="small"
+              <a-button size="small" type="link" :loading="actLoading === record.id"
+                @click="handlePrecheck(record)">预检查</a-button>
+              <a-button size="small" type="link"
                 @click="router.push({ path: '/dataops/migration/detail', query: { id: record.id } })">详情</a-button>
               <a-button v-if="['PENDING', 'FAILED', 'COMPLETED', 'CANCELLED'].includes(record.status)" size="small"
-                @click="router.push({ path: '/dataops/migration/wizard', query: { id: record.id } })">编辑</a-button>
-              <a-button size="small" :loading="actLoading === record.id" @click="handleClone(record)">克隆</a-button>
-              <a-button size="small" :loading="actLoading === record.id"
+                type="link" @click="router.push({ path: '/dataops/migration/wizard', query: { id: record.id } })">编辑</a-button>
+              <a-button size="small" type="link" :loading="actLoading === record.id"
+                @click="handleClone(record)">克隆</a-button>
+              <a-button size="small" type="link" :loading="actLoading === record.id"
                 @click="handleExportTemplate(record)">导出模板</a-button>
-              <a-button v-if="!['RUNNING', 'PAUSED'].includes(record.status)" size="small" danger
+              <a-button v-if="!['RUNNING', 'PAUSED'].includes(record.status)" size="small" type="link" danger
                 @click="handleDelete(record)">删除</a-button>
             </a-space>
           </template>
@@ -366,6 +416,27 @@ onMounted(loadData)
 </template>
 
 <style scoped>
+/* ============================================================
+   页面级设计 token(dataops 浅色基线, 与 db-web 设计系统一致)
+   PageHeader / 表格 / 胶囊样式均依赖这些变量
+   ============================================================ */
+.page {
+  --brand: #2563eb;
+  --brand-600: #1d4ed8;
+  --brand-bg: #eff6ff;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --bg-subtle: #fafbfd;
+  --border: #e8ebf2;
+  --border-strong: #d9dee9;
+  --text-1: #171c2c;
+  --text-2: #4a5268;
+  --text-3: #7c8497;
+  --radius-sm: 8px;
+  --radius: 12px;
+}
+
+/* ---------- 筛选栏 ---------- */
 .filter-bar {
   margin-bottom: 14px;
   padding: 12px 14px;
@@ -378,16 +449,204 @@ onMounted(loadData)
   margin-bottom: 0;
 }
 
+.filter-bar :deep(.ant-form-item-label > label) {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.filter-ico {
+  color: var(--text-3);
+}
+
+/* ---------- 单元格细节 ---------- */
+.cell-id {
+  font-size: 12.5px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-name {
+  color: var(--text-1);
+  font-weight: 550;
+  transition: color 0.18s ease;
+}
+
+.task-name:hover {
+  color: var(--brand);
+}
+
+.cell-num {
+  font-weight: 600;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-time {
+  color: var(--text-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 源 → 目标 路由胶囊 ---------- */
+.route {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.route-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 130px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.route-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.route-node.src {
+  color: var(--brand-600);
+  background: var(--brand-bg);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+
+.route-node.dst {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.route-ico {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.route-arrow {
+  color: var(--text-3);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ---------- 状态胶囊(带呼吸点) ---------- */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-pill[data-status='PENDING'],
+.status-pill[data-status='CANCELLED'] {
+  color: var(--text-3);
+  background: #f1f3f8;
+}
+
+.status-pill[data-status='PENDING'] .status-dot,
+.status-pill[data-status='CANCELLED'] .status-dot {
+  background: #98a1b3;
+}
+
+.status-pill[data-status='RUNNING'] {
+  color: var(--brand-600);
+  background: var(--brand-bg);
+}
+
+.status-pill[data-status='RUNNING'] .status-dot {
+  background: var(--brand);
+  animation: dot-pulse 1.6s ease-in-out infinite;
+}
+
+.status-pill[data-status='PAUSED'] {
+  color: #92400e;
+  background: #fffbeb;
+}
+
+.status-pill[data-status='PAUSED'] .status-dot {
+  background: var(--warning);
+}
+
+.status-pill[data-status='COMPLETED'] {
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.status-pill[data-status='COMPLETED'] .status-dot {
+  background: #16a34a;
+}
+
+.status-pill[data-status='FAILED'] {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.status-pill[data-status='FAILED'] .status-dot {
+  background: var(--danger);
+}
+
+@keyframes dot-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35);
+  }
+
+  50% {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+}
+
+/* ---------- 操作列 ---------- */
+.act-group :deep(.ant-btn-link) {
+  padding-inline: 6px;
+}
+
+.act-group :deep(.ant-btn) {
+  transition: color 0.18s ease;
+}
+
+/* ---------- 预检查明细弹窗 ---------- */
 .fail-list {
   max-height: 400px;
   overflow: auto;
 }
 
 .fail-line {
-  padding: 4px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  border-radius: 8px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: flex-start;
+  font-size: 13px;
+  color: var(--text-2);
+  transition: background 0.15s ease;
+}
+
+.fail-line:hover {
+  background: var(--bg-subtle);
+}
+
+.fail-line:last-child {
+  border-bottom: none;
 }
 </style>

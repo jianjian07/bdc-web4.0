@@ -375,6 +375,22 @@ onMounted(loadData)
 </template>
 
 <style scoped>
+.page {
+  --brand: #2563eb;
+  --brand-600: #1d4ed8;
+  --brand-bg: #eff6ff;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --bg-subtle: #fafbfd;
+  --border: #e8ebf2;
+  --border-strong: #d9dee9;
+  --text-1: #171c2c;
+  --text-2: #4a5268;
+  --text-3: #7c8497;
+  --radius-sm: 8px;
+  --radius: 12px;
+}
+
 .table-toolbar {
   display: flex;
   justify-content: space-between;

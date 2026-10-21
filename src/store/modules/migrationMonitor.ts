@@ -99,7 +99,8 @@ export const useMonitorStore = defineStore('app-monitor', {
           active.map(async (t) => {
             try {
               const snap = await getTaskProgressApi(t.id)
-              if (snap && snap.totalRows) {
+              // 判 snap 即可: totalRows=0(空表/纯结构迁移)的任务同样需要回填状态
+              if (snap) {
                 this.progressMap[t.id] = { ...snap, taskId: t.id }
                 if (snap.status) this.stateMap[t.id] = snap.status
               }
