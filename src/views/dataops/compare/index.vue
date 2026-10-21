@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import {
@@ -16,6 +16,7 @@ import {
   deleteCompareTaskApi,
   diffCsvExportUrl,
   getCompareChunkDiffsApi,
+  getCompareProgressApi,
   getCompareResultsApi,
   listCompareTasksApi,
   startCompareTaskApi
@@ -23,7 +24,7 @@ import {
 import { listTablesApi } from '/@/views/dataops/api/metadata'
 import { listAllDataSourcesApi } from '/@/views/dataops/api/datasource'
 import type { DataSource } from '/@/views/dataops/api/model/datasource'
-import type { CompareChunk, CompareResult, CompareTask } from '/@/views/dataops/api/model/compare'
+import type { CompareChunk, CompareProgress, CompareResult, CompareTask } from '/@/views/dataops/api/model/compare'
 import {
   COMPARE_MODE_COLORS,
   COMPARE_MODE_LABELS,
@@ -53,10 +54,92 @@ async function loadData() {
     const page = await listCompareTasksApi(query)
     datalist.value = page.list ?? []
     total.value = page.total ?? 0
+    // 存在运行中任务则保持/启动进度轮询, 全部终态时停表
+    if (datalist.value.some((t) => t.overallResult === 'RUNNING')) {
+      startProgressPolling()
+    } else {
+      stopProgressPolling()
+    }
   } finally {
     loading.value = false
   }
 }
+
+//region ==================== 运行中进度轮询 ====================
+
+const PROGRESS_INTERVAL = 3000
+
+/** 运行中任务进度(id -> 快照), 列表"结果"列实时展示 */
+const runningProgress = reactive<Record<number, CompareProgress>>({})
+/** 结果弹窗当前对应任务 id(弹窗打开且任务 RUNNING 时, 明细随轮询增量刷新) */
+const resultTaskId = ref<number | null>(null)
+let progressTimer: ReturnType<typeof setInterval> | null = null
+
+function runningIds(): number[] {
+  return datalist.value.filter((t) => t.overallResult === 'RUNNING').map((t) => t.id)
+}
+
+/** 静默刷新列表(不动 loading, 避免轮询导致表格反复闪烁) */
+async function reloadListSilently() {
+  try {
+    const page = await listCompareTasksApi(query)
+    datalist.value = page.list ?? []
+    total.value = page.total ?? 0
+  } catch {
+    /* 单次刷新失败忽略, 下一轮轮询重试 */
+  }
+  if (!datalist.value.some((t) => t.overallResult === 'RUNNING')) {
+    stopProgressPolling()
+  }
+}
+
+async function pollProgress() {
+  const ids = runningIds()
+  if (!ids.length) {
+    // 无运行中任务: 停表并静默刷新一次让终态落地
+    stopProgressPolling()
+    await reloadListSilently()
+    return
+  }
+  await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const snap = await getCompareProgressApi(id)
+        if (snap?.overall && snap.overall !== 'RUNNING') {
+          // 后端已终态: 回收该任务进度并刷列表(内部停表)
+          delete runningProgress[id]
+          await reloadListSilently()
+        } else if (snap) {
+          runningProgress[id] = snap
+        }
+      } catch {
+        /* 单次轮询失败忽略, 下一轮重试 */
+      }
+    })
+  )
+  // 结果弹窗打开且对应任务仍在跑: 明细随轮询增量刷新
+  if (resultOpen.value && resultTaskId.value != null && runningIds().includes(resultTaskId.value)) {
+    try {
+      results.value = await getCompareResultsApi(resultTaskId.value)
+    } catch {
+      /* 忽略, 下一轮重试 */
+    }
+  }
+}
+
+function startProgressPolling() {
+  if (progressTimer) return
+  progressTimer = setInterval(pollProgress, PROGRESS_INTERVAL)
+}
+
+function stopProgressPolling() {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+}
+
+//endregion
 
 function handleSearch() {
   query.page = 1
@@ -201,6 +284,7 @@ const resultTaskName = ref('')
 async function openResults(id: number) {
   const task = datalist.value.find((t) => t.id === id)
   resultTaskName.value = task?.name ?? `#${id}`
+  resultTaskId.value = id
   resultOpen.value = true
   resultLoading.value = true
   try {
@@ -288,6 +372,7 @@ function chunkRange(record: CompareChunk): string {
 //endregion
 
 onMounted(loadData)
+onBeforeUnmount(stopProgressPolling)
 </script>
 
 <template>
@@ -347,7 +432,13 @@ onMounted(loadData)
       record.strategy }}</a-tag>
           </template>
           <template v-else-if="column.dataIndex === 'overallResult'">
-            <a-tag v-if="record.overallResult" :color="COMPARE_RESULT_COLORS[record.overallResult]">
+            <a-tag v-if="record.overallResult === 'RUNNING'" color="processing">
+              <template v-if="runningProgress[record.id]">
+                进行中 {{ runningProgress[record.id].completed }}/{{ runningProgress[record.id].total }}
+              </template>
+              <template v-else>进行中</template>
+            </a-tag>
+            <a-tag v-else-if="record.overallResult" :color="COMPARE_RESULT_COLORS[record.overallResult]">
               {{ COMPARE_RESULT_LABELS[record.overallResult] ?? record.overallResult }}
             </a-tag>
             <span v-else style="color: #999">未运行</span>
@@ -442,7 +533,7 @@ onMounted(loadData)
     </a-modal>
 
     <!-- 结果明细 -->
-    <a-modal v-model:open="resultOpen" :title="`比对结果 - ${resultTaskName}`" :width="1200" :footer="null">
+    <a-modal v-model:open="resultOpen" :title="`比对结果 - ${resultTaskName}`" :width="1600" :footer="null">
       <a-alert v-if="results.length"
         :type="results.every((r) => r.rowCountMatch && (r.checksumMatch === null || r.checksumMatch)) ? 'success' : 'error'"
         show-icon style="margin-bottom: 12px" :message="results.every((r) => r.rowCountMatch && (r.checksumMatch === null || r.checksumMatch))

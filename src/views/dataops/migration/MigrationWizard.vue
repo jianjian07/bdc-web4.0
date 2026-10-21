@@ -32,10 +32,12 @@ import {
   MIGRATION_MODE_LABELS,
   WRITE_MODE_LABELS,
   findInvalidFilterCondition,
+  findInvalidTransformExpr,
   isUnsupportedType,
   qualifiedName,
   suggestTargetType,
-  validateFilterCondition
+  validateFilterCondition,
+  validateTransformExpr
 } from '/@/views/dataops/utils/migration'
 import { $message, $warning } from '/@/utils/message'
 
@@ -197,6 +199,30 @@ interface ColumnEdit {
 }
 const columnEdits = reactive<Record<string, ColumnEdit>>({})
 
+/**
+ * 源数据源变更: 列结构/列映射/表覆盖全部与"源库"绑定, 换源后一律失效。
+ * <p>不清理的话, 换源后重选同名表时 {@code ensureColumnsLoaded} 会因 loaded=true
+ * 短路返回, 展示并提交旧源的列结构; {@code buildColumnMappings} 也会把旧源表的
+ * 映射静默回传 —— 造成数据映射错误。编辑模式下 saved* 是旧源读回的原始配置,
+ * 同样随源失效, 一并清空并提示。</p>
+ */
+function handleSourceChanged() {
+  const hadEdits =
+    selectedTableNames.value.length > 0 ||
+    Object.keys(columnEdits).length > 0 ||
+    Object.keys(overrides).length > 0 ||
+    savedColumnMappings.value.length > 0 ||
+    Object.keys(savedOverrides.value).length > 0
+  selectedTableNames.value = []
+  Object.keys(columnEdits).forEach((k) => delete columnEdits[k])
+  Object.keys(overrides).forEach((k) => delete overrides[k])
+  savedColumnMappings.value = []
+  savedOverrides.value = {}
+  if (hadEdits) {
+    $warning('源数据源已变更, 已清空表选择、列映射与表覆盖配置, 请重新选择与配置')
+  }
+}
+
 /** 懒加载表结构并初始化同名映射 + 类型建议(展开某张表时才触发) */
 async function ensureColumnsLoaded(tableName: string) {
   if (!source.value || columnEdits[tableName]?.loaded) return
@@ -294,6 +320,17 @@ function targetTypeStatus(tableName: string, c: ColumnMeta): 'error' | undefined
   const e = editOf(tableName, c.name)
   if (!e || e.ignore || e.targetType.trim()) return undefined
   return 'error'
+}
+
+/**
+ * 转换表达式输入框的状态
+ * <p>表达式会被后端拼接进目标库 UPDATE SET(或源库 SELECT 列表)，无法参数化，
+ * 非法形态提交后必定被安全策略拒绝 —— 输入时就标红，与过滤条件的即时反馈同口径。</p>
+ */
+function transformExprStatus(tableName: string, c: ColumnMeta): 'error' | undefined {
+  const e = editOf(tableName, c.name)
+  if (!e || e.ignore || !e.transformExpr) return undefined
+  return validateTransformExpr(e.transformExpr) ? 'error' : undefined
 }
 
 /** 导出列映射(跳过"无任何修改"的列,减少 payload) */
@@ -432,6 +469,37 @@ function assertFilterConditionsValid(): boolean {
   )
   if (!bad) return true
   $warning(`表 ${bad.table} 的过滤条件不合法：${bad.reason}`)
+  return false
+}
+
+/**
+ * 收集全部已配置的转换表达式
+ * <p>已加载表来自编辑态；未加载的表（编辑模式未展开列映射）沿用原映射，
+ * 与 buildColumnMappings 的数据来源保持一致。</p>
+ */
+function* transformExprEntries(): Generator<readonly [string, string | undefined]> {
+  for (const [tableName, state] of Object.entries(columnEdits)) {
+    if (!state?.loaded) continue
+    for (const [colName, e] of Object.entries(state.edits)) {
+      if (e.ignore) continue
+      if (e.transformExpr) yield [`${tableName}.${colName}`, e.transformExpr] as const
+    }
+  }
+  for (const m of savedColumnMappings.value) {
+    if (columnEdits[m.sourceTable]?.loaded) continue
+    if (m.transformExpr) yield [`${m.sourceTable}.${m.sourceColumn}`, m.transformExpr] as const
+  }
+}
+
+/**
+ * 校验全部已配置的转换表达式（提交前最后防线之一）
+ *
+ * @returns 全部合法返回 true；否则弹出首个非法项并返回 false
+ */
+function assertTransformExprsValid(): boolean {
+  const bad = findInvalidTransformExpr(transformExprEntries())
+  if (!bad) return true
+  $warning(`列 ${bad.column} 的转换表达式不合法：${bad.reason}`)
   return false
 }
 
@@ -597,6 +665,7 @@ const autoCompareValid = computed(() => {
 async function handleSubmit() {
   // 最后防线：用户可点击步骤条直接跳步，不一定经过「下一步」的校验路径
   if (!isScriptMode.value && !assertFilterConditionsValid()) return
+  if (!isScriptMode.value && !assertTransformExprsValid()) return
   creating.value = true
   try {
     const task = isEdit.value
@@ -680,10 +749,11 @@ const handleStepChange = async (next: number) => {
       $warning('请至少添加一个「已启用且内容非空」的脚本')
       return
     }
-    // 离开「列映射与写入策略」前拦截非法过滤条件：后端同样会拒，
+    // 离开「列映射与写入策略」前拦截非法过滤条件与转换表达式：后端同样会拒，
     // 提前到向导里反馈，避免用户填完全部步骤才在预检查阶段发现问题
     if (!isScriptMode.value && step.value === 2 && next > step.value) {
       if (!assertFilterConditionsValid()) return
+      if (!assertTransformExprsValid()) return
     }
     step.value = next
     // 等新步骤(可能是大表)渲染完成后再解除 loading
@@ -789,7 +859,7 @@ onMounted(async () => {
           <a-form-item label="源数据源 (SQL Server / PostgreSQL)" name="sourceId" required>
             <a-select v-model:value="basic.sourceId" show-search option-filter-prop="label"
               :options="dataSources.map((d) => ({ value: d.id, label: `${d.name} (${d.dbType} @ ${d.address ?? d.code ?? ''})` }))"
-              placeholder="选择源库" @change="selectedTableNames = []" />
+              placeholder="选择源库" @change="handleSourceChanged" />
           </a-form-item>
           <a-form-item label="目标数据源" name="targetId" required>
             <a-select v-model:value="basic.targetId" show-search option-filter-prop="label"
@@ -916,11 +986,20 @@ onMounted(async () => {
     }" />
                 </template>
                 <template v-else-if="column.key === 'transformExpr'">
-                  <a-input size="small" placeholder="如 'XXX-XX-' || substring(ssn, 8, 4)"
+                  <a-tooltip placement="topLeft" :overlay-style="{ maxWidth: '560px' }">
+                    <template #title>
+                      <div style="white-space: pre-wrap; line-height: 1.6">
+                        转换表达式规则与过滤条件一致（仅允许只读的标量表达式），且额外禁止子查询（SELECT）。
+                        如 'XXX-XX-' || substring(ssn, 8, 4)
+                      </div>
+                    </template>
+                    <a-input size="small" placeholder="如 'XXX-XX-' || substring(ssn, 8, 4)"
+                    :status="transformExprStatus(record.tableName, col)"
                     :value="editOf(record.tableName, col.name)?.transformExpr"
                     :disabled="editOf(record.tableName, col.name)?.ignore" @update:value="(v: string) => {
       const e = editOf(record.tableName, col.name); if (e) e.transformExpr = v
     }" />
+                  </a-tooltip>
                 </template>
               </template>
             </a-table>

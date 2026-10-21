@@ -52,6 +52,9 @@ const POLL_FALLBACK_MS = 5_000
 const POLL_WS_SLOW_MS = 30_000
 const POLL_IDLE_MS = 60_000
 let pollTimer: number | undefined
+/** 组件存活标志: 卸载后不得再重排轮询 —— clearTimeout 只能取消尚未触发的定时器,
+ *  回调若已进入 await, finally 里的 schedulePoll 会在卸载后重新挂表, 永久轮询 */
+let disposed = false
 
 function schedulePoll() {
   const delay = !monitor.wsOnline
@@ -60,10 +63,11 @@ function schedulePoll() {
       ? POLL_WS_SLOW_MS
       : POLL_IDLE_MS
   pollTimer = window.setTimeout(async () => {
+    if (disposed) return
     try {
       await Promise.all([monitor.fetchTasksAction(), loadMetrics()])
     } finally {
-      schedulePoll()
+      if (!disposed) schedulePoll()
     }
   }, delay)
 }
@@ -100,6 +104,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  disposed = true
   if (pollTimer) window.clearTimeout(pollTimer)
 })
 
@@ -113,7 +118,10 @@ const runningTasks = computed(() => monitor.runningTasks)
 const rowStats = computed(() => {
   let totalRows = 0
   let migratedRows = 0
-  for (const t of monitor.tasks) {
+  // 只聚合活跃(运行中/暂停)任务 —— 与 totalQps/totalEtaSeconds 同口径。
+  // 已完成任务的进度快照是"历史值", 混入聚合会把后续任务的进度稀释/虚增
+  // (典型症状: 已迁移 > 总数、总进度被钳到 100%)。
+  for (const t of monitor.runningTasks) {
     const p = monitor.progressMap[t.id]
     if (p) {
       totalRows += p.totalRows ?? 0

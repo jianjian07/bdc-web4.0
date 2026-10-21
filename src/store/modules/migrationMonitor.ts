@@ -28,6 +28,12 @@ export interface TaskStateMsg {
 /** 日志环形缓冲容量 */
 const LOG_BUFFER_SIZE = 300
 
+/** 任务订阅退订句柄(taskId -> progress/log/state 三个 topic 的退订函数), 模块级保存避免进入可序列化 state */
+const unsubscribers = new Map<number, Array<() => void>>()
+
+/** 任务终态(收到即退订, 常驻订阅只会在 WS 离线时白跑 REST 兑底轮询; PAUSED 可恢复不退订) */
+const TERMINAL_STATES = ['COMPLETED', 'FAILED', 'CANCELLED']
+
 /**
  * @description: 监控大屏全局状态
  * <p>聚合运行中任务 + 实时日志流(WebSocket);轮询兜底刷新任务列表。</p>
@@ -112,25 +118,53 @@ export const useMonitorStore = defineStore('app-monitor', {
       if (this.subscribedTasks.has(taskId)) return
       this.subscribedTasks.add(taskId)
 
-      stompHub.subscribe(TaskTopics.progress(taskId), (msg) => {
-        const p = msg as TaskProgressMsg
-        this.progressMap[taskId] = p
-        if (p.status) this.stateMap[taskId] = p.status
-      })
-      stompHub.subscribe(TaskTopics.log(taskId), (msg) => {
-        this.logs.push(msg as TaskLogMsg)
-        if (this.logs.length > LOG_BUFFER_SIZE) {
-          this.logs.splice(0, this.logs.length - LOG_BUFFER_SIZE)
-        }
-      })
-      stompHub.subscribe(TaskTopics.state(taskId), (msg) => {
-        const s = msg as TaskStateMsg
-        this.stateMap[taskId] = s.to
-        // 终态时刷新任务列表
-        if (['COMPLETED', 'FAILED', 'CANCELLED', 'PAUSED'].includes(s.to)) {
-          this.fetchTasksAction()
-        }
-      })
+      const unsubs: Array<() => void> = []
+      unsubs.push(
+        stompHub.subscribe(TaskTopics.progress(taskId), (msg) => {
+          const p = msg as TaskProgressMsg
+          this.progressMap[taskId] = p
+          if (p.status) this.stateMap[taskId] = p.status
+        })
+      )
+      unsubs.push(
+        stompHub.subscribe(TaskTopics.log(taskId), (msg) => {
+          this.logs.push(msg as TaskLogMsg)
+          if (this.logs.length > LOG_BUFFER_SIZE) {
+            this.logs.splice(0, this.logs.length - LOG_BUFFER_SIZE)
+          }
+        })
+      )
+      unsubs.push(
+        stompHub.subscribe(TaskTopics.state(taskId), (msg) => {
+          const s = msg as TaskStateMsg
+          this.stateMap[taskId] = s.to
+          // 状态变化时刷新任务列表
+          if (['COMPLETED', 'FAILED', 'CANCELLED', 'PAUSED'].includes(s.to)) {
+            this.fetchTasksAction()
+          }
+          // 终态即退订: 任务不会再推消息, 常驻订阅只会无限累积
+          // (WS 离线时对已终态任务持续白跑 REST 兑底轮询)
+          if (TERMINAL_STATES.includes(s.to)) {
+            this.unsubscribeTask(taskId)
+          }
+        })
+      )
+      unsubscribers.set(taskId, unsubs)
+    },
+
+    /**
+     * 退订某任务并回收进度/状态缓存
+     * <p>终态事件到达时自动调用; 页面不再关注某任务时也可显式调用。</p>
+     */
+    unsubscribeTask(taskId: number) {
+      const unsubs = unsubscribers.get(taskId)
+      if (!unsubs) return
+      unsubs.forEach((u) => u())
+      unsubscribers.delete(taskId)
+      this.subscribedTasks.delete(taskId)
+      // 进度/状态缓存随退订回收: 任务状态回落 tasks 列表(终态后由 fetchTasksAction 刷新)
+      delete this.progressMap[taskId]
+      delete this.stateMap[taskId]
     }
   }
 })

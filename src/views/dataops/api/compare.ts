@@ -1,6 +1,6 @@
 import { get, post, del } from '/@/views/dataops/api/request'
 import type { PageResponse } from '/@/views/dataops/api/model/common'
-import type { CompareResult, CompareTask, CompareChunk, CreateCompareTask } from '/@/views/dataops/api/model/compare'
+import type { CompareProgress, CompareResult, CompareTask, CompareChunk, CreateCompareTask } from '/@/views/dataops/api/model/compare'
 
 /** 比对任务接口地址集中声明 */
 enum api {
@@ -54,6 +54,13 @@ export function startCompareTaskApi(id: number) {
  */
 export function getCompareResultsApi(id: number) {
   return get<CompareResult[]>(`${api.tasks}/${id}/results`)
+}
+
+/**
+ * @description: 比对进度快照(运行中任务轮询, 与 WS 旁路推送同源)
+ */
+export function getCompareProgressApi(id: number) {
+  return get<CompareProgress>(`${api.tasks}/${id}/progress`)
 }
 
 /**

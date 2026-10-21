@@ -82,15 +82,17 @@ const POLL_WS_SLOW_MS = 30_000
 let pollTimer: number | undefined
 /** 活跃任务 id -> state topic 退订函数 */
 const stateUnsubs = new Map<number, () => void>()
+/** 组件存活标志: 卸载后 syncWatch 不得再建订阅/重启轮询 */
+let disposed = false
 
 function schedulePoll() {
   if (pollTimer !== undefined) return
   pollTimer = window.setTimeout(async () => {
     pollTimer = undefined
-    if (hasActiveTasks.value) {
-      await loadData(true)
-      schedulePoll()
-    }
+    if (disposed || !hasActiveTasks.value) return
+    // 兜底轮询失败不能断链: 吞掉异常后继续排下一拍, 否则一次网络抖动轮询就永久停止
+    await loadData(true).catch(() => {})
+    if (!disposed) schedulePoll()
   }, stompHub.isOnline() ? POLL_WS_SLOW_MS : POLL_FALLBACK_MS)
 }
 
@@ -103,6 +105,7 @@ function stopPoll() {
 
 /** 同步订阅与轮询: 活跃任务状态订阅(始终订阅, 触发 hub 建连;离线时 hub 内部有 REST 兜底) + 轮询节拍 */
 function syncWatch() {
+  if (disposed) return
   const active = datalist.value.filter((t) => t.status === 'RUNNING' || t.status === 'PAUSED')
   active.forEach((t) => {
     if (!stateUnsubs.has(t.id)) {
@@ -129,12 +132,16 @@ function syncWatch() {
 
 watch(hasActiveTasks, () => syncWatch())
 // WS 在线状态变化: 离线→退订事件+3s 轮询, 恢复→事件驱动+慢速轮询
-stompHub.onStatusChange(() => syncWatch())
+// 必须保存退订句柄: 丢弃的话组件卸载后任意一次断连/重连都会回调 syncWatch,
+// 重新建立 WS 订阅并重启轮询定时器, 完全绕过 onBeforeUnmount 的清理
+const unsubWsStatus = stompHub.onStatusChange(() => syncWatch())
 
 onBeforeUnmount(() => {
+  disposed = true
   stopPoll()
   stateUnsubs.forEach((unsub) => unsub())
   stateUnsubs.clear()
+  unsubWsStatus()
 })
 
 /** 搜索(重置回第一页) */

@@ -4,6 +4,27 @@ export type CompareStrategy = 'ROW_COUNT' | 'CHECKSUM' | 'DIFF_ROWS'
 /** 比对总体结果 */
 export type CompareOverallResult = 'MATCH' | 'MISMATCH' | 'FAILED' | 'RUNNING' | null
 
+/**
+ * 比对进度快照(REST 轮询与 WS 旁路推送同源)
+ * <p>运行中每表完成推送一次; overall 仅终态推送时携带。</p>
+ */
+export interface CompareProgress {
+  compareTaskId?: number
+  /** 已完成表数(含失败表) */
+  completed: number
+  /** 总表数 */
+  total: number
+  /** 失败表数(比对异常) */
+  failedTables?: number
+  /** 最近完成的表名(初始推送无) */
+  lastTable?: string
+  /** 最近完成的表是否一致(初始推送无) */
+  lastMatch?: boolean
+  /** 终态结果(任务结束时携带) */
+  overall?: CompareOverallResult
+  updatedAt?: string
+}
+
 /** 比对任务 */
 export interface CompareTask {
   id: number

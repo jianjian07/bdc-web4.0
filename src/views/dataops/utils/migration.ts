@@ -359,11 +359,48 @@ function tokenizeFilter(s: string): { tokens: FilterToken[]; error?: string } {
  * @returns 第一条拒绝原因；通过时返回 `undefined`
  */
 export function validateFilterCondition(filter?: string | null): string | undefined {
-  if (filter === null || filter === undefined) return undefined
-  const text = filter.trim()
+  return validateSqlFragment(filter, '过滤条件')
+}
+
+/**
+ * 校验单个转换表达式(transformExpr)
+ *
+ * 复用过滤条件的全部校验规则（后端 `SqlFilterValidator.validateExpression` 的前端镜像），
+ * 并额外禁止子查询：值表达式中的 `SELECT` 只可能是子查询，它能把任意表数据写入目标列
+ * 再经比对差异导出外带 —— WHERE 语境放行的 `id IN (SELECT ...)` 白名单子查询
+ * 不适用于 SET 值语境。
+ *
+ * @param expr 转换表达式，空值表示不转换，直接通过
+ * @returns 第一条拒绝原因；通过时返回 `undefined`
+ */
+export function validateTransformExpr(expr?: string | null): string | undefined {
+  const reason = validateSqlFragment(expr, '转换表达式')
+  if (reason) return reason
+  if (expr === null || expr === undefined) return undefined
+  const text = expr.trim()
+  if (!text) return undefined
+  const { tokens } = tokenizeFilter(text)
+  if (tokens.some((t) => t.type === 'WORD' && t.text.toUpperCase() === 'SELECT')) {
+    return '转换表达式不允许子查询（检测到 SELECT），请改写为列/字面量/函数组合'
+  }
+  return undefined
+}
+
+/**
+ * 校验核心：长度 → 词法 → 语义（与后端 `SqlFilterValidator.validateInternal` 对齐）
+ *
+ * @param fragment 用户填写的 SQL 片段
+ * @param what 片段类型名称（用于长度超限消息，如"过滤条件"/"转换表达式"）
+ */
+function validateSqlFragment(
+  fragment: string | null | undefined,
+  what: '过滤条件' | '转换表达式'
+): string | undefined {
+  if (fragment === null || fragment === undefined) return undefined
+  const text = fragment.trim()
   if (!text) return undefined
   if (text.length > FILTER_MAX_LENGTH) {
-    return `过滤条件过长（上限 ${FILTER_MAX_LENGTH} 字符，当前 ${text.length}）`
+    return `${what}过长（上限 ${FILTER_MAX_LENGTH} 字符，当前 ${text.length}）`
   }
 
   const { tokens, error } = tokenizeFilter(text)
@@ -384,7 +421,7 @@ export function validateFilterCondition(filter?: string | null): string | undefi
 
     const upper = t.text.toUpperCase()
     if (FILTER_FORBIDDEN_KEYWORDS.has(upper)) {
-      return `只允许只读的 WHERE 布尔表达式，检测到禁用关键字: ${upper}`
+      return `只允许只读的标量/布尔表达式，检测到禁用关键字: ${upper}`
     }
     if (FILTER_SYSTEM_OBJECTS.has(upper)) {
       return `不允许访问系统目录/系统对象: ${t.text}`
@@ -416,6 +453,22 @@ export function findInvalidFilterCondition(
   for (const [table, filter] of entries) {
     const reason = validateFilterCondition(filter)
     if (reason) return { table, reason }
+  }
+  return undefined
+}
+
+/**
+ * 批量校验多张表的转换表达式
+ *
+ * @param entries `[表.列, 表达式]` 二元组集合
+ * @returns 第一条非法项（含定位键）；全部通过时返回 `undefined`
+ */
+export function findInvalidTransformExpr(
+  entries: Iterable<readonly [string, string | undefined]>
+): { column: string; reason: string } | undefined {
+  for (const [column, expr] of entries) {
+    const reason = validateTransformExpr(expr)
+    if (reason) return { column, reason }
   }
   return undefined
 }
