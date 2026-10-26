@@ -509,7 +509,7 @@ export const useUserStore = defineStore({
       }
       await getDict()
       // 规则
-      await getRuleList()
+      // await getRuleList()
       return userInfo;
     },
     /**

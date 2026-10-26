@@ -48,6 +48,7 @@ import {
     Dropdown,
     Collapse,
     Card,
+    Descriptions,
     Result,
     Tag,
     FloatButton,
@@ -108,6 +109,8 @@ export function registerGlobComp(app: App) {
         .use(Dropdown)
         .use(Collapse)
         .use(Card)
+        // 描述列表: Descriptions 的 install 会同时注册 a-descriptions 与 a-descriptions-item
+        .use(Descriptions)
         .use(FloatButton)
         .use(Result)
         .use(Tag)
